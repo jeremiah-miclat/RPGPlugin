@@ -1,0 +1,11 @@
+name: RPGPlugin
+version: '1.0-SNAPSHOT'
+main: github.eremiyuh.rPGPlugin.RPGPlugin
+api-version: '1.21'
+commands:
+  selectclass:
+    description: Opens a GUI to select your class
+    usage: /<command>
+  checkclass:
+    description: Check your current class
+    usage: /<command>
