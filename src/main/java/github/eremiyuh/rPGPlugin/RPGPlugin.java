@@ -26,6 +26,7 @@ public final class RPGPlugin extends JavaPlugin {
         // Register listener
         PlayerClassListener playerClassListener = new PlayerClassListener(playerClassManager);
         getServer().getPluginManager().registerEvents(playerClassListener, this);
+        getServer().getPluginManager().registerEvents(checkClassCommand, this);
     }
 
     @Override

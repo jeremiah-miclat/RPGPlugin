@@ -46,8 +46,8 @@ public class PlayerClassListener implements Listener {
                         player.sendMessage("You have selected the Alchemist class!");
                         break;
                     default:
-                        player.sendMessage("Invalid class selection.");
-                        break;
+                        player.sendMessage("Please click correct icon.");
+                        return;
                 }
 
                 player.closeInventory(); // Close the GUI after selection
@@ -66,7 +66,7 @@ public class PlayerClassListener implements Listener {
                 // Add a default case if necessary
                 if (playerClass.equals("Swordsman")) {
                     if (player.getInventory().getItemInMainHand().getType().toString().endsWith("_SWORD")) {
-                        double newDamage = originalDamage * 1.2; // 20% more damage
+                        double newDamage = originalDamage * (1.2 + playerClassManager.getPlayerStrength(player)); // 20% more damage + swordy str
                         event.setDamage(newDamage); // Set the new damage
                         player.sendMessage("Swordsman, dealt " + newDamage + " (previous damage: " + originalDamage + ")");
                     }
