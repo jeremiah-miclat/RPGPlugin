@@ -9,3 +9,13 @@ commands:
   checkclass:
     description: Check your current class
     usage: /<command>
+  convertlevels:
+    description: "Convert 100 experience levels into 1 attribute point."
+    usage: "/convertlevels"
+  selectelement:
+    description: "Select an elemental affinity."
+    usage: "/<command> <fire|water|earth|wind|lightning|ice>"
+  selectrace:
+    description: "Join race."
+    usage: "/<command> <human|elf|orc|vampire|dwarf|demon|angel|darkelf>"
+
