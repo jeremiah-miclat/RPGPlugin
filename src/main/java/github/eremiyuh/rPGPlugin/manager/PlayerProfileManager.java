@@ -62,6 +62,7 @@ public class PlayerProfileManager {
         config.set("chosenClass", profile.getChosenClass());
         config.set("lastClassSelection", profile.getLastClassSelection());
         config.set("currentAttributePoints", profile.getCurrentAttributePoints());
+        config.set("totalAllocatedPoints", profile.getTotalAllocatedPoints());
 
         // Save class-specific allocated points
         config.set("totalArcherAllocatedPoints", profile.getTotalArcherAllocatedPoints());
@@ -81,6 +82,10 @@ public class PlayerProfileManager {
         // Save race choice
         config.set("selectedRace", profile.getSelectedRace());
         config.set("lastRaceSelection", profile.getLastRaceSelection());
+
+        // Save skill choice
+        config.set("selectedSkill",profile.getSelectedSkill());
+        config.set("lastSkillSelection", profile.getLastSkillSelection());
 
         try {
             config.save(profileFile);

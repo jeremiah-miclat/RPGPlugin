@@ -15,10 +15,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class CheckClassCommand implements CommandExecutor, Listener {
 
@@ -95,6 +92,7 @@ public class CheckClassCommand implements CommandExecutor, Listener {
         lore.add("§eAllocated Points (" + profile.getChosenClass() +"): " + getTotalPointsForChosenClass(profile));
         lore.add("§eTotal Allocated Points: " + profile.getTotalAllocatedPoints());
         lore.add("§eElement: " + profile.getSelectedElement());
+        lore.add("§eSkill: " + profile.getSelectedSkill());
         lore.add("§eRace: " + profile.getSelectedRace());
 
         // Set the lore to the skull meta
@@ -181,6 +179,11 @@ public class CheckClassCommand implements CommandExecutor, Listener {
             if (event.getCurrentItem() != null && event.getCurrentItem().getItemMeta() != null) {
                 Player player = (Player) event.getWhoClicked();
                 UserProfile profile = profileManager.getProfile(player.getName());
+
+                if (Objects.equals(profile.getChosenClass(), "default")) {
+                    player.sendMessage("You cannot allocate points while in the default class.");
+                    return;
+                }
 
                 if (profile != null && profile.getCurrentAttributePoints() > 0) {
                     String attributeName = event.getCurrentItem().getItemMeta().getDisplayName().replace("§a", "").toLowerCase();

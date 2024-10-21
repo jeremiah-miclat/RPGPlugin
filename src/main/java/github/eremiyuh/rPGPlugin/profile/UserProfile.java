@@ -22,6 +22,10 @@ public class UserProfile {
     private String selectedRace = "default";  // Default to no race
     private long lastRaceSelection = 0;    // Timestamp of the last element selection
 
+    // New fields for skill choice
+    private  String selectedSkill = "none";
+    private long lastSkillSelection = 0;    // Timestamp of the last skill selection
+
     public UserProfile(String playerName) {
         this.playerID = UUID.randomUUID(); // Generate a unique ID for the player
         this.playerName = playerName;
@@ -159,6 +163,31 @@ public class UserProfile {
     public void setLastRaceSelection(long lastRaceSelection) {
         this.lastRaceSelection = lastRaceSelection;
     }
+
+    // Getter and setter for selectedSkill
+    public String getSelectedSkill() {
+        return selectedSkill;
+    }
+
+    public void setSelectedSkill(String skill) {
+        this.selectedSkill = skill;
+        this.lastSkillSelection = System.currentTimeMillis();  // Set timestamp
+    }
+
+    // Method to check if 10-minute cooldown has passed
+    public boolean canSelectNewSkill() {
+        long currentTime = System.currentTimeMillis();
+        return (currentTime - lastSkillSelection) >= 600000;  // 600,000 ms = 10 minutes
+    }
+
+    public long getLastSkillSelection() {
+        return lastSkillSelection;
+    }
+
+    public void setLastSkillSelection(long lastSkillSelection) {
+        this.lastSkillSelection = lastSkillSelection;
+    }
+
 
 
     // Inner class to hold class-specific attributes
