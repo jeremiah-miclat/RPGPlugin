@@ -6,7 +6,7 @@ commands:
   selectclass:
     description: Opens a GUI to select your class
     usage: /<command>
-  checkclass:
+  checkstatus:
     description: Check your current class
     usage: /<command>
   convertlevels:
@@ -21,3 +21,20 @@ commands:
   selectskill:
     description: Open the skill selection GUI
     usage: /selectskill
+  teamcreate:
+    description: "Creates a new team with your name."
+    usage: "/teamcreate"
+  teaminvite:
+    description: Invite a player to your team.
+    usage: /teaminvite <player>
+    permission: rpgplugin.teaminvite
+  teamleave:
+    description: Leave your current team.
+    usage: /teamleave
+    permission: rpgplugin.leaveteam
+  teaminviteaccept:
+    description: Accept an invitation to join a team.
+    usage: /teaminviteaccept <inviterName>
+  teamremove:
+    description: Remove player from a team.
+    usage: /teamremove <playertoberemoved>

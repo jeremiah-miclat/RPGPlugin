@@ -37,6 +37,23 @@ public class Damage implements Listener {
 
         if (damager instanceof Player attacker) {
             if (damaged instanceof Player victim) {
+                UserProfile attackerProfile = profileManager.getProfile(attacker.getName());
+                UserProfile victimProfile = profileManager.getProfile(victim.getName());
+
+                if (attackerProfile != null && victimProfile != null) {
+                    String attackerTeam = attackerProfile.getTeam();
+                    String victimTeam = victimProfile.getTeam();
+
+                    // If they are on the same team, cancel the damage
+                    if (attackerTeam != null && attackerTeam.equals(victimTeam)) {
+                        attacker.sendMessage("You cannot damage players on your own team!");
+                        event.setCancelled(true);
+                        return; // Exit early as we don’t need to process further
+                    }
+                }
+
+
+
                 // PvP damage calculation
                 handlePvPDamage(attacker, victim, event, damagerLocation, damagedLocation);
             }

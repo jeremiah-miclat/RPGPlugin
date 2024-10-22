@@ -1,8 +1,6 @@
 package github.eremiyuh.rPGPlugin;
 
-import github.eremiyuh.rPGPlugin.commands.ConvertLevelsCommand;
-import github.eremiyuh.rPGPlugin.commands.SelectElement;
-import github.eremiyuh.rPGPlugin.commands.SelectRace;
+import github.eremiyuh.rPGPlugin.commands.*;
 import github.eremiyuh.rPGPlugin.commandswithgui.CheckClassCommand;
 import github.eremiyuh.rPGPlugin.commandswithgui.SelectClassCommand;
 import github.eremiyuh.rPGPlugin.commandswithgui.SkillsGui;
@@ -32,12 +30,19 @@ public class RPGPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new OptimizedVampireSunlightListener(profileManager, this), this);
         getServer().getPluginManager().registerEvents(new Damage(profileManager), this);
 
+
         // Register the command executor
-        Objects.requireNonNull(this.getCommand("checkclass")).setExecutor(new CheckClassCommand(profileManager));
+        Objects.requireNonNull(this.getCommand("checkstatus")).setExecutor(new CheckClassCommand(profileManager));
         Objects.requireNonNull(getCommand("convertlevels")).setExecutor(new ConvertLevelsCommand(profileManager));
         Objects.requireNonNull(getCommand("selectelement")).setExecutor(new SelectElement(profileManager));
         Objects.requireNonNull(getCommand("selectrace")).setExecutor(new SelectRace(profileManager));
         Objects.requireNonNull(getCommand("selectskill")).setExecutor(new SkillsGui(this,profileManager));
+        Objects.requireNonNull(getCommand("teamcreate")).setExecutor(new CreateTeamCommand(profileManager));
+        Objects.requireNonNull(getCommand("teaminvite")).setExecutor(new TeamInviteCommand(profileManager));
+        Objects.requireNonNull(getCommand("teamleave")).setExecutor(new TeamLeaveCommand(profileManager));
+        Objects.requireNonNull(getCommand("teaminviteaccept")).setExecutor(new TeamInviteAcceptCommand(profileManager));
+        Objects.requireNonNull(getCommand("teamremove")).setExecutor(new TeamRemoveCommand(profileManager));
+
         // Register the listener
         Bukkit.getPluginManager().registerEvents(new CheckClassCommand(profileManager), this);
 

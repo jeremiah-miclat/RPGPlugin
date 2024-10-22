@@ -1,5 +1,7 @@
 package github.eremiyuh.rPGPlugin.profile;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class UserProfile {
@@ -29,6 +31,9 @@ public class UserProfile {
     // New field for team
     private String team = "none";
 
+    // New field for team invites
+    private List<String> teamInvites;
+
     public UserProfile(String playerName) {
         this.playerID = UUID.randomUUID(); // Generate a unique ID for the player
         this.playerName = playerName;
@@ -41,6 +46,9 @@ public class UserProfile {
         this.archerClassInfo = new ClassAttributes();
         this.swordsmanClassInfo = new ClassAttributes();
         this.alchemistClassInfo = new ClassAttributes();
+
+        // Initialize the team invite list
+        this.teamInvites = new ArrayList<>();
 
 
     }
@@ -197,6 +205,25 @@ public class UserProfile {
 
     public void setTeam(String team) {
         this.team = team;
+    }
+
+    // Getters and setters for team invites
+    public List<String> getTeamInvites() {
+        return teamInvites;
+    }
+
+    public void addTeamInvite(String playerName) {
+        if (!teamInvites.contains(playerName)) {
+            teamInvites.add(playerName);
+        }
+    }
+
+    public void removeTeamInvite(String playerName) {
+        teamInvites.remove(playerName);
+    }
+
+    public boolean isInvited(String playerName) {
+        return teamInvites.contains(playerName);
     }
 
 
