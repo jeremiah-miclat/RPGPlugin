@@ -87,6 +87,9 @@ public class PlayerProfileManager {
         config.set("selectedSkill",profile.getSelectedSkill());
         config.set("lastSkillSelection", profile.getLastSkillSelection());
 
+        // save team
+        config.set("team", profile.getTeam());
+
         try {
             config.save(profileFile);
         } catch (IOException e) {
@@ -135,6 +138,13 @@ public class PlayerProfileManager {
         // Load race choice
         profile.setSelectedRace(config.getString("selectedRace", "default"));
         profile.setLastRaceSelection(config.getLong("lastRaceSelection", 0));
+
+        // Load skill choice
+        profile.setSelectedSkill(config.getString("selectedSkill", "default"));
+        profile.setLastSkillSelection(config.getLong("lastSkillSelection", 0));
+
+        // load team
+        profile.setTeam(config.getString("team","none"));
 
         playerProfiles.put(playerName, profile);
     }

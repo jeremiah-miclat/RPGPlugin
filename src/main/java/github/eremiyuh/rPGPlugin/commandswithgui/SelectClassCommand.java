@@ -86,7 +86,8 @@ public class SelectClassCommand implements CommandExecutor, Listener {
 
                 // Check cooldown
                 long currentTime = System.currentTimeMillis();
-                long cooldownPeriod = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+//                long cooldownPeriod = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+                long cooldownPeriod = 1000; // 24 hours in milliseconds
                 if (currentTime - profile.getLastClassSelection() < cooldownPeriod) {
                     long timeLeft = cooldownPeriod - (currentTime - profile.getLastClassSelection());
                     player.sendMessage("You must wait " + (timeLeft / 1000 / 60) + " minutes before choosing a class again.");

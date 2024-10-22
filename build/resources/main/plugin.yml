@@ -18,4 +18,6 @@ commands:
   selectrace:
     description: "Join race."
     usage: "/<command> <human|elf|orc|vampire|dwarf|demon|angel|darkelf>"
-
+  selectskill:
+    description: Open the skill selection GUI
+    usage: /selectskill

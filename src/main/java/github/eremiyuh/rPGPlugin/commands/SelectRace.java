@@ -63,7 +63,7 @@ public class SelectRace implements CommandExecutor {
                 return true;
         }
 
-        profileManager.saveProfile(player.getName());  // Save after changing element
+        profileManager.saveProfile(player.getName());  // Save after changing race
         return true;
     }
 }

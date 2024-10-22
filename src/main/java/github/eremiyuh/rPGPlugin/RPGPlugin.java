@@ -5,6 +5,8 @@ import github.eremiyuh.rPGPlugin.commands.SelectElement;
 import github.eremiyuh.rPGPlugin.commands.SelectRace;
 import github.eremiyuh.rPGPlugin.commandswithgui.CheckClassCommand;
 import github.eremiyuh.rPGPlugin.commandswithgui.SelectClassCommand;
+import github.eremiyuh.rPGPlugin.commandswithgui.SkillsGui;
+import github.eremiyuh.rPGPlugin.listeners.Damage;
 import github.eremiyuh.rPGPlugin.listeners.OptimizedVampireSunlightListener;
 import github.eremiyuh.rPGPlugin.listeners.PlayerJoinListener;
 import github.eremiyuh.rPGPlugin.listeners.PlayerQuitListener;
@@ -28,12 +30,14 @@ public class RPGPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new PlayerQuitListener(profileManager), this);
         Objects.requireNonNull(getCommand("selectclass")).setExecutor(new SelectClassCommand(this, profileManager));
         getServer().getPluginManager().registerEvents(new OptimizedVampireSunlightListener(profileManager, this), this);
+        getServer().getPluginManager().registerEvents(new Damage(profileManager), this);
 
         // Register the command executor
         Objects.requireNonNull(this.getCommand("checkclass")).setExecutor(new CheckClassCommand(profileManager));
         Objects.requireNonNull(getCommand("convertlevels")).setExecutor(new ConvertLevelsCommand(profileManager));
         Objects.requireNonNull(getCommand("selectelement")).setExecutor(new SelectElement(profileManager));
         Objects.requireNonNull(getCommand("selectrace")).setExecutor(new SelectRace(profileManager));
+        Objects.requireNonNull(getCommand("selectskill")).setExecutor(new SkillsGui(this,profileManager));
         // Register the listener
         Bukkit.getPluginManager().registerEvents(new CheckClassCommand(profileManager), this);
 

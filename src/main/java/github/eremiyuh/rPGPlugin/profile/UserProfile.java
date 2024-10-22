@@ -26,6 +26,9 @@ public class UserProfile {
     private  String selectedSkill = "none";
     private long lastSkillSelection = 0;    // Timestamp of the last skill selection
 
+    // New field for team
+    private String team = "none";
+
     public UserProfile(String playerName) {
         this.playerID = UUID.randomUUID(); // Generate a unique ID for the player
         this.playerName = playerName;
@@ -128,7 +131,7 @@ public class UserProfile {
     // Method to check if 10-minute cooldown has passed
     public boolean canSelectNewElement() {
         long currentTime = System.currentTimeMillis();
-        return (currentTime - lastElementSelection) >= 600000;  // 600,000 ms = 10 minutes
+        return (currentTime - lastElementSelection) >= 600;  // 600,000 ms = 10 minutes
     }
 
     public long getLastElementSelection() {
@@ -152,7 +155,7 @@ public class UserProfile {
     // Method to check if 10-minute cooldown has passed
     public boolean canSelectNewRace() {
         long currentTime = System.currentTimeMillis();
-        return (currentTime - lastRaceSelection) >= 600000;  // 600,000 ms = 10 minutes
+        return (currentTime - lastRaceSelection) >= 600;  // 600,000 ms = 10 minutes
     }
 
     public long getLastRaceSelection() {
@@ -177,7 +180,7 @@ public class UserProfile {
     // Method to check if 10-minute cooldown has passed
     public boolean canSelectNewSkill() {
         long currentTime = System.currentTimeMillis();
-        return (currentTime - lastSkillSelection) >= 600000;  // 600,000 ms = 10 minutes
+        return (currentTime - lastSkillSelection) >= 600;  // 600,000 ms = 10 minutes
     }
 
     public long getLastSkillSelection() {
@@ -188,6 +191,13 @@ public class UserProfile {
         this.lastSkillSelection = lastSkillSelection;
     }
 
+    public String getTeam() {
+        return team;
+    }
+
+    public void setTeam(String team) {
+        this.team = team;
+    }
 
 
     // Inner class to hold class-specific attributes
@@ -346,4 +356,28 @@ public class UserProfile {
                 throw new IllegalArgumentException("Invalid attribute: " + attribute);
         }
     }
+
+    // ability perms
+
+    public boolean canSummonLava() {
+        // Check if player is Swordsman, has Fire element, and selected Skill 1
+        return chosenClass.equalsIgnoreCase("Swordsman") &&
+                selectedElement.equalsIgnoreCase("Fire") &&
+                selectedSkill.equalsIgnoreCase("Skill 1");
+    }
+
+    public boolean canSummonFire() {
+        // Check if player is Swordsman, has Fire element, and selected Skill 1
+        return chosenClass.equalsIgnoreCase("Swordsman") &&
+                selectedElement.equalsIgnoreCase("Fire") &&
+                selectedSkill.equalsIgnoreCase("Skill 1");
+    }
+
+    public boolean canSummonFlowingWater() {
+        // Check if player is Swordsman, has Fire element, and selected Skill 1
+        return chosenClass.equalsIgnoreCase("Swordsman") &&
+                selectedElement.equalsIgnoreCase("Water") &&
+                selectedSkill.equalsIgnoreCase("Skill 1");
+    }
+
 }
