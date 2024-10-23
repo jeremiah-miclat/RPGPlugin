@@ -90,6 +90,9 @@ public class PlayerProfileManager {
         // save team
         config.set("team", profile.getTeam());
 
+        //pvp
+        config.set("pvpEnabled",profile.isPvpEnabled());
+
         try {
             config.save(profileFile);
         } catch (IOException e) {
@@ -145,6 +148,9 @@ public class PlayerProfileManager {
 
         // load team
         profile.setTeam(config.getString("team","none"));
+
+        //pvp
+        profile.setPvpEnabled(config.getBoolean("pvpEnabled",false));
 
         playerProfiles.put(playerName, profile);
     }

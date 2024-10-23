@@ -11,6 +11,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.ProjectileHitEvent;
+
+import java.util.Objects;
 
 public class Damage implements Listener {
 
@@ -41,21 +44,34 @@ public class Damage implements Listener {
                 UserProfile victimProfile = profileManager.getProfile(victim.getName());
 
                 if (attackerProfile != null && victimProfile != null) {
+                    boolean attackerPvp = attackerProfile.isPvpEnabled();
+                    boolean victimPvp = victimProfile.isPvpEnabled();
+
+                    if (!attackerPvp || !victimPvp){
+                        // Cancel the damage event to prevent PvP
+                        event.setCancelled(true);
+
+                        // Optionally send messages to both players
+                        attacker.sendMessage("PvP is disabled for you or your target.");
+                    }
+
                     String attackerTeam = attackerProfile.getTeam();
                     String victimTeam = victimProfile.getTeam();
 
                     // If they are on the same team, cancel the damage
-                    if (attackerTeam != null && attackerTeam.equals(victimTeam)) {
+                    if (!Objects.equals(attackerTeam, "none") && !Objects.equals(victimTeam, "none") && attackerTeam.equals(victimTeam)) {
                         attacker.sendMessage("You cannot damage players on your own team!");
                         event.setCancelled(true);
                         return; // Exit early as we don’t need to process further
                     }
+
+                    // PvP damage calculation
+                    handlePvPDamage(attacker, victim, event, damagerLocation, damagedLocation);
                 }
 
 
 
-                // PvP damage calculation
-                handlePvPDamage(attacker, victim, event, damagerLocation, damagedLocation);
+
             }
             if (damaged instanceof LivingEntity target && !(damaged instanceof Player)) {
                 // PvE damage calculation
@@ -71,7 +87,70 @@ public class Damage implements Listener {
         }
     }
 
-    // PvP Damage
+    @EventHandler
+    public void onProjectileHit(ProjectileHitEvent event) {
+        Projectile projectile = event.getEntity();
+        Entity hitEntity = event.getHitEntity();
+        // pvp event
+        if (projectile.getShooter() instanceof Player damager) {
+            if (hitEntity instanceof Player victim) {
+                UserProfile damagerProfile = profileManager.getProfile(damager.getName());
+                UserProfile victimProfile = profileManager.getProfile(victim.getName());
+
+                if (damagerProfile != null && victimProfile != null) {
+                    Boolean attackerPvp = damagerProfile.isPvpEnabled();
+                    Boolean victimPvp = victimProfile.isPvpEnabled();
+
+                    if (!damagerProfile.isPvpEnabled() || !victimProfile.isPvpEnabled()){
+                        // Cancel the damage event to prevent PvP
+                        event.setCancelled(true);
+
+                        // Optionally send messages to both players
+                        damager.sendMessage("PvP is disabled for you or your target.");
+                        victim.sendMessage("PvP is disabled, you cannot be attacked.");
+                    }
+
+                    String damagerTeam = damagerProfile.getTeam();
+                    String victimTeam = victimProfile.getTeam();
+
+                    // If they are on the same team, cancel the damage
+                    if (damagerTeam != null && damagerTeam.equals(victimTeam)) {
+                        damager.sendMessage("You cannot damage players on your own team!");
+                        event.setCancelled(true);
+                        return; // Exit early as we don’t need to process further
+                    }
+
+                    Location damagerLocation = damager.getLocation();
+                    Location victimLocation = victim.getLocation();
+
+
+
+                }
+
+            }
+        }
+    }
+
+    // PvP melee Damage
+    private void handlePvPMeleeDamage(Player attacker, Player victim, EntityDamageByEntityEvent event, Location damagerLocation, Location damagedLocation, UserProfile attackerProfile, UserProfile victimProfile) {
+        double baseDamage = event.getDamage();
+        UserProfile playerProfile = profileManager.getProfile(attacker.getName());
+
+        // Get the item in the attacker's main hand
+        Material mainHandItem = attacker.getInventory().getItemInMainHand().getType();
+
+        // Using Sword
+        if (attackerProfile.getChosenClass().equalsIgnoreCase("swordsman") && mainHandItem.toString().endsWith("_SWORD")) {  // Check if the item is any type of sword
+            // Your logic for sword usage here
+            attacker.sendMessage("You are using a sword!");
+        }
+
+        double modifiedDamage = calculatePvPDamage(attacker, victim, baseDamage);
+        event.setDamage(modifiedDamage);
+    }
+
+
+
     private void handlePvPDamage(Player attacker, Player victim, EntityDamageByEntityEvent event, Location damagerLocation, Location damagedLocation) {
         double baseDamage = event.getDamage();
         UserProfile playerProfile = profileManager.getProfile(attacker.getName());
@@ -99,6 +178,11 @@ public class Damage implements Listener {
 
         double modifiedDamage = calculatePvPDamage(attacker, victim, baseDamage);
         event.setDamage(modifiedDamage);
+    }
+
+    // PvP ranged Damage
+    private void handlePvpProjectileDamage(Player attacker, Player victim, EntityDamageByEntityEvent event, Location damagerLocation, Location damagedLocation) {
+
     }
 
 

@@ -42,6 +42,7 @@ public class RPGPlugin extends JavaPlugin {
         Objects.requireNonNull(getCommand("teamleave")).setExecutor(new TeamLeaveCommand(profileManager));
         Objects.requireNonNull(getCommand("teaminviteaccept")).setExecutor(new TeamInviteAcceptCommand(profileManager));
         Objects.requireNonNull(getCommand("teamremove")).setExecutor(new TeamRemoveCommand(profileManager));
+        Objects.requireNonNull(getCommand("pvpstatus")).setExecutor(new PVPStatusCommand(profileManager));
 
         // Register the listener
         Bukkit.getPluginManager().registerEvents(new CheckClassCommand(profileManager), this);

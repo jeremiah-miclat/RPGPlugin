@@ -34,6 +34,8 @@ public class UserProfile {
     // New field for team invites
     private List<String> teamInvites;
 
+    private boolean pvpEnabled = true;
+
     public UserProfile(String playerName) {
         this.playerID = UUID.randomUUID(); // Generate a unique ID for the player
         this.playerName = playerName;
@@ -50,6 +52,8 @@ public class UserProfile {
         // Initialize the team invite list
         this.teamInvites = new ArrayList<>();
 
+        // Initialize pvp toggle
+        this.pvpEnabled =false;
 
     }
 
@@ -224,6 +228,14 @@ public class UserProfile {
 
     public boolean isInvited(String playerName) {
         return teamInvites.contains(playerName);
+    }
+
+    public boolean isPvpEnabled() {
+        return pvpEnabled;
+    }
+
+    public void setPvpEnabled(boolean pvpEnabled) {
+        this.pvpEnabled = pvpEnabled;
     }
 
 

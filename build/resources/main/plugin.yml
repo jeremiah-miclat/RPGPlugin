@@ -31,10 +31,13 @@ commands:
   teamleave:
     description: Leave your current team.
     usage: /teamleave
-    permission: rpgplugin.leaveteam
+    permission: rpgplugin.teamleave
   teaminviteaccept:
     description: Accept an invitation to join a team.
     usage: /teaminviteaccept <inviterName>
   teamremove:
     description: Remove player from a team.
     usage: /teamremove <playertoberemoved>
+  pvpstatus:
+    description: Set PVP on or off
+    usage: /pvpstatus <onoroff>
