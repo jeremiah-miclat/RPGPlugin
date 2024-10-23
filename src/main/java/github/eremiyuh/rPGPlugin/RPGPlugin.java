@@ -9,6 +9,7 @@ import github.eremiyuh.rPGPlugin.listeners.OptimizedVampireSunlightListener;
 import github.eremiyuh.rPGPlugin.listeners.PlayerJoinListener;
 import github.eremiyuh.rPGPlugin.listeners.PlayerQuitListener;
 import github.eremiyuh.rPGPlugin.manager.PlayerProfileManager;
+import github.eremiyuh.rPGPlugin.methods.AbilityManager;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -22,13 +23,14 @@ public class RPGPlugin extends JavaPlugin {
     public void onEnable() {
         // Initialize the profile manager
         profileManager = new PlayerProfileManager(this);
+        AbilityManager abilityManager = new AbilityManager();
 
         // Register events
         getServer().getPluginManager().registerEvents(new PlayerJoinListener(profileManager), this);
         getServer().getPluginManager().registerEvents(new PlayerQuitListener(profileManager), this);
         Objects.requireNonNull(getCommand("selectclass")).setExecutor(new SelectClassCommand(this, profileManager));
         getServer().getPluginManager().registerEvents(new OptimizedVampireSunlightListener(profileManager, this), this);
-        getServer().getPluginManager().registerEvents(new Damage(profileManager), this);
+        getServer().getPluginManager().registerEvents(new Damage(profileManager, abilityManager), this);
 
 
         // Register the command executor

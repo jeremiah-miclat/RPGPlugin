@@ -405,13 +405,6 @@ public class UserProfile {
                 selectedSkill.equalsIgnoreCase("Skill 1");
     }
 
-    public boolean canSummonFire() {
-        // Check if player is Swordsman, has Fire element, and selected Skill 1
-        return chosenClass.equalsIgnoreCase("Swordsman") &&
-                selectedElement.equalsIgnoreCase("Fire") &&
-                selectedSkill.equalsIgnoreCase("Skill 1");
-    }
-
     public boolean canSummonFlowingWater() {
         // Check if player is Swordsman, has Fire element, and selected Skill 1
         return chosenClass.equalsIgnoreCase("Swordsman") &&

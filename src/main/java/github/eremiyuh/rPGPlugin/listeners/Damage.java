@@ -1,6 +1,7 @@
 package github.eremiyuh.rPGPlugin.listeners;
 
 import github.eremiyuh.rPGPlugin.manager.PlayerProfileManager;
+import github.eremiyuh.rPGPlugin.methods.AbilityManager;
 import github.eremiyuh.rPGPlugin.profile.UserProfile;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -11,16 +12,20 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.potion.PotionEffectType;
 
 import java.util.Objects;
 
 public class Damage implements Listener {
 
     private  final PlayerProfileManager profileManager;
+    private final AbilityManager abilityManager;
 
-    public Damage(PlayerProfileManager profileManager) {
+    public Damage(PlayerProfileManager profileManager, AbilityManager abilityManager) {
         this.profileManager = profileManager;
+        this.abilityManager = abilityManager;
     }
 
 
@@ -123,13 +128,53 @@ public class Damage implements Listener {
                     Location damagerLocation = damager.getLocation();
                     Location victimLocation = victim.getLocation();
 
+                    if (projectile instanceof Arrow) {
+                        damager.sendMessage("Bullseye");
+                    }
+
+                    if (projectile instanceof  ThrownPotion) {
+                        damager.sendMessage("Bullseye");
+                    }
+
 
 
                 }
 
             }
         }
+
+        //pve event
+        if (projectile.getShooter() instanceof Player damager) {
+            if (hitEntity instanceof LivingEntity mobVictim && !(hitEntity instanceof Player)) {
+                UserProfile damagerProfile = profileManager.getProfile(damager.getName());
+                Location damagerLoc = damager.getLocation();
+                Location mobVictimLoc = mobVictim.getLocation();
+                damager.sendMessage(event.getEntity().getName() + " hit");
+                handleLongRangePveDamage(damager,mobVictim,event,damagerLoc, mobVictimLoc,damagerProfile);
+            }
+        }
     }
+
+    @EventHandler
+    public void onSplashPotionHit(PotionSplashEvent event) {
+        ThrownPotion thrownPotion = event.getPotion();
+
+        boolean isInstantDamage =  thrownPotion.getEffects().stream().anyMatch(effect -> effect.getType().equals(PotionEffectType.INSTANT_DAMAGE));
+
+        if (isInstantDamage &&  thrownPotion.getShooter() instanceof Player thrower) {
+            UserProfile throwerProfile =  profileManager.getProfile(thrower.getName());
+            for (LivingEntity entity : event.getAffectedEntities()) {
+                if (!(entity instanceof Player ) && throwerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
+                    thrower.sendMessage("you threw potion on a mob");
+                    abilityManager.applyAbility(throwerProfile,entity,thrower.getLocation(),entity.getLocation());
+                }
+            }
+
+        }
+
+    }
+
+
 
     // PvP melee Damage
     private void handlePvPMeleeDamage(Player attacker, Player victim, EntityDamageByEntityEvent event, Location damagerLocation, Location damagedLocation, UserProfile attackerProfile, UserProfile victimProfile) {
@@ -197,7 +242,7 @@ public class Damage implements Listener {
         event.setDamage(modifiedDamage);
     }
 
-    // PvE Damage (Player vs Mob)
+    // PvE melee Damage (Player vs Mob)
     private void handlePvEDamageToEnvironment(Player attacker, LivingEntity target, EntityDamageByEntityEvent event, Location damagerLocation, Location damagedLocation) {
         double baseDamage = event.getDamage();
         double modifiedDamage = calculatePvEDamageToEnvironment(attacker, target, baseDamage);
@@ -234,8 +279,21 @@ public class Damage implements Listener {
 
     }
 
+    // PvE Long Range Damage
+    private void handleLongRangePveDamage(Player attacker, LivingEntity target, ProjectileHitEvent event, Location damagerLocation, Location damagedLocation
+        , UserProfile damagerProfile
+    ) {
 
+        // archers
+        if (damagerProfile.getChosenClass().equalsIgnoreCase("archer") && event.getEntity() instanceof Arrow) {
+            attacker.sendMessage("Archer class bonus applied");
+        }
 
+        if (damagerProfile.getChosenClass().equalsIgnoreCase("alchemist") && event.getEntity() instanceof ThrownPotion) {
+            attacker.sendMessage("Alchemist class bonus applied");
+        }
+
+    }
 
     // ELEMENTS SUMMON
 
@@ -250,13 +308,6 @@ public class Damage implements Listener {
         }
     }
 
-    // method to fire at a location
-    private void summonFire(Location location) {
-        Block block = location.getBlock();
-        if (block.getType() == Material.AIR || block.getType() == Material.WATER) {
-            block.setType(Material.FIRE);
-        }
-    }
 
     // Example method to summon water at a location
     private void summonWater(Location location) {
