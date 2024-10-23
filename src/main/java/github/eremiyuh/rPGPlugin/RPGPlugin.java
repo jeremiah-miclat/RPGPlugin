@@ -23,7 +23,7 @@ public class RPGPlugin extends JavaPlugin {
     public void onEnable() {
         // Initialize the profile manager
         profileManager = new PlayerProfileManager(this);
-        AbilityManager abilityManager = new AbilityManager();
+        AbilityManager abilityManager = new AbilityManager(this);
 
         // Register events
         getServer().getPluginManager().registerEvents(new PlayerJoinListener(profileManager), this);

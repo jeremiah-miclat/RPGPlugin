@@ -174,6 +174,20 @@ public class Damage implements Listener {
 
     }
 
+    @EventHandler
+    public void onPlayerFreezeDamage(EntityDamageEvent event) {
+        if (event.getEntity() instanceof Player) {
+            Player player = (Player) event.getEntity();
+
+            if (event.getCause() == EntityDamageEvent.DamageCause.FREEZE) {
+
+                UserProfile profile = profileManager.getProfile(player.getName());
+                if (profile.getSelectedElement().equalsIgnoreCase("ice")) {
+                    event.setCancelled(true);
+                }
+            }
+        }
+    }
 
 
     // PvP melee Damage
