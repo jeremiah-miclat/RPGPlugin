@@ -41,16 +41,16 @@ public class SelectElement implements CommandExecutor {
         // Validate the chosen element and set it
         switch (element) {
             case "fire":
-            case "earth":
-            case "wind":
-            case "lightning":
+//            case "earth":
+//            case "wind":
+//            case "lightning":
             case "water":
             case "ice":
                 profile.setSelectedElement(element);
                 player.sendMessage("You have chosen the " + element + " element!");
                 break;
             default:
-                player.sendMessage("Invalid element. Choose either fire, water, earth, wind, lightning, or ice.");
+                player.sendMessage("Invalid element. Choose either fire, water, or ice.");
                 return true;
         }
 

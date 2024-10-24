@@ -14,7 +14,7 @@ commands:
     usage: "/convertlevels"
   selectelement:
     description: "Select an elemental affinity."
-    usage: "/<command> <fire|water|earth|wind|lightning|ice>"
+    usage: "/<command> <fire|water|ice>"
   selectrace:
     description: "Join race."
     usage: "/<command> <human|elf|orc|vampire|dwarf|demon|angel|darkelf>"
