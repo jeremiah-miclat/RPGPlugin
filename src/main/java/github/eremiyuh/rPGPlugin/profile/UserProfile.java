@@ -41,7 +41,7 @@ public class UserProfile {
         this.playerName = playerName;
         this.chosenClass = "default"; // Default class upon joining
         this.lastClassSelection = 0; // Time of last class selection (could be used as timestamp)
-        this.currentAttributePoints = 0; // Starts with 0 points
+        this.currentAttributePoints = 100; // Starts with 0 points
 
         // Initialize class-specific attributes
         this.defaultClassInfo = new ClassAttributes();

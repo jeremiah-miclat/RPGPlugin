@@ -1,5 +1,6 @@
 package github.eremiyuh.rPGPlugin.commandswithgui;
 
+import github.eremiyuh.rPGPlugin.buffs.PlayerStatBuff;
 import github.eremiyuh.rPGPlugin.manager.PlayerProfileManager;
 import github.eremiyuh.rPGPlugin.profile.UserProfile;
 import org.bukkit.Bukkit;
@@ -20,9 +21,11 @@ import java.util.*;
 public class CheckClassCommand implements CommandExecutor, Listener {
 
     private final PlayerProfileManager profileManager;
+    private final PlayerStatBuff playerStatBuff;
 
     public CheckClassCommand(PlayerProfileManager profileManager) {
         this.profileManager = profileManager;
+        this.playerStatBuff = new PlayerStatBuff(profileManager);
     }
 
     @Override
@@ -197,6 +200,7 @@ public class CheckClassCommand implements CommandExecutor, Listener {
                         case "agility":
                             profile.addAttributePoints("agi", 1);
                             player.sendMessage("You added a point to Agility!");
+                            player.sendMessage("Your ms now is: " + player.getWalkSpeed());
                             break;
                         case "dexterity":
                             profile.addAttributePoints("dex", 1);
@@ -219,6 +223,7 @@ public class CheckClassCommand implements CommandExecutor, Listener {
                             break;
                     }
 
+                    playerStatBuff.onClassSwitchOrAttributeChange(player);
                     profileManager.saveProfile(player.getName());
                     openClassInfoGUI(player, profile);  // Refresh the GUI
                 } else {

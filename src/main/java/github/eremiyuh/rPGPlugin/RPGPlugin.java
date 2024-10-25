@@ -15,19 +15,24 @@ import java.util.Objects;
 public class RPGPlugin extends JavaPlugin {
 
     private PlayerProfileManager profileManager;
+    private MonsterStrengthScalingListener monsterStrengthScalingListener;
+    private PlayerDamageOthers playerDamageOthersListener;
 
     @Override
     public void onEnable() {
         // Initialize the profile manager
         profileManager = new PlayerProfileManager(this);
         AbilityManager abilityManager = new AbilityManager(this);
-
+        MonsterStrengthScalingListener monsterStrScaler = new MonsterStrengthScalingListener();
         // Register events
         getServer().getPluginManager().registerEvents(new PlayerJoinListener(profileManager), this);
         getServer().getPluginManager().registerEvents(new PlayerQuitListener(profileManager), this);
         Objects.requireNonNull(getCommand("selectclass")).setExecutor(new SelectClassCommand(this, profileManager));
-        getServer().getPluginManager().registerEvents(new OptimizedVampireSunlightListener(profileManager, this), this);
-        getServer().getPluginManager().registerEvents(new Damage(profileManager, abilityManager), this);
+        getServer().getPluginManager().registerEvents(new OptimizedVampireSunlightListener(profileManager, this),this);
+        playerDamageOthersListener = new PlayerDamageOthers(profileManager,abilityManager,this);
+        getServer().getPluginManager().registerEvents(playerDamageOthersListener,this);
+        monsterStrengthScalingListener = new MonsterStrengthScalingListener();
+        getServer().getPluginManager().registerEvents(monsterStrengthScalingListener, this);
 
 
         // Register the command executor
@@ -49,6 +54,11 @@ public class RPGPlugin extends JavaPlugin {
 
         // Log to console that the plugin has been enabled
         getLogger().info("RPGPlugin has been enabled.");
+    }
+
+    // Method to access the listener
+    public MonsterStrengthScalingListener getMonsterStrengthScalingListener() {
+        return monsterStrengthScalingListener;
     }
 
     @Override

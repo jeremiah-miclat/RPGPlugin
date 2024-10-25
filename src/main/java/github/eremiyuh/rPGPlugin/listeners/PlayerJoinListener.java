@@ -1,5 +1,6 @@
 package github.eremiyuh.rPGPlugin.listeners;
 
+import github.eremiyuh.rPGPlugin.buffs.PlayerStatBuff;
 import github.eremiyuh.rPGPlugin.buffs.VampireBuffs;
 import github.eremiyuh.rPGPlugin.manager.PlayerProfileManager;
 import github.eremiyuh.rPGPlugin.profile.UserProfile;
@@ -11,9 +12,11 @@ import org.bukkit.event.player.PlayerJoinEvent;
 public class PlayerJoinListener implements Listener {
 
     private final PlayerProfileManager profileManager;
+    private final PlayerStatBuff playerStatBuff;
 
     public PlayerJoinListener(PlayerProfileManager profileManager) {
         this.profileManager = profileManager;
+        this.playerStatBuff = new PlayerStatBuff(profileManager);
     }
 
     @EventHandler
@@ -21,6 +24,7 @@ public class PlayerJoinListener implements Listener {
         Player player = event.getPlayer();
         String playerName = event.getPlayer().getName();
         UserProfile profile = profileManager.getProfile(playerName);
+
         // If no profile was found, create a new one
         if (profile == null) {
             profileManager.createProfile(playerName);
@@ -34,6 +38,8 @@ public class PlayerJoinListener implements Listener {
             event.getPlayer().sendMessage("Your chosen class is: " + profile.getChosenClass());
             event.getPlayer().sendMessage("Your chosen element is: " + profile.getSelectedElement());
             event.getPlayer().sendMessage("Your chosen race is: " + profile.getSelectedRace());
+
+            playerStatBuff.onClassSwitchOrAttributeChange(player);
 
             // Apply race-specific effects based on the player's race
             String race = profile.getSelectedRace();

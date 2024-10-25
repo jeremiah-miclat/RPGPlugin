@@ -1,6 +1,7 @@
 package github.eremiyuh.rPGPlugin.commandswithgui;
 
 import github.eremiyuh.rPGPlugin.RPGPlugin;
+import github.eremiyuh.rPGPlugin.buffs.PlayerStatBuff;
 import github.eremiyuh.rPGPlugin.manager.PlayerProfileManager;
 import github.eremiyuh.rPGPlugin.profile.UserProfile;
 import org.bukkit.Bukkit;
@@ -23,10 +24,12 @@ public class SelectClassCommand implements CommandExecutor, Listener {
 
     private final RPGPlugin plugin;
     private final PlayerProfileManager profileManager;
+    private final PlayerStatBuff playerStatBuff;
 
     public SelectClassCommand(RPGPlugin plugin, PlayerProfileManager profileManager) {
         this.plugin = plugin;
         this.profileManager = profileManager;
+        this.playerStatBuff = new PlayerStatBuff(profileManager);
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 
@@ -61,12 +64,10 @@ public class SelectClassCommand implements CommandExecutor, Listener {
         ItemMeta meta = icon.getItemMeta();
         if (meta != null) {
             meta.setDisplayName(className);
-            // Set lore
             List<String> lore = new ArrayList<>();
             lore.add(loreText);
             meta.setLore(lore);
-            // Hide attributes
-            meta.setUnbreakable(true); // Optional: To hide item attributes visually
+            meta.setUnbreakable(true);
             icon.setItemMeta(meta);
         }
         return icon;
@@ -75,27 +76,22 @@ public class SelectClassCommand implements CommandExecutor, Listener {
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
         if (event.getView().getTitle().equals("Select Your Class")) {
-            event.setCancelled(true); // Prevent interactions
+            event.setCancelled(true);
             Player player = (Player) event.getWhoClicked();
-
-            // Check which item was clicked
             ItemStack clickedItem = event.getCurrentItem();
             if (clickedItem != null && clickedItem.hasItemMeta() && clickedItem.getItemMeta().hasDisplayName()) {
                 String displayName = clickedItem.getItemMeta().getDisplayName();
                 UserProfile profile = profileManager.getProfile(player.getName());
 
-                // Check cooldown
                 long currentTime = System.currentTimeMillis();
-//                long cooldownPeriod = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
-                long cooldownPeriod = 1000; // 24 hours in milliseconds
+                long cooldownPeriod = 24 * 60 * 60 * 1000;
                 if (currentTime - profile.getLastClassSelection() < cooldownPeriod) {
                     long timeLeft = cooldownPeriod - (currentTime - profile.getLastClassSelection());
                     player.sendMessage("You must wait " + (timeLeft / 1000 / 60) + " minutes before choosing a class again.");
-                    return; // Exit if still in cooldown
+                    return;
                 }
 
                 if (profile != null) {
-                    // Update class and save profile
                     switch (displayName) {
                         case "Swordsman":
                             profile.setChosenClass("Swordsman");
@@ -107,12 +103,15 @@ public class SelectClassCommand implements CommandExecutor, Listener {
                             profile.setChosenClass("Alchemist");
                             break;
                     }
-                    profile.setLastClassSelection(currentTime); // Update last selection time
+                    profile.setLastClassSelection(currentTime);
                     profileManager.saveProfile(player.getName());
+
+                    // Apply buffs based on the new class selection
+                    playerStatBuff.onClassSwitchOrAttributeChange(player);
+
                     player.sendMessage("You have selected the " + profile.getChosenClass() + " class!");
                 }
 
-                // Close the inventory after selection
                 player.closeInventory();
             }
         }

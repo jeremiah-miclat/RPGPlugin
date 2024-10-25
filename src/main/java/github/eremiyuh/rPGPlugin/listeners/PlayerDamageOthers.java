@@ -1,34 +1,35 @@
 package github.eremiyuh.rPGPlugin.listeners;
 
+import github.eremiyuh.rPGPlugin.RPGPlugin;
 import github.eremiyuh.rPGPlugin.manager.PlayerProfileManager;
 import github.eremiyuh.rPGPlugin.methods.AbilityManager;
 import github.eremiyuh.rPGPlugin.profile.UserProfile;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.Sound;
-import org.bukkit.block.Block;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.*;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.projectiles.ProjectileSource;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
-public class Damage implements Listener {
+public class PlayerDamageOthers implements Listener {
 
     private  final PlayerProfileManager profileManager;
     private final AbilityManager abilityManager;
+    private final RPGPlugin plugin;
 
-    public Damage(PlayerProfileManager profileManager, AbilityManager abilityManager) {
+
+    public PlayerDamageOthers(PlayerProfileManager profileManager, AbilityManager abilityManager,RPGPlugin plugin) {
         this.profileManager = profileManager;
         this.abilityManager = abilityManager;
+        this.plugin = plugin;
     }
 
 
@@ -49,6 +50,8 @@ public class Damage implements Listener {
         // Pve melee
         if (damager instanceof Player attacker && damaged instanceof LivingEntity victim && !(damaged instanceof Player))
         {
+
+
             UserProfile attackerProfile = profileManager.getProfile(attacker.getName());
             if (attackerProfile!=null) {
                 handleMeleePveDamage(attacker,victim,event,damagerLocation,damagedLocation,attackerProfile);
@@ -56,7 +59,7 @@ public class Damage implements Listener {
         }
 
         //PVE with bows and potion
-        if (damager instanceof Projectile && damaged instanceof LivingEntity victim && !(damaged instanceof Player)) {
+        if (damager instanceof Projectile && damaged instanceof LivingEntity victim && !(damaged instanceof Player) ) {
             Projectile projectile = (Projectile) event.getDamager();
             ProjectileSource shooter = projectile.getShooter();
 
@@ -81,6 +84,8 @@ public class Damage implements Listener {
         if (damager instanceof LivingEntity angryMob && !(damager instanceof Player)) {
 
         }
+
+
     }
 
     @EventHandler
@@ -101,17 +106,76 @@ public class Damage implements Listener {
     // pve melee damage
     private void handleMeleePveDamage(Player attacker, LivingEntity target, EntityDamageByEntityEvent event, Location damagerLocation, Location damagedLocation
             , UserProfile damagerProfile) {
+        MonsterStrengthScalingListener monsterListener = plugin.getMonsterStrengthScalingListener();
+        Map<LivingEntity, Double> extraHealthMap = monsterListener.getExtraHealthMap();
 
-        ItemStack weapon = attacker.getInventory().getItemInMainHand();
-        if (!damagerProfile.getSelectedElement().equalsIgnoreCase("fire") && (weapon.containsEnchantment(Enchantment.FLAME) ||weapon.containsEnchantment(Enchantment.FIRE_ASPECT) ))
-        {
-            event.getEntity().setFireTicks(0);
+        if (extraHealthMap.containsKey(target)) {
+            attacker.sendMessage(target.getHealth()+" left");
         }
+
 
         if (damagerProfile.getChosenClass().equalsIgnoreCase("swordsman")) {
             abilityManager.applyAbility(damagerProfile,target,damagerLocation,damagedLocation);
-            double damage =  event.getDamage();
-            event.setDamage(damage);
+            double damage = event.getDamage();
+
+            double agi = damagerProfile.getArcherClassInfo().getAgi();
+            double str = damagerProfile.getArcherClassInfo().getStr();
+            double dex = damagerProfile.getArcherClassInfo().getDex();
+            double intel = damagerProfile.getArcherClassInfo().getIntel();
+            double luk = damagerProfile.getArcherClassInfo().getLuk();
+            double vit = damagerProfile.getArcherClassInfo().getVit();
+
+            // damage from str
+            double strDmg = str * .01;
+
+            // Elemental Damage
+            double elementalDamage = 2.0 + (intel * .01) ;
+
+            // new dmg
+            double newDmg = damage + strDmg + elementalDamage;
+
+            // Critical Hit System
+            double critChance = ((luk/10) * 0.1) + .05;
+            double critDmgMultiplier = 1.1 + (dex * 0.01);
+            boolean isCrit = Math.random() < critChance;
+
+            if (isCrit) {
+                newDmg = newDmg * critDmgMultiplier;
+                attacker.sendMessage("Critical hit! Damage multiplied by " + critDmgMultiplier + "Damage dealt " + newDmg*critDmgMultiplier);
+                target.getWorld().playSound(damagerLocation, Sound.ENTITY_PLAYER_ATTACK_CRIT, 1, 1);
+                target.getWorld().playSound(damagedLocation, Sound.ENTITY_PLAYER_ATTACK_CRIT, 10, 1);
+            }
+
+            if (extraHealthMap.containsKey(target)) {
+                double currentHealth = target.getHealth();
+                double extraHealth = extraHealthMap.get(target);
+                double mobDmg = Objects.requireNonNull(target.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).getValue();
+
+
+                // Check if entity has extra health
+                if (extraHealth - newDmg > 0) {
+                    // If health after damage is less than or equal to zero, use extra health
+
+                        extraHealthMap.put(target, extraHealth - newDmg);
+
+                        event.setDamage(0); // Cancel the damage event
+                    attacker.sendMessage("mob dmg:" + mobDmg);
+                    attacker.sendMessage("Current Health: " + currentHealth + ", Extra Health: " + extraHealth);
+                        return;
+
+                } else {
+                    // If there's no extra health left, remove the entity from the map
+                    extraHealthMap.put(target, extraHealth - newDmg);
+                    event.setDamage(newDmg);
+                    attacker.sendMessage("Current Health: " + currentHealth + ", Extra Health: " + extraHealth);
+                    extraHealthMap.remove(target);
+                    return;
+                }
+            }
+
+            event.setDamage(newDmg);
+
+
         }
     }
 
@@ -152,7 +216,7 @@ public class Damage implements Listener {
             double newDmg = damage + strDmg + elementalDamage;
 
             // Critical Hit System
-            double critChance = ((luk/100) * 0.1) + .5;
+            double critChance = ((luk/10) * 0.1) + .001;
             double critDmgMultiplier = 1.1 + (dex * 0.01);
             boolean isCrit = Math.random() < critChance;
             if (isCrit) {
@@ -164,25 +228,47 @@ public class Damage implements Listener {
                 // Apply the final damage to the event
                 event.setDamage(newDmg);
 
-                attacker.sendMessage("Not critical. Dealt damage is: " + newDmg);
             }
         }
 
         // Alchemist class
         if (damagerProfile.getChosenClass().equalsIgnoreCase("alchemist") && event.getDamager() instanceof ThrownPotion) {
             attacker.sendMessage("Alchemist class bonus applied");
-            double damage = event.getDamage();
+
             abilityManager.applyAbility(damagerProfile, target, damagerLocation, damagedLocation);
-            event.setDamage(damage);
+            double damage = event.getDamage();
+
+            double agi = damagerProfile.getArcherClassInfo().getAgi();
+            double str = damagerProfile.getArcherClassInfo().getStr();
+            double dex = damagerProfile.getArcherClassInfo().getDex();
+            double intel = damagerProfile.getArcherClassInfo().getIntel();
+            double luk = damagerProfile.getArcherClassInfo().getLuk();
+            double vit = damagerProfile.getArcherClassInfo().getVit();
+
+            // damage from str
+            double strDmg = str * .003;
+
+            // Elemental Damage
+            double elementalDamage = 4.0 + (intel * .02) ;
+
+            // new dmg
+            double newDmg = damage + strDmg + elementalDamage + (intel * .01);
+
+            // Critical Hit System
+            double critChance = ((luk/10) * 0.1) + .05;
+            double critDmgMultiplier = 1.1 + (dex * 0.01);
+            boolean isCrit = Math.random() < critChance;
+            if (isCrit) {
+                event.setDamage(newDmg * critDmgMultiplier);
+                attacker.sendMessage("Critical hit! Damage multiplied by " + critDmgMultiplier + "Damage dealt " + newDmg*critDmgMultiplier);
+                target.getWorld().playSound(damagerLocation, Sound.ENTITY_PLAYER_ATTACK_CRIT, 1, 1);
+                target.getWorld().playSound(damagedLocation, Sound.ENTITY_PLAYER_ATTACK_CRIT, 10, 1);
+            } else {
+                // Apply the final damage to the event
+                event.setDamage(newDmg);
+
+            }
         }
-    }
-
-    // splash potion event damage to mobs handler
-    private void handlePlayerPotionDamageToMobs(Player attacker, LivingEntity victim, PotionSplashEvent event, Location damagerLocation, Location damagedLocation, UserProfile attackerProfile) {
-        abilityManager.applyAbility(attackerProfile,victim,damagerLocation,damagedLocation);
-        double intensity = event.getIntensity(victim);
-        attacker.sendMessage("you dealt " + intensity + " damage");
-
     }
 
 }
