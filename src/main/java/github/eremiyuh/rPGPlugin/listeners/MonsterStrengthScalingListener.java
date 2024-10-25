@@ -28,7 +28,7 @@ public class MonsterStrengthScalingListener implements Listener {
             int z = Math.abs(entity.getLocation().getBlockZ());
 
             // Calculate scaling factor based on distance from origin (x and z only)
-            int scalingFactor = Math.max(Math.abs(x), Math.abs(z)) / 100; // Scaling increases by 10% per 100 blocks
+            int scalingFactor = Math.max(Math.abs(x), Math.abs(z)) / 10; // Scaling increases by 10% per 100 blocks
 
             // Increase health
             AttributeInstance maxHealth = entity.getAttribute(Attribute.GENERIC_MAX_HEALTH);

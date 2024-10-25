@@ -108,6 +108,13 @@ public class PlayerDamageOthers implements Listener {
             , UserProfile damagerProfile) {
         MonsterStrengthScalingListener monsterListener = plugin.getMonsterStrengthScalingListener();
         Map<LivingEntity, Double> extraHealthMap = monsterListener.getExtraHealthMap();
+        ItemStack weapon = attacker.getInventory().getItemInMainHand();
+
+        // Fire element check: Disable fire if not selected
+        if (!damagerProfile.getSelectedElement().equalsIgnoreCase("fire")
+                && (weapon.containsEnchantment(Enchantment.FLAME) || weapon.containsEnchantment(Enchantment.FIRE_ASPECT))) {
+            event.getEntity().setFireTicks(0); // Cancel fire ticks
+        }
 
         if (extraHealthMap.containsKey(target)) {
             attacker.sendMessage(target.getHealth()+" left");
@@ -115,7 +122,8 @@ public class PlayerDamageOthers implements Listener {
 
 
         if (damagerProfile.getChosenClass().equalsIgnoreCase("swordsman")) {
-            abilityManager.applyAbility(damagerProfile,target,damagerLocation,damagedLocation);
+
+
             double damage = event.getDamage();
 
             double agi = damagerProfile.getArcherClassInfo().getAgi();
@@ -144,34 +152,40 @@ public class PlayerDamageOthers implements Listener {
                 attacker.sendMessage("Critical hit! Damage multiplied by " + critDmgMultiplier + "Damage dealt " + newDmg*critDmgMultiplier);
                 target.getWorld().playSound(damagerLocation, Sound.ENTITY_PLAYER_ATTACK_CRIT, 1, 1);
                 target.getWorld().playSound(damagedLocation, Sound.ENTITY_PLAYER_ATTACK_CRIT, 10, 1);
+
             }
 
             if (extraHealthMap.containsKey(target)) {
                 double currentHealth = target.getHealth();
                 double extraHealth = extraHealthMap.get(target);
                 double mobDmg = Objects.requireNonNull(target.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).getValue();
+                if (weapon.getType().toString().endsWith("_SWORD")) {
 
+                    abilityManager.applyAbility(damagerProfile,target,damagerLocation,damagedLocation);
+                } else {
+                    newDmg=damage;
+                }
 
                 // Check if entity has extra health
                 if (extraHealth - newDmg > 0) {
-                    // If health after damage is less than or equal to zero, use extra health
-
-                        extraHealthMap.put(target, extraHealth - newDmg);
-
+                    extraHealthMap.put(target, extraHealth - newDmg);
                         event.setDamage(0); // Cancel the damage event
                     attacker.sendMessage("mob dmg:" + mobDmg);
                     attacker.sendMessage("Current Health: " + currentHealth + ", Extra Health: " + extraHealth);
                         return;
 
-                } else {
-                    // If there's no extra health left, remove the entity from the map
+                }
+                else {
+
                     extraHealthMap.put(target, extraHealth - newDmg);
-                    event.setDamage(newDmg);
-                    attacker.sendMessage("Current Health: " + currentHealth + ", Extra Health: " + extraHealth);
                     extraHealthMap.remove(target);
+                    event.setDamage(newDmg);
                     return;
                 }
+
             }
+
+
 
             event.setDamage(newDmg);
 
