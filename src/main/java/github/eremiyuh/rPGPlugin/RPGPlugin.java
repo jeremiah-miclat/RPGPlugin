@@ -15,8 +15,7 @@ import java.util.Objects;
 public class RPGPlugin extends JavaPlugin {
 
     private PlayerProfileManager profileManager;
-    private MonsterStrengthScalingListener monsterStrengthScalingListener;
-    private PlayerDamageOthers playerDamageOthersListener;
+//    private MonsterStrengthScalingListener monsterStrengthScalingListener;
 
     @Override
     public void onEnable() {
@@ -29,10 +28,10 @@ public class RPGPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new PlayerQuitListener(profileManager), this);
         Objects.requireNonNull(getCommand("selectclass")).setExecutor(new SelectClassCommand(this, profileManager));
         getServer().getPluginManager().registerEvents(new OptimizedVampireSunlightListener(profileManager, this),this);
-        playerDamageOthersListener = new PlayerDamageOthers(profileManager,abilityManager,this);
+        PlayerDamageOthers playerDamageOthersListener = new PlayerDamageOthers(profileManager, abilityManager, this);
         getServer().getPluginManager().registerEvents(playerDamageOthersListener,this);
-        monsterStrengthScalingListener = new MonsterStrengthScalingListener();
-        getServer().getPluginManager().registerEvents(monsterStrengthScalingListener, this);
+//        monsterStrengthScalingListener = new MonsterStrengthScalingListener();
+//        getServer().getPluginManager().registerEvents(monsterStrengthScalingListener, this);
 
 
         // Register the command executor
@@ -57,9 +56,9 @@ public class RPGPlugin extends JavaPlugin {
     }
 
     // Method to access the listener
-    public MonsterStrengthScalingListener getMonsterStrengthScalingListener() {
-        return monsterStrengthScalingListener;
-    }
+//    public MonsterStrengthScalingListener getMonsterStrengthScalingListener() {
+//        return monsterStrengthScalingListener;
+//    }
 
     @Override
     public void onDisable() {

@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/RPGPlugin.main.iml" filepath="$PROJECT_DIR$/.idea/modules/RPGPlugin.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/github.eremiyuh.RPGPlugin.main.iml" filepath="$PROJECT_DIR$/.idea/modules/github.eremiyuh.RPGPlugin.main.iml" />
     </modules>
   </component>
 </project>

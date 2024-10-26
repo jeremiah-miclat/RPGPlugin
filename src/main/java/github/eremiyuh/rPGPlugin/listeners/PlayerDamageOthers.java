@@ -10,10 +10,12 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.*;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.projectiles.ProjectileSource;
 
 import java.util.Map;
@@ -104,10 +106,15 @@ public class PlayerDamageOthers implements Listener {
     }
 
     // pve melee damage
-    private void handleMeleePveDamage(Player attacker, LivingEntity target, EntityDamageByEntityEvent event, Location damagerLocation, Location damagedLocation
-            , UserProfile damagerProfile) {
-        MonsterStrengthScalingListener monsterListener = plugin.getMonsterStrengthScalingListener();
-        Map<LivingEntity, Double> extraHealthMap = monsterListener.getExtraHealthMap();
+    private void handleMeleePveDamage(Player attacker, LivingEntity target, EntityDamageByEntityEvent event, Location damagerLocation, Location damagedLocation, UserProfile damagerProfile) {
+        // Check if the player is in the default class
+        if (damagerProfile.getChosenClass().equalsIgnoreCase("default")) {
+            event.setDamage(event.getDamage()); // Keep default Minecraft combat
+            return;
+        }
+
+//        MonsterStrengthScalingListener monsterListener = plugin.getMonsterStrengthScalingListener();
+//        Map<LivingEntity, Double> extraHealthMap = monsterListener.getExtraHealthMap();
         ItemStack weapon = attacker.getInventory().getItemInMainHand();
 
         // Fire element check: Disable fire if not selected
@@ -116,87 +123,68 @@ public class PlayerDamageOthers implements Listener {
             event.getEntity().setFireTicks(0); // Cancel fire ticks
         }
 
-        if (extraHealthMap.containsKey(target)) {
-            attacker.sendMessage(target.getHealth()+" left");
+
+
+        double baseDamage = event.getDamage();
+
+        // Apply stats based on class for non-default players
+        double damageWithStats = applyStatsToDamage(baseDamage, damagerProfile, attacker, event);
+
+//        // Calculate base and attribute-based damage
+//        double damage = event.getDamage();
+//        double strDmg = damagerProfile.getSwordsmanClassInfo().getStr() * 0.01;
+//        double elementalDamage = 2.0 + (damagerProfile.getSwordsmanClassInfo().getIntel() * 0.01);
+//        double newDmg = damage + strDmg + elementalDamage;
+//
+//        // Critical Hit System
+//        double critChance = (damagerProfile.getSwordsmanClassInfo().getLuk() / 10) * 0.1 + 0.05;
+//        double critDmgMultiplier = 1.1 + (damagerProfile.getSwordsmanClassInfo().getDex() * 0.01);
+//        boolean isCrit = Math.random() < critChance;
+//
+//        if (isCrit) {
+//            newDmg *= critDmgMultiplier;
+//            attacker.sendMessage("Critical hit! Damage multiplied by " + critDmgMultiplier + ". Damage dealt: " + newDmg);
+//            target.getWorld().playSound(damagerLocation, Sound.ENTITY_PLAYER_ATTACK_CRIT, 1, 1);
+//            target.getWorld().playSound(damagedLocation, Sound.ENTITY_PLAYER_ATTACK_CRIT, 10, 1);
+//        }
+//
+//        // Apply extra health check for all non-default classes
+//        if (extraHealthMap.containsKey(target)) {
+//            double currentHealth = target.getHealth();
+//            double extraHealth = extraHealthMap.get(target);
+//            double remainingHealth = extraHealth - newDmg;
+//
+//            if (remainingHealth > 0) {
+//                extraHealthMap.put(target, remainingHealth);
+//                event.setDamage(0); // Cancel the event damage
+//                attacker.sendMessage("Current Health: " + currentHealth + ", Extra Health: " + extraHealth);
+//                return;
+//            } else {
+//                extraHealthMap.remove(target);
+//                event.setDamage(newDmg); // Apply remaining damage
+//                return;
+//            }
+//        }
+
+        // Swordsman-specific ability if holding a sword
+        if (damagerProfile.getChosenClass().equalsIgnoreCase("swordsman") && weapon.getType().toString().endsWith("_SWORD")) {
+            abilityManager.applyAbility(damagerProfile, target, damagerLocation, damagedLocation);
         }
 
-
-        if (damagerProfile.getChosenClass().equalsIgnoreCase("swordsman")) {
-
-
-            double damage = event.getDamage();
-
-            double agi = damagerProfile.getArcherClassInfo().getAgi();
-            double str = damagerProfile.getArcherClassInfo().getStr();
-            double dex = damagerProfile.getArcherClassInfo().getDex();
-            double intel = damagerProfile.getArcherClassInfo().getIntel();
-            double luk = damagerProfile.getArcherClassInfo().getLuk();
-            double vit = damagerProfile.getArcherClassInfo().getVit();
-
-            // damage from str
-            double strDmg = str * .01;
-
-            // Elemental Damage
-            double elementalDamage = 2.0 + (intel * .01) ;
-
-            // new dmg
-            double newDmg = damage + strDmg + elementalDamage;
-
-            // Critical Hit System
-            double critChance = ((luk/10) * 0.1) + .05;
-            double critDmgMultiplier = 1.1 + (dex * 0.01);
-            boolean isCrit = Math.random() < critChance;
-
-            if (isCrit) {
-                newDmg = newDmg * critDmgMultiplier;
-                attacker.sendMessage("Critical hit! Damage multiplied by " + critDmgMultiplier + "Damage dealt " + newDmg*critDmgMultiplier);
-                target.getWorld().playSound(damagerLocation, Sound.ENTITY_PLAYER_ATTACK_CRIT, 1, 1);
-                target.getWorld().playSound(damagedLocation, Sound.ENTITY_PLAYER_ATTACK_CRIT, 10, 1);
-
-            }
-
-            if (extraHealthMap.containsKey(target)) {
-                double currentHealth = target.getHealth();
-                double extraHealth = extraHealthMap.get(target);
-                double mobDmg = Objects.requireNonNull(target.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).getValue();
-                if (weapon.getType().toString().endsWith("_SWORD")) {
-
-                    abilityManager.applyAbility(damagerProfile,target,damagerLocation,damagedLocation);
-                } else {
-                    newDmg=damage;
-                }
-
-                // Check if entity has extra health
-                if (extraHealth - newDmg > 0) {
-                    extraHealthMap.put(target, extraHealth - newDmg);
-                        event.setDamage(0); // Cancel the damage event
-                    attacker.sendMessage("mob dmg:" + mobDmg);
-                    attacker.sendMessage("Current Health: " + currentHealth + ", Extra Health: " + extraHealth);
-                        return;
-
-                }
-                else {
-
-                    extraHealthMap.put(target, extraHealth - newDmg);
-                    extraHealthMap.remove(target);
-                    event.setDamage(newDmg);
-                    return;
-                }
-
-            }
-
-
-
-            event.setDamage(newDmg);
-
-
-        }
+        // Apply extra health and set final damage
+        double finalDamage = applyExtraHealth(target, damageWithStats, attacker);
+        event.setDamage(finalDamage);
     }
+
 
     // PvE Long Range Damage
-    private void handleLongRangePveDamage(Player attacker, LivingEntity target, EntityDamageByEntityEvent event, Location damagerLocation, Location damagedLocation
-            , UserProfile damagerProfile
-    ) {
+    private void handleLongRangePveDamage(Player attacker, LivingEntity target, EntityDamageByEntityEvent event, Location damagerLocation, Location damagedLocation, UserProfile damagerProfile) {
+
+        // Check if the player is in the default class
+        if (damagerProfile.getChosenClass().equalsIgnoreCase("default")) {
+            event.setDamage(event.getDamage()); // Keep default Minecraft combat
+            return;
+        }
 
         ItemStack weapon = attacker.getInventory().getItemInMainHand();
 
@@ -206,83 +194,161 @@ public class PlayerDamageOthers implements Listener {
             event.getEntity().setFireTicks(0); // Cancel fire ticks
         }
 
-        // Archer class
+//        MonsterStrengthScalingListener monsterListener = plugin.getMonsterStrengthScalingListener();
+//        Map<LivingEntity, Double> extraHealthMap = monsterListener.getExtraHealthMap();
+
+        double baseDamage = event.getDamage();
+
+        // Apply stats based on class for non-default players
+        double damageWithStats = applyStatsToDamage(baseDamage, damagerProfile, attacker, event);
+
+        // Archer class - Check if using bow
         if (damagerProfile.getChosenClass().equalsIgnoreCase("archer") && event.getDamager() instanceof Arrow) {
             attacker.sendMessage("Archer class bonus applied");
-
             abilityManager.applyAbility(damagerProfile, target, damagerLocation, damagedLocation);
-            double damage = event.getDamage();
-
-            double agi = damagerProfile.getArcherClassInfo().getAgi();
-            double str = damagerProfile.getArcherClassInfo().getStr();
-            double dex = damagerProfile.getArcherClassInfo().getDex();
-            double intel = damagerProfile.getArcherClassInfo().getIntel();
-            double luk = damagerProfile.getArcherClassInfo().getLuk();
-            double vit = damagerProfile.getArcherClassInfo().getVit();
-
-            // damage from str
-            double strDmg = str * .01;
-
-            // Elemental Damage
-            double elementalDamage = 2.0 + (intel * .01) ;
-
-            // new dmg
-            double newDmg = damage + strDmg + elementalDamage;
-
-            // Critical Hit System
-            double critChance = ((luk/10) * 0.1) + .001;
-            double critDmgMultiplier = 1.1 + (dex * 0.01);
-            boolean isCrit = Math.random() < critChance;
-            if (isCrit) {
-                event.setDamage(newDmg * critDmgMultiplier);
-                attacker.sendMessage("Critical hit! Damage multiplied by " + critDmgMultiplier + "Damage dealt " + newDmg*critDmgMultiplier);
-                target.getWorld().playSound(damagerLocation, Sound.ENTITY_PLAYER_ATTACK_CRIT, 1, 1);
-                target.getWorld().playSound(damagedLocation, Sound.ENTITY_PLAYER_ATTACK_CRIT, 10, 1);
-            } else {
-                // Apply the final damage to the event
-                event.setDamage(newDmg);
-
-            }
         }
 
-        // Alchemist class
+        // Alchemist class - Check if using thrown potion
         if (damagerProfile.getChosenClass().equalsIgnoreCase("alchemist") && event.getDamager() instanceof ThrownPotion) {
             attacker.sendMessage("Alchemist class bonus applied");
-
             abilityManager.applyAbility(damagerProfile, target, damagerLocation, damagedLocation);
-            double damage = event.getDamage();
+        }
 
-            double agi = damagerProfile.getArcherClassInfo().getAgi();
-            double str = damagerProfile.getArcherClassInfo().getStr();
-            double dex = damagerProfile.getArcherClassInfo().getDex();
-            double intel = damagerProfile.getArcherClassInfo().getIntel();
-            double luk = damagerProfile.getArcherClassInfo().getLuk();
-            double vit = damagerProfile.getArcherClassInfo().getVit();
+        // Apply extra health and set final damage
+        double finalDamage = applyExtraHealth(target, damageWithStats, attacker);
+        event.setDamage(finalDamage);
+    }
 
-            // damage from str
-            double strDmg = str * .003;
+    // Method to apply stats to damage
+    private double applyStatsToDamage(double baseDamage, UserProfile damagerProfile, Player player, Event event) {
+        double str = 0, dex = 0, intel = 0, luk = 0;
 
-            // Elemental Damage
-            double elementalDamage = 4.0 + (intel * .02) ;
+        // Get stats based on the player's chosen class
+        if (damagerProfile.getChosenClass().equalsIgnoreCase("archer")) {
+            str = damagerProfile.getArcherClassInfo().getStr();
+            dex = damagerProfile.getArcherClassInfo().getDex();
+            intel = damagerProfile.getArcherClassInfo().getIntel();
+            luk = damagerProfile.getArcherClassInfo().getLuk();
+        } else if (damagerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
+            str = damagerProfile.getAlchemistClassInfo().getStr(); // Assume you have a similar method for Alchemist stats
+            dex = damagerProfile.getAlchemistClassInfo().getDex();
+            intel = damagerProfile.getAlchemistClassInfo().getIntel();
+            luk = damagerProfile.getAlchemistClassInfo().getLuk();
+        }
+        else if (damagerProfile.getChosenClass().equalsIgnoreCase("swordsman")) {
+            str = damagerProfile.getAlchemistClassInfo().getStr(); // Assume you have a similar method for Alchemist stats
+            dex = damagerProfile.getAlchemistClassInfo().getDex();
+            intel = damagerProfile.getAlchemistClassInfo().getIntel();
+            luk = damagerProfile.getAlchemistClassInfo().getLuk();
+        }
 
-            // new dmg
-            double newDmg = damage + strDmg + elementalDamage + (intel * .01);
-
-            // Critical Hit System
-            double critChance = ((luk/10) * 0.1) + .05;
-            double critDmgMultiplier = 1.1 + (dex * 0.01);
-            boolean isCrit = Math.random() < critChance;
-            if (isCrit) {
-                event.setDamage(newDmg * critDmgMultiplier);
-                attacker.sendMessage("Critical hit! Damage multiplied by " + critDmgMultiplier + "Damage dealt " + newDmg*critDmgMultiplier);
-                target.getWorld().playSound(damagerLocation, Sound.ENTITY_PLAYER_ATTACK_CRIT, 1, 1);
-                target.getWorld().playSound(damagedLocation, Sound.ENTITY_PLAYER_ATTACK_CRIT, 10, 1);
-            } else {
-                // Apply the final damage to the event
-                event.setDamage(newDmg);
-
+        // Damage calculation based on class stats
+        double statDmg = 0;
+        double elementalDamage = 0;
+        if (event instanceof EntityDamageByEntityEvent) {
+            if (damagerProfile.getChosenClass().equalsIgnoreCase("swordsman")) {
+                statDmg += str*.01;
+                if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 1") && player.getInventory().getItemInMainHand().getType().toString().endsWith("_SWORD")) {
+                    elementalDamage += (4 + (intel * 0.01));
+                } else {
+                    elementalDamage += (2 + (intel * 0.01));
+                }
+            } else if (damagerProfile.getChosenClass().equalsIgnoreCase("archer")) {
+                statDmg +=(str*.005) ;
+                elementalDamage+=(2+ (intel * 0.01));
+            }
+            else if (damagerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
+                statDmg += (str*.005);
+                elementalDamage+=(4+ (intel * 0.01));
             }
         }
+
+
+
+        double calculatedDamage = baseDamage + statDmg + elementalDamage;
+
+        // Critical Hit System
+        double critChance = 0;
+        if (damagerProfile.getChosenClass().equalsIgnoreCase("swordsman")){
+            critChance += ((luk / 10) * 0.1 + 0.001);
+        } else {
+            critChance += ((luk / 20) * 0.1 + 0.001);
+        }
+        double critDmgMultiplier = 1.1 + (dex * 0.01);
+        boolean isCrit = Math.random() < critChance;
+
+        if (isCrit) {
+            calculatedDamage *= critDmgMultiplier;
+        }
+        player.sendMessage("Base dmg: " + baseDamage + ". With stats applied: " + calculatedDamage + ".");
+
+        return calculatedDamage;
     }
+
+    // Method to apply extra health and return adjusted damage
+    private double applyExtraHealth(LivingEntity target, double calculatedDamage, Player player) {
+        // Check if extra health has already been applied
+        if (target.hasMetadata("extraHealthApplied")) {
+            // If extra health has been applied, retrieve the stored initial extra health value
+            double initialExtraHealth = target.getMetadata("initialExtraHealth").get(0).asDouble();
+            // Apply damage considering the existing extra health
+            return applyDamageWithExtraHealth(target, calculatedDamage, initialExtraHealth, player);
+        }
+
+        // Get the target's location and calculate extra health
+        Location targetLocation = target.getLocation();
+        double extraHealth = calculateExtraHealth(targetLocation);
+
+        // Store the initial extra health value in metadata
+        target.setMetadata("initialExtraHealth", new FixedMetadataValue(plugin, extraHealth));
+        target.setMetadata("extraHealthApplied", new FixedMetadataValue(plugin, true)); // Mark as applied
+
+        // Send current health and extra health information
+        player.sendMessage("Health: " + target.getHealth() + ". Extra health applied: " + extraHealth);
+
+        // Apply damage considering the calculated extra health
+        return applyDamageWithExtraHealth(target, calculatedDamage, extraHealth, player);
+    }
+
+    // Method to apply damage considering extra health
+    private double applyDamageWithExtraHealth(LivingEntity target, double calculatedDamage, double extraHealth, Player player) {
+        // Check if the calculated damage is less than the extra health
+        if (extraHealth - calculatedDamage > 0) {
+            // All damage is absorbed by extra health
+            // Update the extra health value
+            target.setMetadata("initialExtraHealth", new FixedMetadataValue(plugin, extraHealth - calculatedDamage));
+            player.sendMessage("Damage absorbed by extra health. Remaining extra health: " + (extraHealth - calculatedDamage));
+            return 0; // Extra health absorbs all damage
+        } else {
+            // Calculate excess damage
+            double excessDamage = calculatedDamage - extraHealth;
+
+            // Apply excess damage to the target's health
+            target.setHealth(Math.max(0, target.getHealth() - excessDamage)); // Ensure health doesn't drop below 0
+
+            // Clear the extra health metadata as it has been depleted
+            target.setMetadata("initialExtraHealth", new FixedMetadataValue(plugin, 0.0)); // Reset extra health to 0
+            player.sendMessage("Extra health depleted. Excess damage applied to target's health: " + excessDamage);
+
+            return excessDamage; // Return the excess damage applied
+        }
+    }
+
+    // Method to calculate extra health based on target location
+    private double calculateExtraHealth(Location targetLocation) {
+        double maxCoord = Math.max(Math.abs(targetLocation.getBlockX()), Math.abs(targetLocation.getBlockZ()));
+        double extraHealth = (maxCoord / 100) * 100; // 100% health for every 100 blocks
+
+        // 5% chance to apply +1000% health
+        if (Math.random() < 0.05) {
+            extraHealth += (extraHealth * 10); // Add 1000% health
+        }
+
+        return extraHealth; // Return calculated extra health
+    }
+
+
+
+
 
 }
