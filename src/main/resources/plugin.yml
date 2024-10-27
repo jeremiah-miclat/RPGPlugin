@@ -41,3 +41,7 @@ commands:
   pvpstatus:
     description: Set PVP on or off
     usage: /pvpstatus <onoroff>
+  setrpg:
+    description: Set RPG on or off
+    usage: /setrpg <onoroff>
+

@@ -106,19 +106,55 @@ public class PlayerDamageOthers implements Listener {
     }
 
     @EventHandler
-    public void onPlayerFreezeDamage(EntityDamageEvent event) {
-        if (event.getEntity() instanceof Player) {
-            Player player = (Player) event.getEntity();
+    public void onEntityDamageOverTime(EntityDamageEvent event) {
+        if (event.getEntity() instanceof Monster || event.getEntity() instanceof IronGolem || event.getEntity() instanceof Wolf) {
 
-            if (event.getCause() == EntityDamageEvent.DamageCause.FREEZE) {
+            // Get the entity and damage cause
+            LivingEntity entity = (LivingEntity) event.getEntity();
+            EntityDamageEvent.DamageCause cause = event.getCause();
 
-                UserProfile profile = profileManager.getProfile(player.getName());
-                if (profile.getSelectedElement().equalsIgnoreCase("ice")) {
-                    event.setCancelled(true);
+            // Check if the damage cause is one of the specified types (poison, fire, drowning, freezing, etc.)
+            if (cause == EntityDamageEvent.DamageCause.POISON ||
+                    cause == EntityDamageEvent.DamageCause.FIRE_TICK ||
+                    cause == EntityDamageEvent.DamageCause.DROWNING ||
+                    cause == EntityDamageEvent.DamageCause.FREEZE ||
+                    cause == EntityDamageEvent.DamageCause.WITHER ||
+                    cause == EntityDamageEvent.DamageCause.LAVA ||
+                    cause == EntityDamageEvent.DamageCause.SUFFOCATION ||
+                    cause == EntityDamageEvent.DamageCause.FALL ||
+                    cause == EntityDamageEvent.DamageCause.FALLING_BLOCK ||
+                    cause == EntityDamageEvent.DamageCause.BLOCK_EXPLOSION ||
+                    cause == EntityDamageEvent.DamageCause.LIGHTNING ||
+                    cause == EntityDamageEvent.DamageCause.THORNS
+            )
+            {
+
+                if (entity.hasMetadata("initialExtraHealth")) {
+                    // Retrieve extra health attribute from entity's metadata or custom attribute
+                    double extraHealth = entity.getMetadata("initialExtraHealth").getFirst().asDouble();
+
+                    if (extraHealth > 0) {
+                        double damage = event.getDamage();
+
+                        if (extraHealth - damage > 0) {
+                            entity.setMetadata("initialExtraHealth", new FixedMetadataValue(plugin, extraHealth - damage));
+                            event.setDamage(0);
+                        } else {
+                            // Calculate excess damage
+                            double excessDamage = damage - extraHealth;
+                            entity.setHealth(Math.max(0, entity.getHealth() - excessDamage)); // Ensure health doesn't drop below 0
+
+                            // Clear the extra health metadata as it has been depleted
+                            entity.setMetadata("initialExtraHealth", new FixedMetadataValue(plugin, 0.0)); // Reset extra health to 0
+
+                            event.setDamage(excessDamage);
+                        }
+                    }
                 }
             }
         }
     }
+
 
     // pve melee damage
     private void handleMeleePveDamage(Player attacker, LivingEntity target, EntityDamageByEntityEvent event, Location damagerLocation, Location damagedLocation, UserProfile damagerProfile) {
@@ -144,42 +180,6 @@ public class PlayerDamageOthers implements Listener {
 
         // Apply stats based on class for non-default players
         double damageWithStats = applyStatsToDamage(baseDamage, damagerProfile, attacker, event);
-
-//        // Calculate base and attribute-based damage
-//        double damage = event.getDamage();
-//        double strDmg = damagerProfile.getSwordsmanClassInfo().getStr() * 0.01;
-//        double elementalDamage = 2.0 + (damagerProfile.getSwordsmanClassInfo().getIntel() * 0.01);
-//        double newDmg = damage + strDmg + elementalDamage;
-//
-//        // Critical Hit System
-//        double critChance = (damagerProfile.getSwordsmanClassInfo().getLuk() / 10) * 0.1 + 0.05;
-//        double critDmgMultiplier = 1.1 + (damagerProfile.getSwordsmanClassInfo().getDex() * 0.01);
-//        boolean isCrit = Math.random() < critChance;
-//
-//        if (isCrit) {
-//            newDmg *= critDmgMultiplier;
-//            attacker.sendMessage("Critical hit! Damage multiplied by " + critDmgMultiplier + ". Damage dealt: " + newDmg);
-//            target.getWorld().playSound(damagerLocation, Sound.ENTITY_PLAYER_ATTACK_CRIT, 1, 1);
-//            target.getWorld().playSound(damagedLocation, Sound.ENTITY_PLAYER_ATTACK_CRIT, 10, 1);
-//        }
-//
-//        // Apply extra health check for all non-default classes
-//        if (extraHealthMap.containsKey(target)) {
-//            double currentHealth = target.getHealth();
-//            double extraHealth = extraHealthMap.get(target);
-//            double remainingHealth = extraHealth - newDmg;
-//
-//            if (remainingHealth > 0) {
-//                extraHealthMap.put(target, remainingHealth);
-//                event.setDamage(0); // Cancel the event damage
-//                attacker.sendMessage("Current Health: " + currentHealth + ", Extra Health: " + extraHealth);
-//                return;
-//            } else {
-//                extraHealthMap.remove(target);
-//                event.setDamage(newDmg); // Apply remaining damage
-//                return;
-//            }
-//        }
 
         // Swordsman-specific ability if holding a sword
         if (damagerProfile.getChosenClass().equalsIgnoreCase("swordsman") && weapon.getType().toString().endsWith("_SWORD")) {
@@ -237,7 +237,7 @@ public class PlayerDamageOthers implements Listener {
     }
 
     // Method to apply stats to damage
-    private double applyStatsToDamage(double baseDamage, UserProfile damagerProfile, Player player, Event event) {
+    private double applyStatsToDamage(double baseDamage, UserProfile damagerProfile, Player player, EntityDamageByEntityEvent event) {
         double str = 0, dex = 0, intel = 0, luk = 0;
 
         // Get stats based on the player's chosen class
@@ -262,7 +262,9 @@ public class PlayerDamageOthers implements Listener {
         // Damage calculation based on class stats
         double statDmg = 0;
         double elementalDamage = 0;
-        if (event instanceof EntityDamageByEntityEvent) {
+
+        // melee
+        if (event.getDamager() instanceof Player) {
             if (damagerProfile.getChosenClass().equalsIgnoreCase("swordsman")) {
                 statDmg += str*.01;
                 if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 1") && player.getInventory().getItemInMainHand().getType().toString().endsWith("_SWORD")) {
@@ -281,6 +283,50 @@ public class PlayerDamageOthers implements Listener {
         }
 
 
+        // bow
+        if (event.getDamager() instanceof Arrow) {
+
+            //archers
+            if (damagerProfile.getChosenClass().equalsIgnoreCase("archer")) {
+                statDmg += (dex*.02);
+                if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 1")) {
+                    elementalDamage += 3;
+                    elementalDamage += (intel*.01);
+                } else {
+                    elementalDamage += 2 + (intel*.01);
+                }
+            }else if (damagerProfile.getChosenClass().equalsIgnoreCase("swordsman")) {
+                statDmg +=(dex*.005) ;
+                elementalDamage+=(2+ (intel * 0.01));
+            }
+            else if (damagerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
+                statDmg += (dex*.005);
+                elementalDamage+=(4+ (intel * 0.01));
+            }
+
+
+        }
+
+        // thrown potions
+        if (event.getDamager() instanceof ThrownPotion) {
+
+            //alchemists
+            if (damagerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
+                if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 1")) {
+                    elementalDamage += 6;
+                    elementalDamage += (intel*.01);
+                } else {
+                    elementalDamage += 4 + (intel*.01);
+                }
+            }else if (damagerProfile.getChosenClass().equalsIgnoreCase("swordsman")) {
+                elementalDamage+=(2+ (intel * 0.005));
+            }
+            else if (damagerProfile.getChosenClass().equalsIgnoreCase("archer")) {
+                elementalDamage+=(2+ (intel * 0.005));
+            }
+
+
+        }
 
         double calculatedDamage = baseDamage + statDmg + elementalDamage;
 
@@ -288,53 +334,40 @@ public class PlayerDamageOthers implements Listener {
         double critChance = 0;
         if (damagerProfile.getChosenClass().equalsIgnoreCase("swordsman")){
             critChance += ((luk / 10) * 0.1 + 0.001);
-        } else {
+        }
+        if (damagerProfile.getChosenClass().equalsIgnoreCase("archer")){
+            dex += ((dex / 10) * 0.1 + 0.001);
+        }
+
+        else {
             critChance += ((luk / 20) * 0.1 + 0.001);
         }
         double critDmgMultiplier = 1.1 + (dex * 0.01);
+        if (damagerProfile.getChosenClass().equalsIgnoreCase("archer")){
+            dex += ((dex / 10) * 0.1 + 0.001);
+            critDmgMultiplier += 1.1 + (dex * 0.01);
+        }
         boolean isCrit = Math.random() < critChance;
 
         if (isCrit) {
             calculatedDamage *= critDmgMultiplier;
         }
-        player.sendMessage("Base dmg: " + baseDamage + ". With stats applied: " + calculatedDamage + ".");
+        player.sendMessage("Base dmg: " + baseDamage + ". stat str: " + statDmg + "." +
+                "Elemental dmg: " + elementalDamage
+                );
 
         return calculatedDamage;
     }
 
-    // Method to apply extra health and return adjusted damage
-    private double applyExtraHealth(LivingEntity target, double calculatedDamage, Player player) {
-        // Check if extra health has already been applied
-        if (target.hasMetadata("extraHealthApplied")) {
-            // If extra health has been applied, retrieve the stored initial extra health value
-            double initialExtraHealth = target.getMetadata("initialExtraHealth").get(0).asDouble();
-            // Apply damage considering the existing extra health
-            return applyDamageWithExtraHealth(target, calculatedDamage, initialExtraHealth, player);
-        }
-
-        // Get the target's location and calculate extra health
-        Location targetLocation = target.getLocation();
-        double extraHealth = calculateExtraHealth(targetLocation);
-
-        // Store the initial extra health value in metadata
-        target.setMetadata("initialExtraHealth", new FixedMetadataValue(plugin, extraHealth));
-        target.setMetadata("extraHealthApplied", new FixedMetadataValue(plugin, true)); // Mark as applied
-
-        // Send current health and extra health information
-        player.sendMessage("Health: " + target.getHealth() + ". Extra health applied: " + extraHealth);
-
-        // Apply damage considering the calculated extra health
-        return applyDamageWithExtraHealth(target, calculatedDamage, extraHealth, player);
-    }
-
     // Method to apply damage considering extra health
     private double applyDamageWithExtraHealth(LivingEntity target, double calculatedDamage, double extraHealth, Player player) {
+        player.giveExp((int)calculatedDamage);
         // Check if the calculated damage is less than the extra health
         if (extraHealth - calculatedDamage > 0) {
             // All damage is absorbed by extra health
             // Update the extra health value
             target.setMetadata("initialExtraHealth", new FixedMetadataValue(plugin, extraHealth - calculatedDamage));
-            player.sendMessage("Damage absorbed by extra health. Remaining extra health: " + (extraHealth - calculatedDamage));
+            player.sendMessage("Target's remaining health: " + (int)(target.getHealth() + target.getMetadata("initialExtraHealth").getFirst().asDouble() - calculatedDamage));
             return 0; // Extra health absorbs all damage
         } else {
             // Calculate excess damage
@@ -345,7 +378,6 @@ public class PlayerDamageOthers implements Listener {
 
             // Clear the extra health metadata as it has been depleted
             target.setMetadata("initialExtraHealth", new FixedMetadataValue(plugin, 0.0)); // Reset extra health to 0
-            player.sendMessage("Extra health depleted. Excess damage applied to target's health: " + excessDamage);
 
             return excessDamage; // Return the excess damage applied
         }
@@ -353,27 +385,21 @@ public class PlayerDamageOthers implements Listener {
 
     // Method to apply extra health and return adjusted damage
     private double applyExtraHealthAndDamage(LivingEntity target, double calculatedDamage, Player player) {
-        initializeExtraAttributes(target, player); // Ensure metadata is initialized
+        if (target instanceof Monster || target instanceof IronGolem || target instanceof Wolf) {
+            initializeExtraAttributes(target, player); // Ensure metadata is initialized
+        }
 
         // Retrieve and apply existing extra health
-        double initialExtraHealth = target.getMetadata("initialExtraHealth").get(0).asDouble();
+        double initialExtraHealth = 0;
+
+        if (target.hasMetadata("initialExtraHealth")) {
+            initialExtraHealth += target.getMetadata("initialExtraHealth").get(0).asDouble();
+        }
+
         return applyDamageWithExtraHealth(target, calculatedDamage, initialExtraHealth, player);
     }
 
 
-    // Method to calculate extra health based on target location
-    private double calculateExtraHealth(Location targetLocation) {
-        double maxCoord = Math.max(Math.abs(targetLocation.getBlockX()), Math.abs(targetLocation.getBlockZ()));
-        double extraHealth = (maxCoord / 100) * 100; // 100% health for every 100 blocks
-        double extraDamage = (maxCoord/100) * .1;
-        // 5% chance to apply +1000% health
-        if (Math.random() < 0.05) {
-            extraHealth += (extraHealth * 10); // Add 1000% health
-            extraDamage += extraDamage*10;
-        }
-
-        return extraHealth; // Return calculated extra health
-    }
 
 
     // Method to initialize extra health and extra damage metadata
@@ -381,8 +407,8 @@ public class PlayerDamageOthers implements Listener {
         if (!entity.hasMetadata("extraHealthApplied")) {
             // Calculate extra health and damage
             Location location = entity.getLocation();
-            double extraHealth = calculateExtraAttributes(location);
-            double extraDamage = extraHealth * 0.1; // Convert to damage (10% of extra health)
+            double extraHealth = calculateExtraAttributes(location,entity);
+            double extraDamage = extraHealth * 0.01; // Convert to damage (10% of extra health)
 
             // Store in metadata
             entity.setMetadata("initialExtraHealth", new FixedMetadataValue(plugin, extraHealth));
@@ -392,22 +418,50 @@ public class PlayerDamageOthers implements Listener {
             // Inform player (if applicable)
             if (player != null) {
                 player.sendMessage("Mob initialized with extra health: " + extraHealth + " and extra damage: " + extraDamage);
+                player.sendMessage("jump strenght: "+ entity.getAttribute(Attribute.GENERIC_JUMP_STRENGTH).getValue());
+                player.sendMessage("jump safe dist: "+ entity.getAttribute(Attribute.GENERIC_SAFE_FALL_DISTANCE).getValue());
             }
-        }
+              }
     }
 
     // Method to calculate extra attributes (used for both extra health and damage)
-    private double calculateExtraAttributes(Location targetLocation) {
+    private double calculateExtraAttributes(Location targetLocation, LivingEntity entity) {
         double maxCoord = Math.max(Math.abs(targetLocation.getBlockX()), Math.abs(targetLocation.getBlockZ()));
-        double extraHealth = (maxCoord / 100) * 100; // 100% health for every 100 blocks
+        double extraHealth = (maxCoord / 100) * 10; // 100% health for every 100 blocks
 
         // 5% chance to add +1000% extra health
-        if (Math.random() < 0.05) {
+        if (Math.random() < 0.5) {
             extraHealth += (extraHealth * 10); // Add 1000% health
+
+            // Set the entity name to display as a boss with health bar
+            String bossName = "Lvl " + (int) (Math.floor(maxCoord) /100) + " Boss " + entity.getType().name() +
+                    " Health: " + (int) (entity.getHealth() + extraHealth);
+
+            // Apply the custom name to the entity
+            entity.setCustomName(bossName);
+            entity.setCustomNameVisible(true);
+            // Set extra movement speed if the attribute is available
+            if (entity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED) != null) {
+                double newSpeed = Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)).getBaseValue() * 1.5; // Increase speed by 50%
+                Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)).setBaseValue(newSpeed);
+            }
+
+            // Set extra jump strength if applicable (for horses or similar entities that support it)
+            if (entity.getAttribute(Attribute.GENERIC_JUMP_STRENGTH) != null) {
+                double newJumpStrength = Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_JUMP_STRENGTH)).getBaseValue() * 3;
+                Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_JUMP_STRENGTH)).setBaseValue(newJumpStrength);
+            }
+
+            // Set extra jump strength if applicable (for horses or similar entities that support it)
+            if (entity.getAttribute(Attribute.GENERIC_SAFE_FALL_DISTANCE) != null) {
+                double newSafeJumpDist = Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_JUMP_STRENGTH)).getBaseValue() * 3;
+                Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_SAFE_FALL_DISTANCE)).setBaseValue(entity.getAttribute(Attribute.GENERIC_SAFE_FALL_DISTANCE).getBaseValue()*3);
+            }
         }
 
         return extraHealth; // Use as basis for both health and extra damage
     }
+
 
 
 }

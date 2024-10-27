@@ -37,6 +37,8 @@ public class UserProfile {
     private boolean pvpEnabled = true;
 
     private String RPG="off";
+    private long lastRpgSwitchTime = 0; // New field to store last RPG switch timestamp
+    private static final long RPG_COOLDOWN = 10 * 60 * 60 * 1000; // 10 hours in milliseconds
 
     public UserProfile(String playerName) {
         this.playerID = UUID.randomUUID(); // Generate a unique ID for the player
@@ -247,6 +249,29 @@ public class UserProfile {
 
     public void setRPG(String RPG) {
         this.RPG = RPG;
+    }
+
+    public long getLastRpgSwitchTime() {
+        return lastRpgSwitchTime;
+    }
+
+    public void setLastRpgSwitchTime(long switchTime) {
+        this.lastRpgSwitchTime = switchTime;
+    }
+
+    // Method to check if cooldown has passed
+    public boolean canSwitchRPG() {
+        long currentTime = System.currentTimeMillis();
+        return (currentTime - lastRpgSwitchTime) >= RPG_COOLDOWN;
+    }
+
+    // Method to switch RPG mode with cooldown check
+    public void switchRPG(String newRPG) {
+        if (!canSwitchRPG()) {
+            throw new IllegalStateException("Cannot switch RPG mode yet. Please wait until the cooldown expires.");
+        }
+        this.RPG = newRPG;
+        this.lastRpgSwitchTime = System.currentTimeMillis(); // Update timestamp on switch
     }
 
     // Inner class to hold class-specific attributes

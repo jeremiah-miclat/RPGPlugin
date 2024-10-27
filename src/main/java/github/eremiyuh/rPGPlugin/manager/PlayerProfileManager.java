@@ -96,6 +96,7 @@ public class PlayerProfileManager {
         //RPG
         config.set("rpgStatus",profile.getRPG());
 
+
         try {
             config.save(profileFile);
         } catch (IOException e) {
