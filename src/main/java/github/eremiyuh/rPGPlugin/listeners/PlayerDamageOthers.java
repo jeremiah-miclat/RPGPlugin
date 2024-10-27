@@ -83,7 +83,22 @@ public class PlayerDamageOthers implements Listener {
         }
 
 
-        if (damager instanceof LivingEntity angryMob && !(damager instanceof Player)) {
+        if (damager instanceof LivingEntity angryMob && !(damager instanceof Player) && damaged instanceof Player damagedPLayer) {
+                UserProfile damagedProfile = profileManager.getProfile(damagedPLayer.getName());
+                if (damagedProfile.getChosenClass().equalsIgnoreCase("default")
+                    || damagedProfile.getRPG().equalsIgnoreCase("off")
+                ) {
+                    event.setDamage(event.getDamage());
+                } else {
+                    initializeExtraAttributes(angryMob,damagedPLayer);
+
+                    // Apply extra damage if present
+                    if (angryMob.hasMetadata("extraDamage")) {
+                        double extraDamage = angryMob.getMetadata("extraDamage").get(0).asDouble();
+                        event.setDamage(event.getDamage() + extraDamage); // Apply stored extra damage
+                        damagedPLayer.sendMessage("Extra damage from mob: " + extraDamage);
+                    }
+                }
 
         }
 
@@ -108,7 +123,7 @@ public class PlayerDamageOthers implements Listener {
     // pve melee damage
     private void handleMeleePveDamage(Player attacker, LivingEntity target, EntityDamageByEntityEvent event, Location damagerLocation, Location damagedLocation, UserProfile damagerProfile) {
         // Check if the player is in the default class
-        if (damagerProfile.getChosenClass().equalsIgnoreCase("default")) {
+        if (damagerProfile.getChosenClass().equalsIgnoreCase("default") || damagerProfile.getRPG().equalsIgnoreCase("off")) {
             event.setDamage(event.getDamage()); // Keep default Minecraft combat
             return;
         }
@@ -172,7 +187,7 @@ public class PlayerDamageOthers implements Listener {
         }
 
         // Apply extra health and set final damage
-        double finalDamage = applyExtraHealth(target, damageWithStats, attacker);
+        double finalDamage = applyExtraHealthAndDamage(target, damageWithStats, attacker);
         event.setDamage(finalDamage);
     }
 
@@ -181,7 +196,9 @@ public class PlayerDamageOthers implements Listener {
     private void handleLongRangePveDamage(Player attacker, LivingEntity target, EntityDamageByEntityEvent event, Location damagerLocation, Location damagedLocation, UserProfile damagerProfile) {
 
         // Check if the player is in the default class
-        if (damagerProfile.getChosenClass().equalsIgnoreCase("default")) {
+        if (damagerProfile.getChosenClass().equalsIgnoreCase("default")
+                || damagerProfile.getRPG().equalsIgnoreCase("off")
+        ) {
             event.setDamage(event.getDamage()); // Keep default Minecraft combat
             return;
         }
@@ -215,7 +232,7 @@ public class PlayerDamageOthers implements Listener {
         }
 
         // Apply extra health and set final damage
-        double finalDamage = applyExtraHealth(target, damageWithStats, attacker);
+        double finalDamage = applyExtraHealthAndDamage(target, damageWithStats, attacker);
         event.setDamage(finalDamage);
     }
 
@@ -334,21 +351,63 @@ public class PlayerDamageOthers implements Listener {
         }
     }
 
+    // Method to apply extra health and return adjusted damage
+    private double applyExtraHealthAndDamage(LivingEntity target, double calculatedDamage, Player player) {
+        initializeExtraAttributes(target, player); // Ensure metadata is initialized
+
+        // Retrieve and apply existing extra health
+        double initialExtraHealth = target.getMetadata("initialExtraHealth").get(0).asDouble();
+        return applyDamageWithExtraHealth(target, calculatedDamage, initialExtraHealth, player);
+    }
+
+
     // Method to calculate extra health based on target location
     private double calculateExtraHealth(Location targetLocation) {
         double maxCoord = Math.max(Math.abs(targetLocation.getBlockX()), Math.abs(targetLocation.getBlockZ()));
         double extraHealth = (maxCoord / 100) * 100; // 100% health for every 100 blocks
-
+        double extraDamage = (maxCoord/100) * .1;
         // 5% chance to apply +1000% health
         if (Math.random() < 0.05) {
             extraHealth += (extraHealth * 10); // Add 1000% health
+            extraDamage += extraDamage*10;
         }
 
         return extraHealth; // Return calculated extra health
     }
 
 
+    // Method to initialize extra health and extra damage metadata
+    private void initializeExtraAttributes(LivingEntity entity, Player player) {
+        if (!entity.hasMetadata("extraHealthApplied")) {
+            // Calculate extra health and damage
+            Location location = entity.getLocation();
+            double extraHealth = calculateExtraAttributes(location);
+            double extraDamage = extraHealth * 0.1; // Convert to damage (10% of extra health)
 
+            // Store in metadata
+            entity.setMetadata("initialExtraHealth", new FixedMetadataValue(plugin, extraHealth));
+            entity.setMetadata("extraDamage", new FixedMetadataValue(plugin, extraDamage));
+            entity.setMetadata("extraHealthApplied", new FixedMetadataValue(plugin, true)); // Mark as applied
+
+            // Inform player (if applicable)
+            if (player != null) {
+                player.sendMessage("Mob initialized with extra health: " + extraHealth + " and extra damage: " + extraDamage);
+            }
+        }
+    }
+
+    // Method to calculate extra attributes (used for both extra health and damage)
+    private double calculateExtraAttributes(Location targetLocation) {
+        double maxCoord = Math.max(Math.abs(targetLocation.getBlockX()), Math.abs(targetLocation.getBlockZ()));
+        double extraHealth = (maxCoord / 100) * 100; // 100% health for every 100 blocks
+
+        // 5% chance to add +1000% extra health
+        if (Math.random() < 0.05) {
+            extraHealth += (extraHealth * 10); // Add 1000% health
+        }
+
+        return extraHealth; // Use as basis for both health and extra damage
+    }
 
 
 }

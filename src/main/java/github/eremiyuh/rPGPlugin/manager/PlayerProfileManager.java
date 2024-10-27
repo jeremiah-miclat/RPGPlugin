@@ -93,6 +93,9 @@ public class PlayerProfileManager {
         //pvp
         config.set("pvpEnabled",profile.isPvpEnabled());
 
+        //RPG
+        config.set("rpgStatus",profile.getRPG());
+
         try {
             config.save(profileFile);
         } catch (IOException e) {
@@ -151,6 +154,9 @@ public class PlayerProfileManager {
 
         //pvp
         profile.setPvpEnabled(config.getBoolean("pvpEnabled",false));
+
+        //RPG
+        profile.setRPG(config.getString("rpgStatus","off"));
 
         playerProfiles.put(playerName, profile);
     }

@@ -36,6 +36,8 @@ public class UserProfile {
 
     private boolean pvpEnabled = true;
 
+    private String RPG="off";
+
     public UserProfile(String playerName) {
         this.playerID = UUID.randomUUID(); // Generate a unique ID for the player
         this.playerName = playerName;
@@ -54,6 +56,9 @@ public class UserProfile {
 
         // Initialize pvp toggle
         this.pvpEnabled =false;
+
+        // Initialize vanilla only / non rpg toggle
+        this.RPG = "off";
 
     }
 
@@ -238,6 +243,11 @@ public class UserProfile {
         this.pvpEnabled = pvpEnabled;
     }
 
+    public String getRPG() {return  RPG;}
+
+    public void setRPG(String RPG) {
+        this.RPG = RPG;
+    }
 
     // Inner class to hold class-specific attributes
     public static class ClassAttributes {
