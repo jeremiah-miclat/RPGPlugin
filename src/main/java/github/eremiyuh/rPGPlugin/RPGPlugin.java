@@ -30,8 +30,8 @@ public class RPGPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new OptimizedVampireSunlightListener(profileManager, this),this);
         PlayerDamageOthers playerDamageOthersListener = new PlayerDamageOthers(profileManager, abilityManager, this);
         getServer().getPluginManager().registerEvents(playerDamageOthersListener,this);
-//        monsterStrengthScalingListener = new MonsterStrengthScalingListener();
-//        getServer().getPluginManager().registerEvents(monsterStrengthScalingListener, this);
+        getServer().getPluginManager().registerEvents(new AlchemistThrowPotion(profileManager), this);
+
 
 
         // Register the command executor
