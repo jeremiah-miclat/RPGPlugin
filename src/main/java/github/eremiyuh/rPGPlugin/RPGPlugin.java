@@ -10,6 +10,7 @@ import github.eremiyuh.rPGPlugin.methods.AbilityManager;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.awt.geom.Area;
 import java.util.Objects;
 
 public class RPGPlugin extends JavaPlugin {
@@ -31,9 +32,8 @@ public class RPGPlugin extends JavaPlugin {
         PlayerDamageOthers playerDamageOthersListener = new PlayerDamageOthers(profileManager, abilityManager, this);
         getServer().getPluginManager().registerEvents(playerDamageOthersListener,this);
         getServer().getPluginManager().registerEvents(new AlchemistThrowPotion(profileManager), this);
-
-
-
+//        new AreaProtectionListener(this);
+         new OverworldBlastProtectionListener(this);
         // Register the command executor
         Objects.requireNonNull(this.getCommand("checkstatus")).setExecutor(new CheckClassCommand(profileManager));
         Objects.requireNonNull(getCommand("convertlevels")).setExecutor(new ConvertLevelsCommand(profileManager));
