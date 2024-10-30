@@ -8,20 +8,19 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
-public class AbilityManager {
+public class EffectsAbilityManager {
 
     private PlayerAbilityPerms abilityPerms;
-    private Abilities playerAbility;
+    private EffectAbilities playerAbility;
 
     // Updated to map abilities with UserProfile
-    private Map<Predicate<UserProfile>, TriConsumer<UserProfile, Location, LivingEntity>> abilityActions;
+    private Map<Predicate<UserProfile>, EamConsumer<UserProfile, Location, LivingEntity>> abilityActions;
 
-    public AbilityManager(JavaPlugin plugin) {
+    public EffectsAbilityManager(JavaPlugin plugin) {
         this.abilityPerms = new PlayerAbilityPerms();
-        this.playerAbility = new Abilities(plugin);
+        this.playerAbility = new EffectAbilities(plugin);
 
         // Initialize the ability action map with UserProfile
         abilityActions = new HashMap<>();
@@ -47,9 +46,9 @@ public class AbilityManager {
 
     // Apply ability based on the profile's abilities and victim's location
     public void applyAbility(UserProfile attackerProfile, LivingEntity victim, Location attackerLoc, Location victimLoc) {
-        for (Map.Entry<Predicate<UserProfile>, TriConsumer<UserProfile, Location, LivingEntity>> entry : abilityActions.entrySet()) {
+        for (Map.Entry<Predicate<UserProfile>, EamConsumer<UserProfile, Location, LivingEntity>> entry : abilityActions.entrySet()) {
             Predicate<UserProfile> checkAbility = entry.getKey();
-            TriConsumer<UserProfile, Location, LivingEntity> applyEffect = entry.getValue();
+            EamConsumer<UserProfile, Location, LivingEntity> applyEffect = entry.getValue();
 
             // Apply effect based on profile
             if (checkAbility.test(attackerProfile)) {
@@ -61,6 +60,6 @@ public class AbilityManager {
 
 // TriConsumer is a functional interface for methods that take 3 parameters
 @FunctionalInterface
-interface TriConsumer<T, U, V> {
+interface EamConsumer<T, U, V> {
     void accept(T t, U u, V v);
 }

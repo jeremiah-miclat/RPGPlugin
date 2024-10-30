@@ -2,15 +2,16 @@ package github.eremiyuh.rPGPlugin.listeners;
 
 import github.eremiyuh.rPGPlugin.RPGPlugin;
 import github.eremiyuh.rPGPlugin.manager.PlayerProfileManager;
-import github.eremiyuh.rPGPlugin.methods.AbilityManager;
+import github.eremiyuh.rPGPlugin.methods.DamageAbilityManager;
+import github.eremiyuh.rPGPlugin.methods.EffectsAbilityManager;
+import github.eremiyuh.rPGPlugin.perms.PlayerBuffPerms;
 import github.eremiyuh.rPGPlugin.profile.UserProfile;
 import org.bukkit.Location;
+import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
-import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
-import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.*;
@@ -18,19 +19,20 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.projectiles.ProjectileSource;
 
-import java.util.Map;
 import java.util.Objects;
 
-public class PlayerDamageOthers implements Listener {
+public class PveListener implements Listener {
 
     private  final PlayerProfileManager profileManager;
-    private final AbilityManager abilityManager;
+    private final EffectsAbilityManager effectsAbilityManager;
+    private  final DamageAbilityManager damageAbilityManager;
     private final RPGPlugin plugin;
 
 
-    public PlayerDamageOthers(PlayerProfileManager profileManager, AbilityManager abilityManager,RPGPlugin plugin) {
+    public PveListener(PlayerProfileManager profileManager, EffectsAbilityManager effectsAbilityManager, DamageAbilityManager damageAbilityManager,RPGPlugin plugin) {
         this.profileManager = profileManager;
-        this.abilityManager = abilityManager;
+        this.effectsAbilityManager = effectsAbilityManager;
+        this. damageAbilityManager = damageAbilityManager;
         this.plugin = plugin;
     }
 
@@ -95,7 +97,12 @@ public class PlayerDamageOthers implements Listener {
                     // Apply extra damage if present
                     if (angryMob.hasMetadata("extraDamage")) {
                         double extraDamage = angryMob.getMetadata("extraDamage").get(0).asDouble();
-                        event.setDamage(event.getDamage() + extraDamage); // Apply stored extra damage
+                        if (PlayerBuffPerms.canReduceDmg(damagedProfile)) {
+                            event.setDamage((event.getDamage() + extraDamage)/2);
+                        } else {
+                            event.setDamage((event.getDamage() + extraDamage));
+                        }
+
                         damagedPLayer.sendMessage("Extra damage from mob: " + extraDamage);
                     }
                 }
@@ -112,7 +119,6 @@ public class PlayerDamageOthers implements Listener {
             // Get the entity and damage cause
             LivingEntity entity = (LivingEntity) event.getEntity();
             EntityDamageEvent.DamageCause cause = event.getCause();
-
             // Check if the damage cause is one of the specified types (poison, fire, drowning, freezing, etc.)
             if (cause == EntityDamageEvent.DamageCause.POISON ||
                     cause == EntityDamageEvent.DamageCause.FIRE_TICK ||
@@ -125,7 +131,17 @@ public class PlayerDamageOthers implements Listener {
                     cause == EntityDamageEvent.DamageCause.FALLING_BLOCK ||
                     cause == EntityDamageEvent.DamageCause.BLOCK_EXPLOSION ||
                     cause == EntityDamageEvent.DamageCause.LIGHTNING ||
-                    cause == EntityDamageEvent.DamageCause.THORNS
+                    cause == EntityDamageEvent.DamageCause.THORNS ||
+                    cause == EntityDamageEvent.DamageCause.CONTACT ||
+                    cause == EntityDamageEvent.DamageCause.CAMPFIRE ||
+                    cause == EntityDamageEvent.DamageCause.ENTITY_SWEEP_ATTACK ||
+                    cause == EntityDamageEvent.DamageCause.ENTITY_EXPLOSION ||
+                    cause == EntityDamageEvent.DamageCause.MELTING ||
+                    cause == EntityDamageEvent.DamageCause.HOT_FLOOR ||
+                    cause == EntityDamageEvent.DamageCause.DRAGON_BREATH ||
+                    cause == EntityDamageEvent.DamageCause.FIRE ||
+                    cause == EntityDamageEvent.DamageCause.SONIC_BOOM ||
+                    cause == EntityDamageEvent.DamageCause.SUICIDE
             )
             {
 
@@ -151,6 +167,44 @@ public class PlayerDamageOthers implements Listener {
                         }
                     }
                 }
+            }
+        }
+    }
+
+    @EventHandler
+    public void onEntityHitByCustomSkill(EntityDamageByEntityEvent event) {
+        if (event.getEntity() instanceof Monster || event.getEntity() instanceof IronGolem || event.getEntity() instanceof Wolf) {
+
+            // Get the entity and damage cause
+            LivingEntity entity = (LivingEntity) event.getEntity();
+
+            // Check if the damage cause is one of the specified types (poison, fire, drowning, freezing, etc.)
+            if (event.getDamager() instanceof Arrow arrow){
+            if (arrow.hasMetadata("FireArrowBarrage") || arrow.hasMetadata("FreezeArrowBarrage") || arrow.hasMetadata("WeaknessArrowBarrage"))
+            {
+                if (entity.hasMetadata("initialExtraHealth")) {
+                    // Retrieve extra health attribute from entity's metadata or custom attribute
+                    double extraHealth = entity.getMetadata("initialExtraHealth").getFirst().asDouble();
+
+                    if (extraHealth > 0) {
+                        double damage = event.getDamage();
+
+                        if (extraHealth - damage > 0) {
+                            entity.setMetadata("initialExtraHealth", new FixedMetadataValue(plugin, extraHealth - damage));
+                            event.setDamage(0);
+                        } else {
+                            // Calculate excess damage
+                            double excessDamage = damage - extraHealth;
+                            entity.setHealth(Math.max(0, entity.getHealth() - excessDamage)); // Ensure health doesn't drop below 0
+
+                            // Clear the extra health metadata as it has been depleted
+                            entity.setMetadata("initialExtraHealth", new FixedMetadataValue(plugin, 0.0)); // Reset extra health to 0
+
+                            event.setDamage(excessDamage);
+                        }
+                    }
+                }
+            }
             }
         }
     }
@@ -183,7 +237,7 @@ public class PlayerDamageOthers implements Listener {
 
         // Swordsman-specific ability if holding a sword
         if (damagerProfile.getChosenClass().equalsIgnoreCase("swordsman") && weapon.getType().toString().endsWith("_SWORD")) {
-            abilityManager.applyAbility(damagerProfile, target, damagerLocation, damagedLocation);
+            effectsAbilityManager.applyAbility(damagerProfile, target, damagerLocation, damagedLocation);
         }
 
         // Apply extra health and set final damage
@@ -219,20 +273,22 @@ public class PlayerDamageOthers implements Listener {
         // Apply stats based on class for non-default players
         double damageWithStats = applyStatsToDamage(baseDamage, damagerProfile, attacker, event);
 
+
+
+        // Apply extra health and set final damage
+        double finalDamage = applyExtraHealthAndDamage(target, damageWithStats, attacker);
         // Archer class - Check if using bow
         if (damagerProfile.getChosenClass().equalsIgnoreCase("archer") && event.getDamager() instanceof Arrow) {
             attacker.sendMessage("Archer class bonus applied");
-            abilityManager.applyAbility(damagerProfile, target, damagerLocation, damagedLocation);
+            effectsAbilityManager.applyAbility(damagerProfile, target, damagerLocation, damagedLocation);
+            damageAbilityManager.applyDamageAbility(damagerProfile, target, damagerLocation, damagedLocation,finalDamage);
         }
 
         // Alchemist class - Check if using thrown potion
         if (damagerProfile.getChosenClass().equalsIgnoreCase("alchemist") && event.getDamager() instanceof ThrownPotion) {
             attacker.sendMessage("Alchemist class bonus applied");
-            abilityManager.applyAbility(damagerProfile, target, damagerLocation, damagedLocation);
+            effectsAbilityManager.applyAbility(damagerProfile, target, damagerLocation, damagedLocation);
         }
-
-        // Apply extra health and set final damage
-        double finalDamage = applyExtraHealthAndDamage(target, damageWithStats, attacker);
         event.setDamage(finalDamage);
     }
 
@@ -247,16 +303,16 @@ public class PlayerDamageOthers implements Listener {
             intel = damagerProfile.getArcherClassInfo().getIntel();
             luk = damagerProfile.getArcherClassInfo().getLuk();
         } else if (damagerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
-            str = damagerProfile.getAlchemistClassInfo().getStr(); // Assume you have a similar method for Alchemist stats
+            str = damagerProfile.getAlchemistClassInfo().getStr();
             dex = damagerProfile.getAlchemistClassInfo().getDex();
             intel = damagerProfile.getAlchemistClassInfo().getIntel();
             luk = damagerProfile.getAlchemistClassInfo().getLuk();
         }
         else if (damagerProfile.getChosenClass().equalsIgnoreCase("swordsman")) {
-            str = damagerProfile.getAlchemistClassInfo().getStr(); // Assume you have a similar method for Alchemist stats
-            dex = damagerProfile.getAlchemistClassInfo().getDex();
-            intel = damagerProfile.getAlchemistClassInfo().getIntel();
-            luk = damagerProfile.getAlchemistClassInfo().getLuk();
+            str = damagerProfile.getSwordsmanClassInfo().getStr();
+            dex = damagerProfile.getSwordsmanClassInfo().getDex();
+            intel = damagerProfile.getSwordsmanClassInfo().getIntel();
+            luk = damagerProfile.getSwordsmanClassInfo().getLuk();
         }
 
         // Damage calculation based on class stats
@@ -266,7 +322,15 @@ public class PlayerDamageOthers implements Listener {
         // melee
         if (event.getDamager() instanceof Player) {
             if (damagerProfile.getChosenClass().equalsIgnoreCase("swordsman")) {
-                statDmg += str*.01;
+
+
+                if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 2") && player.getInventory().getItemInMainHand().getType().toString().endsWith("_SWORD")) {
+                    statDmg += str*.02;
+                } else {
+                    statDmg += str*.01;
+                }
+
+
                 if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 1") && player.getInventory().getItemInMainHand().getType().toString().endsWith("_SWORD")) {
                     elementalDamage += (4 + (intel * 0.01));
                 } else {
@@ -351,10 +415,23 @@ public class PlayerDamageOthers implements Listener {
 
         if (isCrit) {
             calculatedDamage *= critDmgMultiplier;
+            player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_ATTACK_CRIT, 1.0f, 1.0f);
+            event.getEntity().getWorld().playSound(event.getEntity().getLocation(), Sound.ENTITY_PLAYER_ATTACK_CRIT, 1.0f, 1.0f);
+            event.getEntity().getWorld().spawnParticle(Particle.CRIT, event.getEntity().getLocation(), 10, 0.5, 0.5, 0.5, 0.05);
         }
         player.sendMessage("Base dmg: " + baseDamage + ". stat str: " + statDmg + "." +
                 "Elemental dmg: " + elementalDamage
                 );
+
+
+        if (PlayerBuffPerms.canLifeSteal(damagerProfile)) {
+            double lifestealAmount = statDmg * 0.1; // 10% lifesteal
+            double maxHealth = Objects.requireNonNull(player.getAttribute(Attribute.GENERIC_MAX_HEALTH)).getValue(); // Get max health using attribute
+            double newHealth = Math.min(player.getHealth() + lifestealAmount, maxHealth); // Avoid exceeding max health
+            player.setHealth(newHealth);
+            player.sendMessage("You restored " + lifestealAmount + " health.");
+        }
+
 
         return calculatedDamage;
     }
@@ -430,12 +507,11 @@ public class PlayerDamageOthers implements Listener {
         double extraHealth = (maxCoord / 100) * 10; // 100% health for every 100 blocks
 
         // 5% chance to add +1000% extra health
-        if (Math.random() < 0.5) {
+        if (Math.random() < .9) {
             extraHealth += (extraHealth * 10); // Add 1000% health
 
             // Set the entity name to display as a boss with health bar
-            String bossName = "Lvl " + (int) (Math.floor(maxCoord) /100) + " Boss " + entity.getType().name() +
-                    " Health: " + (int) (entity.getHealth() + extraHealth);
+            String bossName = "Lvl " + (int) (Math.floor(maxCoord) /100) + " Boss " + entity.getType().name();
 
             // Apply the custom name to the entity
             entity.setCustomName(bossName);

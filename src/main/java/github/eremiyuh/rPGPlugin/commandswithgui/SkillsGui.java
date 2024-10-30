@@ -56,7 +56,7 @@ public class SkillsGui implements CommandExecutor, Listener {
         // Set up skills based on the player's chosen class
         switch (profile.getChosenClass().toLowerCase()) {
             case "swordsman":
-                addSkillsToGui(gui, "Swordsman", "Sword Mage", "Swordsman Skill 2", "Element Debuff", "Coming Soon");
+                addSkillsToGui(gui, "Swordsman", "Sword Mage", "Bloodblade", "Tank", "Coming Soon");
                 break;
             case "archer":
                 addSkillsToGui(gui, "Archer", "Elemental Arrows", "Archer Skill 2", "Element Debuff", "Coming Soon");

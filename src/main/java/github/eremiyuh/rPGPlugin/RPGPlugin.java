@@ -6,11 +6,11 @@ import github.eremiyuh.rPGPlugin.commandswithgui.SelectClassCommand;
 import github.eremiyuh.rPGPlugin.commandswithgui.SkillsGui;
 import github.eremiyuh.rPGPlugin.listeners.*;
 import github.eremiyuh.rPGPlugin.manager.PlayerProfileManager;
-import github.eremiyuh.rPGPlugin.methods.AbilityManager;
+import github.eremiyuh.rPGPlugin.methods.DamageAbilityManager;
+import github.eremiyuh.rPGPlugin.methods.EffectsAbilityManager;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.awt.geom.Area;
 import java.util.Objects;
 
 public class RPGPlugin extends JavaPlugin {
@@ -22,18 +22,20 @@ public class RPGPlugin extends JavaPlugin {
     public void onEnable() {
         // Initialize the profile manager
         profileManager = new PlayerProfileManager(this);
-        AbilityManager abilityManager = new AbilityManager(this);
+        EffectsAbilityManager effectsAbilityManager = new EffectsAbilityManager(this);
+        DamageAbilityManager damageAbilityManager = new DamageAbilityManager(this);
         MonsterStrengthScalingListener monsterStrScaler = new MonsterStrengthScalingListener();
         // Register events
         getServer().getPluginManager().registerEvents(new PlayerJoinListener(profileManager), this);
         getServer().getPluginManager().registerEvents(new PlayerQuitListener(profileManager), this);
         Objects.requireNonNull(getCommand("selectclass")).setExecutor(new SelectClassCommand(this, profileManager));
         getServer().getPluginManager().registerEvents(new OptimizedVampireSunlightListener(profileManager, this),this);
-        PlayerDamageOthers playerDamageOthersListener = new PlayerDamageOthers(profileManager, abilityManager, this);
-        getServer().getPluginManager().registerEvents(playerDamageOthersListener,this);
-        getServer().getPluginManager().registerEvents(new AlchemistThrowPotion(profileManager), this);
+        PveListener pveListenerListener = new PveListener(profileManager, effectsAbilityManager, damageAbilityManager,this);
+        getServer().getPluginManager().registerEvents(pveListenerListener,this);
+//        getServer().getPluginManager().registerEvents(new AlchemistThrowPotion(profileManager), this);
 //        new AreaProtectionListener(this);
          new OverworldBlastProtectionListener(this);
+         new ArrowHitListener((this));
         // Register the command executor
         Objects.requireNonNull(this.getCommand("checkstatus")).setExecutor(new CheckClassCommand(profileManager));
         Objects.requireNonNull(getCommand("convertlevels")).setExecutor(new ConvertLevelsCommand(profileManager));

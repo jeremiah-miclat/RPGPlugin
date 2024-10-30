@@ -7,13 +7,12 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.util.Vector;
 
-public class Abilities {
+public class EffectAbilities {
 
     private JavaPlugin plugin;
 
-    public Abilities(JavaPlugin plugin) {
+    public EffectAbilities(JavaPlugin plugin) {
         this.plugin = plugin;
     }
 
