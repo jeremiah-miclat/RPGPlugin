@@ -40,6 +40,7 @@ public class UserProfile {
     private long lastRpgSwitchTime = 0; // New field to store last RPG switch timestamp
     private static final long RPG_COOLDOWN = 10 * 60 * 60 * 1000; // 10 hours in milliseconds
     private double diamond=0;
+    private double claimPoints=0;
 
     public UserProfile(String playerName) {
         this.playerID = UUID.randomUUID(); // Generate a unique ID for the player
@@ -65,6 +66,8 @@ public class UserProfile {
 
         // money
         this.diamond = 0;
+
+        this.claimPoints =100;
 
     }
 
@@ -284,6 +287,14 @@ public class UserProfile {
         }
         this.RPG = newRPG;
         this.lastRpgSwitchTime = System.currentTimeMillis(); // Update timestamp on switch
+    }
+
+    public double getClaimPoints() {
+        return claimPoints;
+    }
+
+    public void setClaimPoints(double claimPoints) {
+        this.claimPoints = claimPoints;
     }
 
     // Inner class to hold class-specific attributes

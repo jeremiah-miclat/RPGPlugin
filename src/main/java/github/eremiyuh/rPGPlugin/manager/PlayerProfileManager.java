@@ -99,6 +99,8 @@ public class PlayerProfileManager {
         //diamonds
         config.set("diamonds",profile.getDiamond());
 
+        //claimPoints
+        config.set("claimPoints",profile.getClaimPoints());
 
         try {
             config.save(profileFile);
@@ -165,6 +167,8 @@ public class PlayerProfileManager {
         //diamond
         profile.setDiamond(config.getDouble("diamond",0));
 
+        //claim points
+        profile.setClaimPoints(config.getDouble("claimPoints",100));
         playerProfiles.put(playerName, profile);
     }
 

@@ -5,6 +5,7 @@ import github.eremiyuh.rPGPlugin.commandswithgui.CheckClassCommand;
 import github.eremiyuh.rPGPlugin.commandswithgui.SelectClassCommand;
 import github.eremiyuh.rPGPlugin.commandswithgui.SkillsGui;
 import github.eremiyuh.rPGPlugin.listeners.*;
+import github.eremiyuh.rPGPlugin.manager.ChunkManager;
 import github.eremiyuh.rPGPlugin.manager.PlayerProfileManager;
 import github.eremiyuh.rPGPlugin.methods.DamageAbilityManager;
 import github.eremiyuh.rPGPlugin.methods.EffectsAbilityManager;
@@ -16,12 +17,14 @@ import java.util.Objects;
 public class RPGPlugin extends JavaPlugin {
 
     private PlayerProfileManager profileManager;
+    private ChunkManager chunkManager;
 //    private MonsterStrengthScalingListener monsterStrengthScalingListener;
 
     @Override
     public void onEnable() {
         // Initialize the profile manager
         profileManager = new PlayerProfileManager(this);
+        this.chunkManager = new ChunkManager(getDataFolder());
         EffectsAbilityManager effectsAbilityManager = new EffectsAbilityManager(this);
         DamageAbilityManager damageAbilityManager = new DamageAbilityManager(this);
         MonsterStrengthScalingListener monsterStrScaler = new MonsterStrengthScalingListener();
@@ -35,6 +38,7 @@ public class RPGPlugin extends JavaPlugin {
          new OverworldBlastProtectionListener(this);
          new ArrowHitListener((this));
         getServer().getPluginManager().registerEvents(new AlchemistThrowPotion(profileManager),this);
+        getServer().getPluginManager().registerEvents(new ChunkProtectionListener(chunkManager),this);
 
         // Register the command executor
         Objects.requireNonNull(this.getCommand("checkstatus")).setExecutor(new CheckClassCommand(profileManager));
@@ -49,6 +53,7 @@ public class RPGPlugin extends JavaPlugin {
         Objects.requireNonNull(getCommand("teamremove")).setExecutor(new TeamRemoveCommand(profileManager));
         Objects.requireNonNull(getCommand("pvpstatus")).setExecutor(new PVPStatusCommand(profileManager));
         Objects.requireNonNull(getCommand("setrpg")).setExecutor(new SetRPG(profileManager));
+        Objects.requireNonNull(getCommand("cc")).setExecutor(new ChunkCommand(chunkManager,profileManager));
         // Register the listener
         Bukkit.getPluginManager().registerEvents(new CheckClassCommand(profileManager), this);
 
@@ -70,6 +75,8 @@ public class RPGPlugin extends JavaPlugin {
 
         // Log to console that the plugin has been disabled
         getLogger().info("RPGPlugin has been disabled.");
+
+        chunkManager.saveChunkData();
     }
 
 }

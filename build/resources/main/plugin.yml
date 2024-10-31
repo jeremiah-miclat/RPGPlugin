@@ -44,4 +44,7 @@ commands:
   setrpg:
     description: Set RPG on or off
     usage: /setrpg <onoroff>
+  cc:
+    description: claimed chunks commands
+    usage: /cc <claim>
 
