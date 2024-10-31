@@ -96,6 +96,9 @@ public class PlayerProfileManager {
         //RPG
         config.set("rpgStatus",profile.getRPG());
 
+        //diamonds
+        config.set("diamonds",profile.getDiamond());
+
 
         try {
             config.save(profileFile);
@@ -158,6 +161,9 @@ public class PlayerProfileManager {
 
         //RPG
         profile.setRPG(config.getString("rpgStatus","off"));
+
+        //diamond
+        profile.setDiamond(config.getDouble("diamond",0));
 
         playerProfiles.put(playerName, profile);
     }

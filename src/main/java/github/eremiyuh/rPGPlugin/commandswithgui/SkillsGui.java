@@ -29,6 +29,8 @@ public class SkillsGui implements CommandExecutor, Listener {
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 
+    private final long COOLDOWN = 10000;
+
     // When a player enters /selectskill, the GUI will appear
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -56,13 +58,13 @@ public class SkillsGui implements CommandExecutor, Listener {
         // Set up skills based on the player's chosen class
         switch (profile.getChosenClass().toLowerCase()) {
             case "swordsman":
-                addSkillsToGui(gui, "Swordsman", "Sword Mage", "Bloodblade", "Tank", "Coming Soon");
+                addSkillsToGui(gui, "Swordsman", "Sword Mage", "Blood blade", "Tank");
                 break;
             case "archer":
-                addSkillsToGui(gui, "Archer", "Elemental Arrows", "Archer Skill 2", "Element Debuff", "Coming Soon");
+                addSkillsToGui(gui, "Archer", "Arrow Enchanter", "Bow Master", "Sniper");
                 break;
             case "alchemist":
-                addSkillsToGui(gui, "Alchemist", "Element Master", "Alchemist Skill 2", "Element Shield", "Coming Soon");
+                addSkillsToGui(gui, "Alchemist", "Potion Enchanter", "Buffer", "Doctor");
                 break;
             default:
                 player.sendMessage("Your class does not have any skills.");
@@ -74,7 +76,7 @@ public class SkillsGui implements CommandExecutor, Listener {
     }
 
     // Add the skills for the player's chosen class to the GUI
-    private void addSkillsToGui(Inventory gui, String className, String skill1, String skill2, String skill3, String skill4) {
+    private void addSkillsToGui(Inventory gui, String className, String skill1, String skill2, String skill3) {
         // Skill 1
         gui.setItem(1, createSkillIcon(Material.EMERALD, "§a" + className + " Skill 1", skill1));
 
@@ -84,8 +86,6 @@ public class SkillsGui implements CommandExecutor, Listener {
         // Skill 3
         gui.setItem(5, createSkillIcon(Material.EMERALD, "§a" + className + " Skill 3", skill3));
 
-        // Skill 4
-        gui.setItem(7, createSkillIcon(Material.EMERALD, "§a" + className + " Skill 4", skill4));
     }
 
     // Create an icon for each skill with a unique lore to identify it

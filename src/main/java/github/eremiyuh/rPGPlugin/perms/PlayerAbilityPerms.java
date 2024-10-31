@@ -62,4 +62,5 @@ public class PlayerAbilityPerms {
                 && profile.getSelectedElement().equalsIgnoreCase("water")
                 && profile.getSelectedSkill().equalsIgnoreCase("Skill 2");
     }
+
 }

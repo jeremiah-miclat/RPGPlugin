@@ -39,6 +39,7 @@ public class UserProfile {
     private String RPG="off";
     private long lastRpgSwitchTime = 0; // New field to store last RPG switch timestamp
     private static final long RPG_COOLDOWN = 10 * 60 * 60 * 1000; // 10 hours in milliseconds
+    private double diamond=0;
 
     public UserProfile(String playerName) {
         this.playerID = UUID.randomUUID(); // Generate a unique ID for the player
@@ -61,6 +62,9 @@ public class UserProfile {
 
         // Initialize vanilla only / non rpg toggle
         this.RPG = "off";
+
+        // money
+        this.diamond = 0;
 
     }
 
@@ -257,6 +261,14 @@ public class UserProfile {
 
     public void setLastRpgSwitchTime(long switchTime) {
         this.lastRpgSwitchTime = switchTime;
+    }
+
+    public double getDiamond() {
+        return diamond;
+    }
+
+    public void setDiamond(double diamond) {
+        this.diamond = diamond;
     }
 
     // Method to check if cooldown has passed

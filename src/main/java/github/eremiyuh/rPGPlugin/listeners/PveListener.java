@@ -9,6 +9,7 @@ import github.eremiyuh.rPGPlugin.profile.UserProfile;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
@@ -90,7 +91,15 @@ public class PveListener implements Listener {
                 if (damagedProfile.getChosenClass().equalsIgnoreCase("default")
                     || damagedProfile.getRPG().equalsIgnoreCase("off")
                 ) {
-                    event.setDamage(event.getDamage());
+
+                    if (angryMob.hasMetadata("initialExtraHealth")) {
+                        damagedPLayer.sendMessage("You are protected from modified monsters");
+                        event.setDamage(0);
+                    } else {
+                        event.setDamage(event.getDamage());
+                    }
+
+
                 } else {
                     initializeExtraAttributes(angryMob,damagedPLayer);
 
@@ -113,39 +122,17 @@ public class PveListener implements Listener {
     }
 
     @EventHandler
-    public void onEntityDamageOverTime(EntityDamageEvent event) {
+    public void onModifiedEntityTakeDamage(EntityDamageEvent event) {
         if (event.getEntity() instanceof Monster || event.getEntity() instanceof IronGolem || event.getEntity() instanceof Wolf) {
 
             // Get the entity and damage cause
             LivingEntity entity = (LivingEntity) event.getEntity();
             EntityDamageEvent.DamageCause cause = event.getCause();
             // Check if the damage cause is one of the specified types (poison, fire, drowning, freezing, etc.)
-            if (cause == EntityDamageEvent.DamageCause.POISON ||
-                    cause == EntityDamageEvent.DamageCause.FIRE_TICK ||
-                    cause == EntityDamageEvent.DamageCause.DROWNING ||
-                    cause == EntityDamageEvent.DamageCause.FREEZE ||
-                    cause == EntityDamageEvent.DamageCause.WITHER ||
-                    cause == EntityDamageEvent.DamageCause.LAVA ||
-                    cause == EntityDamageEvent.DamageCause.SUFFOCATION ||
-                    cause == EntityDamageEvent.DamageCause.FALL ||
-                    cause == EntityDamageEvent.DamageCause.FALLING_BLOCK ||
-                    cause == EntityDamageEvent.DamageCause.BLOCK_EXPLOSION ||
-                    cause == EntityDamageEvent.DamageCause.LIGHTNING ||
-                    cause == EntityDamageEvent.DamageCause.THORNS ||
-                    cause == EntityDamageEvent.DamageCause.CONTACT ||
-                    cause == EntityDamageEvent.DamageCause.CAMPFIRE ||
-                    cause == EntityDamageEvent.DamageCause.ENTITY_SWEEP_ATTACK ||
-                    cause == EntityDamageEvent.DamageCause.ENTITY_EXPLOSION ||
-                    cause == EntityDamageEvent.DamageCause.MELTING ||
-                    cause == EntityDamageEvent.DamageCause.HOT_FLOOR ||
-                    cause == EntityDamageEvent.DamageCause.DRAGON_BREATH ||
-                    cause == EntityDamageEvent.DamageCause.FIRE ||
-                    cause == EntityDamageEvent.DamageCause.SONIC_BOOM ||
-                    cause == EntityDamageEvent.DamageCause.SUICIDE
-            )
-            {
+
 
                 if (entity.hasMetadata("initialExtraHealth")) {
+
                     // Retrieve extra health attribute from entity's metadata or custom attribute
                     double extraHealth = entity.getMetadata("initialExtraHealth").getFirst().asDouble();
 
@@ -167,54 +154,61 @@ public class PveListener implements Listener {
                         }
                     }
                 }
-            }
+
         }
     }
 
-    @EventHandler
-    public void onEntityHitByCustomSkill(EntityDamageByEntityEvent event) {
-        if (event.getEntity() instanceof Monster || event.getEntity() instanceof IronGolem || event.getEntity() instanceof Wolf) {
-
-            // Get the entity and damage cause
-            LivingEntity entity = (LivingEntity) event.getEntity();
-
-            // Check if the damage cause is one of the specified types (poison, fire, drowning, freezing, etc.)
-            if (event.getDamager() instanceof Arrow arrow){
-            if (arrow.hasMetadata("FireArrowBarrage") || arrow.hasMetadata("FreezeArrowBarrage") || arrow.hasMetadata("WeaknessArrowBarrage"))
-            {
-                if (entity.hasMetadata("initialExtraHealth")) {
-                    // Retrieve extra health attribute from entity's metadata or custom attribute
-                    double extraHealth = entity.getMetadata("initialExtraHealth").getFirst().asDouble();
-
-                    if (extraHealth > 0) {
-                        double damage = event.getDamage();
-
-                        if (extraHealth - damage > 0) {
-                            entity.setMetadata("initialExtraHealth", new FixedMetadataValue(plugin, extraHealth - damage));
-                            event.setDamage(0);
-                        } else {
-                            // Calculate excess damage
-                            double excessDamage = damage - extraHealth;
-                            entity.setHealth(Math.max(0, entity.getHealth() - excessDamage)); // Ensure health doesn't drop below 0
-
-                            // Clear the extra health metadata as it has been depleted
-                            entity.setMetadata("initialExtraHealth", new FixedMetadataValue(plugin, 0.0)); // Reset extra health to 0
-
-                            event.setDamage(excessDamage);
-                        }
-                    }
-                }
-            }
-            }
-        }
-    }
+//    @EventHandler
+//    public void onEntityHitByCustomSkill(EntityDamageByEntityEvent event) {
+//        if (event.getEntity() instanceof Monster || event.getEntity() instanceof IronGolem || event.getEntity() instanceof Wolf) {
+//
+//            // Get the entity and damage cause
+//            LivingEntity entity = (LivingEntity) event.getEntity();
+//
+//            // Check if the damage cause is one of the specified types (poison, fire, drowning, freezing, etc.)
+//            if (event.getDamager() instanceof Arrow arrow){
+//            if (arrow.hasMetadata("FireArrowBarrage") || arrow.hasMetadata("FreezeArrowBarrage") || arrow.hasMetadata("WeaknessArrowBarrage"))
+//            {
+//                if (entity.hasMetadata("initialExtraHealth")) {
+//                    // Retrieve extra health attribute from entity's metadata or custom attribute
+//                    double extraHealth = entity.getMetadata("initialExtraHealth").getFirst().asDouble();
+//
+//                    if (extraHealth > 0) {
+//                        double damage = event.getDamage();
+//
+//                        if (extraHealth - damage > 0) {
+//                            entity.setMetadata("initialExtraHealth", new FixedMetadataValue(plugin, extraHealth - damage));
+//                            event.setDamage(0);
+//                        } else {
+//                            // Calculate excess damage
+//                            double excessDamage = damage - extraHealth;
+//                            entity.setHealth(Math.max(0, entity.getHealth() - excessDamage)); // Ensure health doesn't drop below 0
+//
+//                            // Clear the extra health metadata as it has been depleted
+//                            entity.setMetadata("initialExtraHealth", new FixedMetadataValue(plugin, 0.0)); // Reset extra health to 0
+//
+//                            event.setDamage(excessDamage);
+//                        }
+//                    }
+//                }
+//            }
+//            }
+//        }
+//    }
 
 
     // pve melee damage
     private void handleMeleePveDamage(Player attacker, LivingEntity target, EntityDamageByEntityEvent event, Location damagerLocation, Location damagedLocation, UserProfile damagerProfile) {
         // Check if the player is in the default class
         if (damagerProfile.getChosenClass().equalsIgnoreCase("default") || damagerProfile.getRPG().equalsIgnoreCase("off")) {
-            event.setDamage(event.getDamage()); // Keep default Minecraft combat
+
+            if (target.hasMetadata("initialExtraHealth")) {
+                attacker.sendMessage("You can't damage modified monsters");
+                event.setDamage(0);
+            } else {
+                event.setDamage(event.getDamage());
+            }
+
             return;
         }
 
@@ -253,7 +247,12 @@ public class PveListener implements Listener {
         if (damagerProfile.getChosenClass().equalsIgnoreCase("default")
                 || damagerProfile.getRPG().equalsIgnoreCase("off")
         ) {
-            event.setDamage(event.getDamage()); // Keep default Minecraft combat
+            if (target.hasMetadata("initialExtraHealth")) {
+                attacker.sendMessage("You can't damage modified monsters");
+                event.setDamage(0);
+            } else {
+                event.setDamage(event.getDamage());
+            }
             return;
         }
 
@@ -397,27 +396,41 @@ public class PveListener implements Listener {
         // Critical Hit System
         double critChance = 0;
         if (damagerProfile.getChosenClass().equalsIgnoreCase("swordsman")){
-            critChance += ((luk / 10) * 0.1 + 0.001);
+            critChance += (luk * 0.00075);
+        }
+        else {
+            critChance += (luk * 0.0005);
         }
         if (damagerProfile.getChosenClass().equalsIgnoreCase("archer")){
-            dex += ((dex / 10) * 0.1 + 0.001);
+            critChance += (dex * 0.00025);
+        }
+        double critDmgMultiplier = 1.5 + (dex * 0.0001);
+        if (damagerProfile.getChosenClass().equalsIgnoreCase("archer") && damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")){
+            critChance += 0.25;
+            critDmgMultiplier += dex*0.00005;
         }
 
-        else {
-            critChance += ((luk / 20) * 0.1 + 0.001);
-        }
-        double critDmgMultiplier = 1.1 + (dex * 0.01);
-        if (damagerProfile.getChosenClass().equalsIgnoreCase("archer")){
-            dex += ((dex / 10) * 0.1 + 0.001);
-            critDmgMultiplier += 1.1 + (dex * 0.01);
-        }
         boolean isCrit = Math.random() < critChance;
 
         if (isCrit) {
             calculatedDamage *= critDmgMultiplier;
             player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_ATTACK_CRIT, 1.0f, 1.0f);
             event.getEntity().getWorld().playSound(event.getEntity().getLocation(), Sound.ENTITY_PLAYER_ATTACK_CRIT, 1.0f, 1.0f);
-            event.getEntity().getWorld().spawnParticle(Particle.CRIT, event.getEntity().getLocation(), 10, 0.5, 0.5, 0.5, 0.05);
+            World world = event.getEntity().getWorld();
+            for (int i = 0; i < 50; i++) {
+                double xOffset = (Math.random() - 0.5) * 1.5;
+                double zOffset = (Math.random() - 0.5) * 1.5;
+                double yVelocity = Math.random() * 0.5 + 0.5;
+
+                // Spawn different water-like particles for the splash effect
+                world.spawnParticle(
+                        Particle.CRIT,
+                        event.getEntity().getLocation().clone().add(xOffset, 0, zOffset),
+                        1, // Particle count (1 at a time)
+                        0, yVelocity, 0, // Upward velocity to make them rise
+                        0.05 // Speed of the particle
+                );
+            }
         }
         player.sendMessage("Base dmg: " + baseDamage + ". stat str: " + statDmg + "." +
                 "Elemental dmg: " + elementalDamage
@@ -465,15 +478,16 @@ public class PveListener implements Listener {
         if (target instanceof Monster || target instanceof IronGolem || target instanceof Wolf) {
             initializeExtraAttributes(target, player); // Ensure metadata is initialized
         }
-
-        // Retrieve and apply existing extra health
-        double initialExtraHealth = 0;
-
-        if (target.hasMetadata("initialExtraHealth")) {
-            initialExtraHealth += target.getMetadata("initialExtraHealth").get(0).asDouble();
-        }
-
-        return applyDamageWithExtraHealth(target, calculatedDamage, initialExtraHealth, player);
+//
+//        // Retrieve and apply existing extra health
+//        double initialExtraHealth = 0;
+//
+//        if (target.hasMetadata("initialExtraHealth")) {
+//            initialExtraHealth += target.getMetadata("initialExtraHealth").get(0).asDouble();
+//        }
+//
+//        return applyDamageWithExtraHealth(target, calculatedDamage, initialExtraHealth, player);
+        return  calculatedDamage;
     }
 
 

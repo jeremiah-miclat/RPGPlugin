@@ -37,6 +37,7 @@ public class DamageAbilityManager {
                 profile -> abilityPerms.canSummonWeaknessArrowBarrage(profile),
                 (profile, location, target, damage) -> playerAbility.summonWeaknessArrowBarrage(profile, location, target, damage)
         );
+
     }
 
     // Apply ability based on the profile's abilities and victim's location

@@ -32,10 +32,10 @@ public class RPGPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new OptimizedVampireSunlightListener(profileManager, this),this);
         PveListener pveListenerListener = new PveListener(profileManager, effectsAbilityManager, damageAbilityManager,this);
         getServer().getPluginManager().registerEvents(pveListenerListener,this);
-//        getServer().getPluginManager().registerEvents(new AlchemistThrowPotion(profileManager), this);
-//        new AreaProtectionListener(this);
          new OverworldBlastProtectionListener(this);
          new ArrowHitListener((this));
+        getServer().getPluginManager().registerEvents(new AlchemistThrowPotion(profileManager),this);
+
         // Register the command executor
         Objects.requireNonNull(this.getCommand("checkstatus")).setExecutor(new CheckClassCommand(profileManager));
         Objects.requireNonNull(getCommand("convertlevels")).setExecutor(new ConvertLevelsCommand(profileManager));
