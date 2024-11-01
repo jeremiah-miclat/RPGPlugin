@@ -56,7 +56,6 @@ public class ChunkManager {
         return ownedChunks.get(generateChunkKey(chunk));
     }
 
-
     public boolean isTrusted(String playerName, Chunk chunk) {
         OwnedChunk ownedChunk = ownedChunks.get(generateChunkKey(chunk));
         return ownedChunk != null && ownedChunk.getTrustedPlayers().contains(playerName);
@@ -69,6 +68,17 @@ public class ChunkManager {
             saveChunkData();
         }
     }
+
+    public List<OwnedChunk> getOwnedChunksByOwner(String ownerName) {
+        List<OwnedChunk> ownedChunksList = new ArrayList<>();
+        for (OwnedChunk ownedChunk : ownedChunks.values()) {
+            if (ownedChunk.getOwner().equals(ownerName)) {
+                ownedChunksList.add(ownedChunk);
+            }
+        }
+        return ownedChunksList;
+    }
+
 
     public void untrustPlayer(String ownerName, Chunk chunk, String trustedPlayer) {
         OwnedChunk ownedChunk = ownedChunks.get(generateChunkKey(chunk));

@@ -47,4 +47,15 @@ commands:
   cc:
     description: claimed chunks commands
     usage: /cc <claim|check>
-
+  trust:
+    description: claimed chunks trust command
+    usage: /trust <playerName>
+  trustall:
+    description: claimed chunks trust all command
+    usage: /trustall <playerName>
+  untrust:
+    description: claimed chunks untrust command
+    usage: /untrust <playerName>
+  untrustall:
+    description: claimed chunks untrust all command
+    usage: /untrustall <playerName>

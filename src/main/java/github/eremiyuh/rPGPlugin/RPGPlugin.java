@@ -60,6 +60,10 @@ public class RPGPlugin extends JavaPlugin {
         Objects.requireNonNull(getCommand("pvpstatus")).setExecutor(new PVPStatusCommand(profileManager));
         Objects.requireNonNull(getCommand("setrpg")).setExecutor(new SetRPG(profileManager));
         Objects.requireNonNull(getCommand("cc")).setExecutor(new ChunkCommand(chunkManager,profileManager, chunkBorderBlueVisualizer, chunkBorderRedVisualizer));
+        Objects.requireNonNull(getCommand("trust")).setExecutor(new TrustCommand(chunkManager));
+        Objects.requireNonNull(getCommand("trustall")).setExecutor(new TrustAllCommand(chunkManager));
+        Objects.requireNonNull(getCommand("untrust")).setExecutor(new UntrustCommand(chunkManager));
+        Objects.requireNonNull(getCommand("untrustall")).setExecutor(new UntrustAllCommand(chunkManager));
         // Register the listener
         Bukkit.getPluginManager().registerEvents(new CheckClassCommand(profileManager), this);
 

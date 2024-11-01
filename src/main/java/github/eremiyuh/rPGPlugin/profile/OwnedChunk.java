@@ -32,5 +32,9 @@ public class OwnedChunk {
     public void removeTrustedPlayer(String playerName) {
         trustedPlayers.remove(playerName);
     }
+
+    public Chunk getChunk() {
+        return chunk;
+    }
 }
 

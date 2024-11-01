@@ -30,46 +30,6 @@ public class ChunkProtectionListener implements Listener {
         this.chunkBorderRedVisualizer = chunkBorderRedVisualizer;
     }
 
-//    @EventHandler
-//    public void onBlockBreak(BlockBreakEvent event) {
-//        Player player = event.getPlayer();
-//        Chunk chunk = event.getBlock().getChunk();
-//        OwnedChunk ownedChunk = chunkManager.getOwnedChunk(chunk);
-//        if (ownedChunk != null) {  // Only proceed if the chunk is claimed by someone
-//            if (!chunkManager.isOwner(player.getName(), chunk) && !chunkManager.isTrusted(player.getName(), chunk)) {
-//                chunkBorderRedVisualizer.showChunkBoundary(player,chunk);
-//                event.setCancelled(true);
-//                player.sendMessage("You don't have permission to break blocks in this chunk.");
-//            }
-//        }
-//        if (chunkHasOwnedChunkNearby(chunk, player)) {
-//            player.sendMessage("There's a nearby owned chunk that is not yours. You can't break blocks here");
-//            event.setCancelled(true); // Prevent block placement
-//        }
-//    }
-//
-//    // Additional EventHandler for placing blocks
-//    @EventHandler
-//    public void onBlockPlace(BlockPlaceEvent event) {
-//        Player player = event.getPlayer();
-//        Chunk chunk = event.getBlock().getChunk();
-//        OwnedChunk ownedChunk = chunkManager.getOwnedChunk(chunk);
-//        if (ownedChunk != null && !chunkManager.isOwner(player.getName(), chunk) && !chunkManager.isTrusted(player.getName(), chunk)) {
-//            event.setCancelled(true); // Prevent block placement
-//
-//
-//            player.sendMessage("You don't have permission to place blocks in this chunk.");
-//        }
-//
-//        if (chunkHasOwnedChunkNearby(chunk, player)) {
-//            player.sendMessage("There's a nearby owned chunk that is not yours. You can't build here");
-//            chunkBorderRedVisualizer.showChunkBoundary(player, chunk);
-//            event.setCancelled(true); // Prevent block placement
-//        }
-//
-//
-//    }
-
     // Additional EventHandler for damaging entities
     @EventHandler
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
@@ -139,7 +99,7 @@ public class ChunkProtectionListener implements Listener {
             }
             if (chunkHasOwnedChunkNearby(chunk, player)) {
                 chunkHasOwnedChunkNearbyVisualizer(chunk,player);
-                player.sendMessage("There's a nearby owned chunk that is not yours. You can't interact in this chunk");
+                player.sendMessage("There's a nearby owned chunk that is not yours or you are not trusted. You can't interact in this chunk");
                 event.setCancelled(true); // Prevent block placement
             }
         }
