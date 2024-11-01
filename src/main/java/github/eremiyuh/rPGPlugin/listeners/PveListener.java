@@ -277,10 +277,12 @@ public class PveListener implements Listener {
         // Apply extra health and set final damage
         double finalDamage = applyExtraHealthAndDamage(target, damageWithStats, attacker);
         // Archer class - Check if using bow
-        if (damagerProfile.getChosenClass().equalsIgnoreCase("archer") && event.getDamager() instanceof Arrow) {
+        if (damagerProfile.getChosenClass().equalsIgnoreCase("archer") && event.getDamager() instanceof Arrow arrow) {
             attacker.sendMessage("Archer class bonus applied");
             effectsAbilityManager.applyAbility(damagerProfile, target, damagerLocation, damagedLocation);
-            damageAbilityManager.applyDamageAbility(damagerProfile, target, damagerLocation, damagedLocation,finalDamage);
+            if (!arrow.hasMetadata("WeaknessArrowBarrage") && !arrow.hasMetadata("FireArrowBarrage") && !arrow.hasMetadata("FreezeArrowBarrage")) {
+                damageAbilityManager.applyDamageAbility(damagerProfile, target, damagerLocation, damagedLocation,finalDamage);
+            }
         }
 
         // Alchemist class - Check if using thrown potion

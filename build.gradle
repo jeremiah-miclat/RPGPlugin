@@ -50,7 +50,7 @@ processResources {
 
 task copyToServer(type: Copy) {
     from "$buildDir/libs" // Source folder where the .jar file is created
-    into "C:/Users/USER/Desktop/Paper 1.21/plugins" // Destination folder (your server's plugins folder)
+    into "C:/Users/USER/Desktop/testServer/plugins" // Destination folder (your server's plugins folder)
     include "*.jar"
 }
 

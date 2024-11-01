@@ -7,6 +7,8 @@ import github.eremiyuh.rPGPlugin.commandswithgui.SkillsGui;
 import github.eremiyuh.rPGPlugin.listeners.*;
 import github.eremiyuh.rPGPlugin.manager.ChunkManager;
 import github.eremiyuh.rPGPlugin.manager.PlayerProfileManager;
+import github.eremiyuh.rPGPlugin.methods.ChunkBorderBlueVisualizer;
+import github.eremiyuh.rPGPlugin.methods.ChunkBorderRedVisualizer;
 import github.eremiyuh.rPGPlugin.methods.DamageAbilityManager;
 import github.eremiyuh.rPGPlugin.methods.EffectsAbilityManager;
 import org.bukkit.Bukkit;
@@ -18,6 +20,8 @@ public class RPGPlugin extends JavaPlugin {
 
     private PlayerProfileManager profileManager;
     private ChunkManager chunkManager;
+    private ChunkBorderBlueVisualizer chunkBorderBlueVisualizer;
+    private ChunkBorderRedVisualizer chunkBorderRedVisualizer;
 //    private MonsterStrengthScalingListener monsterStrengthScalingListener;
 
     @Override
@@ -37,8 +41,10 @@ public class RPGPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(pveListenerListener,this);
          new OverworldBlastProtectionListener(this);
          new ArrowHitListener((this));
+        chunkBorderBlueVisualizer = new ChunkBorderBlueVisualizer(this);
+        chunkBorderRedVisualizer = new ChunkBorderRedVisualizer(this);
         getServer().getPluginManager().registerEvents(new AlchemistThrowPotion(profileManager),this);
-        getServer().getPluginManager().registerEvents(new ChunkProtectionListener(chunkManager),this);
+        getServer().getPluginManager().registerEvents(new ChunkProtectionListener(chunkManager,chunkBorderBlueVisualizer,chunkBorderRedVisualizer),this);
 
         // Register the command executor
         Objects.requireNonNull(this.getCommand("checkstatus")).setExecutor(new CheckClassCommand(profileManager));
@@ -53,7 +59,7 @@ public class RPGPlugin extends JavaPlugin {
         Objects.requireNonNull(getCommand("teamremove")).setExecutor(new TeamRemoveCommand(profileManager));
         Objects.requireNonNull(getCommand("pvpstatus")).setExecutor(new PVPStatusCommand(profileManager));
         Objects.requireNonNull(getCommand("setrpg")).setExecutor(new SetRPG(profileManager));
-        Objects.requireNonNull(getCommand("cc")).setExecutor(new ChunkCommand(chunkManager,profileManager));
+        Objects.requireNonNull(getCommand("cc")).setExecutor(new ChunkCommand(chunkManager,profileManager, chunkBorderBlueVisualizer, chunkBorderRedVisualizer));
         // Register the listener
         Bukkit.getPluginManager().registerEvents(new CheckClassCommand(profileManager), this);
 

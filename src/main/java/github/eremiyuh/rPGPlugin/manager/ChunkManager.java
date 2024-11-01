@@ -1,6 +1,7 @@
 package github.eremiyuh.rPGPlugin.manager;
 
 import github.eremiyuh.rPGPlugin.profile.OwnedChunk;
+import github.eremiyuh.rPGPlugin.profile.UserProfile;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -30,6 +31,19 @@ public class ChunkManager {
             player.sendMessage("Chunk claimed successfully!");
         } else {
             player.sendMessage("This chunk is already claimed.");
+        }
+    }
+
+    public void unclaimChunk(Player player, Chunk chunk) {
+        String key = generateChunkKey(chunk);
+        OwnedChunk ownedChunk = ownedChunks.get(key);
+
+        if (ownedChunk != null && ownedChunk.getOwner().equals(player.getName())) {
+            ownedChunks.remove(key);
+            saveChunkData();
+            player.sendMessage("Chunk unclaimed successfully!");
+        } else {
+            player.sendMessage("You do not own this chunk or it is not claimed.");
         }
     }
 

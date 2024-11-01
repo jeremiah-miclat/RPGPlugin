@@ -52,7 +52,6 @@ public class EffectAbilities {
             double zOffset = (Math.random() - 0.5) * 1.5;
             double yVelocity = Math.random() * 0.5 + 0.5;
 
-            // Spawn different water-like particles for the splash effect
             world.spawnParticle(
                     Particle.FLAME,
                     targetLocation.clone().add(xOffset, 0, zOffset),

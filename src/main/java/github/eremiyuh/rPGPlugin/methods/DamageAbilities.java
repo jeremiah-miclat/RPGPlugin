@@ -35,7 +35,7 @@ public class DamageAbilities {
                 // Calculate spawn location based on grid position, 6 blocks above the target
                 Location spawnLocation = new Location(location.getWorld(), startX + x, targetLocation.getY() + heightOffset, startZ + z);
                 Arrow arrow = location.getWorld().spawn(spawnLocation, Arrow.class);
-
+                arrow.setShooter(Bukkit.getPlayer(profile.getPlayerName()));
                 // Apply downward velocity
                 arrow.setVelocity(new Vector(0, -.01, 0));
 
@@ -63,7 +63,7 @@ public class DamageAbilities {
                 // Calculate spawn location based on grid position, 6 blocks above the target
                 Location spawnLocation = new Location(location.getWorld(), startX + x, targetLocation.getY() + heightOffset, startZ + z);
                 Arrow arrow = location.getWorld().spawn(spawnLocation, Arrow.class);
-
+                arrow.setShooter(Bukkit.getPlayer(profile.getPlayerName()));
                 // Apply downward velocity
                 arrow.setVelocity(new Vector(0, -.01, 0)); // Straight down
                 arrow.setDamage(arrowDamage);
@@ -94,7 +94,7 @@ public class DamageAbilities {
                 // Apply downward velocity
                 arrow.setVelocity(new Vector(0, -.01, 0)); // Straight down
                 arrow.setDamage(arrowDamage);
-
+                arrow.setShooter(Bukkit.getPlayer(profile.getPlayerName()));
                 // Tag arrow with metadata for recognition in handleLongRangeDamage
                 arrow.setMetadata("WeaknessArrowBarrage", new FixedMetadataValue(plugin, true));
 

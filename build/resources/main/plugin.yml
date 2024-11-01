@@ -46,5 +46,5 @@ commands:
     usage: /setrpg <onoroff>
   cc:
     description: claimed chunks commands
-    usage: /cc <claim>
+    usage: /cc <claim|check>
 
