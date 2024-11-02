@@ -70,19 +70,19 @@ public class AlchemistThrowPotion implements Listener {
                     int duration = 0;
 
                     if (isPositiveEffect) {
-                        intensity = Math.min(INTENSITY_CAP, (int) (intel * 0.003));
-                        duration = Math.min(INTENSITY_CAP, (int) (intel * 0.003));
-
-                    } else if (isNegativeEffect) {
                         intensity = Math.min(INTENSITY_CAP, (int) (intel * 0.002));
                         duration = Math.min(INTENSITY_CAP, (int) (intel * 0.002));
+
+                    } else if (isNegativeEffect) {
+                        intensity = Math.min(INTENSITY_CAP, (int) (intel * 0.001));
+                        duration = Math.min(INTENSITY_CAP, (int) (intel * 0.001));
                     }
 
                     // Apply the effect to targets
                     for (LivingEntity target : event.getAffectedEntities()) {
                         if (target != null) {
-                            int finalIntensity = baseIntensity * intensity; // Add to the original intensity
-                            int finalDuration = baseDuration * duration; // Add to the original duration
+                            int finalIntensity = baseIntensity * (1+intensity); // Add to the original intensity
+                            int finalDuration = baseDuration * (1+duration); // Add to the original duration
                             target.addPotionEffect(new PotionEffect(effect.getType(), finalDuration, finalIntensity, true, true));
 
                         }

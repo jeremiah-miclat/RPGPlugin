@@ -13,8 +13,13 @@ import github.eremiyuh.rPGPlugin.methods.ChunkBorderRedVisualizer;
 import github.eremiyuh.rPGPlugin.methods.DamageAbilityManager;
 import github.eremiyuh.rPGPlugin.methods.EffectsAbilityManager;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.World;
+import org.bukkit.WorldCreator;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
+import java.io.File;
 import java.util.Objects;
 
 public class RPGPlugin extends JavaPlugin {
@@ -51,7 +56,10 @@ public class RPGPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new ChunkProtectionListener(chunkManager,chunkBorderBlueVisualizer,chunkBorderRedVisualizer),this);
         getServer().getPluginManager().registerEvents(new WorldProtectionListener(this), this);
         playerStatBuff = new PlayerStatBuff(profileManager);
-        getServer().getPluginManager().registerEvents(new PlayerTeleportListener(playerStatBuff), this);
+        FlyCommand flyCommand = new FlyCommand(profileManager, this);
+        getServer().getPluginManager().registerEvents(new PlayerTeleportListener(playerStatBuff,flyCommand ), this);
+        getServer().getPluginManager().registerEvents(new PlayerDeathListener(), this);
+        getServer().getPluginManager().registerEvents(new ArmorChangePlugin(profileManager,this), this);
         // Register the command executor
         Objects.requireNonNull(this.getCommand("checkstatus")).setExecutor(new CheckClassCommand(profileManager));
         Objects.requireNonNull(getCommand("convertlevels")).setExecutor(new ConvertLevelsCommand(profileManager));
@@ -73,15 +81,22 @@ public class RPGPlugin extends JavaPlugin {
         Objects.requireNonNull(getCommand("buyclaim")).setExecutor(new BuyClaim(profileManager));
         Objects.requireNonNull(getCommand("convertdiamond")).setExecutor(new ConvertToEDiamond(profileManager));
         Objects.requireNonNull(getCommand("convertEdiamond")).setExecutor(new ConvertEDiamond(profileManager));
-        Objects.requireNonNull(getCommand("switchworld")).setExecutor(new WorldSwitchCommand(this));
+        Objects.requireNonNull(getCommand("switchworld")).setExecutor(new WorldSwitchCommand(this,playerStatBuff));
         Objects.requireNonNull(getCommand("giveap")).setExecutor(new AttributePointsCommand(profileManager));
         Objects.requireNonNull(getCommand("fly")).setExecutor(new FlyCommand(profileManager, this));
         // Register the listener
         Bukkit.getPluginManager().registerEvents(new CheckClassCommand(profileManager), this);
+        Objects.requireNonNull(this.getCommand("givesword")).setExecutor(new SwordCommand());
+
+
+
+        // Load the world
+        loadWorld("world_rpg");
 
 
         // Log to console that the plugin has been enabled
         getLogger().info("RPGPlugin has been enabled.");
+
     }
 
     // Method to access the listener
@@ -97,8 +112,24 @@ public class RPGPlugin extends JavaPlugin {
 
         // Log to console that the plugin has been disabled
         getLogger().info("RPGPlugin has been disabled.");
-
+        World world = getServer().getWorld("world_rpg");
+        if (world != null) {
+            world.save();
+            getLogger().info("world rpg was SAVED.");
+        }
         chunkManager.saveChunkData();
+    }
+
+    private void loadWorld(String worldName) {
+        // Check if the world is already loaded
+        World world = getServer().getWorld(worldName);
+        if (world == null) {
+            world = getServer().createWorld(new WorldCreator(worldName).environment(World.Environment.NORMAL));
+            if (world==null) {getLogger().info("world STILL NULL");}
+
+        } else {
+            getLogger().info("World " + worldName + " is already loaded.");
+        }
     }
 
 }

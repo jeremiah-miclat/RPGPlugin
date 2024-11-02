@@ -4,6 +4,9 @@ import github.eremiyuh.rPGPlugin.buffs.PlayerStatBuff;
 import github.eremiyuh.rPGPlugin.buffs.VampireBuffs;
 import github.eremiyuh.rPGPlugin.manager.PlayerProfileManager;
 import github.eremiyuh.rPGPlugin.profile.UserProfile;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -25,26 +28,30 @@ public class PlayerJoinListener implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        String playerName = event.getPlayer().getName();
+        String playerName = player.getName();
         UserProfile profile = profileManager.getProfile(playerName);
-        if (Objects.requireNonNull(player.getLocation().getWorld()).getName().equals("world_rpg")) {
+
+        // Ensure player spawns on solid ground
+        Location spawnLocation = player.getLocation();
+        spawnLocation = getGroundLocation(spawnLocation);
+        player.teleport(spawnLocation);
+
+        if (Objects.requireNonNull(spawnLocation.getWorld()).getName().equals("world_rpg")) {
             playerStatBuff.updatePlayerStatsToRPG(player);
         } else {
             playerStatBuff.updatePlayerStatsToNormal(player);
         }
+
         // If no profile was found, create a new one
         if (profile == null) {
             profileManager.createProfile(playerName);
-            event.getPlayer().sendMessage("Welcome! Your profile has been created.");
+            player.sendMessage("Welcome! Your profile has been created.");
         } else {
-
             // If profile exists, just load it (it should already be loaded)
-            event.getPlayer().sendMessage("Welcome back! Your profile has been loaded.");
-
-            // Optionally display the player's chosen class or any other information
-            event.getPlayer().sendMessage("Your chosen class is: " + profile.getChosenClass());
-            event.getPlayer().sendMessage("Your chosen element is: " + profile.getSelectedElement());
-            event.getPlayer().sendMessage("Your chosen race is: " + profile.getSelectedRace());
+            player.sendMessage("Welcome back! Your profile has been loaded.");
+            player.sendMessage("Your chosen class is: " + profile.getChosenClass());
+            player.sendMessage("Your chosen element is: " + profile.getSelectedElement());
+            player.sendMessage("Your chosen race is: " + profile.getSelectedRace());
 
             playerStatBuff.onClassSwitchOrAttributeChange(player);
 
@@ -73,11 +80,15 @@ public class PlayerJoinListener implements Listener {
 
     @EventHandler
     public void onPlayerRespawn(PlayerRespawnEvent event) {
-
-
         Player player = event.getPlayer();
+
+        // Ensure player spawns on solid ground
+        Location respawnLocation = event.getRespawnLocation();
+        respawnLocation = getGroundLocation(respawnLocation);
+        event.setRespawnLocation(respawnLocation);
+
         // Get the world from the player's location directly via the event
-        String worldName = Objects.requireNonNull(Objects.requireNonNull(event.getRespawnLocation()).getWorld()).getName();
+        String worldName = Objects.requireNonNull(respawnLocation.getWorld()).getName();
 
         // Check which world the player is respawning in
         if (worldName.equals("world_rpg")) {
@@ -87,4 +98,17 @@ public class PlayerJoinListener implements Listener {
         }
     }
 
+    private Location getGroundLocation(Location location) {
+        // Find the highest block at the given location
+        Location groundLocation = location.getWorld().getHighestBlockAt(location).getLocation();
+        // Set the Y coordinate to the top of the highest block
+        groundLocation.setY(groundLocation.getY() + 1);
+
+        // Ensure it's a solid block below to avoid spawning inside of blocks
+        if (groundLocation.getBlock().getType() == Material.AIR) {
+            groundLocation.setY(groundLocation.getY() - 1);
+        }
+
+        return groundLocation;
+    }
 }

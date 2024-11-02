@@ -5,6 +5,8 @@ import github.eremiyuh.rPGPlugin.profile.UserProfile;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Objects;
 
@@ -20,23 +22,46 @@ public class PlayerStatBuff  {
     /**
      * Calculates max health based on the player's Vitality (vit) attribute.
      */
-    private double calculateMaxHealth(UserProfile profile) {
+    private double calculateMaxHealth(UserProfile profile, Player player) {
         double baseHealth = 20.0; // base health in half-hearts (20 = 10 hearts)
         double healthPerVitality = 1; // each vitality point adds one full heart
+        double equipVitality = 0;
+
+        ItemStack[] equipment = {
+                player.getInventory().getHelmet(),
+                player.getInventory().getChestplate(),
+                player.getInventory().getLeggings(),
+                player.getInventory().getBoots(),
+                player.getInventory().getItemInMainHand(),
+                player.getInventory().getItemInOffHand()
+        };
+
+        for (ItemStack item : equipment) {
+            if (item != null && item.hasItemMeta()) {
+                ItemMeta meta = item.getItemMeta();
+                if (meta != null && meta.hasLore()) {
+                    for (String lore : Objects.requireNonNull(meta.getLore())) {
+                        if (lore.startsWith("Vitality: ")) {
+                            equipVitality += parseLoreValue(lore);
+                        }
+                    }
+                }
+            }
+        }
 
         switch (profile.getChosenClass().toLowerCase()) {
             case "archer":
-                baseHealth += healthPerVitality * profile.getArcherClassInfo().getVit();
+                baseHealth += healthPerVitality * profile.getArcherClassInfo().getVit()+equipVitality;
                 break;
             case "swordsman":
-                baseHealth += healthPerVitality * profile.getSwordsmanClassInfo().getVit();
+                baseHealth += healthPerVitality * profile.getSwordsmanClassInfo().getVit()+equipVitality;
                 break;
             case "alchemist":
-                baseHealth += healthPerVitality * profile.getAlchemistClassInfo().getVit();
+                baseHealth += healthPerVitality * profile.getAlchemistClassInfo().getVit()+equipVitality;
                 break;
             default:
                 // If no class-specific info is found, use a default vitality value
-                baseHealth += healthPerVitality * profile.getDefaultClassInfo().getVit();
+                baseHealth += healthPerVitality * profile.getDefaultClassInfo().getVit()+equipVitality;
                 break;
         }
 
@@ -46,17 +71,41 @@ public class PlayerStatBuff  {
     /**
      * Calculates movement speed based on the player's Agility (agi) attribute.
      */
-    private double calculateSpeed(UserProfile profile) {
+    private double calculateSpeed(UserProfile profile, Player player) {
         double baseSpeed = 0.2; // Default Minecraft player speed
         double maxAgilityBonus = 0.3; // Cap agility contribution at 0.3, total max speed = 0.5
         double speedPerAgility = 0.0002;
+        double equipAgility = 0;
+        double equipVitality = 0;
+
+        ItemStack[] equipment = {
+                player.getInventory().getHelmet(),
+                player.getInventory().getChestplate(),
+                player.getInventory().getLeggings(),
+                player.getInventory().getBoots(),
+                player.getInventory().getItemInMainHand(),
+                player.getInventory().getItemInOffHand()
+        };
+
+        for (ItemStack item : equipment) {
+            if (item != null && item.hasItemMeta()) {
+                ItemMeta meta = item.getItemMeta();
+                if (meta != null && meta.hasLore()) {
+                    for (String lore : Objects.requireNonNull(meta.getLore())) {
+                        if (lore.startsWith("Agility: ")) {
+                            equipAgility += parseLoreValue(lore);
+                        }
+                    }
+                }
+            }
+        }
 
         // Calculate agility-based bonus speed
         double agilityBonus = switch (profile.getChosenClass().toLowerCase()) {
-            case "archer" -> speedPerAgility * profile.getArcherClassInfo().getAgi();
-            case "swordsman" -> speedPerAgility * profile.getSwordsmanClassInfo().getAgi();
-            case "alchemist" -> speedPerAgility * profile.getAlchemistClassInfo().getAgi();
-            default -> speedPerAgility * profile.getDefaultClassInfo().getAgi();
+            case "archer" -> speedPerAgility * profile.getArcherClassInfo().getAgi() + equipAgility;
+            case "swordsman" -> speedPerAgility * profile.getSwordsmanClassInfo().getAgi()+ equipAgility;
+            case "alchemist" -> speedPerAgility * profile.getAlchemistClassInfo().getAgi()+ equipAgility;
+            default -> speedPerAgility * profile.getDefaultClassInfo().getAgi()+ equipAgility;
         };
 
         // Cap the agility-based bonus at maxAgilityBonus to prevent excess speed
@@ -80,7 +129,6 @@ public class PlayerStatBuff  {
         double baseHealth = 20.0; // Vanilla max health (20 = 10 hearts)
         float baseSpeed = 0.2f; // Vanilla walk speed
 
-        player.setHealth(baseHealth);
         player.setWalkSpeed(baseSpeed);
 
         // Set the player's max health to the base health
@@ -104,7 +152,6 @@ public class PlayerStatBuff  {
         double baseHealth = 20.0; // Vanilla max health (20 = 10 hearts)
         float baseSpeed = 0.2f; // Vanilla walk speed
 
-        player.setHealth(baseHealth);
         player.setWalkSpeed(baseSpeed);
 
         // Set the player's max health to the base health
@@ -117,12 +164,12 @@ public class PlayerStatBuff  {
         // Now apply the RPG calculations
 
         // Set max health based on vitality using GENERIC_MAX_HEALTH attribute
-        double newMaxHealth = calculateMaxHealth(profile);
+        double newMaxHealth = calculateMaxHealth(profile, player);
         maxHealthAttr.setBaseValue(newMaxHealth);
         player.setHealth(Math.min(player.getHealth(), newMaxHealth)); // Ensure health isn't above max
 
         // Set walk speed based on agility
-        double newSpeed = calculateSpeed(profile);
+        double newSpeed = calculateSpeed(profile, player);
         if (newSpeed > 0.4) {
             player.sendMessage("You have reached max ms from agi. Increasing it over 1k points is not recommended");
         }
@@ -141,6 +188,15 @@ public class PlayerStatBuff  {
             updatePlayerStatsToNormal(player);
         }
 
+    }
+
+    private int parseLoreValue(String lore) {
+        try {
+            return Integer.parseInt(lore.split(": ")[1]);
+        } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+            // Handle parsing errors or missing values
+            return 0;
+        }
     }
 
 }

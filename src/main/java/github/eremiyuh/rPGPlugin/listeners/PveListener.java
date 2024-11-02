@@ -42,6 +42,12 @@ public class PveListener implements Listener {
 
     @EventHandler
     public void onEntityDamage(EntityDamageByEntityEvent event) {
+        if (event.getDamager() instanceof Player player && player.getAllowFlight()) {
+            player.sendMessage("you can' attack while flying");
+            event.setCancelled(true);
+            return;
+        }
+
         if (!Objects.requireNonNull(event.getDamager().getLocation().getWorld()).getName().equals("world_rpg")) {
             return;
         }
@@ -51,6 +57,8 @@ public class PveListener implements Listener {
 
         // Get the damager (the entity dealing the damage)
         Entity damager = event.getDamager();
+
+
 
         // Get the location of the damaged entity
         Location damagedLocation = damaged.getLocation();
@@ -147,6 +155,8 @@ public class PveListener implements Listener {
 
 
                 if (entity.hasMetadata("initialExtraHealth")) {
+
+                    if (event.getDamageSource().getCausingEntity() instanceof Player player && player.getAllowFlight()) return;
 
                     // Retrieve extra health attribute from entity's metadata or custom attribute
                     double extraHealth = entity.getMetadata("initialExtraHealth").getFirst().asDouble();

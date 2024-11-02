@@ -1,6 +1,7 @@
 package github.eremiyuh.rPGPlugin.commands;
 
 import github.eremiyuh.rPGPlugin.RPGPlugin;
+import github.eremiyuh.rPGPlugin.buffs.PlayerStatBuff;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.Command;
@@ -11,9 +12,11 @@ import org.bukkit.entity.Player;
 public class WorldSwitchCommand implements CommandExecutor {
 
     private final RPGPlugin plugin;
-
-    public WorldSwitchCommand(RPGPlugin plugin) {
+    private final PlayerStatBuff playerStatBuff;
+    public WorldSwitchCommand(RPGPlugin plugin, PlayerStatBuff playerStatBuff) {
         this.plugin = plugin;
+
+        this.playerStatBuff = playerStatBuff;
     }
 
     @Override
@@ -25,13 +28,11 @@ public class WorldSwitchCommand implements CommandExecutor {
 
         Player player = (Player) sender;
 
-        // Check for proper arguments
         if (args.length < 1) {
             player.sendMessage("Specify the world to switch to: /switchworld <rpg|normal>");
             return false;
         }
 
-        // Determine the target world based on input
         String worldType = args[0].toLowerCase();
         String targetWorldName;
 
@@ -47,22 +48,28 @@ public class WorldSwitchCommand implements CommandExecutor {
                 return false;
         }
 
-        // Check if the player is already in the target world
         if (player.getWorld().getName().equals(targetWorldName)) {
             player.sendMessage("You are already in " + targetWorldName + " world.");
             return true;
         }
 
-        // Load the target world if it is not already loaded
         World world = plugin.getServer().getWorld(targetWorldName);
         if (world == null) {
+
             player.sendMessage("Failed to load the world " + targetWorldName + ".");
             return true;
+
+//            world = plugin.getServer().createWorld(new WorldCreator(targetWorldName));
+
         }
 
-        // Teleport the player to the spawn location of the target world
         Location spawnLocation = world.getSpawnLocation();
         player.teleport(spawnLocation);
+
+        if (world.getName().equals("world_rpg")) {
+            playerStatBuff.updatePlayerStatsToRPG(player);
+        } else playerStatBuff.updatePlayerStatsToNormal(player);
+
         player.sendMessage("Teleported to " + targetWorldName + "!");
         return true;
     }

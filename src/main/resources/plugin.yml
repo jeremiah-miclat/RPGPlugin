@@ -77,3 +77,6 @@ commands:
   fly:
     description: "flight."
     usage: "/fly"
+  givesword:
+    description: "givesword"
+    usage: /<command>
