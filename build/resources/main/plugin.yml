@@ -59,3 +59,21 @@ commands:
   untrustall:
     description: claimed chunks untrust all command
     usage: /untrustall <playerName>
+  buyclaim:
+    description: buy claim command
+    usage: /buyclaim <claimpoint>
+  convertdiamond:
+    description: convert diamond
+    usage: /convertdiamond
+  convertEdiamond:
+    description: convert Ediamond
+    usage: /convertEdiamond <amount>
+  switchworld:
+    description: go to rpg world
+    usage: /switchworld rpgworld
+  giveap:
+    description: "Gives attribute points to a player."
+    usage: "/giveap <playername> <numberofpoints>"
+  fly:
+    description: "flight."
+    usage: "/fly"

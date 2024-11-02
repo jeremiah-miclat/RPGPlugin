@@ -8,6 +8,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
+
+import java.util.Objects;
 
 public class PlayerJoinListener implements Listener {
 
@@ -24,7 +27,11 @@ public class PlayerJoinListener implements Listener {
         Player player = event.getPlayer();
         String playerName = event.getPlayer().getName();
         UserProfile profile = profileManager.getProfile(playerName);
-
+        if (Objects.requireNonNull(player.getLocation().getWorld()).getName().equals("world_rpg")) {
+            playerStatBuff.updatePlayerStatsToRPG(player);
+        } else {
+            playerStatBuff.updatePlayerStatsToNormal(player);
+        }
         // If no profile was found, create a new one
         if (profile == null) {
             profileManager.createProfile(playerName);
@@ -61,6 +68,22 @@ public class PlayerJoinListener implements Listener {
                     player.sendMessage("No race effects applied.");
                     break;
             }
+        }
+    }
+
+    @EventHandler
+    public void onPlayerRespawn(PlayerRespawnEvent event) {
+
+
+        Player player = event.getPlayer();
+        // Get the world from the player's location directly via the event
+        String worldName = Objects.requireNonNull(Objects.requireNonNull(event.getRespawnLocation()).getWorld()).getName();
+
+        // Check which world the player is respawning in
+        if (worldName.equals("world_rpg")) {
+            playerStatBuff.updatePlayerStatsToRPG(player);
+        } else {
+            playerStatBuff.updatePlayerStatsToNormal(player);
         }
     }
 

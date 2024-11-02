@@ -97,7 +97,7 @@ public class PlayerProfileManager {
         config.set("rpgStatus",profile.getRPG());
 
         //diamonds
-        config.set("diamonds",profile.getDiamond());
+        config.set("diamond",profile.getDiamond());
 
         //claimPoints
         config.set("claimPoints",profile.getClaimPoints());

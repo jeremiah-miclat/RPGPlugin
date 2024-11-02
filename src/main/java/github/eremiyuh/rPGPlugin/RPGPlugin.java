@@ -1,5 +1,6 @@
 package github.eremiyuh.rPGPlugin;
 
+import github.eremiyuh.rPGPlugin.buffs.PlayerStatBuff;
 import github.eremiyuh.rPGPlugin.commands.*;
 import github.eremiyuh.rPGPlugin.commandswithgui.CheckClassCommand;
 import github.eremiyuh.rPGPlugin.commandswithgui.SelectClassCommand;
@@ -22,6 +23,7 @@ public class RPGPlugin extends JavaPlugin {
     private ChunkManager chunkManager;
     private ChunkBorderBlueVisualizer chunkBorderBlueVisualizer;
     private ChunkBorderRedVisualizer chunkBorderRedVisualizer;
+    private PlayerStatBuff playerStatBuff;
 //    private MonsterStrengthScalingListener monsterStrengthScalingListener;
 
     @Override
@@ -44,8 +46,12 @@ public class RPGPlugin extends JavaPlugin {
         chunkBorderBlueVisualizer = new ChunkBorderBlueVisualizer(this);
         chunkBorderRedVisualizer = new ChunkBorderRedVisualizer(this);
         getServer().getPluginManager().registerEvents(new AlchemistThrowPotion(profileManager),this);
+        getServer().getPluginManager().registerEvents(new DeadMobListener(profileManager),this);
+        getServer().getPluginManager().registerEvents(new MonsterInitializer(this),this);
         getServer().getPluginManager().registerEvents(new ChunkProtectionListener(chunkManager,chunkBorderBlueVisualizer,chunkBorderRedVisualizer),this);
-
+        getServer().getPluginManager().registerEvents(new WorldProtectionListener(this), this);
+        playerStatBuff = new PlayerStatBuff(profileManager);
+        getServer().getPluginManager().registerEvents(new PlayerTeleportListener(playerStatBuff), this);
         // Register the command executor
         Objects.requireNonNull(this.getCommand("checkstatus")).setExecutor(new CheckClassCommand(profileManager));
         Objects.requireNonNull(getCommand("convertlevels")).setExecutor(new ConvertLevelsCommand(profileManager));
@@ -64,6 +70,12 @@ public class RPGPlugin extends JavaPlugin {
         Objects.requireNonNull(getCommand("trustall")).setExecutor(new TrustAllCommand(chunkManager));
         Objects.requireNonNull(getCommand("untrust")).setExecutor(new UntrustCommand(chunkManager));
         Objects.requireNonNull(getCommand("untrustall")).setExecutor(new UntrustAllCommand(chunkManager));
+        Objects.requireNonNull(getCommand("buyclaim")).setExecutor(new BuyClaim(profileManager));
+        Objects.requireNonNull(getCommand("convertdiamond")).setExecutor(new ConvertToEDiamond(profileManager));
+        Objects.requireNonNull(getCommand("convertEdiamond")).setExecutor(new ConvertEDiamond(profileManager));
+        Objects.requireNonNull(getCommand("switchworld")).setExecutor(new WorldSwitchCommand(this));
+        Objects.requireNonNull(getCommand("giveap")).setExecutor(new AttributePointsCommand(profileManager));
+        Objects.requireNonNull(getCommand("fly")).setExecutor(new FlyCommand(profileManager, this));
         // Register the listener
         Bukkit.getPluginManager().registerEvents(new CheckClassCommand(profileManager), this);
 

@@ -14,9 +14,11 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.*;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.projectiles.ProjectileSource;
 
@@ -40,6 +42,10 @@ public class PveListener implements Listener {
 
     @EventHandler
     public void onEntityDamage(EntityDamageByEntityEvent event) {
+        if (!Objects.requireNonNull(event.getDamager().getLocation().getWorld()).getName().equals("world_rpg")) {
+            return;
+        }
+
         // Get the entity that was damaged
         Entity damaged = event.getEntity();
 
@@ -101,7 +107,7 @@ public class PveListener implements Listener {
 
 
                 } else {
-                    initializeExtraAttributes(angryMob,damagedPLayer);
+//                    initializeExtraAttributes(angryMob,damagedPLayer);
 
                     // Apply extra damage if present
                     if (angryMob.hasMetadata("extraDamage")) {
@@ -121,12 +127,21 @@ public class PveListener implements Listener {
 
     }
 
-    @EventHandler
+    @EventHandler (priority = EventPriority.HIGH)
     public void onModifiedEntityTakeDamage(EntityDamageEvent event) {
+        if (!Objects.requireNonNull(event.getEntity().getLocation().getWorld()).getName().equals("world_rpg")) {
+            return;
+        }
+
         if (event.getEntity() instanceof Monster || event.getEntity() instanceof IronGolem || event.getEntity() instanceof Wolf) {
 
             // Get the entity and damage cause
             LivingEntity entity = (LivingEntity) event.getEntity();
+
+
+
+
+
             EntityDamageEvent.DamageCause cause = event.getCause();
             // Check if the damage cause is one of the specified types (poison, fire, drowning, freezing, etc.)
 
@@ -136,11 +151,16 @@ public class PveListener implements Listener {
                     // Retrieve extra health attribute from entity's metadata or custom attribute
                     double extraHealth = entity.getMetadata("initialExtraHealth").getFirst().asDouble();
 
+                    if (event.getDamageSource().getCausingEntity() instanceof Player attacker) {
+                        attacker.sendMessage(extraHealth +" extrahealth");
+                    }
+
                     if (extraHealth > 0) {
                         double damage = event.getDamage();
 
                         if (extraHealth - damage > 0) {
                             entity.setMetadata("initialExtraHealth", new FixedMetadataValue(plugin, extraHealth - damage));
+
                             event.setDamage(0);
                         } else {
                             // Calculate excess damage
@@ -205,10 +225,7 @@ public class PveListener implements Listener {
             if (target.hasMetadata("initialExtraHealth")) {
                 attacker.sendMessage("You can't damage modified monsters");
                 event.setDamage(0);
-            } else {
-                event.setDamage(event.getDamage());
             }
-
             return;
         }
 
@@ -315,6 +332,40 @@ public class PveListener implements Listener {
             intel = damagerProfile.getSwordsmanClassInfo().getIntel();
             luk = damagerProfile.getSwordsmanClassInfo().getLuk();
         }
+
+        double strFromLore = 0;
+
+        // Apply additional stats from item lore
+        ItemStack[] equipment = {
+                player.getInventory().getHelmet(),
+                player.getInventory().getChestplate(),
+                player.getInventory().getLeggings(),
+                player.getInventory().getBoots(),
+                player.getInventory().getItemInMainHand(),
+                player.getInventory().getItemInOffHand()
+        };
+
+        for (ItemStack item : equipment) {
+            if (item != null && item.hasItemMeta()) {
+                ItemMeta meta = item.getItemMeta();
+                if (meta != null && meta.hasLore()) {
+                    for (String lore : Objects.requireNonNull(meta.getLore())) {
+                        if (lore.startsWith("Strength: ")) {
+                            str += parseLoreValue(lore);
+                            strFromLore += parseLoreValue(lore);
+                        } else if (lore.startsWith("Dexterity: ")) {
+                            dex += parseLoreValue(lore);
+                        } else if (lore.startsWith("Intelligence: ")) {
+                            intel += parseLoreValue(lore);
+                        } else if (lore.startsWith("Luck: ")) {
+                            luk += parseLoreValue(lore);
+                        }
+                    }
+                }
+            }
+        }
+
+        player.sendMessage("str from equip =" + strFromLore);
 
         // Damage calculation based on class stats
         double statDmg = 0;
@@ -434,9 +485,7 @@ public class PveListener implements Listener {
                 );
             }
         }
-        player.sendMessage("Base dmg: " + baseDamage + ". stat str: " + statDmg + "." +
-                "Elemental dmg: " + elementalDamage
-                );
+
 
 
         if (PlayerBuffPerms.canLifeSteal(damagerProfile)) {
@@ -444,41 +493,25 @@ public class PveListener implements Listener {
             double maxHealth = Objects.requireNonNull(player.getAttribute(Attribute.GENERIC_MAX_HEALTH)).getValue(); // Get max health using attribute
             double newHealth = Math.min(player.getHealth() + lifestealAmount, maxHealth); // Avoid exceeding max health
             player.setHealth(newHealth);
-            player.sendMessage("You restored " + lifestealAmount + " health.");
         }
 
 
         return calculatedDamage;
     }
 
-    // Method to apply damage considering extra health
-    private double applyDamageWithExtraHealth(LivingEntity target, double calculatedDamage, double extraHealth, Player player) {
-        player.giveExp((int)calculatedDamage);
-        // Check if the calculated damage is less than the extra health
-        if (extraHealth - calculatedDamage > 0) {
-            // All damage is absorbed by extra health
-            // Update the extra health value
-            target.setMetadata("initialExtraHealth", new FixedMetadataValue(plugin, extraHealth - calculatedDamage));
-            player.sendMessage("Target's remaining health: " + (int)(target.getHealth() + target.getMetadata("initialExtraHealth").getFirst().asDouble() - calculatedDamage));
-            return 0; // Extra health absorbs all damage
-        } else {
-            // Calculate excess damage
-            double excessDamage = calculatedDamage - extraHealth;
-
-            // Apply excess damage to the target's health
-            target.setHealth(Math.max(0, target.getHealth() - excessDamage)); // Ensure health doesn't drop below 0
-
-            // Clear the extra health metadata as it has been depleted
-            target.setMetadata("initialExtraHealth", new FixedMetadataValue(plugin, 0.0)); // Reset extra health to 0
-
-            return excessDamage; // Return the excess damage applied
+    private int parseLoreValue(String lore) {
+        try {
+            return Integer.parseInt(lore.split(": ")[1]);
+        } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+            // Handle parsing errors or missing values
+            return 0;
         }
     }
 
     // Method to apply extra health and return adjusted damage
     private double applyExtraHealthAndDamage(LivingEntity target, double calculatedDamage, Player player) {
         if (target instanceof Monster || target instanceof IronGolem || target instanceof Wolf) {
-            initializeExtraAttributes(target, player); // Ensure metadata is initialized
+//            initializeExtraAttributes(target, player);
         }
 //
 //        // Retrieve and apply existing extra health
@@ -501,19 +534,13 @@ public class PveListener implements Listener {
             // Calculate extra health and damage
             Location location = entity.getLocation();
             double extraHealth = calculateExtraAttributes(location,entity);
-            double extraDamage = extraHealth * 0.01; // Convert to damage (10% of extra health)
+            double extraDamage = extraHealth * 0.1; // Convert to damage (10% of extra health)
 
             // Store in metadata
             entity.setMetadata("initialExtraHealth", new FixedMetadataValue(plugin, extraHealth));
             entity.setMetadata("extraDamage", new FixedMetadataValue(plugin, extraDamage));
             entity.setMetadata("extraHealthApplied", new FixedMetadataValue(plugin, true)); // Mark as applied
 
-            // Inform player (if applicable)
-            if (player != null) {
-                player.sendMessage("Mob initialized with extra health: " + extraHealth + " and extra damage: " + extraDamage);
-                player.sendMessage("jump strenght: "+ entity.getAttribute(Attribute.GENERIC_JUMP_STRENGTH).getValue());
-                player.sendMessage("jump safe dist: "+ entity.getAttribute(Attribute.GENERIC_SAFE_FALL_DISTANCE).getValue());
-            }
               }
     }
 
@@ -522,8 +549,8 @@ public class PveListener implements Listener {
         double maxCoord = Math.max(Math.abs(targetLocation.getBlockX()), Math.abs(targetLocation.getBlockZ()));
         double extraHealth = (maxCoord / 100) * 10; // 100% health for every 100 blocks
 
-        // 5% chance to add +1000% extra health
-        if (Math.random() < .9) {
+        // 1% chance to add +1000% extra health
+        if (Math.random() < .001) {
             extraHealth += (extraHealth * 10); // Add 1000% health
 
             // Set the entity name to display as a boss with health bar
@@ -531,6 +558,36 @@ public class PveListener implements Listener {
 
             // Apply the custom name to the entity
             entity.setCustomName(bossName);
+            entity.setCustomNameVisible(true);
+            // Set extra movement speed if the attribute is available
+            if (entity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED) != null) {
+                double newSpeed = Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)).getBaseValue() * 1.5; // Increase speed by 50%
+                Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)).setBaseValue(newSpeed);
+            }
+
+            // Set extra jump strength if applicable (for horses or similar entities that support it)
+            if (entity.getAttribute(Attribute.GENERIC_JUMP_STRENGTH) != null) {
+                double newJumpStrength = Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_JUMP_STRENGTH)).getBaseValue() * 3;
+                Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_JUMP_STRENGTH)).setBaseValue(newJumpStrength);
+            }
+
+            // Set extra jump strength if applicable (for horses or similar entities that support it)
+            if (entity.getAttribute(Attribute.GENERIC_SAFE_FALL_DISTANCE) != null) {
+                double newSafeJumpDist = Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_JUMP_STRENGTH)).getBaseValue() * 3;
+                Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_SAFE_FALL_DISTANCE)).setBaseValue(entity.getAttribute(Attribute.GENERIC_SAFE_FALL_DISTANCE).getBaseValue()*3);
+            }
+        }
+
+        // .5% chance to add +10000% extra health
+        if (Math.random() < .0005) {
+            extraHealth += (extraHealth * 100); // Add 1000% health
+
+            // Set the entity name to display as a boss with health bar
+            String bossName = "Lvl " + (int) (Math.floor(maxCoord) /100) + " World Boss " + entity.getType().name();
+
+            // Apply the custom name to the entity
+            entity.setCustomName(bossName);
+            entity.setPersistent(true);
             entity.setCustomNameVisible(true);
             // Set extra movement speed if the attribute is available
             if (entity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED) != null) {

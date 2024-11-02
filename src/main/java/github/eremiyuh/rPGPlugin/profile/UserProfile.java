@@ -42,6 +42,8 @@ public class UserProfile {
     private double diamond=0;
     private double claimPoints=0;
 
+    private List<String> teamMembers = new ArrayList<>();
+
     public UserProfile(String playerName) {
         this.playerID = UUID.randomUUID(); // Generate a unique ID for the player
         this.playerName = playerName;
@@ -428,6 +430,30 @@ public class UserProfile {
         currentAttributePoints -= points; // Decrease available attribute points
     }
 
+    // Getter for team members
+    public List<String> getTeamMembers() {
+        return teamMembers;
+    }
+
+    // Method to add a team member (only if the list has fewer than 4 members)
+    public boolean addTeamMember(String playerName) {
+        if (teamMembers.size() < 4 && !teamMembers.contains(playerName)) {
+            teamMembers.add(playerName);
+            return true; // Successfully added
+        }
+        return false; // Failed to add (list full or player already in team)
+    }
+
+    // Method to remove a team member
+    public boolean removeTeamMember(String playerName) {
+        return teamMembers.remove(playerName); // Returns true if player was removed
+    }
+
+    // Method to check if a player is a team member
+    public boolean isTeamMember(String playerName) {
+        return teamMembers.contains(playerName);
+    }
+
     // Helper method to add points to a class's attributes
     private void addPointsToClass(ClassAttributes classAttributes, String attribute, int points) {
         switch (attribute.toLowerCase()) {
@@ -453,21 +479,4 @@ public class UserProfile {
                 throw new IllegalArgumentException("Invalid attribute: " + attribute);
         }
     }
-
-    // ability perms
-
-    public boolean canSummonLava() {
-        // Check if player is Swordsman, has Fire element, and selected Skill 1
-        return chosenClass.equalsIgnoreCase("Swordsman") &&
-                selectedElement.equalsIgnoreCase("Fire") &&
-                selectedSkill.equalsIgnoreCase("Skill 1");
-    }
-
-    public boolean canSummonFlowingWater() {
-        // Check if player is Swordsman, has Fire element, and selected Skill 1
-        return chosenClass.equalsIgnoreCase("Swordsman") &&
-                selectedElement.equalsIgnoreCase("Water") &&
-                selectedSkill.equalsIgnoreCase("Skill 1");
-    }
-
 }
