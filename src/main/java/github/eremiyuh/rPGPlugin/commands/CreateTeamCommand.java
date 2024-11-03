@@ -36,12 +36,14 @@ public class CreateTeamCommand implements CommandExecutor {
             return true;
         }
 
-        // Create a new team with the player's name
-        profile.setTeam(playerName);
-        profileManager.saveProfile(playerName);  // Save the updated profile
+        if (profile.addTeamMember(playerName)) {
+            // Create a new team with the player's name
+            profile.setTeam(playerName);
+            profileManager.saveProfile(playerName);  // Save the updated profile
 
-        // Notify the player
-        player.sendMessage(ChatColor.GREEN + "Team " + ChatColor.GOLD + playerName + ChatColor.GREEN + " has been created!");
+            // Notify the player
+            player.sendMessage(ChatColor.GREEN + "Team " + ChatColor.GOLD + playerName + ChatColor.GREEN + " has been created!");
+        }
 
         return true;
     }

@@ -4,6 +4,7 @@ import github.eremiyuh.rPGPlugin.manager.PlayerProfileManager;
 import github.eremiyuh.rPGPlugin.profile.UserProfile;
 import org.bukkit.Material;
 import org.bukkit.entity.*;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
@@ -22,52 +23,64 @@ public class DeadMobListener implements Listener {
 
     @EventHandler
     public void onModifiedMobDeath(EntityDeathEvent event) {
-        double RANDOMCHANCE = .1;
-
         if (!Objects.requireNonNull(event.getEntity().getLocation().getWorld()).getName().equals("world_rpg")) {
             return;
         }
 
-        if ((event.getEntity() instanceof Monster || event.getEntity() instanceof Wolf || event.getEntity() instanceof IronGolem)
-                && event.getEntity().getKiller() instanceof Player killer) {
+        double RANDOMCHANCE = .1;
+        if ((event.getEntity() instanceof Monster || event.getEntity() instanceof Wolf || event.getEntity() instanceof IronGolem) && event.getEntity().getKiller() instanceof Player killer)
+         {
 
-            UserProfile killerProfile = profileManager.getProfile(killer.getName());
-            String killerTeam = killerProfile.getTeam();
-            List<ItemStack> drops = event.getDrops();
+
 
             LivingEntity mob = event.getEntity();
             if (mob.hasMetadata("extraDamage")) {
+                UserProfile killerProfile = profileManager.getProfile(killer.getName());
+                String killerTeam = killerProfile.getTeam();
+
+
                 double health = mob.getMetadata("extraDamage").get(0).asDouble() * 10;
-                RANDOMCHANCE += health * 0.00045;
+                RANDOMCHANCE += (health * 0.00045);
                 int dropMultiplier = (int) (health * 0.01);
 
                 String customName = mob.getCustomName();
                 boolean isBoss = customName != null && customName.toLowerCase().contains("boss");
+
 
                 if (isBoss) {
                     List<Player> nearbyPlayers = getNearbyTeamPlayers(mob, killerTeam, 40, 10);
                     for (Player player : nearbyPlayers) {
                         UserProfile playerProfile = profileManager.getProfile(player.getName());
                         applyRewards(player, playerProfile, health, RANDOMCHANCE, dropMultiplier);
+
                     }
                     return;
                 }
 
+
                 if (killerTeam.equals("none")) {
                     applyRewards(killer, killerProfile, health, RANDOMCHANCE, dropMultiplier);
-                    distributeDrops(killer, drops, dropMultiplier);
-                    return;
+                    distributeDrops(killer,event,dropMultiplier);
+                    event.getDrops().clear();
+                    return; // Drops have already been distributed
                 }
 
                 List<Player> nearbyTeamPlayers = getNearbyTeamPlayers(mob, killerTeam, 40, 10);
                 for (Player player : nearbyTeamPlayers) {
                     UserProfile playerProfile = profileManager.getProfile(player.getName());
                     applyRewards(player, playerProfile, health, RANDOMCHANCE, dropMultiplier);
-                    distributeDrops(player, drops, dropMultiplier);
+                    distributeDrops(player,event,dropMultiplier);
                 }
+                // Clear the original drops
+
             }
+            event.getDrops().clear();
+            event.setDroppedExp(0);
         }
+
+
     }
+
 
     private List<Player> getNearbyTeamPlayers(LivingEntity mob, String team, double horizontalRange, double verticalRange) {
         List<Player> teamPlayers = new ArrayList<>();
@@ -95,14 +108,16 @@ public class DeadMobListener implements Listener {
         }
     }
 
-    private void distributeDrops(Player player, List<ItemStack> drops, int multiplier) {
-        for (ItemStack item : drops) {
-            ItemStack multipliedDrop = item.clone();
-            multipliedDrop.setAmount(item.getAmount() * multiplier);
+    private void distributeDrops(Player player, EntityDeathEvent event, int multiplier) {
+        for (ItemStack drop : event.getDrops()) {
+            // Example: Multiply by 2
+            int originalAmount = drop.getAmount();
+            int multipliedAmount = originalAmount * 2;
+            ItemStack newDrop = new ItemStack(drop.getType(), multipliedAmount);
 
-            if (!player.getInventory().addItem(multipliedDrop).isEmpty()) {
-                player.getWorld().dropItemNaturally(player.getLocation(), multipliedDrop);
-            }
+            // Give the items directly to the player
+            player.getInventory().addItem(newDrop);
+            player.sendMessage("received: " + Objects.requireNonNull(newDrop.getItemMeta()).getDisplayName() + " " + newDrop.getAmount());
         }
     }
 

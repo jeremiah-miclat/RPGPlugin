@@ -98,10 +98,10 @@ public class CheckClassCommand implements CommandExecutor, Listener {
         lore.add("§eSkill: " + profile.getSelectedSkill());
         lore.add("§eRace: " + profile.getSelectedRace());
         lore.add("§eTeam: " + profile.getTeam());
+        lore.add("§eTeamMates: " + profile.getTeamMembers());
         lore.add("§ePVP: " + profile.isPvpEnabled());
         lore.add("§eClaimPoints: " + profile.getClaimPoints());
         lore.add("§eDiamonds: " + profile.getDiamond());
-        lore.add("§RRPG: " + profile.getRPG());
         // Set the lore to the skull meta
         skullMeta.setLore(lore);
     }

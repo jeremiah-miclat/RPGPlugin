@@ -7,6 +7,7 @@ import github.eremiyuh.rPGPlugin.profile.UserProfile;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -25,21 +26,30 @@ public class PlayerJoinListener implements Listener {
         this.playerStatBuff = new PlayerStatBuff(profileManager);
     }
 
+    // Helper method to determine if a block is solid
+    private boolean isSolidBlock(Material material) {
+        return material.isSolid() && material != Material.LAVA && material != Material.BEDROCK;
+    }
+
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         String playerName = player.getName();
         UserProfile profile = profileManager.getProfile(playerName);
 
-        // Ensure player spawns on solid ground
-        Location spawnLocation = player.getLocation();
-        spawnLocation = getGroundLocation(spawnLocation);
-        player.teleport(spawnLocation);
+        Location playerLocation = player.getLocation();
+        Material blockType = playerLocation.clone().subtract(0, 1, 0).getBlock().getType(); // Check the block below the player
 
-        if (Objects.requireNonNull(spawnLocation.getWorld()).getName().equals("world_rpg")) {
+        // Check if the player is in the air or standing on a non-solid block
+        if (blockType == Material.AIR || !isSolidBlock(blockType)) {
+            Location groundLocation = getGroundLocation(playerLocation, player);
+            player.teleport(groundLocation);
+        }
+
+        playerStatBuff.updatePlayerStatsToNormal(player);
+
+        if (Objects.requireNonNull(player.getLocation().getWorld()).getName().equals("world_rpg")) {
             playerStatBuff.updatePlayerStatsToRPG(player);
-        } else {
-            playerStatBuff.updatePlayerStatsToNormal(player);
         }
 
         // If no profile was found, create a new one
@@ -53,7 +63,10 @@ public class PlayerJoinListener implements Listener {
             player.sendMessage("Your chosen element is: " + profile.getSelectedElement());
             player.sendMessage("Your chosen race is: " + profile.getSelectedRace());
 
-            playerStatBuff.onClassSwitchOrAttributeChange(player);
+            if (Objects.requireNonNull(player.getLocation().getWorld()).getName().equals("world_rpg")) {
+                playerStatBuff.updatePlayerStatsToRPG(player);
+                player.sendMessage("on player join else listener");
+            }
 
             // Apply race-specific effects based on the player's race
             String race = profile.getSelectedRace();
@@ -82,33 +95,64 @@ public class PlayerJoinListener implements Listener {
     public void onPlayerRespawn(PlayerRespawnEvent event) {
         Player player = event.getPlayer();
 
-        // Ensure player spawns on solid ground
-        Location respawnLocation = event.getRespawnLocation();
-        respawnLocation = getGroundLocation(respawnLocation);
-        event.setRespawnLocation(respawnLocation);
-
         // Get the world from the player's location directly via the event
-        String worldName = Objects.requireNonNull(respawnLocation.getWorld()).getName();
+        String worldName = Objects.requireNonNull(event.getRespawnLocation().getWorld()).getName();
+
+        playerStatBuff.updatePlayerStatsToNormal(player);
 
         // Check which world the player is respawning in
         if (worldName.equals("world_rpg")) {
             playerStatBuff.updatePlayerStatsToRPG(player);
+        }
+    }
+
+
+    private Location getGroundLocation(Location location, Player player) {
+        World world = location.getWorld();
+        int centerX = location.getBlockX();
+        int centerY = location.getBlockY();
+        int centerZ = location.getBlockZ();
+
+        // Check if the player is in the Nether
+        if (world.getEnvironment() == World.Environment.NETHER) {
+            // Check a 60x60 area around the player's location (adjusted from 20x20)
+            for (int x = -30; x <= 30; x++) {
+                for (int z = -30; z <= 30; z++) {
+                    Location currentLocation = new Location(world, centerX + x, centerY - 1, centerZ + z);
+                    Material blockType = currentLocation.getBlock().getType();
+
+                    // Check if the block is solid but not bedrock
+                    if (blockType.isSolid() && blockType != Material.BEDROCK) {
+                        // Check two air blocks above
+                        if (currentLocation.clone().add(0, 1, 0).getBlock().getType() == Material.AIR &&
+                                currentLocation.clone().add(0, 2, 0).getBlock().getType() == Material.AIR) {
+                            // Return location one block above the found solid block
+                            return currentLocation.add(0, 1, 0); // Adjust Y coordinate to be on top of the solid block
+                        }
+                    }
+                }
+            }
         } else {
-            playerStatBuff.updatePlayerStatsToNormal(player);
-        }
-    }
+            // If not in the Nether, find the highest solid block at the player's current location
+            for (int y = world.getMaxHeight() - 1; y >= 0; y--) {
+                Location currentLocation = new Location(world, centerX, y, centerZ);
+                Material blockType = currentLocation.getBlock().getType();
 
-    private Location getGroundLocation(Location location) {
-        // Find the highest block at the given location
-        Location groundLocation = location.getWorld().getHighestBlockAt(location).getLocation();
-        // Set the Y coordinate to the top of the highest block
-        groundLocation.setY(groundLocation.getY() + 1);
-
-        // Ensure it's a solid block below to avoid spawning inside of blocks
-        if (groundLocation.getBlock().getType() == Material.AIR) {
-            groundLocation.setY(groundLocation.getY() - 1);
+                // Check if the block is solid
+                if (blockType.isSolid()) {
+                    // Return location one block above the highest solid block
+                    return currentLocation.add(0, 1, 0);
+                }
+            }
         }
 
-        return groundLocation;
+        // If no valid ground location found, return the world's spawn location instead of null
+        return world.getSpawnLocation(); // Always returns a valid location
     }
+
+
+
+
+
+
 }

@@ -53,8 +53,19 @@ public class AlchemistThrowPotion implements Listener {
 
     @EventHandler
     public void onDoctorThrewPotion(PotionSplashEvent event) {
+        if (!Objects.requireNonNull(event.getEntity().getLocation().getWorld()).getName().equals("world_rpg")) {
+            return;
+        }
+
         if (event.getEntity().getShooter() instanceof Player thrower) {
             UserProfile throwerProfile = profileManager.getProfile(thrower.getName());
+
+            if (thrower.getAllowFlight()) {
+                thrower.sendMessage("You are flying, don't waste potions");
+                event.setCancelled(true);
+                return;
+            }
+
 
             if (throwerProfile != null && "alchemist".equalsIgnoreCase(throwerProfile.getChosenClass())&& throwerProfile.getSelectedSkill().equalsIgnoreCase("skill 2")) {
                 double intel = throwerProfile.getAlchemistClassInfo() != null ? throwerProfile.getAlchemistClassInfo().getIntel() : 0;
@@ -74,19 +85,23 @@ public class AlchemistThrowPotion implements Listener {
                         duration = Math.min(INTENSITY_CAP, (int) (intel * 0.002));
 
                     } else if (isNegativeEffect) {
-                        intensity = Math.min(INTENSITY_CAP, (int) (intel * 0.001));
-                        duration = Math.min(INTENSITY_CAP, (int) (intel * 0.001));
+                        intensity = Math.min(INTENSITY_CAP, (int) (intel * 0.002));
+                        duration = Math.min(INTENSITY_CAP, (int) (intel * 0.002));
                     }
 
                     // Apply the effect to targets
                     for (LivingEntity target : event.getAffectedEntities()) {
-                        if (target != null) {
-                            int finalIntensity = baseIntensity * (1+intensity); // Add to the original intensity
-                            int finalDuration = baseDuration * (1+duration); // Add to the original duration
+                        // Skip applying negative effects to the thrower
+                        if (!target.getName().equals(thrower.getName()) && isNegativeEffect) {
+                            target.sendMessage("thrower");
+                            // Adjust intensity and duration and apply the effect to the target
+                            int finalIntensity = baseIntensity * (1 + intensity); // Adjusted intensity
+                            int finalDuration = baseDuration * (1 + duration);    // Adjusted duration
                             target.addPotionEffect(new PotionEffect(effect.getType(), finalDuration, finalIntensity, true, true));
-
                         }
+
                     }
+
                 }
             }
 
@@ -99,42 +114,25 @@ public class AlchemistThrowPotion implements Listener {
 
                     boolean isPositiveEffect = HEAL_EFFECTS.contains(effect.getType());
 
+
                     int intensity = 0;
                     int duration = 0;
 
+                    // Calculate intensity and duration adjustments based on effect type
                     if (isPositiveEffect) {
-                        intensity = Math.min(INTENSITY_CAP, (int) (intel * 0.003));
-                        duration = Math.min(INTENSITY_CAP, (int) (intel * 0.003));
-
+                        intensity = (int) (intel * 0.005);
+                        duration = Math.min(INTENSITY_CAP, (int) (intel * 0.002));
                     }
-
+                    // Apply the effect to targets
                     for (LivingEntity target : event.getAffectedEntities()) {
-                        int finalIntensity = baseIntensity * intensity; // Add to the original intensity
-                        int finalDuration = baseDuration * duration; // Add to the original duration
 
-                        if (target instanceof Player targetPlayer) {
-                           if (target.getName().equals(thrower.getName())) {
-                               target.addPotionEffect(new PotionEffect(effect.getType(), finalDuration, finalIntensity, true, true));
-                               thrower.sendMessage("healed self");
-                           }
-                           UserProfile targetPlayerProfile = profileManager.getProfile(targetPlayer.getName());
-                           String throwerTeam = throwerProfile.getTeam();
-                           String targetTeam = targetPlayerProfile.getTeam();
-
-                           if (!Objects.equals(throwerTeam, "none") && throwerTeam.equals(targetTeam)) {
-                               target.addPotionEffect(new PotionEffect(effect.getType(), finalDuration, finalIntensity, true, true));
-                               thrower.sendMessage("healed target teammate");
-                           }
-                        }
-
-
-                        if (!(target instanceof Player)) {
-                            target.addPotionEffect(new PotionEffect(effect.getType(), finalDuration, finalIntensity, true, true));
-                            thrower.sendMessage("healed target");
-                        }
+                        // Adjust intensity and duration and apply the effect to the target
+                        int finalIntensity = baseIntensity * (1 + intensity); // Adjusted intensity
+                        int finalDuration = baseDuration * (1 + duration);    // Adjusted duration
+                        target.addPotionEffect(new PotionEffect(effect.getType(), finalDuration, finalIntensity, true, true));
                     }
                 }
-                event.setCancelled(true);
+
             }
 
 

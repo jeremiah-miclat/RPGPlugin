@@ -17,7 +17,9 @@ import org.bukkit.event.vehicle.VehicleCreateEvent;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 public class WorldProtectionListener implements Listener {
 
@@ -28,12 +30,30 @@ public class WorldProtectionListener implements Listener {
         this.plugin = plugin;
     }
 
+    private static final Set<Material> ANNOYING_BLOCKS;
+
+    static {
+        ANNOYING_BLOCKS = new HashSet<>();
+        ANNOYING_BLOCKS.add(Material.SHORT_GRASS);
+        ANNOYING_BLOCKS.add(Material.TALL_GRASS);
+        ANNOYING_BLOCKS.add(Material.FERN);
+        ANNOYING_BLOCKS.add(Material.DEAD_BUSH);
+    }
+
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
+        if (ANNOYING_BLOCKS.contains(event.getBlock().getType())) {
+            return;
+        }
+
         // Cancel block break in protected world unless the player is in creative mode
         if (isInProtectedWorld(event.getBlock().getWorld()) && event.getPlayer().getGameMode() != GameMode.CREATIVE) {
             event.setCancelled(true);
             event.getPlayer().sendMessage("Block breaking is not allowed in this world.");
+        }
+
+        if (isInProtectedWorld(event.getBlock().getWorld())) {
+            event.setCancelled(true);
         }
     }
 
@@ -43,6 +63,10 @@ public class WorldProtectionListener implements Listener {
         if (isInProtectedWorld(event.getBlock().getWorld()) && event.getPlayer().getGameMode() != GameMode.CREATIVE) {
             event.setCancelled(true);
             event.getPlayer().sendMessage("Block placing is not allowed in this world.");
+        }
+
+        if (isInProtectedWorld(event.getBlock().getWorld())) {
+            event.setCancelled(true);
         }
     }
 

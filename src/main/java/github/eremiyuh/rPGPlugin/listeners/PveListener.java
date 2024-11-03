@@ -43,7 +43,7 @@ public class PveListener implements Listener {
     @EventHandler
     public void onEntityDamage(EntityDamageByEntityEvent event) {
         if (event.getDamager() instanceof Player player && player.getAllowFlight()) {
-            player.sendMessage("you can' attack while flying");
+            player.sendMessage("you can't attack while flying");
             event.setCancelled(true);
             return;
         }
@@ -101,34 +101,19 @@ public class PveListener implements Listener {
 
 
         if (damager instanceof LivingEntity angryMob && !(damager instanceof Player) && damaged instanceof Player damagedPLayer) {
+
+            if (angryMob.hasMetadata("extraDamage")) {
                 UserProfile damagedProfile = profileManager.getProfile(damagedPLayer.getName());
-                if (damagedProfile.getChosenClass().equalsIgnoreCase("default")
-                    || damagedProfile.getRPG().equalsIgnoreCase("off")
-                ) {
-
-                    if (angryMob.hasMetadata("initialExtraHealth")) {
-                        damagedPLayer.sendMessage("You are protected from modified monsters");
-                        event.setDamage(0);
-                    } else {
-                        event.setDamage(event.getDamage());
-                    }
-
-
+                double extraDamage = angryMob.getMetadata("extraDamage").get(0).asDouble();
+                if (PlayerBuffPerms.canReduceDmg(damagedProfile)) {
+                    event.setDamage((event.getDamage() + extraDamage)/2);
                 } else {
-//                    initializeExtraAttributes(angryMob,damagedPLayer);
-
-                    // Apply extra damage if present
-                    if (angryMob.hasMetadata("extraDamage")) {
-                        double extraDamage = angryMob.getMetadata("extraDamage").get(0).asDouble();
-                        if (PlayerBuffPerms.canReduceDmg(damagedProfile)) {
-                            event.setDamage((event.getDamage() + extraDamage)/2);
-                        } else {
-                            event.setDamage((event.getDamage() + extraDamage));
-                        }
-
-                        damagedPLayer.sendMessage("Extra damage from mob: " + extraDamage);
-                    }
+                    event.setDamage((event.getDamage() + extraDamage));
                 }
+
+
+            }
+
 
         }
 
@@ -161,9 +146,7 @@ public class PveListener implements Listener {
                     // Retrieve extra health attribute from entity's metadata or custom attribute
                     double extraHealth = entity.getMetadata("initialExtraHealth").getFirst().asDouble();
 
-                    if (event.getDamageSource().getCausingEntity() instanceof Player attacker) {
-                        attacker.sendMessage(extraHealth +" extrahealth");
-                    }
+
 
                     if (extraHealth > 0) {
                         double damage = event.getDamage();
@@ -229,15 +212,8 @@ public class PveListener implements Listener {
 
     // pve melee damage
     private void handleMeleePveDamage(Player attacker, LivingEntity target, EntityDamageByEntityEvent event, Location damagerLocation, Location damagedLocation, UserProfile damagerProfile) {
-        // Check if the player is in the default class
-        if (damagerProfile.getChosenClass().equalsIgnoreCase("default") || damagerProfile.getRPG().equalsIgnoreCase("off")) {
 
-            if (target.hasMetadata("initialExtraHealth")) {
-                attacker.sendMessage("You can't damage modified monsters");
-                event.setDamage(0);
-            }
-            return;
-        }
+
 
 //        MonsterStrengthScalingListener monsterListener = plugin.getMonsterStrengthScalingListener();
 //        Map<LivingEntity, Double> extraHealthMap = monsterListener.getExtraHealthMap();
@@ -270,19 +246,6 @@ public class PveListener implements Listener {
     // PvE Long Range Damage
     private void handleLongRangePveDamage(Player attacker, LivingEntity target, EntityDamageByEntityEvent event, Location damagerLocation, Location damagedLocation, UserProfile damagerProfile) {
 
-        // Check if the player is in the default class
-        if (damagerProfile.getChosenClass().equalsIgnoreCase("default")
-                || damagerProfile.getRPG().equalsIgnoreCase("off")
-        ) {
-            if (target.hasMetadata("initialExtraHealth")) {
-                attacker.sendMessage("You can't damage modified monsters");
-                event.setDamage(0);
-            } else {
-                event.setDamage(event.getDamage());
-            }
-            return;
-        }
-
         ItemStack weapon = attacker.getInventory().getItemInMainHand();
 
         // Fire element check: Disable fire if not selected
@@ -305,7 +268,7 @@ public class PveListener implements Listener {
         double finalDamage = applyExtraHealthAndDamage(target, damageWithStats, attacker);
         // Archer class - Check if using bow
         if (damagerProfile.getChosenClass().equalsIgnoreCase("archer") && event.getDamager() instanceof Arrow arrow) {
-            attacker.sendMessage("Archer class bonus applied");
+
             effectsAbilityManager.applyAbility(damagerProfile, target, damagerLocation, damagedLocation);
             if (!arrow.hasMetadata("WeaknessArrowBarrage") && !arrow.hasMetadata("FireArrowBarrage") && !arrow.hasMetadata("FreezeArrowBarrage")) {
                 damageAbilityManager.applyDamageAbility(damagerProfile, target, damagerLocation, damagedLocation,finalDamage);
@@ -314,7 +277,7 @@ public class PveListener implements Listener {
 
         // Alchemist class - Check if using thrown potion
         if (damagerProfile.getChosenClass().equalsIgnoreCase("alchemist") && event.getDamager() instanceof ThrownPotion) {
-            attacker.sendMessage("Alchemist class bonus applied");
+
             effectsAbilityManager.applyAbility(damagerProfile, target, damagerLocation, damagedLocation);
         }
         event.setDamage(finalDamage);
@@ -375,7 +338,6 @@ public class PveListener implements Listener {
             }
         }
 
-        player.sendMessage("str from equip =" + strFromLore);
 
         // Damage calculation based on class stats
         double statDmg = 0;

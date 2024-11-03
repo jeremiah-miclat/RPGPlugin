@@ -14,6 +14,7 @@ import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Objects;
 
@@ -33,32 +34,35 @@ public class ArmorChangePlugin  implements Listener {
         if (!(event.getPlayer() instanceof Player)) return;
 
         Player player = (Player) event.getPlayer();
-            player.sendMessage("You closed you inventory");
-        playerStatBuff.updatePlayerStatsToRPG(player);
+        String worldName = Objects.requireNonNull(player.getLocation().getWorld()).getName();
+        if (worldName.equals("world_rpg")) {
+
+
+                playerStatBuff.updatePlayerStatsToRPG(player);
+
+
+
+        } if (worldName.equals("world")) {
+
+                playerStatBuff.updatePlayerStatsToNormal(player);
+
+        }
     }
 
     @EventHandler
     public void onWeaponChange(PlayerItemHeldEvent event) {
         Player player = event.getPlayer();
-
-        // Debug message to confirm the event is firing
-        player.sendMessage("Item held changed to slot: " + event.getNewSlot());
-
         String worldName = Objects.requireNonNull(player.getLocation().getWorld()).getName();
-        player.sendMessage("Current world: " + worldName);
 
-        if (worldName.equals("world_rpg")) {
-            ItemStack newItem = player.getInventory().getItem(event.getNewSlot());
-
-
-            plugin.getServer().getScheduler().runTask(plugin, () -> {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (worldName.equals("world_rpg")) {
                     playerStatBuff.updatePlayerStatsToRPG(player);
-                });
-
-        } if (worldName.equals("world")) {
-            plugin.getServer().getScheduler().runTask(plugin, () -> {
-                playerStatBuff.updatePlayerStatsToNormal(player);
-            });
-        }
+                } else if (worldName.equals("world")) {
+                    playerStatBuff.updatePlayerStatsToNormal(player);
+                }
+            }
+        }.runTaskLater(plugin, 1);
     }
 }

@@ -66,11 +66,14 @@ public class WorldSwitchCommand implements CommandExecutor {
         Location spawnLocation = world.getSpawnLocation();
         player.teleport(spawnLocation);
 
-        if (world.getName().equals("world_rpg")) {
-            playerStatBuff.updatePlayerStatsToRPG(player);
-        } else playerStatBuff.updatePlayerStatsToNormal(player);
+        playerStatBuff.updatePlayerStatsToNormal(player);
 
-        player.sendMessage("Teleported to " + targetWorldName + "!");
+        if (targetWorldName.contains("rpg")) {
+            playerStatBuff.updatePlayerStatsToRPG(player);
+        }
+
+
+
         return true;
     }
 }

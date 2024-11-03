@@ -46,6 +46,7 @@ public class RPGPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new OptimizedVampireSunlightListener(profileManager, this),this);
         PveListener pveListenerListener = new PveListener(profileManager, effectsAbilityManager, damageAbilityManager,this);
         getServer().getPluginManager().registerEvents(pveListenerListener,this);
+        getServer().getPluginManager().registerEvents(new PotionGiveListener(this,profileManager),this);
          new OverworldBlastProtectionListener(this);
          new ArrowHitListener((this));
         chunkBorderBlueVisualizer = new ChunkBorderBlueVisualizer(this);
@@ -57,7 +58,7 @@ public class RPGPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new WorldProtectionListener(this), this);
         playerStatBuff = new PlayerStatBuff(profileManager);
         FlyCommand flyCommand = new FlyCommand(profileManager, this);
-        getServer().getPluginManager().registerEvents(new PlayerTeleportListener(playerStatBuff,flyCommand ), this);
+        getServer().getPluginManager().registerEvents(new PlayerTeleportListener(playerStatBuff,flyCommand,this ), this);
         getServer().getPluginManager().registerEvents(new PlayerDeathListener(), this);
         getServer().getPluginManager().registerEvents(new ArmorChangePlugin(profileManager,this), this);
         // Register the command executor
@@ -72,7 +73,6 @@ public class RPGPlugin extends JavaPlugin {
         Objects.requireNonNull(getCommand("teaminviteaccept")).setExecutor(new TeamInviteAcceptCommand(profileManager));
         Objects.requireNonNull(getCommand("teamremove")).setExecutor(new TeamRemoveCommand(profileManager));
         Objects.requireNonNull(getCommand("pvpstatus")).setExecutor(new PVPStatusCommand(profileManager));
-        Objects.requireNonNull(getCommand("setrpg")).setExecutor(new SetRPG(profileManager));
         Objects.requireNonNull(getCommand("cc")).setExecutor(new ChunkCommand(chunkManager,profileManager, chunkBorderBlueVisualizer, chunkBorderRedVisualizer));
         Objects.requireNonNull(getCommand("trust")).setExecutor(new TrustCommand(chunkManager));
         Objects.requireNonNull(getCommand("trustall")).setExecutor(new TrustAllCommand(chunkManager));

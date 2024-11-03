@@ -63,7 +63,7 @@ public class MonsterInitializer implements Listener {
 
     // Method to initialize extra health and extra damage metadata
     private void initializeExtraAttributes(LivingEntity entity) {
-        if (!entity.hasMetadata("extraHealthApplied")) {
+//        if (!entity.hasMetadata("extraHealthApplied")) {
             // Calculate extra health and damage
             Location location = entity.getLocation();
             double extraHealth = calculateExtraAttributes(location, entity);
@@ -72,8 +72,8 @@ public class MonsterInitializer implements Listener {
             // Store in metadata
             entity.setMetadata("initialExtraHealth", new FixedMetadataValue(plugin, extraHealth));
             entity.setMetadata("extraDamage", new FixedMetadataValue(plugin, extraDamage));
-            entity.setMetadata("extraHealthApplied", new FixedMetadataValue(plugin, true)); // Mark as applied
-        }
+//            entity.setMetadata("extraHealthApplied", new FixedMetadataValue(plugin, true));
+//        }
     }
 
     // Method to calculate extra attributes (used for both extra health and damage)

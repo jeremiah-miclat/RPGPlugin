@@ -27,11 +27,11 @@ commands:
   teaminvite:
     description: Invite a player to your team.
     usage: /teaminvite <player>
-    permission: rpgplugin.teaminvite
+
   teamleave:
     description: Leave your current team.
     usage: /teamleave
-    permission: rpgplugin.teamleave
+
   teaminviteaccept:
     description: Accept an invitation to join a team.
     usage: /teaminviteaccept <inviterName>
@@ -41,9 +41,6 @@ commands:
   pvpstatus:
     description: Set PVP on or off
     usage: /pvpstatus <onoroff>
-  setrpg:
-    description: Set RPG on or off
-    usage: /setrpg <onoroff>
   cc:
     description: claimed chunks commands
     usage: /cc <claim|check>

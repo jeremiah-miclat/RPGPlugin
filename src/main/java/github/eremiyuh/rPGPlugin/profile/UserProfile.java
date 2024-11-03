@@ -28,21 +28,24 @@ public class UserProfile {
     private  String selectedSkill = "none";
     private long lastSkillSelection = 0;    // Timestamp of the last skill selection
 
-    // New field for team
-    private String team = "none";
 
-    // New field for team invites
-    private List<String> teamInvites;
+
+
 
     private boolean pvpEnabled = true;
 
-    private String RPG="off";
     private long lastRpgSwitchTime = 0; // New field to store last RPG switch timestamp
     private static final long RPG_COOLDOWN = 10 * 60 * 60 * 1000; // 10 hours in milliseconds
     private double diamond=0;
     private double claimPoints=0;
 
+    // TEAMS
+    private String team = "none";
+    private List<String> teamInvites;
     private List<String> teamMembers = new ArrayList<>();
+
+
+    private double potion = 1000;
 
     public UserProfile(String playerName) {
         this.playerID = UUID.randomUUID(); // Generate a unique ID for the player
@@ -63,13 +66,15 @@ public class UserProfile {
         // Initialize pvp toggle
         this.pvpEnabled =false;
 
-        // Initialize vanilla only / non rpg toggle
-        this.RPG = "off";
 
         // money
         this.diamond = 0;
 
         this.claimPoints =100;
+        this.team = "none";
+        this.teamMembers = getTeamMembers();
+
+        this.potion=1000;
 
     }
 
@@ -254,11 +259,6 @@ public class UserProfile {
         this.pvpEnabled = pvpEnabled;
     }
 
-    public String getRPG() {return  RPG;}
-
-    public void setRPG(String RPG) {
-        this.RPG = RPG;
-    }
 
     public long getLastRpgSwitchTime() {
         return lastRpgSwitchTime;
@@ -282,14 +282,6 @@ public class UserProfile {
         return (currentTime - lastRpgSwitchTime) >= RPG_COOLDOWN;
     }
 
-    // Method to switch RPG mode with cooldown check
-    public void switchRPG(String newRPG) {
-        if (!canSwitchRPG()) {
-            throw new IllegalStateException("Cannot switch RPG mode yet. Please wait until the cooldown expires.");
-        }
-        this.RPG = newRPG;
-        this.lastRpgSwitchTime = System.currentTimeMillis(); // Update timestamp on switch
-    }
 
     public double getClaimPoints() {
         return claimPoints;
@@ -297,6 +289,14 @@ public class UserProfile {
 
     public void setClaimPoints(double claimPoints) {
         this.claimPoints = claimPoints;
+    }
+
+    public double getPotion() {
+        return potion;
+    }
+
+    public void setPotion(double potion) {
+        this.potion = potion;
     }
 
     // Inner class to hold class-specific attributes
@@ -433,6 +433,10 @@ public class UserProfile {
     // Getter for team members
     public List<String> getTeamMembers() {
         return teamMembers;
+    }
+
+    public void setTeamMembers(List<String> teamMembers) {
+        this.teamMembers = teamMembers;
     }
 
     // Method to add a team member (only if the list has fewer than 4 members)

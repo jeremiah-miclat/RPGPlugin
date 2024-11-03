@@ -7,7 +7,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
@@ -89,18 +91,20 @@ public class PlayerProfileManager {
 
         // save team
         config.set("team", profile.getTeam());
+        config.set("teammembers", profile.getTeamMembers());
 
         //pvp
         config.set("pvpEnabled",profile.isPvpEnabled());
 
-        //RPG
-        config.set("rpgStatus",profile.getRPG());
 
         //diamonds
         config.set("diamond",profile.getDiamond());
 
         //claimPoints
         config.set("claimPoints",profile.getClaimPoints());
+
+        //potion
+        config.set("potion",profile.getPotion());
 
         try {
             config.save(profileFile);
@@ -155,20 +159,27 @@ public class PlayerProfileManager {
         profile.setSelectedSkill(config.getString("selectedSkill", "default"));
         profile.setLastSkillSelection(config.getLong("lastSkillSelection", 0));
 
-        // load team
-        profile.setTeam(config.getString("team","none"));
-
         //pvp
         profile.setPvpEnabled(config.getBoolean("pvpEnabled",false));
 
-        //RPG
-        profile.setRPG(config.getString("rpgStatus","off"));
 
         //diamond
         profile.setDiamond(config.getDouble("diamond",0));
 
         //claim points
         profile.setClaimPoints(config.getDouble("claimPoints",100));
+
+        //potion
+        profile.setPotion(config.getDouble("potion",1000));
+
+        // load team
+        profile.setTeam(config.getString("team","none"));
+        List<String> teamMembers = config.getStringList("teammembers");
+        if (teamMembers.isEmpty()) {
+            teamMembers = new ArrayList<>(); // Default to an empty list if none exists
+        }
+        profile.setTeamMembers(teamMembers);
+
         playerProfiles.put(playerName, profile);
     }
 

@@ -3,6 +3,7 @@ package github.eremiyuh.rPGPlugin.listeners;
 import github.eremiyuh.rPGPlugin.RPGPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.ProjectileHitEvent;
@@ -21,6 +22,12 @@ public class ArrowHitListener implements Listener {
 
     @EventHandler
     public void onArrowHit(ProjectileHitEvent event) {
+        if (event.getEntity().getShooter() instanceof Player player && player.getAllowFlight()) {
+            player.sendMessage("you can't attack while flying");
+            event.setCancelled(true);
+            return;
+        }
+
         if (event.getEntity() instanceof Arrow arrow) {
 
 

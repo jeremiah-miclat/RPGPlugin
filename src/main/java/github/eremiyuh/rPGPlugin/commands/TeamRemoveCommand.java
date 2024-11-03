@@ -62,13 +62,15 @@ public class TeamRemoveCommand implements CommandExecutor {
             return true;
         }
 
-        // Remove the target player from the team
-        targetProfile.setTeam(null); // Remove the player from the team
-        profileManager.saveProfile(targetPlayer.getName()); // Save the changes
+        if (leaderProfile.removeTeamMember(targetPlayerName)) {
+            // Remove the target player from the team
+            targetProfile.setTeam("none"); // Remove the player from the team
+            profileManager.saveProfile(targetPlayer.getName()); // Save the changes
 
-        // Notify both players
-        leader.sendMessage(ChatColor.GREEN + "You have removed " + targetPlayerName + " from the team.");
-        targetPlayer.sendMessage(ChatColor.RED + "You have been removed from the team by " + leader.getName() + ".");
+            // Notify both players
+            leader.sendMessage(ChatColor.GREEN + "You have removed " + targetPlayerName + " from the team.");
+            targetPlayer.sendMessage(ChatColor.RED + "You have been removed from the team by " + leader.getName() + ".");
+        }
 
         return true;
     }
