@@ -36,8 +36,12 @@ public class UserProfile {
 
     private long lastRpgSwitchTime = 0; // New field to store last RPG switch timestamp
     private static final long RPG_COOLDOWN = 10 * 60 * 60 * 1000; // 10 hours in milliseconds
-    private double diamond=0;
-    private double claimPoints=0;
+    private double diamond;
+    private double emerald;
+    private double iron;
+    private double lapiz;
+    private double gold;
+    private double claimPoints;
 
     // TEAMS
     private String team = "none";
@@ -69,6 +73,10 @@ public class UserProfile {
 
         // money
         this.diamond = 0;
+        this.emerald = 0;
+        this.iron = 0;
+        this.lapiz = 0;
+        this.gold = 0;
 
         this.claimPoints =100;
         this.team = "none";
@@ -79,6 +87,8 @@ public class UserProfile {
     }
 
     // Getters and setters
+
+
     public UUID getPlayerID() {
         return playerID;
     }
@@ -297,6 +307,78 @@ public class UserProfile {
 
     public void setPotion(double potion) {
         this.potion = potion;
+    }
+
+    public double getEmerald() {
+        return emerald;
+    }
+
+    public void setEmerald(double emerald) {
+        this.emerald = emerald;
+    }
+
+    public double getIron() {
+        return iron;
+    }
+
+    public void setIron(double iron) {
+        this.iron = iron;
+    }
+
+    public double getLapiz() {
+        return lapiz;
+    }
+
+    public void setLapiz(double lapiz) {
+        this.lapiz = lapiz;
+    }
+
+    public double getGold() {
+        return gold;
+    }
+
+    public void setGold(double gold) {
+        this.gold = gold;
+    }
+
+    // currencies
+    public double getCurrency(String currencyName) {
+        switch (currencyName.toLowerCase()) {
+            case "diamond":
+                return diamond;
+            case "emerald":
+                return emerald;
+            case "iron":
+                return iron;
+            case "lapis":
+                return lapiz;
+            case "gold":
+                return gold;
+            default:
+                throw new IllegalArgumentException("Invalid currency name: " + currencyName);
+        }
+    }
+
+    public void setCurrency(String currencyName, double amount) {
+        switch (currencyName.toLowerCase()) {
+            case "diamond":
+                this.diamond = amount;
+                break;
+            case "emerald":
+                this.emerald = amount;
+                break;
+            case "iron":
+                this.iron = amount;
+                break;
+            case "lapis":
+                this.lapiz = amount;
+                break;
+            case "gold":
+                this.gold = amount;
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid currency name: " + currencyName);
+        }
     }
 
     // Inner class to hold class-specific attributes

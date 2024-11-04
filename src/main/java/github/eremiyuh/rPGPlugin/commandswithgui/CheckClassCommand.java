@@ -54,12 +54,35 @@ public class CheckClassCommand implements CommandExecutor, Listener {
         ItemStack playerHead = createPlayerHead(player, profile);
         gui.setItem(4, playerHead);
 
+        // Create a single currency icon to show all player's currencies
+        ItemStack currencyIcon = new ItemStack(Material.DIAMOND);
+        ItemMeta currencyMeta = currencyIcon.getItemMeta();
+
+        if (currencyMeta != null) {
+            currencyMeta.setDisplayName("§eCurrencies");
+
+            // Set lore to show each currency balance with color coding
+            List<String> currencyLore = new ArrayList<>();
+            currencyLore.add("§bDiamonds: §7" + profile.getCurrency("diamond"));  // Light Blue for Diamond
+            currencyLore.add("§aEmeralds: §7" + profile.getCurrency("emerald"));   // Green for Emerald
+            currencyLore.add("§fIron: §7" + profile.getCurrency("iron"));          // White for Iron
+            currencyLore.add("§9Lapis: §7" + profile.getCurrency("lapis"));        // Dark Blue for Lapis
+            currencyLore.add("§6Gold: §7" + profile.getCurrency("gold"));          // Gold for Gold
+            currencyMeta.setLore(currencyLore);
+
+            currencyIcon.setItemMeta(currencyMeta);
+        }
+
+        // Place the single currency item in the GUI
+        gui.setItem(6, currencyIcon);
+
         // Add attribute point items to the GUI
         createAttributePointItems(gui, player, profile);
 
         // Open the GUI for the player
         player.openInventory(gui);
     }
+
 
     private ItemStack createPlayerHead(Player player, UserProfile profile) {
         ItemStack playerHead = new ItemStack(Material.PLAYER_HEAD);
@@ -101,7 +124,7 @@ public class CheckClassCommand implements CommandExecutor, Listener {
         lore.add("§eTeamMates: " + profile.getTeamMembers());
         lore.add("§ePVP: " + profile.isPvpEnabled());
         lore.add("§eClaimPoints: " + profile.getClaimPoints());
-        lore.add("§eDiamonds: " + profile.getDiamond());
+        lore.add("§ePotion: " + profile.getPotion());
         // Set the lore to the skull meta
         skullMeta.setLore(lore);
     }

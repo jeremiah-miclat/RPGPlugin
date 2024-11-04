@@ -134,7 +134,7 @@ public class PlayerStatBuff {
      * @param player The player whose stats are being updated.
      */
     public void onClassSwitchOrAttributeChange(Player player) {
-        if (player.getLocation().getWorld().getName().equals("world_rpg")) {
+        if (player.getLocation().getWorld().getName().equals("world_rpg") || player.getLocation().getWorld().getName().equals("world_labyrinth")) {
             updatePlayerStatsToRPG(player);
         }
     }

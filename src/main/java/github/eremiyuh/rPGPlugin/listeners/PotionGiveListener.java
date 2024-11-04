@@ -31,6 +31,9 @@ public class PotionGiveListener implements Listener {
 
         Player player = event.getPlayer();
         UserProfile playerProfile = profileManager.getProfile(player.getName());
+        if (playerProfile.getPotion()<1) {
+            player.sendMessage("No potions");
+        }
 
         if (!playerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
             return;
@@ -80,9 +83,8 @@ public class PotionGiveListener implements Listener {
 
             // Add the potion to the player's inventory
             player.getInventory().addItem(potion);
+            playerProfile.setPotion(playerProfile.getPotion()-1);
 
-            // Optionally send a message to the player
-            player.sendMessage("You received a potion!");
         }
     }
 }

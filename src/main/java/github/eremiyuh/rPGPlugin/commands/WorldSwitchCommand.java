@@ -40,6 +40,9 @@ public class WorldSwitchCommand implements CommandExecutor {
             case "rpg":
                 targetWorldName = "world_rpg";
                 break;
+            case "rpg2":
+                targetWorldName = "world_labyrinth";
+                break;
             case "normal":
                 targetWorldName = "world";
                 break;
@@ -68,7 +71,7 @@ public class WorldSwitchCommand implements CommandExecutor {
 
         playerStatBuff.updatePlayerStatsToNormal(player);
 
-        if (targetWorldName.contains("rpg")) {
+        if (targetWorldName.contains("rpg") || targetWorldName.contains("labyrinth")) {
             playerStatBuff.updatePlayerStatsToRPG(player);
         }
 

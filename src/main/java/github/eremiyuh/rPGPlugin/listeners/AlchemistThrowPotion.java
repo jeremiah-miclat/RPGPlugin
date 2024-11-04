@@ -53,6 +53,7 @@ public class AlchemistThrowPotion implements Listener {
 
     @EventHandler
     public void onDoctorThrewPotion(PotionSplashEvent event) {
+
         if (!Objects.requireNonNull(event.getEntity().getLocation().getWorld()).getName().equals("world_rpg")) {
             return;
         }
@@ -81,26 +82,23 @@ public class AlchemistThrowPotion implements Listener {
                     int duration = 0;
 
                     if (isPositiveEffect) {
-                        intensity = Math.min(INTENSITY_CAP, (int) (intel * 0.002));
-                        duration = Math.min(INTENSITY_CAP, (int) (intel * 0.002));
+                        intensity = (int)(intel*0.003);
+                        duration = (int)(intel*0.6);
 
                     } else if (isNegativeEffect) {
-                        intensity = Math.min(INTENSITY_CAP, (int) (intel * 0.002));
-                        duration = Math.min(INTENSITY_CAP, (int) (intel * 0.002));
+                        intensity = (int)(intel*0.003);
+                        duration = (int)(intel*0.03);
                     }
 
                     // Apply the effect to targets
                     for (LivingEntity target : event.getAffectedEntities()) {
-                        // Skip applying negative effects to the thrower
-                        if (!target.getName().equals(thrower.getName()) && isNegativeEffect) {
-                            target.sendMessage("thrower");
-                            // Adjust intensity and duration and apply the effect to the target
-                            int finalIntensity = baseIntensity * (1 + intensity); // Adjusted intensity
-                            int finalDuration = baseDuration * (1 + duration);    // Adjusted duration
+
+                            int finalIntensity = baseIntensity + ( intensity); // Adjusted intensity
+                            int finalDuration = baseDuration + ( duration);    // Adjusted duration
                             target.addPotionEffect(new PotionEffect(effect.getType(), finalDuration, finalIntensity, true, true));
-                        }
 
                     }
+
 
                 }
             }

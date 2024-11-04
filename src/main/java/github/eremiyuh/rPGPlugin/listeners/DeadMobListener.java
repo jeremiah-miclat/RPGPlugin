@@ -1,7 +1,10 @@
 package github.eremiyuh.rPGPlugin.listeners;
 
+import github.eremiyuh.rPGPlugin.manager.BossDropItem;
 import github.eremiyuh.rPGPlugin.manager.PlayerProfileManager;
 import github.eremiyuh.rPGPlugin.profile.UserProfile;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.*;
 import org.bukkit.event.Event;
@@ -10,6 +13,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.metadata.MetadataValue;
 
 import java.util.*;
 
@@ -17,9 +21,46 @@ public class DeadMobListener implements Listener {
     private final PlayerProfileManager profileManager;
     private final Random random = new Random();
 
+    private final List<BossDropItem> regularBossDrops = Arrays.asList(
+            new BossDropItem(new ItemStack(Material.IRON_HELMET), random.nextInt(1, 2), 0.7),
+            new BossDropItem(new ItemStack(Material.IRON_CHESTPLATE), random.nextInt(1, 2), 0.7),
+            new BossDropItem(new ItemStack(Material.IRON_LEGGINGS), random.nextInt(1, 2), 0.7),
+            new BossDropItem(new ItemStack(Material.IRON_BOOTS), random.nextInt(1, 2), 0.7),
+            new BossDropItem(new ItemStack(Material.IRON_SWORD), random.nextInt(1, 2), 0.7),
+            new BossDropItem(new ItemStack(Material.DIAMOND_HELMET), random.nextInt(1, 2), 0.2),
+            new BossDropItem(new ItemStack(Material.DIAMOND_CHESTPLATE), random.nextInt(1, 2), 0.2),
+            new BossDropItem(new ItemStack(Material.DIAMOND_LEGGINGS), random.nextInt(1, 2), 0.2),
+            new BossDropItem(new ItemStack(Material.DIAMOND_BOOTS), random.nextInt(1, 2), 0.2),
+            new BossDropItem(new ItemStack(Material.BOW), random.nextInt(1, 2), 0.1),
+            new BossDropItem(new ItemStack(Material.CROSSBOW), random.nextInt(1, 2), 0.1),
+            new BossDropItem(new ItemStack(Material.DIAMOND_SWORD), random.nextInt(1, 2), 0.1)
+    );
+
+    private final List<BossDropItem> worldBossDrops = Arrays.asList(
+            new BossDropItem(new ItemStack(Material.DIAMOND_HELMET), random.nextInt(1, 2), 0.99),
+            new BossDropItem(new ItemStack(Material.DIAMOND_CHESTPLATE), random.nextInt(1, 2), 0.99),
+            new BossDropItem(new ItemStack(Material.DIAMOND_LEGGINGS), random.nextInt(1, 2), 0.99),
+            new BossDropItem(new ItemStack(Material.DIAMOND_BOOTS), random.nextInt(1, 2), 0.99),
+            new BossDropItem(new ItemStack(Material.DIAMOND_SWORD), random.nextInt(1, 2), 0.99),
+            new BossDropItem(new ItemStack(Material.BOW), random.nextInt(1, 2), 0.99),
+            new BossDropItem(new ItemStack(Material.CROSSBOW), random.nextInt(1, 2), 0.99),
+            new BossDropItem(new ItemStack(Material.NETHERITE_HELMET), random.nextInt(1, 2), 0.01),
+            new BossDropItem(new ItemStack(Material.NETHERITE_CHESTPLATE), random.nextInt(1, 2), 0.01),
+            new BossDropItem(new ItemStack(Material.NETHERITE_LEGGINGS), random.nextInt(1, 2), 0.01),
+            new BossDropItem(new ItemStack(Material.NETHERITE_BOOTS), random.nextInt(1, 2), 0.01),
+            new BossDropItem(new ItemStack(Material.NETHERITE_SWORD), random.nextInt(1, 2), 0.01)
+    );
+
+
+
     public DeadMobListener(PlayerProfileManager profileManager) {
         this.profileManager = profileManager;
     }
+
+
+
+
+
 
     @EventHandler
     public void onModifiedMobDeath(EntityDeathEvent event) {
@@ -28,58 +69,113 @@ public class DeadMobListener implements Listener {
         }
 
         double RANDOMCHANCE = .1;
-        if ((event.getEntity() instanceof Monster || event.getEntity() instanceof Wolf || event.getEntity() instanceof IronGolem) && event.getEntity().getKiller() instanceof Player killer)
-         {
-
-
+        if ((event.getEntity() instanceof Monster || event.getEntity() instanceof Wolf || event.getEntity() instanceof IronGolem) && event.getEntity().getKiller() instanceof Player killer) {
 
             LivingEntity mob = event.getEntity();
+
             if (mob.hasMetadata("extraDamage")) {
                 UserProfile killerProfile = profileManager.getProfile(killer.getName());
                 String killerTeam = killerProfile.getTeam();
-
 
                 double health = mob.getMetadata("extraDamage").get(0).asDouble() * 10;
                 RANDOMCHANCE += (health * 0.00045);
                 int dropMultiplier = (int) (health * 0.01);
 
                 String customName = mob.getCustomName();
-                boolean isBoss = customName != null && customName.toLowerCase().contains("boss");
+                boolean isBoss = isBoss(mob);
+                boolean isWorldBoss = isWorldBoss(mob);
+                int bosslvl = getBossLevel(mob);
+                double chancePerLevel = 0.002;
+                double baseChance = 0.10;
 
+                // please get a list off attackers
+                // then iterate on that list checking if those were players
+                // then check if those players are near, create a method for that 40 horizontal, 10 vertical
+                // then create variable nearbyplayers
+                List<String> attackerNames = (List<String>) mob.getMetadata("attackerList").get(0).value();
+                List<Player> nearbyPlayers = new ArrayList<>();
 
-                if (isBoss) {
-                    List<Player> nearbyPlayers = getNearbyTeamPlayers(mob, killerTeam, 40, 10);
-                    for (Player player : nearbyPlayers) {
-                        UserProfile playerProfile = profileManager.getProfile(player.getName());
-                        applyRewards(player, playerProfile, health, RANDOMCHANCE, dropMultiplier);
-
+                // Iterate over the list of attacker names and check if they are players nearby
+                for (String attackerName : attackerNames) {
+                    Player player = Bukkit.getPlayer(attackerName); // Get the player by name
+                    if (player != null && isPlayerNearby(player, mob.getLocation(), 40, 10)) {
+                        nearbyPlayers.add(player); // Add player to nearby players list
                     }
-                    return;
                 }
 
-
-                if (killerTeam.equals("none")) {
-                    applyRewards(killer, killerProfile, health, RANDOMCHANCE, dropMultiplier);
-                    distributeDrops(killer,event,dropMultiplier);
-                    event.getDrops().clear();
-                    return; // Drops have already been distributed
-                }
-
-                List<Player> nearbyTeamPlayers = getNearbyTeamPlayers(mob, killerTeam, 40, 10);
-                for (Player player : nearbyTeamPlayers) {
+                for (Player player : nearbyPlayers) {
                     UserProfile playerProfile = profileManager.getProfile(player.getName());
                     applyRewards(player, playerProfile, health, RANDOMCHANCE, dropMultiplier);
-                    distributeDrops(player,event,dropMultiplier);
-                }
-                // Clear the original drops
+                    player.sendMessage("You received a reward for killing " + customName);
+                    // Check if the player should receive a boss drop
+                    if (isBoss || isWorldBoss) {
+                        if (Math.random() < ((bosslvl * chancePerLevel) + baseChance)) {
+                            BossDropItem dropItem = isBoss ? BossDropItem.getRandomBossDropItem(regularBossDrops) : BossDropItem.getRandomBossDropItem(worldBossDrops);
 
+                            if (dropItem != null) {
+                                // Clone the item to ensure each player gets a separate instance
+                                ItemStack itemToDrop = dropItem.getItem().clone();
+                                // Add lore based on the boss level
+                                dropItem.addLoreWithBossLevel(itemToDrop, bosslvl);
+                                player.sendMessage("You received a lucky reward for killing " + customName);
+                                if (player.getInventory().firstEmpty() != -1) {
+                                    // If there is space in the inventory, add the item
+                                    player.getInventory().addItem(itemToDrop);
+                                } else {
+                                    // If the inventory is full, drop the item in the world
+                                    player.getWorld().dropItem(player.getLocation(), itemToDrop);
+                                    player.sendMessage("Your inventory was full, so the item has been dropped on the ground.");
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Handle drops for the killer if they are not on a team
+                if (killerTeam.equals("none")) {
+                    distributeDrops(killer, event, dropMultiplier);
+                } else {
+                    // Optionally handle team members here if you want additional logic
+                    List<Player> nearbyTeamPlayers = getNearbyTeamPlayers(mob, killerTeam, 40, 10);
+                    for (Player player : nearbyTeamPlayers) {
+                        distributeDrops(player, event, dropMultiplier);
+                    }
+                }
+
+                // Clear the original drops and experience
+                event.getDrops().clear();
+                event.setDroppedExp(0);
             }
-            event.getDrops().clear();
-            event.setDroppedExp(0);
+        }
+    }
+
+    private List<Player> getNearbyPlayers(Entity entity, double radius, double height) {
+        List<Player> nearbyPlayers = new ArrayList<>();
+        Location entityLocation = entity.getLocation();
+
+        // Get a list of all players who have attacked the entity
+        for (MetadataValue metadataValue : entity.getMetadata(entity.getUniqueId().toString())) {
+            if (metadataValue.getOwningPlugin() == this) { // Check if the metadata belongs to your plugin
+                Player player = Bukkit.getPlayer(metadataValue.asString()); // Get the player by name
+
+                if (player != null && player.isOnline()) {
+                    // Calculate the distance from the player to the entity's location
+                    double distanceSquared = player.getLocation().distanceSquared(entityLocation);
+
+                    // Check if the player is within the horizontal radius
+                    if (distanceSquared <= radius * radius) {
+                        // Check the height difference
+                        if (Math.abs(player.getLocation().getY() - entityLocation.getY()) <= height) {
+                            nearbyPlayers.add(player);
+                        }
+                    }
+                }
+            }
         }
 
-
+        return nearbyPlayers;
     }
+
 
 
     private List<Player> getNearbyTeamPlayers(LivingEntity mob, String team, double horizontalRange, double verticalRange) {
@@ -104,9 +200,14 @@ public class DeadMobListener implements Listener {
         player.giveExp((int) (health * 2));
         if (random.nextDouble() < chance) {
             applyRandomLoreToEquippedItem(player);
+        }
+        double randomed = random.nextDouble();
+        if ( randomed  < chance) {
             profile.setDiamond(profile.getDiamond() + multiplier);
         }
     }
+
+
 
     private void distributeDrops(Player player, EntityDeathEvent event, int multiplier) {
         for (ItemStack drop : event.getDrops()) {
@@ -117,7 +218,6 @@ public class DeadMobListener implements Listener {
 
             // Give the items directly to the player
             player.getInventory().addItem(newDrop);
-            player.sendMessage("received: " + Objects.requireNonNull(newDrop.getItemMeta()).getDisplayName() + " " + newDrop.getAmount());
         }
     }
 
@@ -229,4 +329,29 @@ public class DeadMobListener implements Listener {
             return displayName;
         }
     }
+
+    private boolean isBoss(LivingEntity entity) {
+        return entity.hasMetadata("boss");
+    }
+
+    private boolean isWorldBoss(LivingEntity entity) {
+        return entity.hasMetadata("worldboss");
+    }
+
+    private int getBossLevel(LivingEntity entity) {
+        if (entity.hasMetadata("lvl")) {
+            return entity.getMetadata("lvl").get(0).asInt(); // Retrieve the level from metadata
+        }
+        return 1; // Default level if no metadata is set
+    }
+
+    // Method to check if the player is nearby within specified range
+    private boolean isPlayerNearby(Player player, Location mobLocation, double horizontalRange, double verticalRange) {
+        Location playerLocation = player.getLocation();
+        double horizontalDistance = playerLocation.distance(mobLocation);
+        double verticalDistance = Math.abs(playerLocation.getY() - mobLocation.getY());
+
+        return horizontalDistance <= horizontalRange && verticalDistance <= verticalRange;
+    }
+
 }

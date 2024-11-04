@@ -9,9 +9,23 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class ConvertToEDiamond implements CommandExecutor {
 
     private final PlayerProfileManager profileManager;
+
+    // Map to associate item names with Materials
+    private static final Map<String, Material> currencyMaterials = new HashMap<>();
+
+    static {
+        currencyMaterials.put("diamond", Material.DIAMOND);
+        currencyMaterials.put("gold", Material.GOLD_INGOT);
+        currencyMaterials.put("lapis", Material.LAPIS_LAZULI);
+        currencyMaterials.put("emerald", Material.EMERALD);
+        currencyMaterials.put("iron", Material.IRON_INGOT);
+    }
 
     public ConvertToEDiamond(PlayerProfileManager profileManager) {
         this.profileManager = profileManager;
@@ -24,41 +38,54 @@ public class ConvertToEDiamond implements CommandExecutor {
             return true;
         }
 
+        if (args.length == 0) {
+            player.sendMessage("Please specify a currency to convert (diamond, gold, lapis, emerald, iron).");
+            return true;
+        }
+
+        String currencyName = args[0].toLowerCase();
+        Material currencyMaterial = currencyMaterials.get(currencyName);
+
+        if (currencyMaterial == null) {
+            player.sendMessage("Invalid currency type. Available types: diamond, gold, lapis, emerald, iron.");
+            return true;
+        }
+
         // Get the player's inventory and the UserProfile
         ItemStack[] inventoryContents = player.getInventory().getContents();
         UserProfile profile = profileManager.getProfile(player.getName());
 
-        // Count the number of diamonds in the player's inventory
-        int diamondCount = 0;
+        // Count the number of specified currency in the player's inventory
+        int itemCount = 0;
         for (ItemStack item : inventoryContents) {
-            if (item != null && item.getType() == Material.DIAMOND) {
-                diamondCount += item.getAmount();
+            if (item != null && item.getType() == currencyMaterial) {
+                itemCount += item.getAmount();
             }
         }
 
-        // Check if the player has any diamonds
-        if (diamondCount == 0) {
-            player.sendMessage("You do not have any diamonds in your inventory to convert.");
+        // Check if the player has any of the specified currency
+        if (itemCount == 0) {
+            player.sendMessage("You do not have any " + currencyName + " in your inventory to convert.");
             return true;
         }
 
-        // Convert the diamonds to the UserProfile's diamond balance
-        double currentProfileDiamonds = profile.getDiamond();
-        double newProfileBalance = currentProfileDiamonds + diamondCount;
+        // Convert the items to the UserProfile's balance for the specified currency
+        double currentBalance = profile.getCurrency(currencyName); // Assuming a generic getCurrency method
+        double newBalance = currentBalance + itemCount;
 
-        // Update the UserProfile's diamond balance
-        profile.setDiamond(newProfileBalance);
+        // Update the UserProfile's balance for the specified currency
+        profile.setCurrency(currencyName, newBalance); // Assuming a generic setCurrency method
 
-        // Remove the diamonds from the player's inventory
+        // Remove the items from the player's inventory
         for (ItemStack item : inventoryContents) {
-            if (item != null && item.getType() == Material.DIAMOND) {
+            if (item != null && item.getType() == currencyMaterial) {
                 player.getInventory().remove(item);
             }
         }
 
         // Inform the player of the conversion
-        player.sendMessage("You have converted " + diamondCount + " diamond(s) to your profile's diamond balance!");
-        player.sendMessage("Your new balance is: " + newProfileBalance + " diamonds.");
+        player.sendMessage("You have converted " + itemCount + " " + currencyName + "(s) to your profile's balance!");
+        player.sendMessage("Your new " + currencyName + " balance is: " + newBalance + ".");
 
         return true; // Indicates the command was processed successfully
     }

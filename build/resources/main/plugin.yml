@@ -59,12 +59,12 @@ commands:
   buyclaim:
     description: buy claim command
     usage: /buyclaim <claimpoint>
-  convertdiamond:
-    description: convert diamond
-    usage: /convertdiamond
-  convertEdiamond:
-    description: convert Ediamond
-    usage: /convertEdiamond <amount>
+  convert:
+    description: convert ores
+    usage: /convert <orename>
+  convertcurrency:
+    description: convert currency
+    usage: /convertcurrency <ore> <amount>
   switchworld:
     description: go to rpg world
     usage: /switchworld rpgworld
@@ -77,3 +77,9 @@ commands:
   givesword:
     description: "givesword"
     usage: /<command>
+  buypotion:
+    description: "use magic to convert your lapiz to potion"
+    usage: /<command>
+  rtp:
+    description: "Randomly teleport to a location within the world borders."
+    usage: "/rtp"

@@ -97,8 +97,15 @@ public class PlayerProfileManager {
         config.set("pvpEnabled",profile.isPvpEnabled());
 
 
-        //diamonds
+        //currencies
         config.set("diamond",profile.getDiamond());
+        // Save currencies
+        config.set("diamond", profile.getDiamond());
+        config.set("emerald", profile.getCurrency("emerald"));
+        config.set("iron", profile.getCurrency("iron"));
+        config.set("lapis", profile.getCurrency("lapis"));
+        config.set("gold", profile.getCurrency("gold"));
+
 
         //claimPoints
         config.set("claimPoints",profile.getClaimPoints());
@@ -163,8 +170,14 @@ public class PlayerProfileManager {
         profile.setPvpEnabled(config.getBoolean("pvpEnabled",false));
 
 
-        //diamond
+        //currencies
         profile.setDiamond(config.getDouble("diamond",0));
+        profile.setCurrency("diamond", config.getDouble("diamond", 0));
+        profile.setCurrency("emerald", config.getDouble("emerald", 0));
+        profile.setCurrency("iron", config.getDouble("iron", 0));
+        profile.setCurrency("lapis", config.getDouble("lapis", 0));
+        profile.setCurrency("gold", config.getDouble("gold", 0));
+
 
         //claim points
         profile.setClaimPoints(config.getDouble("claimPoints",100));

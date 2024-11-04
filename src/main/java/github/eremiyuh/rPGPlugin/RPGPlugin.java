@@ -12,10 +12,7 @@ import github.eremiyuh.rPGPlugin.methods.ChunkBorderBlueVisualizer;
 import github.eremiyuh.rPGPlugin.methods.ChunkBorderRedVisualizer;
 import github.eremiyuh.rPGPlugin.methods.DamageAbilityManager;
 import github.eremiyuh.rPGPlugin.methods.EffectsAbilityManager;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.World;
-import org.bukkit.WorldCreator;
+import org.bukkit.*;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -79,14 +76,16 @@ public class RPGPlugin extends JavaPlugin {
         Objects.requireNonNull(getCommand("untrust")).setExecutor(new UntrustCommand(chunkManager));
         Objects.requireNonNull(getCommand("untrustall")).setExecutor(new UntrustAllCommand(chunkManager));
         Objects.requireNonNull(getCommand("buyclaim")).setExecutor(new BuyClaim(profileManager));
-        Objects.requireNonNull(getCommand("convertdiamond")).setExecutor(new ConvertToEDiamond(profileManager));
-        Objects.requireNonNull(getCommand("convertEdiamond")).setExecutor(new ConvertEDiamond(profileManager));
+        Objects.requireNonNull(getCommand("convert")).setExecutor(new ConvertToEDiamond(profileManager));
+        Objects.requireNonNull(getCommand("convertcurrency")).setExecutor(new CurrencyConverter(profileManager));
         Objects.requireNonNull(getCommand("switchworld")).setExecutor(new WorldSwitchCommand(this,playerStatBuff));
         Objects.requireNonNull(getCommand("giveap")).setExecutor(new AttributePointsCommand(profileManager));
         Objects.requireNonNull(getCommand("fly")).setExecutor(new FlyCommand(profileManager, this));
+        Objects.requireNonNull(getCommand("buypotion")).setExecutor(new LapisToPotion(profileManager));
         // Register the listener
         Bukkit.getPluginManager().registerEvents(new CheckClassCommand(profileManager), this);
         Objects.requireNonNull(this.getCommand("givesword")).setExecutor(new SwordCommand());
+        Objects.requireNonNull(this.getCommand("rtp")).setExecutor(new RTPCommand(this));
 
 
 
@@ -96,6 +95,21 @@ public class RPGPlugin extends JavaPlugin {
 
         // Log to console that the plugin has been enabled
         getLogger().info("RPGPlugin has been enabled.");
+
+
+        // Step 1: Create a new world with the desired settings
+        String worldName = "world_labyrinth";
+        WorldCreator worldCreator = new WorldCreator(worldName);
+        World world = Bukkit.createWorld(worldCreator);
+
+        if (world != null) {
+            // Step 2: Set the world border to a radius of 100 blocks
+            WorldBorder border = world.getWorldBorder();
+            border.setCenter(0, 0); // Set the center of the border, usually (0,0)
+            border.setSize(200); // Border size is diameter, so 200 for a 100-block radius
+        } else {
+            getLogger().severe("Failed to create world " + worldName);
+        }
 
     }
 
@@ -116,6 +130,12 @@ public class RPGPlugin extends JavaPlugin {
         if (world != null) {
             world.save();
             getLogger().info("world rpg was SAVED.");
+        }
+
+        World labyrinthWorld = getServer().getWorld("world_labyrinth");
+        if (world != null) {
+            world.save();
+            getLogger().info("world labyrinth was SAVED.");
         }
         chunkManager.saveChunkData();
     }

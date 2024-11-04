@@ -22,6 +22,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.projectiles.ProjectileSource;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class PveListener implements Listener {
@@ -72,8 +74,15 @@ public class PveListener implements Listener {
 
 
             UserProfile attackerProfile = profileManager.getProfile(attacker.getName());
-            if (attackerProfile!=null) {
-                handleMeleePveDamage(attacker,victim,event,damagerLocation,damagedLocation,attackerProfile);
+            if (victim.hasMetadata("attackerList")) {
+                List<String> attackerList = (List<String>) victim.getMetadata("attackerList").get(0).value();
+
+                // Add the attacker's name to the list if it's not already present
+                String attackerName = attacker.getName();
+                if (!attackerList.contains(attackerName)) {
+                    attackerList.add(attackerName);
+                    victim.setMetadata("attackerList", new FixedMetadataValue(plugin, attackerList)); // Update metadata
+                }
             }
         }
 
@@ -85,6 +94,22 @@ public class PveListener implements Listener {
             // pve with bows
             if (projectile instanceof Arrow && shooter instanceof Player attacker) {
                 UserProfile attackerProfile = profileManager.getProfile(attacker.getName());
+                if (victim.hasMetadata("attackerList")) {
+                    // Retrieve the metadata safely
+                    @SuppressWarnings("unchecked") // Suppress unchecked cast warning
+                    List<String> attackerList = (List<String>) victim.getMetadata("attackerList").get(0).value();
+
+                    String attackerName = attacker.getName();
+                    if (!attackerList.contains(attackerName)) {
+                        attackerList.add(attackerName);
+                        victim.setMetadata("attackerList", new FixedMetadataValue(plugin, attackerList)); // Update metadata
+                    }
+                } else {
+                    // Initialize the attacker list if it doesn't exist
+                    List<String> newAttackerList = new ArrayList<>();
+                    newAttackerList.add(attacker.getName());
+                    victim.setMetadata("attackerList", new FixedMetadataValue(plugin, newAttackerList)); // Set new metadata
+                }
                 if (attackerProfile != null) {
                     handleLongRangePveDamage(attacker,victim,event,damagerLocation,damagedLocation,attackerProfile);
                 }
@@ -93,6 +118,22 @@ public class PveListener implements Listener {
             //PVE with thrown instant damage
             if (projectile instanceof ThrownPotion && projectile.getShooter() instanceof Player attacker) {
                 UserProfile attackerProfile = profileManager.getProfile(attacker.getName());
+                if (victim.hasMetadata("attackerList")) {
+                    // Retrieve the metadata safely
+                    @SuppressWarnings("unchecked") // Suppress unchecked cast warning
+                    List<String> attackerList = (List<String>) victim.getMetadata("attackerList").get(0).value();
+
+                    String attackerName = attacker.getName();
+                    if (!attackerList.contains(attackerName)) {
+                        attackerList.add(attackerName);
+                        victim.setMetadata("attackerList", new FixedMetadataValue(plugin, attackerList)); // Update metadata
+                    }
+                } else {
+                    // Initialize the attacker list if it doesn't exist
+                    List<String> newAttackerList = new ArrayList<>();
+                    newAttackerList.add(attacker.getName());
+                    victim.setMetadata("attackerList", new FixedMetadataValue(plugin, newAttackerList)); // Set new metadata
+                }
                 if (attackerProfile != null) {
                     handleLongRangePveDamage(attacker,victim,event,damagerLocation,damagedLocation,attackerProfile);
                 }
@@ -113,8 +154,36 @@ public class PveListener implements Listener {
 
 
             }
+        }
+
+        if (damager instanceof Projectile projectile && projectile.getShooter() instanceof Monster angryMob && !(damager instanceof Player) && damaged instanceof Player damagedPLayer) {
+
+            if (angryMob.hasMetadata("extraDamage")) {
+                UserProfile damagedProfile = profileManager.getProfile(damagedPLayer.getName());
+                double extraDamage = angryMob.getMetadata("extraDamage").get(0).asDouble();
+                if (PlayerBuffPerms.canReduceDmg(damagedProfile)) {
+                    event.setDamage((event.getDamage() + extraDamage)/2);
+                } else {
+                    event.setDamage((event.getDamage() + extraDamage));
+                }
 
 
+            }
+        }
+
+        if (damager instanceof ThrownPotion projectile && projectile.getShooter() instanceof Monster angryMob && !(damager instanceof Player) && damaged instanceof Player damagedPLayer) {
+
+            if (angryMob.hasMetadata("extraDamage")) {
+                UserProfile damagedProfile = profileManager.getProfile(damagedPLayer.getName());
+                double extraDamage = angryMob.getMetadata("extraDamage").get(0).asDouble();
+                if (PlayerBuffPerms.canReduceDmg(damagedProfile)) {
+                    event.setDamage((event.getDamage() + extraDamage)/2);
+                } else {
+                    event.setDamage((event.getDamage() + extraDamage));
+                }
+
+
+            }
         }
 
 
