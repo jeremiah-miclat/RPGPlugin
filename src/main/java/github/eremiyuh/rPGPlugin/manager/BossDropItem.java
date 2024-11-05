@@ -49,7 +49,7 @@ public class BossDropItem {
         return null; // Shouldn't reach here if drop chances are set correctly
     }
 
-    public  void addLoreWithBossLevel(ItemStack item, int bossLevel) {
+    public void addLoreWithBossLevel(ItemStack item, int bossLevel, boolean isWorldBoss) {
         if (item == null) return;
 
         ItemMeta meta = item.getItemMeta();
@@ -58,9 +58,13 @@ public class BossDropItem {
         // Select a random attribute
         String selectedAttribute = attributes.get(random.nextInt(attributes.size()));
 
+        int attributeValue = Math.max(1, Math.floorDiv(bossLevel, 10));
+
+        if (isWorldBoss) attributeValue *=2;
+
         // Set the lore with the format "Attribute: Boss Level"
         List<String> lore = new ArrayList<>();
-        lore.add(selectedAttribute + ": " + bossLevel);
+        lore.add(selectedAttribute + ": " + attributeValue);
         meta.setLore(lore);
 
         item.setItemMeta(meta);

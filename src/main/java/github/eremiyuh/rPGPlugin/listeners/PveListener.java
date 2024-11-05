@@ -74,6 +74,10 @@ public class PveListener implements Listener {
 
 
             UserProfile attackerProfile = profileManager.getProfile(attacker.getName());
+
+            if (attackerProfile != null) {
+                handleMeleePveDamage(attacker,victim,event,damagerLocation,damagedLocation,attackerProfile);
+            }
             if (victim.hasMetadata("attackerList")) {
                 List<String> attackerList = (List<String>) victim.getMetadata("attackerList").get(0).value();
 
@@ -340,7 +344,15 @@ public class PveListener implements Listener {
 
             effectsAbilityManager.applyAbility(damagerProfile, target, damagerLocation, damagedLocation);
             if (!arrow.hasMetadata("WeaknessArrowBarrage") && !arrow.hasMetadata("FireArrowBarrage") && !arrow.hasMetadata("FreezeArrowBarrage")) {
-                damageAbilityManager.applyDamageAbility(damagerProfile, target, damagerLocation, damagedLocation,finalDamage);
+                double archerDex = damagerProfile.getArcherClassInfo().getDex();
+                double baseChance = 0.10; // 10% base chance
+                double dexModifier = 0.002; // 0.004 per Dexterity
+                double totalChance = baseChance + (archerDex * dexModifier);
+
+// Generate a random value between 0.0 and 1.0
+                if (Math.random() < totalChance) {
+                    damageAbilityManager.applyDamageAbility(damagerProfile, target, damagerLocation, damagedLocation, finalDamage);
+                }
             }
         }
 
@@ -418,24 +430,24 @@ public class PveListener implements Listener {
 
 
                 if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 2") && player.getInventory().getItemInMainHand().getType().toString().endsWith("_SWORD")) {
-                    statDmg += str*.02;
+                    statDmg += str*.2;
                 } else {
-                    statDmg += str*.01;
+                    statDmg += str*.1;
                 }
 
 
                 if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 1") && player.getInventory().getItemInMainHand().getType().toString().endsWith("_SWORD")) {
-                    elementalDamage += (4 + (intel * 0.01));
+                    elementalDamage += (4 + (intel * 0.2));
                 } else {
-                    elementalDamage += (2 + (intel * 0.01));
+                    elementalDamage += (2 + (intel * 0.1));
                 }
             } else if (damagerProfile.getChosenClass().equalsIgnoreCase("archer")) {
-                statDmg +=(str*.005) ;
-                elementalDamage+=(2+ (intel * 0.01));
+                statDmg +=(str*.05) ;
+                elementalDamage+=(2+ (intel * 0.1));
             }
             else if (damagerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
-                statDmg += (str*.005);
-                elementalDamage+=(4+ (intel * 0.01));
+                statDmg += (str*.05);
+                elementalDamage+=(4+ (intel * 0.1));
             }
         }
 
@@ -445,20 +457,30 @@ public class PveListener implements Listener {
 
             //archers
             if (damagerProfile.getChosenClass().equalsIgnoreCase("archer")) {
-                statDmg += (dex*.02);
+                statDmg += (dex*.2);
+
+                if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
+                    statDmg += (dex*.2);
+                }
+
+                if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 2")) {
+                    statDmg += (dex*.1);
+                    elementalDamage += (intel*.1);
+                }
+
                 if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 1")) {
-                    elementalDamage += 3;
-                    elementalDamage += (intel*.01);
+                    elementalDamage += 4;
+                    elementalDamage += (intel*.2);
                 } else {
-                    elementalDamage += 2 + (intel*.01);
+                    elementalDamage += 2 + (intel*.1);
                 }
             }else if (damagerProfile.getChosenClass().equalsIgnoreCase("swordsman")) {
-                statDmg +=(dex*.005) ;
-                elementalDamage+=(2+ (intel * 0.01));
+                statDmg +=(dex*.05) ;
+                elementalDamage+=(2+ (intel * 0.1));
             }
             else if (damagerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
-                statDmg += (dex*.005);
-                elementalDamage+=(4+ (intel * 0.01));
+                statDmg += (dex*.05);
+                elementalDamage+=(4+ (intel * 0.1));
             }
 
 
@@ -471,15 +493,16 @@ public class PveListener implements Listener {
             if (damagerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
                 if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 1")) {
                     elementalDamage += 6;
-                    elementalDamage += (intel*.01);
+                    elementalDamage += (intel*.4);
+
                 } else {
-                    elementalDamage += 4 + (intel*.01);
+                    elementalDamage += 4 + (intel*.2);
                 }
             }else if (damagerProfile.getChosenClass().equalsIgnoreCase("swordsman")) {
-                elementalDamage+=(2+ (intel * 0.005));
+                elementalDamage+=(2+ (intel * 0.05));
             }
             else if (damagerProfile.getChosenClass().equalsIgnoreCase("archer")) {
-                elementalDamage+=(2+ (intel * 0.005));
+                elementalDamage+=(2+ (intel * 0.05));
             }
 
 
@@ -535,7 +558,8 @@ public class PveListener implements Listener {
             double newHealth = Math.min(player.getHealth() + lifestealAmount, maxHealth); // Avoid exceeding max health
             player.setHealth(newHealth);
         }
-
+        player.sendMessage("elemental damage is " + elementalDamage);
+        player.sendMessage("Class " + damagerProfile.getChosenClass() + " Skill " + damagerProfile.getSelectedSkill() + " Damage dealt from stats: " + (int) calculatedDamage);
 
         return calculatedDamage;
     }

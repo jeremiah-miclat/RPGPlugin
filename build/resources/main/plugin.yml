@@ -83,3 +83,15 @@ commands:
   rtp:
     description: "Randomly teleport to a location within the world borders."
     usage: "/rtp"
+  spawn:
+    description: Teleports the player to the world spawn.
+    usage: "/spawn"
+  sethome:
+    description: Set player homes.
+    usage: "/home <homeName>"
+  home:
+    description: Teleport to a saved home.
+    usage: /home <homeName>
+  homedelete:
+    description: Delete a saved home.
+    usage: /homedelete <homeName>

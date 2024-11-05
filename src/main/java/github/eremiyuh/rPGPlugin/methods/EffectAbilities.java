@@ -3,6 +3,7 @@ package github.eremiyuh.rPGPlugin.methods;
 import github.eremiyuh.rPGPlugin.profile.UserProfile;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.type.Switch;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
@@ -39,7 +40,15 @@ public class EffectAbilities {
 
     // Method to burn target
     public void burnTarget(UserProfile profile, Location location, LivingEntity target) {
-        int fireDuration =  100; // Extend fire duration based on profile buff
+        int userInt = 0;
+        String userClass = profile.getChosenClass();
+
+        if (userClass.equalsIgnoreCase("archer")) userInt= profile.getArcherClassInfo().getIntel();
+        if (userClass.equalsIgnoreCase("alchemist")) userInt= profile.getArcherClassInfo().getIntel();
+        if (userClass.equalsIgnoreCase("swordsman")) userInt= profile.getSwordsmanClassInfo().getIntel();
+
+
+        int fireDuration =  100 + (int)(userInt *.02); // Extend fire duration based on profile buff
 
         target.setFireTicks(fireDuration);
 
@@ -67,7 +76,15 @@ public class EffectAbilities {
     public void freezeTarget(UserProfile profile, Location location, LivingEntity target) {
         int slownessDuration = 100; // Longer freeze if ice buff
 
-        target.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, slownessDuration, 4));
+        int userInt = 0;
+        String userClass = profile.getChosenClass();
+
+        if (userClass.equalsIgnoreCase("archer")) userInt= profile.getArcherClassInfo().getIntel();
+        if (userClass.equalsIgnoreCase("alchemist")) userInt= profile.getArcherClassInfo().getIntel();
+        if (userClass.equalsIgnoreCase("swordsman")) userInt= profile.getSwordsmanClassInfo().getIntel();
+
+
+        target.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, slownessDuration+ (int)(userInt *.02), 1));
 
         target.getWorld().spawnParticle(Particle.SNOWFLAKE, target.getLocation(), 30, 0.5, 1, 0.5);
     }
@@ -85,13 +102,20 @@ public class EffectAbilities {
 
     // Method to apply weakness effect
     public void applyWeakness(UserProfile profile, Location sourceLocation, LivingEntity target) {
-        int weaknessDuration = 100; // Duration of the nausea effect in ticks (5 seconds)
-        int weaknessLevel = 1; // Level of the nausea effect (1 is the first level)
 
+
+
+        int userInt = 0;
+        String userClass = profile.getChosenClass();
+
+        if (userClass.equalsIgnoreCase("archer")) userInt= profile.getArcherClassInfo().getIntel();
+        if (userClass.equalsIgnoreCase("alchemist")) userInt= profile.getArcherClassInfo().getIntel();
+        if (userClass.equalsIgnoreCase("swordsman")) userInt= profile.getSwordsmanClassInfo().getIntel();
+        int weaknessDuration = 100+ (int)(userInt *.02); // Duration of the nausea effect in ticks (5 seconds)
 
         Location targetLocation = target.getLocation();
         World world = target.getWorld();
-
+        target.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, weaknessDuration, 1));
 
         for (int i = 0; i < 50; i++) {
             double xOffset = (Math.random() - 0.5) * 1.5;

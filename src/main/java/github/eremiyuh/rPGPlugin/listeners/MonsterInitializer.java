@@ -87,16 +87,14 @@ public class MonsterInitializer implements Listener {
         entity.setCustomName(normalName);
         entity.setCustomNameVisible(true);
 
-        // 5% chance to add +1000% extra health
-        if (Math.random() < .05) {
+        if (Math.random() < .01) {
             extraHealth = (extraHealth * 10); // Add 1000% health
             setBossAttributes(entity, maxCoord, "Boss", ChatColor.RED);
             entity.setMetadata("boss",new FixedMetadataValue(plugin, true));
             entity.setMetadata("lvl",new FixedMetadataValue(plugin, lvl));
         }
 
-        // 1% chance to add +10000% extra health
-        if (Math.random() < 0.01) {
+        if (Math.random() < 0.001) {
             extraHealth = (extraHealth * 100); // Add 10000% health
             setBossAttributes(entity, maxCoord, "World Boss", ChatColor.DARK_PURPLE);
             entity.setMetadata("worldboss",new FixedMetadataValue(plugin, true));

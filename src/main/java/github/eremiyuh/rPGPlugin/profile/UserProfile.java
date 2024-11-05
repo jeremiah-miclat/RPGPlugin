@@ -1,8 +1,8 @@
 package github.eremiyuh.rPGPlugin.profile;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import org.bukkit.Location;
+
+import java.util.*;
 
 public class UserProfile {
     private UUID playerID;
@@ -49,8 +49,16 @@ public class UserProfile {
     private List<String> teamMembers = new ArrayList<>();
 
 
-    private double potion = 1000;
+    private double potion;
+    private int stamina;
 
+
+    //homes
+    private Map<String, Location> homes = new HashMap<>();
+    private int maxHomes = 5;  // Initial maximum homes
+
+
+    //constructor
     public UserProfile(String playerName) {
         this.playerID = UUID.randomUUID(); // Generate a unique ID for the player
         this.playerName = playerName;
@@ -83,6 +91,11 @@ public class UserProfile {
         this.teamMembers = getTeamMembers();
 
         this.potion=1000;
+        this.stamina=1000;
+
+        //home
+        this.homes = new HashMap<>();
+        this.maxHomes = 5;
 
     }
 
@@ -381,6 +394,14 @@ public class UserProfile {
         }
     }
 
+    public int getStamina() {
+        return stamina;
+    }
+
+    public void setStamina(int stamina) {
+        this.stamina = stamina;
+    }
+
     // Inner class to hold class-specific attributes
     public static class ClassAttributes {
         private int str;
@@ -564,5 +585,50 @@ public class UserProfile {
             default:
                 throw new IllegalArgumentException("Invalid attribute: " + attribute);
         }
+    }
+
+
+    //home methods
+    public Map<String, Location> getHomes() {
+        return homes;
+    }
+
+    public boolean addHome(String name, Location location) {
+        if (homes.size() < maxHomes) {
+            homes.put(name, location);
+            return true;
+        }
+        return false;
+    }
+
+    public Location getHome(String name) {
+        return homes.get(name);
+    }
+
+    public boolean homeExists(String name) {
+        return homes.containsKey(name);
+    }
+
+    // Getter for maxHomes
+    public int getMaxHomes() {
+        return maxHomes;
+    }
+
+    // Method to increase max homes
+    public void increaseMaxHomes(int increment) {
+        this.maxHomes += increment;
+    }
+
+    // Optional: Method to set max homes directly
+    public void setMaxHomes(int maxHomes) {
+        this.maxHomes = maxHomes;
+    }
+
+    public boolean removeHome(String homeName) {
+        if (homes.containsKey(homeName)) {
+            homes.remove(homeName);
+            return true;
+        }
+        return false;
     }
 }

@@ -1,6 +1,9 @@
 package github.eremiyuh.rPGPlugin.manager;
 
 import github.eremiyuh.rPGPlugin.profile.UserProfile;
+import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -118,6 +121,27 @@ public class PlayerProfileManager {
         } catch (IOException e) {
             plugin.getLogger().log(Level.SEVERE, "Could not save profile for player: " + playerName, e);
         }
+
+        //home
+        config.set("maxHomes", profile.getMaxHomes());
+
+        Map<String, Location> homes = profile.getHomes();
+        for (Map.Entry<String, Location> homeEntry : homes.entrySet()) {
+            String homeName = homeEntry.getKey();
+            Location loc = homeEntry.getValue();
+            config.set("homes." + homeName + ".world", loc.getWorld().getName());
+            config.set("homes." + homeName + ".x", loc.getX());
+            config.set("homes." + homeName + ".y", loc.getY());
+            config.set("homes." + homeName + ".z", loc.getZ());
+            config.set("homes." + homeName + ".yaw", loc.getYaw());
+            config.set("homes." + homeName + ".pitch", loc.getPitch());
+        }
+
+        try {
+            config.save(profileFile);
+        } catch (IOException e) {
+            plugin.getLogger().log(Level.SEVERE, "Could not save profile for player: " + playerName, e);
+        }
     }
 
     private void saveClassAttributes(FileConfiguration config, String path, UserProfile.ClassAttributes attributes) {
@@ -192,6 +216,28 @@ public class PlayerProfileManager {
             teamMembers = new ArrayList<>(); // Default to an empty list if none exists
         }
         profile.setTeamMembers(teamMembers);
+
+        //home
+        int maxHomes = config.getInt("maxHomes", 5); // Default to 5 if not present
+        profile.setMaxHomes(maxHomes);
+
+        ConfigurationSection homesSection = config.getConfigurationSection("homes");
+        if (homesSection != null) {
+            for (String homeName : homesSection.getKeys(false)) {
+                String worldName = homesSection.getString(homeName + ".world");
+                World world = plugin.getServer().getWorld(worldName);
+                if (world == null) continue; // Skip if the world doesn't exist
+
+                double x = homesSection.getDouble(homeName + ".x");
+                double y = homesSection.getDouble(homeName + ".y");
+                double z = homesSection.getDouble(homeName + ".z");
+                float yaw = (float) homesSection.getDouble(homeName + ".yaw");
+                float pitch = (float) homesSection.getDouble(homeName + ".pitch");
+
+                Location homeLocation = new Location(world, x, y, z, yaw, pitch);
+                profile.addHome(homeName, homeLocation);
+            }
+        }
 
         playerProfiles.put(playerName, profile);
     }

@@ -29,14 +29,14 @@ public class SwordCommand implements CommandExecutor {
 
         // Set the display name and lore
         if (meta != null) {
-            meta.setDisplayName("Agility Sword"); // Optional: Give it a custom name
-            meta.setLore(Arrays.asList("Agility: 1000")); // Set the lore
+            meta.setDisplayName("Int Sword"); // Optional: Give it a custom name
+            meta.setLore(Arrays.asList("Intelligence: 10000")); // Set the lore
             sword.setItemMeta(meta);
         }
 
         // Give the sword to the player
         player.getInventory().addItem(sword);
-        player.sendMessage("You have been given a sword with Agility: 1000!");
+        player.sendMessage("You have been given a sword");
 
         return true;
     }

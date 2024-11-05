@@ -48,7 +48,7 @@ public class RPGPlugin extends JavaPlugin {
          new ArrowHitListener((this));
         chunkBorderBlueVisualizer = new ChunkBorderBlueVisualizer(this);
         chunkBorderRedVisualizer = new ChunkBorderRedVisualizer(this);
-        getServer().getPluginManager().registerEvents(new AlchemistThrowPotion(profileManager),this);
+        getServer().getPluginManager().registerEvents(new AlchemistThrowPotion(profileManager, this),this);
         getServer().getPluginManager().registerEvents(new DeadMobListener(profileManager),this);
         getServer().getPluginManager().registerEvents(new MonsterInitializer(this),this);
         getServer().getPluginManager().registerEvents(new ChunkProtectionListener(chunkManager,chunkBorderBlueVisualizer,chunkBorderRedVisualizer),this);
@@ -58,6 +58,7 @@ public class RPGPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new PlayerTeleportListener(playerStatBuff,flyCommand,this ), this);
         getServer().getPluginManager().registerEvents(new PlayerDeathListener(), this);
         getServer().getPluginManager().registerEvents(new ArmorChangePlugin(profileManager,this), this);
+        Bukkit.getPluginManager().registerEvents(new CheckClassCommand(profileManager), this);
         // Register the command executor
         Objects.requireNonNull(this.getCommand("checkstatus")).setExecutor(new CheckClassCommand(profileManager));
         Objects.requireNonNull(getCommand("convertlevels")).setExecutor(new ConvertLevelsCommand(profileManager));
@@ -82,13 +83,12 @@ public class RPGPlugin extends JavaPlugin {
         Objects.requireNonNull(getCommand("giveap")).setExecutor(new AttributePointsCommand(profileManager));
         Objects.requireNonNull(getCommand("fly")).setExecutor(new FlyCommand(profileManager, this));
         Objects.requireNonNull(getCommand("buypotion")).setExecutor(new LapisToPotion(profileManager));
-        // Register the listener
-        Bukkit.getPluginManager().registerEvents(new CheckClassCommand(profileManager), this);
         Objects.requireNonNull(this.getCommand("givesword")).setExecutor(new SwordCommand());
         Objects.requireNonNull(this.getCommand("rtp")).setExecutor(new RTPCommand(this));
-
-
-
+        Objects.requireNonNull(this.getCommand("spawn")).setExecutor(new SpawnCommand());
+        Objects.requireNonNull(this.getCommand("sethome")).setExecutor(new SetHomeCommand(profileManager));
+        Objects.requireNonNull(this.getCommand("home")).setExecutor(new HomeCommand(profileManager));
+        Objects.requireNonNull(this.getCommand("homedelete")).setExecutor(new DeleteHomeCommand(profileManager));
         // Load the world
         loadWorld("world_rpg");
 
