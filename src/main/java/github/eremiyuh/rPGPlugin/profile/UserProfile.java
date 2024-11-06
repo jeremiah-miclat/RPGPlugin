@@ -50,12 +50,18 @@ public class UserProfile {
 
 
     private double potion;
-    private int stamina;
 
 
     //homes
     private Map<String, Location> homes = new HashMap<>();
     private int maxHomes = 5;  // Initial maximum homes
+
+
+    // TO ADD
+    // other currencies
+    private int enderpearl;
+    private int stamina;
+    private int durability;
 
 
     //constructor
@@ -86,12 +92,17 @@ public class UserProfile {
         this.lapiz = 0;
         this.gold = 0;
 
+        // TO ADD
+        // other currencies
+        this.enderpearl = 100;
+        this.stamina = 10000;
+        this.durability = 10000;
+
         this.claimPoints =100;
         this.team = "none";
         this.teamMembers = getTeamMembers();
 
         this.potion=1000;
-        this.stamina=1000;
 
         //home
         this.homes = new HashMap<>();
@@ -367,11 +378,42 @@ public class UserProfile {
                 return lapiz;
             case "gold":
                 return gold;
+            case "enderpearl":
+                return enderpearl;
             default:
                 throw new IllegalArgumentException("Invalid currency name: " + currencyName);
         }
     }
 
+    // TO ADD
+    // other currencies
+    public int getEnderPearl() {
+        return enderpearl;
+    }
+
+    public void setEnderPearl(int enderpearl) {
+        this.enderpearl = enderpearl;
+    }
+
+    public int getStamina() {
+        return stamina;
+    }
+
+    public void setStamina(int stamina) {
+        this.stamina = stamina;
+    }
+
+
+    public int getDurability() {
+        return durability;
+    }
+
+    public void setDurability(int durability) {
+        this.durability = durability;
+    }
+
+
+    // TO UPDATE
     public void setCurrency(String currencyName, double amount) {
         switch (currencyName.toLowerCase()) {
             case "diamond":
@@ -389,17 +431,12 @@ public class UserProfile {
             case "gold":
                 this.gold = amount;
                 break;
+            case "enderpearl":
+                this.enderpearl = (int) amount;
+                break;
             default:
                 throw new IllegalArgumentException("Invalid currency name: " + currencyName);
         }
-    }
-
-    public int getStamina() {
-        return stamina;
-    }
-
-    public void setStamina(int stamina) {
-        this.stamina = stamina;
     }
 
     // Inner class to hold class-specific attributes

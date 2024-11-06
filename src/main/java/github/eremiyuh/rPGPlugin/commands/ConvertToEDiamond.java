@@ -25,6 +25,8 @@ public class ConvertToEDiamond implements CommandExecutor {
         currencyMaterials.put("lapis", Material.LAPIS_LAZULI);
         currencyMaterials.put("emerald", Material.EMERALD);
         currencyMaterials.put("iron", Material.IRON_INGOT);
+        currencyMaterials.put("enderpearl", Material.ENDER_PEARL);
+
     }
 
     public ConvertToEDiamond(PlayerProfileManager profileManager) {
@@ -47,7 +49,7 @@ public class ConvertToEDiamond implements CommandExecutor {
         Material currencyMaterial = currencyMaterials.get(currencyName);
 
         if (currencyMaterial == null) {
-            player.sendMessage("Invalid currency type. Available types: diamond, gold, lapis, emerald, iron.");
+            player.sendMessage("Invalid currency type. Available types: diamond, gold, lapis, emerald, iron, enderpearl.");
             return true;
         }
 

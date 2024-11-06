@@ -21,6 +21,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.projectiles.ProjectileSource;
+import org.bukkit.inventory.meta.Damageable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,7 +72,11 @@ public class PveListener implements Listener {
         // Pve melee
         if (damager instanceof Player attacker && damaged instanceof LivingEntity victim && !(damaged instanceof Player))
         {
-
+            ItemStack itemInHand = attacker.getInventory().getItemInMainHand();
+            ItemMeta meta = itemInHand.getItemMeta();
+            if (meta != null) {
+                itemInHand.setDurability((short) 0);
+            }
 
             UserProfile attackerProfile = profileManager.getProfile(attacker.getName());
 
@@ -98,6 +103,13 @@ public class PveListener implements Listener {
             // pve with bows
             if (projectile instanceof Arrow && shooter instanceof Player attacker) {
                 UserProfile attackerProfile = profileManager.getProfile(attacker.getName());
+                // If the item is not null and has durability (like tools or weapons)
+                ItemStack itemInHand = attacker.getInventory().getItemInMainHand();
+                ItemMeta meta = itemInHand.getItemMeta();
+                if (meta != null) {
+                    itemInHand.setDurability((short) 0);
+
+                }
                 if (victim.hasMetadata("attackerList")) {
                     // Retrieve the metadata safely
                     @SuppressWarnings("unchecked") // Suppress unchecked cast warning
@@ -148,7 +160,17 @@ public class PveListener implements Listener {
         if (damager instanceof LivingEntity angryMob && !(damager instanceof Player) && damaged instanceof Player damagedPLayer) {
 
             if (angryMob.hasMetadata("extraDamage")) {
+                // Assuming 'attacker' is the player whose armor you want to modify
+                ItemStack[] armorItems = damagedPLayer.getInventory().getArmorContents();
+
+                for (ItemStack item : armorItems) {
+                    if (item != null) {
+                        // Set the durability to the maximum for each armor piece
+                        item.setDurability((short) 0);  // 0 represents full durability
+                    }
+                }
                 UserProfile damagedProfile = profileManager.getProfile(damagedPLayer.getName());
+                damagedProfile.setDurability(damagedProfile.getDurability()-1);
                 double extraDamage = angryMob.getMetadata("extraDamage").get(0).asDouble();
                 if (PlayerBuffPerms.canReduceDmg(damagedProfile)) {
                     event.setDamage((event.getDamage() + extraDamage)/2);
@@ -164,6 +186,7 @@ public class PveListener implements Listener {
 
             if (angryMob.hasMetadata("extraDamage")) {
                 UserProfile damagedProfile = profileManager.getProfile(damagedPLayer.getName());
+                damagedProfile.setDurability(damagedProfile.getDurability()-1);
                 double extraDamage = angryMob.getMetadata("extraDamage").get(0).asDouble();
                 if (PlayerBuffPerms.canReduceDmg(damagedProfile)) {
                     event.setDamage((event.getDamage() + extraDamage)/2);
@@ -558,9 +581,19 @@ public class PveListener implements Listener {
             double newHealth = Math.min(player.getHealth() + lifestealAmount, maxHealth); // Avoid exceeding max health
             player.setHealth(newHealth);
         }
-        player.sendMessage("elemental damage is " + elementalDamage);
-        player.sendMessage("Class " + damagerProfile.getChosenClass() + " Skill " + damagerProfile.getSelectedSkill() + " Damage dealt from stats: " + (int) calculatedDamage);
+        if (damagerProfile.getDurability() < 1 && !damagerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
+            calculatedDamage /= 2;
+        } else {
+            damagerProfile.setDurability(damagerProfile.getDurability() - 1);
+        }
 
+        if (damagerProfile.getStamina() < 1) {
+            calculatedDamage /= 2;
+        } else {
+            damagerProfile.setStamina(damagerProfile.getStamina() - 1);
+        }
+
+        damagerProfile.setStamina(damagerProfile.getStamina()-1);
         return calculatedDamage;
     }
 

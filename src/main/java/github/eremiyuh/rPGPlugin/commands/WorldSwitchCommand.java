@@ -46,6 +46,12 @@ public class WorldSwitchCommand implements CommandExecutor {
             case "normal":
                 targetWorldName = "world";
                 break;
+            case "rsw1":
+                targetWorldName = "world_resource_1";
+                break;
+            case "rsw2":
+                targetWorldName = "world_resource_2";
+                break;
             default:
                 player.sendMessage("Invalid world specified. Use 'rpg' or 'normal'.");
                 return false;

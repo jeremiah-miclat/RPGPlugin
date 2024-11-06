@@ -79,6 +79,29 @@ public class CheckClassCommand implements CommandExecutor, Listener {
         // Add attribute point items to the GUI
         createAttributePointItems(gui, player, profile);
 
+        // Create a single combat icon to show all player's currencies
+        ItemStack combatIcon = new ItemStack(Material.BOOK);
+        ItemMeta combatMeta = combatIcon.getItemMeta();
+
+        if (combatMeta != null) {
+            combatMeta.setDisplayName("§eSTATUS: ");
+
+            // Set lore to show each currency balance with color coding
+            List<String> combatLore = new ArrayList<>();
+            combatLore.add("§eStamina: §7" + profile.getStamina());
+            combatLore.add("§eDurability: §7" + profile.getDurability());
+            combatLore.add("§eEnder Pearl: §7" + profile.getEnderPearl());
+            combatLore.add("§ePotion: §7" + profile.getPotion());
+
+
+
+            combatMeta.setLore(combatLore);
+
+            combatIcon.setItemMeta(combatMeta);
+        }
+
+        gui.setItem(2, combatIcon);
+
         // Open the GUI for the player
         player.openInventory(gui);
     }

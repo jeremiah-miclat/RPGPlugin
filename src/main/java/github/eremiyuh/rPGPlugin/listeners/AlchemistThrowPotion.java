@@ -55,6 +55,12 @@ public class AlchemistThrowPotion implements Listener {
 
     @EventHandler
     public void onDoctorThrewPotion(PotionSplashEvent event) {
+        if (event.getEntity().getShooter() instanceof Player thrower  && thrower.getAllowFlight()) {
+            thrower.sendMessage("Disable fly");
+            event.setCancelled(true);
+            return;
+        }
+
 
         if (!Objects.requireNonNull(event.getEntity().getLocation().getWorld()).getName().equals("world_rpg")) {
             return;
@@ -63,15 +69,10 @@ public class AlchemistThrowPotion implements Listener {
         if (event.getEntity().getShooter() instanceof Player thrower) {
             UserProfile throwerProfile = profileManager.getProfile(thrower.getName());
 
-            if (thrower.getAllowFlight()) {
-                thrower.sendMessage("You are flying, don't waste potions");
-                event.setCancelled(true);
-                return;
-            }
+
 
             if (throwerProfile != null && "alchemist".equalsIgnoreCase(throwerProfile.getChosenClass()) && throwerProfile.getSelectedSkill().equalsIgnoreCase("skill 2")) {
                 double intel = throwerProfile.getAlchemistClassInfo() != null ? throwerProfile.getAlchemistClassInfo().getIntel() : 0;
-
 
                 for (PotionEffect effect : event.getPotion().getEffects()) {
                     int baseIntensity = effect.getAmplifier();

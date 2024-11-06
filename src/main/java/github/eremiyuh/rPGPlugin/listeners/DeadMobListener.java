@@ -79,7 +79,7 @@ public class DeadMobListener implements Listener {
 
                 double health = mob.getMetadata("extraDamage").get(0).asDouble() * 10;
                 RANDOMCHANCE += (health * 0.00045);
-                int dropMultiplier = (int) (health * 0.01);
+                int dropMultiplier = (int) (1+(health * 0.01));
 
                 String customName = mob.getCustomName();
                 boolean isBoss = isBoss(mob);

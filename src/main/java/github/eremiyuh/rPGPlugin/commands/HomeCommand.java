@@ -28,6 +28,11 @@ public class HomeCommand implements CommandExecutor {
         Player player = (Player) sender;
         UserProfile profile = profileManager.getProfile(player.getName());
 
+        if (profile.getEnderPearl()<1) {
+            player.sendMessage("Need ender pearl to teleport");
+            return true;
+        }
+
         if (profile == null) {
             player.sendMessage("Your profile could not be found.");
             return true;
@@ -55,7 +60,7 @@ public class HomeCommand implements CommandExecutor {
             player.sendMessage("Use /home <homeName> to teleport to a specific home.");
             return true;
         }
-
+        profile.setEnderPearl(profile.getEnderPearl()-1);
         player.teleport(homeLocation);
         player.sendMessage("Teleported to home '" + homeName + "'.");
         return true;

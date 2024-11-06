@@ -109,6 +109,10 @@ public class PlayerProfileManager {
         config.set("lapis", profile.getCurrency("lapis"));
         config.set("gold", profile.getCurrency("gold"));
 
+        // TO ADD
+        config.set("enderpearl", profile.getCurrency("enderpearl"));
+        config.set("stamina", profile.getStamina());
+        config.set("durability", profile.getDurability());
 
         //claimPoints
         config.set("claimPoints",profile.getClaimPoints());
@@ -195,13 +199,16 @@ public class PlayerProfileManager {
 
 
         //currencies
-        profile.setDiamond(config.getDouble("diamond",0));
         profile.setCurrency("diamond", config.getDouble("diamond", 0));
         profile.setCurrency("emerald", config.getDouble("emerald", 0));
         profile.setCurrency("iron", config.getDouble("iron", 0));
         profile.setCurrency("lapis", config.getDouble("lapis", 0));
         profile.setCurrency("gold", config.getDouble("gold", 0));
 
+
+        profile.setCurrency("enderpearl", config.getInt("enderpearl", 100));
+        profile.setStamina(config.getInt("stamina", 10000));
+        profile.setDurability(config.getInt("durability", 10000));
 
         //claim points
         profile.setClaimPoints(config.getDouble("claimPoints",100));

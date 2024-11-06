@@ -8,6 +8,7 @@ import github.eremiyuh.rPGPlugin.commandswithgui.SkillsGui;
 import github.eremiyuh.rPGPlugin.listeners.*;
 import github.eremiyuh.rPGPlugin.manager.ChunkManager;
 import github.eremiyuh.rPGPlugin.manager.PlayerProfileManager;
+import github.eremiyuh.rPGPlugin.maps.ResourceWorldGenerator;
 import github.eremiyuh.rPGPlugin.methods.ChunkBorderBlueVisualizer;
 import github.eremiyuh.rPGPlugin.methods.ChunkBorderRedVisualizer;
 import github.eremiyuh.rPGPlugin.methods.DamageAbilityManager;
@@ -16,6 +17,7 @@ import org.bukkit.*;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import javax.sql.rowset.spi.SyncFactoryException;
 import java.io.File;
 import java.util.Objects;
 
@@ -85,7 +87,7 @@ public class RPGPlugin extends JavaPlugin {
         Objects.requireNonNull(getCommand("buypotion")).setExecutor(new LapisToPotion(profileManager));
         Objects.requireNonNull(this.getCommand("givesword")).setExecutor(new SwordCommand());
         Objects.requireNonNull(this.getCommand("rtp")).setExecutor(new RTPCommand(this));
-        Objects.requireNonNull(this.getCommand("spawn")).setExecutor(new SpawnCommand());
+        Objects.requireNonNull(this.getCommand("spawn")).setExecutor(new SpawnCommand(profileManager));
         Objects.requireNonNull(this.getCommand("sethome")).setExecutor(new SetHomeCommand(profileManager));
         Objects.requireNonNull(this.getCommand("home")).setExecutor(new HomeCommand(profileManager));
         Objects.requireNonNull(this.getCommand("homedelete")).setExecutor(new DeleteHomeCommand(profileManager));
@@ -133,11 +135,12 @@ public class RPGPlugin extends JavaPlugin {
         }
 
         World labyrinthWorld = getServer().getWorld("world_labyrinth");
-        if (world != null) {
-            world.save();
+        if (labyrinthWorld != null) {
+            labyrinthWorld.save();
             getLogger().info("world labyrinth was SAVED.");
         }
         chunkManager.saveChunkData();
+        // Handle resource worlds separately
     }
 
     private void loadWorld(String worldName) {
@@ -149,6 +152,14 @@ public class RPGPlugin extends JavaPlugin {
 
         } else {
             getLogger().info("World " + worldName + " is already loaded.");
+        }
+    }
+
+    private void setNightForever() {
+        World resourceWorld = Bukkit.getWorld("world_resource");
+        if (resourceWorld != null) {
+            resourceWorld.setTime(18000); // Set to night initially
+            resourceWorld.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
         }
     }
 

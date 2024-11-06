@@ -25,7 +25,9 @@ public class CurrencyConverter implements CommandExecutor {
         currencyMaterials.put("lapis", Material.LAPIS_LAZULI);
         currencyMaterials.put("emerald", Material.EMERALD);
         currencyMaterials.put("iron", Material.IRON_INGOT);
+        currencyMaterials.put("enderpearl", Material.ENDER_PEARL);
     }
+
 
     public CurrencyConverter(PlayerProfileManager profileManager) {
         this.profileManager = profileManager;
@@ -39,7 +41,7 @@ public class CurrencyConverter implements CommandExecutor {
         }
 
         if (args.length < 2) {
-            player.sendMessage("Please specify a currency (diamond, gold, lapis, emerald, iron) and an amount.");
+            player.sendMessage("Please specify a currency (diamond, gold, lapis, emerald, iron, ender pearl) and an amount.");
             return true;
         }
 
