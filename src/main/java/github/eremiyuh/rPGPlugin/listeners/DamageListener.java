@@ -21,13 +21,12 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.projectiles.ProjectileSource;
-import org.bukkit.inventory.meta.Damageable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class PveListener implements Listener {
+public class DamageListener implements Listener {
 
     private  final PlayerProfileManager profileManager;
     private final EffectsAbilityManager effectsAbilityManager;
@@ -35,7 +34,7 @@ public class PveListener implements Listener {
     private final RPGPlugin plugin;
 
 
-    public PveListener(PlayerProfileManager profileManager, EffectsAbilityManager effectsAbilityManager, DamageAbilityManager damageAbilityManager,RPGPlugin plugin) {
+    public DamageListener(PlayerProfileManager profileManager, EffectsAbilityManager effectsAbilityManager, DamageAbilityManager damageAbilityManager, RPGPlugin plugin) {
         this.profileManager = profileManager;
         this.effectsAbilityManager = effectsAbilityManager;
         this. damageAbilityManager = damageAbilityManager;
@@ -48,10 +47,6 @@ public class PveListener implements Listener {
         if (event.getDamager() instanceof Player player && player.getAllowFlight()) {
             player.sendMessage("you can't attack while flying");
             event.setCancelled(true);
-            return;
-        }
-
-        if (!Objects.requireNonNull(event.getDamager().getLocation().getWorld()).getName().equals("world_rpg")) {
             return;
         }
 
@@ -68,6 +63,86 @@ public class PveListener implements Listener {
 
         // Get the location of the damager entity (if damager exists)
         Location damagerLocation = damager.getLocation();
+
+        // PVP HANDLER
+
+        // Melee PVP
+        if (damager instanceof Player attacker && damaged instanceof Player){
+
+            UserProfile attackerProfile = profileManager.getProfile(attacker.getName());
+            UserProfile damagedProfile = profileManager.getProfile(damaged.getName());
+
+            if (attackerProfile==null || damagedProfile==null) {
+                attacker.sendMessage("Your profile or target's profile can not be found. contact developer to fix files");
+                damaged.sendMessage("Your profile or dude's profile can not be found. contact developer to fix files");
+                event.setCancelled(true);
+            }
+
+            assert attackerProfile != null;
+            if (!attackerProfile.isPvpEnabled()) {
+                event.setCancelled(true);
+            }
+
+            assert damagedProfile != null;
+            if (!damagedProfile.isPvpEnabled()) {
+                event.setCancelled(true);
+            }
+
+
+        }
+        // PVP with bow
+        if (damager instanceof Projectile projectile && damaged instanceof Player && projectile.getShooter() instanceof Player shooter ){
+            //bow
+                UserProfile shooterProfile = profileManager.getProfile(shooter.getName());
+                UserProfile damagedProfile = profileManager.getProfile(damaged.getName());
+
+                if (shooterProfile==null || damagedProfile==null) {
+                    shooter.sendMessage("Your profile or target's profile can not be found. contact developer to fix files");
+                    damaged.sendMessage("Your profile or dude's profile can not be found. contact developer to fix files");
+                    event.setCancelled(true);
+                }
+
+                assert shooterProfile != null;
+                if (!shooterProfile.isPvpEnabled()) {
+                    event.setCancelled(true);
+                }
+
+                assert damagedProfile != null;
+                if (!damagedProfile.isPvpEnabled()) {
+                    event.setCancelled(true);
+                }
+        }
+        // PVP with Potion
+        if (damager instanceof Projectile projectile && damaged instanceof Player && projectile instanceof ThrownPotion thrownPotion && thrownPotion.getShooter() instanceof Player thrower ){
+            //bow
+            UserProfile throwerProfile = profileManager.getProfile(thrower.getName());
+            UserProfile damagedProfile = profileManager.getProfile(damaged.getName());
+
+            if (throwerProfile==null || damagedProfile==null) {
+                thrower.sendMessage("Your profile or target's profile can not be found. contact developer to fix files");
+                damaged.sendMessage("Your profile or dude's profile can not be found. contact developer to fix files");
+                event.setCancelled(true);
+            }
+
+            assert throwerProfile != null;
+            if (!throwerProfile.isPvpEnabled()) {
+                event.setCancelled(true);
+            }
+
+            assert damagedProfile != null;
+            if (!damagedProfile.isPvpEnabled()) {
+                event.setCancelled(true);
+            }
+
+        }
+
+
+
+        // END OF PVP HANDLER
+
+        if (!Objects.requireNonNull(event.getDamager().getLocation().getWorld()).getName().equals("world_rpg")) {
+            return;
+        }
 
         // Pve melee
         if (damager instanceof Player attacker && damaged instanceof LivingEntity victim && !(damaged instanceof Player))
@@ -88,6 +163,7 @@ public class PveListener implements Listener {
 
                 // Add the attacker's name to the list if it's not already present
                 String attackerName = attacker.getName();
+                assert attackerList != null;
                 if (!attackerList.contains(attackerName)) {
                     attackerList.add(attackerName);
                     victim.setMetadata("attackerList", new FixedMetadataValue(plugin, attackerList)); // Update metadata
@@ -132,7 +208,7 @@ public class PveListener implements Listener {
             }
 
             //PVE with thrown instant damage
-            if (projectile instanceof ThrownPotion && projectile.getShooter() instanceof Player attacker) {
+            if (projectile instanceof ThrownPotion && projectile.getShooter() instanceof Player attacker ) {
                 UserProfile attackerProfile = profileManager.getProfile(attacker.getName());
                 if (victim.hasMetadata("attackerList")) {
                     // Retrieve the metadata safely
@@ -160,22 +236,22 @@ public class PveListener implements Listener {
         if (damager instanceof LivingEntity angryMob && !(damager instanceof Player) && damaged instanceof Player damagedPLayer) {
 
             if (angryMob.hasMetadata("extraDamage")) {
-                // Assuming 'attacker' is the player whose armor you want to modify
-                ItemStack[] armorItems = damagedPLayer.getInventory().getArmorContents();
-
-                for (ItemStack item : armorItems) {
-                    if (item != null) {
-                        // Set the durability to the maximum for each armor piece
-                        item.setDurability((short) 0);  // 0 represents full durability
-                    }
-                }
                 UserProfile damagedProfile = profileManager.getProfile(damagedPLayer.getName());
                 damagedProfile.setDurability(damagedProfile.getDurability()-1);
+                damagedProfile.setStamina(damagedProfile.getStamina()-1);
                 double extraDamage = angryMob.getMetadata("extraDamage").get(0).asDouble();
                 if (PlayerBuffPerms.canReduceDmg(damagedProfile)) {
-                    event.setDamage((event.getDamage() + extraDamage)/2);
-                } else {
-                    event.setDamage((event.getDamage() + extraDamage));
+                    event.setDamage((event.getDamage() + extraDamage)/4);
+                }
+                else if (damagedProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
+                    event.setDamage((event.getDamage() + extraDamage)*1.2);
+                }
+                else {
+                    if (damagedProfile.getChosenClass().equalsIgnoreCase("swordsman")) {
+                        event.setDamage((event.getDamage() + extraDamage)/1.25);
+                    } else {
+                        event.setDamage((event.getDamage() + extraDamage));
+                    }
                 }
 
 
@@ -187,11 +263,20 @@ public class PveListener implements Listener {
             if (angryMob.hasMetadata("extraDamage")) {
                 UserProfile damagedProfile = profileManager.getProfile(damagedPLayer.getName());
                 damagedProfile.setDurability(damagedProfile.getDurability()-1);
+                damagedProfile.setStamina(damagedProfile.getStamina()-1);
                 double extraDamage = angryMob.getMetadata("extraDamage").get(0).asDouble();
                 if (PlayerBuffPerms.canReduceDmg(damagedProfile)) {
-                    event.setDamage((event.getDamage() + extraDamage)/2);
-                } else {
-                    event.setDamage((event.getDamage() + extraDamage));
+                    event.setDamage((event.getDamage() + extraDamage)/4);
+                }
+                else if (damagedProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
+                    event.setDamage((event.getDamage() + extraDamage)*1.2);
+                }
+                else {
+                    if (damagedProfile.getChosenClass().equalsIgnoreCase("swordsman")) {
+                        event.setDamage((event.getDamage() + extraDamage)/1.25);
+                    } else {
+                        event.setDamage((event.getDamage() + extraDamage));
+                    }
                 }
 
 
@@ -202,11 +287,21 @@ public class PveListener implements Listener {
 
             if (angryMob.hasMetadata("extraDamage")) {
                 UserProfile damagedProfile = profileManager.getProfile(damagedPLayer.getName());
+                damagedProfile.setDurability(damagedProfile.getDurability()-1);
+                damagedProfile.setStamina(damagedProfile.getStamina()-1);
                 double extraDamage = angryMob.getMetadata("extraDamage").get(0).asDouble();
                 if (PlayerBuffPerms.canReduceDmg(damagedProfile)) {
-                    event.setDamage((event.getDamage() + extraDamage)/2);
-                } else {
-                    event.setDamage((event.getDamage() + extraDamage));
+                    event.setDamage((event.getDamage() + extraDamage)/4);
+                }
+                else if (damagedProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
+                    event.setDamage((event.getDamage() + extraDamage)*1.2);
+                }
+                else {
+                    if (damagedProfile.getChosenClass().equalsIgnoreCase("swordsman")) {
+                        event.setDamage((event.getDamage() + extraDamage)/1.25);
+                    } else {
+                        event.setDamage((event.getDamage() + extraDamage));
+                    }
                 }
 
 
@@ -410,7 +505,7 @@ public class PveListener implements Listener {
             luk = damagerProfile.getSwordsmanClassInfo().getLuk();
         }
 
-        double strFromLore = 0;
+
 
         // Apply additional stats from item lore
         ItemStack[] equipment = {
@@ -422,20 +517,44 @@ public class PveListener implements Listener {
                 player.getInventory().getItemInOffHand()
         };
 
+
+
         for (ItemStack item : equipment) {
             if (item != null && item.hasItemMeta()) {
                 ItemMeta meta = item.getItemMeta();
                 if (meta != null && meta.hasLore()) {
                     for (String lore : Objects.requireNonNull(meta.getLore())) {
                         if (lore.startsWith("Strength: ")) {
-                            str += parseLoreValue(lore);
-                            strFromLore += parseLoreValue(lore);
+
+                            if (damagerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
+                                str += (Math.round(1.1*parseLoreValue(lore)));
+                            }
+                            else {
+                                str += parseLoreValue(lore);
+                            }
+
+
                         } else if (lore.startsWith("Dexterity: ")) {
-                            dex += parseLoreValue(lore);
+                            if (damagerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
+                                dex += (Math.round(1.1*parseLoreValue(lore)));
+                            }
+                            else {
+                                dex += parseLoreValue(lore);
+                            }
                         } else if (lore.startsWith("Intelligence: ")) {
-                            intel += parseLoreValue(lore);
+                            if (damagerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
+                                intel += (Math.round(1.1*parseLoreValue(lore)));
+                            }
+                            else {
+                                intel += parseLoreValue(lore);
+                            }
                         } else if (lore.startsWith("Luck: ")) {
-                            luk += parseLoreValue(lore);
+                            if (damagerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
+                                luk += (Math.round(1.1*parseLoreValue(lore)));
+                            }
+                            else {
+                                luk += parseLoreValue(lore);
+                            }
                         }
                     }
                 }

@@ -29,7 +29,7 @@ public class WorldSwitchCommand implements CommandExecutor {
         Player player = (Player) sender;
 
         if (args.length < 1) {
-            player.sendMessage("Specify the world to switch to: /switchworld <rpg|normal>");
+            player.sendMessage("Specify the world to switch to: /switchworld <abyss|normal>");
             return false;
         }
 
@@ -37,23 +37,14 @@ public class WorldSwitchCommand implements CommandExecutor {
         String targetWorldName;
 
         switch (worldType) {
-            case "rpg":
+            case "abyss":
                 targetWorldName = "world_rpg";
-                break;
-            case "rpg2":
-                targetWorldName = "world_labyrinth";
                 break;
             case "normal":
                 targetWorldName = "world";
                 break;
-            case "rsw1":
-                targetWorldName = "world_resource_1";
-                break;
-            case "rsw2":
-                targetWorldName = "world_resource_2";
-                break;
             default:
-                player.sendMessage("Invalid world specified. Use 'rpg' or 'normal'.");
+                player.sendMessage("Invalid world specified. Use 'abyss' or 'normal'.");
                 return false;
         }
 
@@ -77,7 +68,7 @@ public class WorldSwitchCommand implements CommandExecutor {
 
         playerStatBuff.updatePlayerStatsToNormal(player);
 
-        if (targetWorldName.contains("rpg") || targetWorldName.contains("labyrinth")) {
+        if (targetWorldName.contains("rpg")) {
             playerStatBuff.updatePlayerStatsToRPG(player);
         }
 

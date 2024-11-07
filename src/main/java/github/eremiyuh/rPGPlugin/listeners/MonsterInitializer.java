@@ -37,6 +37,10 @@ public class MonsterInitializer implements Listener {
             return;
         }
 
+        if (event.getEntity() instanceof Phantom) {
+            event.setCancelled(true);
+        }
+
         if (event.getEntity() instanceof Monster || event.getEntity() instanceof Wolf || event.getEntity() instanceof IronGolem) {
             Location spawnLocation = event.getLocation();
 
@@ -138,6 +142,7 @@ public class MonsterInitializer implements Listener {
     private void setNormalMonsterName(LivingEntity entity) {
 
     }
+
 
 
 }

@@ -8,17 +8,14 @@ import github.eremiyuh.rPGPlugin.commandswithgui.SkillsGui;
 import github.eremiyuh.rPGPlugin.listeners.*;
 import github.eremiyuh.rPGPlugin.manager.ChunkManager;
 import github.eremiyuh.rPGPlugin.manager.PlayerProfileManager;
-import github.eremiyuh.rPGPlugin.maps.ResourceWorldGenerator;
 import github.eremiyuh.rPGPlugin.methods.ChunkBorderBlueVisualizer;
 import github.eremiyuh.rPGPlugin.methods.ChunkBorderRedVisualizer;
 import github.eremiyuh.rPGPlugin.methods.DamageAbilityManager;
 import github.eremiyuh.rPGPlugin.methods.EffectsAbilityManager;
 import org.bukkit.*;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
 
-import javax.sql.rowset.spi.SyncFactoryException;
-import java.io.File;
+import java.util.HashMap;
 import java.util.Objects;
 
 public class RPGPlugin extends JavaPlugin {
@@ -28,7 +25,7 @@ public class RPGPlugin extends JavaPlugin {
     private ChunkBorderBlueVisualizer chunkBorderBlueVisualizer;
     private ChunkBorderRedVisualizer chunkBorderRedVisualizer;
     private PlayerStatBuff playerStatBuff;
-//    private MonsterStrengthScalingListener monsterStrengthScalingListener;
+    private final HashMap<String, String> teleportRequests = new HashMap<>();
 
     @Override
     public void onEnable() {
@@ -43,11 +40,12 @@ public class RPGPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new PlayerQuitListener(profileManager), this);
         Objects.requireNonNull(getCommand("selectclass")).setExecutor(new SelectClassCommand(this, profileManager));
         getServer().getPluginManager().registerEvents(new OptimizedVampireSunlightListener(profileManager, this),this);
-        PveListener pveListenerListener = new PveListener(profileManager, effectsAbilityManager, damageAbilityManager,this);
-        getServer().getPluginManager().registerEvents(pveListenerListener,this);
+        DamageListener damageListenerListener = new DamageListener(profileManager, effectsAbilityManager, damageAbilityManager,this);
+        getServer().getPluginManager().registerEvents(damageListenerListener,this);
         getServer().getPluginManager().registerEvents(new PotionGiveListener(this,profileManager),this);
          new OverworldBlastProtectionListener(this);
          new ArrowHitListener((this));
+
         chunkBorderBlueVisualizer = new ChunkBorderBlueVisualizer(this);
         chunkBorderRedVisualizer = new ChunkBorderRedVisualizer(this);
         getServer().getPluginManager().registerEvents(new AlchemistThrowPotion(profileManager, this),this);
@@ -91,6 +89,16 @@ public class RPGPlugin extends JavaPlugin {
         Objects.requireNonNull(this.getCommand("sethome")).setExecutor(new SetHomeCommand(profileManager));
         Objects.requireNonNull(this.getCommand("home")).setExecutor(new HomeCommand(profileManager));
         Objects.requireNonNull(this.getCommand("homedelete")).setExecutor(new DeleteHomeCommand(profileManager));
+        Objects.requireNonNull(this.getCommand("convertfood")).setExecutor(new ConvertFoodCommand(profileManager));
+        Objects.requireNonNull(this.getCommand("payblacksmith")).setExecutor(new PayBlackSmithCommand(profileManager));
+        Objects.requireNonNull(getCommand("healthscale")).setExecutor(new HealthScale(this));
+        Objects.requireNonNull(getCommand("tphb")).setExecutor(new TeleportToHighestBlock(profileManager));
+        Objects.requireNonNull(getCommand("tpt")).setExecutor(new TptCommand(this,teleportRequests,profileManager));
+        Objects.requireNonNull(getCommand("tpa")).setExecutor(new TpaCommand(this,teleportRequests,profileManager));
+
+
+        oneManSleep();
+
         // Load the world
         loadWorld("world_rpg");
 
@@ -160,6 +168,13 @@ public class RPGPlugin extends JavaPlugin {
         if (resourceWorld != null) {
             resourceWorld.setTime(18000); // Set to night initially
             resourceWorld.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
+        }
+    }
+
+    private void oneManSleep() {
+        World world = Bukkit.getWorld("world");
+        if (world != null) {
+            world.setGameRule(GameRule.PLAYERS_SLEEPING_PERCENTAGE, 0);
         }
     }
 

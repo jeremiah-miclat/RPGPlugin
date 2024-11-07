@@ -154,17 +154,49 @@ public class DeadMobListener implements Listener {
         }
     }
 
-    private void applyRewards(Player player, UserProfile profile, double healthForExp, double chanceForEquipLoreAndDias, int diamondReward) {
+    private void applyRewards(Player player, UserProfile profile, double healthForExp, double chanceForEquipLoreAndDias, int rewardCount) {
         player.giveExp((int) (healthForExp * 2));
+        profile.setAbyssPoints(profile.getAbyssPoints()+(healthForExp * 2));
         if (random.nextDouble() < chanceForEquipLoreAndDias) {
             applyRandomLoreToEquippedItem(player);
         }
         double randomed = random.nextDouble();
-        if ( randomed  < chanceForEquipLoreAndDias) {
-            profile.setDiamond(profile.getDiamond() + diamondReward);
+        if (randomed < chanceForEquipLoreAndDias) {
+            // Create a random instance
+            Random random = new Random();
+
+            // Select a random ore type
+            OreType randomOre = OreType.values()[random.nextInt(OreType.values().length)];
+
+            // Give rewardCount to the selected ore only
+            switch (randomOre) {
+                case DIAMOND:
+                    profile.setDiamond(profile.getDiamond() + rewardCount);
+                    break;
+                case EMERALD:
+                    profile.setEmerald(profile.getEmerald() + rewardCount);
+                    break;
+                case GOLD:
+                    profile.setGold(profile.getGold() + rewardCount);
+                    break;
+                case IRON:
+                    profile.setIron(profile.getIron() + rewardCount);
+                    break;
+                case LAPIS:
+                    profile.setLapiz(profile.getLapiz() + rewardCount);
+                    break;
+            }
         }
+
     }
 
+    enum OreType {
+        DIAMOND,
+        EMERALD,
+        GOLD,
+        IRON,
+        LAPIS
+    }
 
 
     private void distributeDrops(Player player, EntityDeathEvent event, int dropMultiplier) {

@@ -95,3 +95,21 @@ commands:
   homedelete:
     description: Delete a saved home.
     usage: /homedelete <homeName>
+  convertfood:
+    description: Convert all food in your inventory to stamina.
+    usage: /convertfood
+  healthscale:
+    description: Scales health.
+    usage: /healthscale
+  payblacksmith:
+    description: Convert all ores in your inventory to durability.
+    usage: /payblacksmith
+  tphb:
+    description: If you are stuck underground, use this command to teleport nearby.
+    usage: /tphb
+  tpt:
+    description: "Request to teleport to another player."
+    usage: /tpt <playerName>
+  tpa:
+    description: "Accept a pending teleport request from another player."
+    usage: /tpa <playerName>

@@ -68,6 +68,9 @@ public class PlayerStatBuff {
             case "alchemist" -> profile.getAlchemistClassInfo().getVit();
             default -> profile.getDefaultClassInfo().getVit();
         };
+        if (profile.getChosenClass().equalsIgnoreCase("alchemist")) {
+            equipVitality*=1.1;
+        }
 
         return baseHealth + healthPerVitality * (classVitality + equipVitality);
     }
@@ -90,6 +93,10 @@ public class PlayerStatBuff {
             case "alchemist" -> profile.getAlchemistClassInfo().getAgi();
             default -> profile.getDefaultClassInfo().getAgi();
         };
+
+        if (profile.getChosenClass().equalsIgnoreCase("alchemist")) {
+            equipAgility*=1.1;
+        }
 
         double agilityBonus = speedPerAgility * (classAgility + equipAgility);
         agilityBonus = Math.min(agilityBonus, maxAgilityBonus);

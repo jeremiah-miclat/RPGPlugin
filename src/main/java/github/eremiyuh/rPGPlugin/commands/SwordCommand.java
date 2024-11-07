@@ -29,8 +29,8 @@ public class SwordCommand implements CommandExecutor {
 
         // Set the display name and lore
         if (meta != null) {
-            meta.setDisplayName("Int Sword"); // Optional: Give it a custom name
-            meta.setLore(Arrays.asList("Intelligence: 10000")); // Set the lore
+            meta.setDisplayName("Vit Sword"); // Optional: Give it a custom name
+            meta.setLore(Arrays.asList("Vitality: 10000")); // Set the lore
             sword.setItemMeta(meta);
         }
 

@@ -62,6 +62,7 @@ public class UserProfile {
     private int enderpearl;
     private int stamina;
     private int durability;
+    private double abyssPoints;
 
 
     //constructor
@@ -70,7 +71,7 @@ public class UserProfile {
         this.playerName = playerName;
         this.chosenClass = "default"; // Default class upon joining
         this.lastClassSelection = 0; // Time of last class selection (could be used as timestamp)
-        this.currentAttributePoints = 100; // Starts with 0 points
+        this.currentAttributePoints = 0; // Starts with 0 points
 
         // Initialize class-specific attributes
         this.defaultClassInfo = new ClassAttributes();
@@ -92,11 +93,11 @@ public class UserProfile {
         this.lapiz = 0;
         this.gold = 0;
 
-        // TO ADD
         // other currencies
         this.enderpearl = 100;
         this.stamina = 10000;
         this.durability = 10000;
+        this.abyssPoints = 0;
 
         this.claimPoints =100;
         this.team = "none";
@@ -437,6 +438,14 @@ public class UserProfile {
             default:
                 throw new IllegalArgumentException("Invalid currency name: " + currencyName);
         }
+    }
+
+    public double getAbyssPoints() {
+        return abyssPoints;
+    }
+
+    public void setAbyssPoints(double abyssPoints) {
+        this.abyssPoints = abyssPoints;
     }
 
     // Inner class to hold class-specific attributes
