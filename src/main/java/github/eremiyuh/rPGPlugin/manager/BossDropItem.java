@@ -60,7 +60,7 @@ public class BossDropItem {
 
         int attributeValue = Math.max(1, Math.floorDiv(bossLevel, 10));
 
-        if (isWorldBoss) attributeValue *=2;
+        if (isWorldBoss) attributeValue *=5;
 
         // Set the lore with the format "Attribute: Boss Level"
         List<String> lore = new ArrayList<>();

@@ -41,6 +41,7 @@ public class SkillsGui implements CommandExecutor, Listener {
 
         Player player = (Player) sender;
         UserProfile profile = profileManager.getProfile(player.getName());
+        double playerLapis = profile.getLapiz();
 
         if (profile == null) {
             player.sendMessage("You do not have a profile.");
@@ -121,15 +122,7 @@ public class SkillsGui implements CommandExecutor, Listener {
                     // Ensure the item has the unique lore for skill selection
                     if (itemMeta.getLore() != null && itemMeta.getLore().contains("§eUniqueSkillIcon")) {
                         String displayName = itemMeta.getDisplayName();
-
-                        // Check cooldown before allowing skill selection
-                        long currentTime = System.currentTimeMillis();
-                        long cooldownPeriod = 100; // Example cooldown period
-                        if (currentTime - profile.getLastSkillSelection() < cooldownPeriod) {
-                            long timeLeft = cooldownPeriod - (currentTime - profile.getLastSkillSelection());
-                            player.sendMessage("You must wait " + (timeLeft / 1000 / 60) + " minutes before selecting a skill again.");
-                            return;
-                        }
+                        String currentSkill = profile.getSelectedSkill();
 
                         // Identify the selected skill
                         String selectedSkill;
@@ -146,14 +139,26 @@ public class SkillsGui implements CommandExecutor, Listener {
                             return;
                         }
 
+                        if (currentSkill.equalsIgnoreCase(selectedSkill)) {
+                            player.sendMessage("Already using this skill");
+                            return;
+                        }
+
+                        // Check if the player has selected a skill before
+                        if (!profile.getSelectedSkill().equals("default")) {
+                            // Check if the player has enough lapis
+                            if (profile.getLapiz() < 10) {
+                                player.sendMessage("You need at least 10 lapis to select a new skill.");
+                                return;
+                            }
+                            // Deduct 10 lapis for skill reselection
+                            profile.setLapiz(profile.getLapiz() - 10);
+                        }
+
                         // Save the selected skill to the profile
                         profile.setSelectedSkill(selectedSkill);
                         profileManager.saveProfile(player.getName());
                         player.sendMessage("You have selected " + selectedSkill + "!");
-
-                        // Update the last class selection timestamp
-                        profile.setLastClassSelection(currentTime);
-                        profileManager.saveProfile(player.getName());
 
                         // Close the inventory after the player selects a skill
                         player.closeInventory();

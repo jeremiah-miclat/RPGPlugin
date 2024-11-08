@@ -63,11 +63,13 @@ public class CheckClassCommand implements CommandExecutor, Listener {
 
             // Set lore to show each currency balance with color coding
             List<String> currencyLore = new ArrayList<>();
-            currencyLore.add("§bDiamonds: §7" + profile.getCurrency("diamond"));  // Light Blue for Diamond
-            currencyLore.add("§aEmeralds: §7" + profile.getCurrency("emerald"));   // Green for Emerald
-            currencyLore.add("§fIron: §7" + profile.getCurrency("iron"));          // White for Iron
-            currencyLore.add("§9Lapis: §7" + profile.getCurrency("lapis"));        // Dark Blue for Lapis
-            currencyLore.add("§6Gold: §7" + profile.getCurrency("gold"));          // Gold for Gold
+            currencyLore.add("§bDiamonds: §7" + (int) profile.getCurrency("diamond"));
+            currencyLore.add("§aEmeralds: §7" + (int) profile.getCurrency("emerald"));
+            currencyLore.add("§fIron: §7" + (int) profile.getCurrency("iron"));
+            currencyLore.add("§9Lapis: §7" + (int) profile.getCurrency("lapis"));
+            currencyLore.add("§6Gold: §7" + (int) profile.getCurrency("gold"));
+            currencyLore.add("§dNetherite: §7" +  (int)profile.getCurrency("netherite"));
+
             currencyMeta.setLore(currencyLore);
 
             currencyIcon.setItemMeta(currencyMeta);
@@ -91,6 +93,7 @@ public class CheckClassCommand implements CommandExecutor, Listener {
             combatLore.add("§eStamina: §7" + profile.getStamina());
             combatLore.add("§eDurability: §7" + profile.getDurability());
             combatLore.add("§eEnder Pearl: §7" + profile.getEnderPearl());
+            combatLore.add("§eAbyss Point: " + (int) (profile.getAbyssPoints()));
             combatLore.add("§ePotion: §7" + profile.getPotion());
 
 
@@ -127,6 +130,8 @@ public class CheckClassCommand implements CommandExecutor, Listener {
     private void setPlayerHeadLore(SkullMeta skullMeta, UserProfile profile) {
         List<String> lore = new ArrayList<>();
 
+
+
         // Add class name and attribute values
         lore.add("§7Attributes:");
         lore.add("§7Strength: " + getAttributeValue(profile, "strength"));
@@ -142,12 +147,19 @@ public class CheckClassCommand implements CommandExecutor, Listener {
         lore.add("§eTotal Allocated Points: " + profile.getTotalAllocatedPoints());
         lore.add("§eElement: " + profile.getSelectedElement());
         lore.add("§eSkill: " + profile.getSelectedSkill());
-        lore.add("§eRace: " + profile.getSelectedRace());
+//        lore.add("§eRace: " + profile.getSelectedRace());
         lore.add("§eTeam: " + profile.getTeam());
-        lore.add("§eTeamMates: " + profile.getTeamMembers());
+
+        if (!profile.getTeam().equalsIgnoreCase("none") && !profile.getTeam().equalsIgnoreCase(profile.getPlayerName())) {
+            UserProfile teamOwnerProfile = profileManager.getProfile(profile.getTeam());
+            lore.add("§eTeamMates: " + teamOwnerProfile.getTeamMembers());
+        } else{
+            lore.add("§eTeamMates: " + profile.getTeamMembers());
+        }
+
+
         lore.add("§ePVP: " + profile.isPvpEnabled());
         lore.add("§eClaimPoints: " + profile.getClaimPoints());
-        lore.add("§ePotion: " + profile.getPotion());
         // Set the lore to the skull meta
         skullMeta.setLore(lore);
     }
@@ -238,6 +250,17 @@ public class CheckClassCommand implements CommandExecutor, Listener {
                     return;
                 }
 
+                double allocatedPoints = 0;
+
+                if (profile.getChosenClass().equalsIgnoreCase("archer")) allocatedPoints = profile.getTotalArcherAllocatedPoints();
+                if (profile.getChosenClass().equalsIgnoreCase("alchemist")) allocatedPoints = profile.getTotalAlchemistAllocatedPoints();
+                if (profile.getChosenClass().equalsIgnoreCase("swordsman")) allocatedPoints = profile.getTotalSwordsmanAllocatedPoints();
+
+                if (allocatedPoints > 3000) {
+                    player.sendMessage("Max attribute allocation per class reached.");
+                    return;
+                }
+
                 if (profile != null && profile.getCurrentAttributePoints() > 0) {
                     String attributeName = event.getCurrentItem().getItemMeta().getDisplayName().replace("§a", "").toLowerCase();
                     switch (attributeName) {
@@ -272,7 +295,7 @@ public class CheckClassCommand implements CommandExecutor, Listener {
                     }
 
                     playerStatBuff.onClassSwitchOrAttributeChange(player);
-                    profileManager.saveProfile(player.getName());
+
                     openClassInfoGUI(player, profile);  // Refresh the GUI
                 } else {
                     player.sendMessage("You have no remaining points to allocate.");

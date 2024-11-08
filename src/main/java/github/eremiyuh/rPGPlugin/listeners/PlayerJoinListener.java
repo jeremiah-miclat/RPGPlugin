@@ -4,6 +4,8 @@ import github.eremiyuh.rPGPlugin.buffs.PlayerStatBuff;
 import github.eremiyuh.rPGPlugin.buffs.VampireBuffs;
 import github.eremiyuh.rPGPlugin.manager.PlayerProfileManager;
 import github.eremiyuh.rPGPlugin.profile.UserProfile;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -55,13 +57,19 @@ public class PlayerJoinListener implements Listener {
         // If no profile was found, create a new one
         if (profile == null) {
             profileManager.createProfile(playerName);
+            // If the player is not logged in, trigger the blackout effect
+            if (!profileManager.getProfile(playerName).isLoggedIn()) {
+                // Make the player's screen black with a message
+                player.sendTitle("§0§lYou must log in", "§7Please use /login <password> or register using /register <password> <password>", 10, 70, 20); // Title + Subtitle
+
+                player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§cYou must log in first"));
+                event.setJoinMessage(""); // Optional: Hide the join message for non-logged-in players
+            }
             player.sendMessage("Welcome! Your profile has been created.");
         } else {
             // If profile exists, just load it (it should already be loaded)
             player.sendMessage("Welcome back! Your profile has been loaded.");
-            player.sendMessage("Your chosen class is: " + profile.getChosenClass());
-            player.sendMessage("Your chosen element is: " + profile.getSelectedElement());
-            player.sendMessage("Your chosen race is: " + profile.getSelectedRace());
+
 
             if (Objects.requireNonNull(player.getLocation().getWorld()).getName().equals("world_rpg")) {
                 playerStatBuff.updatePlayerStatsToRPG(player);
@@ -69,24 +77,33 @@ public class PlayerJoinListener implements Listener {
             }
 
             // Apply race-specific effects based on the player's race
-            String race = profile.getSelectedRace();
-            switch (race) {
-                case "vampire":
-                    VampireBuffs.applyVampireSpeedBoost(player, true); // Apply speed boost to vampires
-                    player.sendMessage("You are a vampire! Speed boost has been applied.");
-                    break;
-                case "human":
-                case "elf":
-                case "orc":
-                case "dwarf":
-                case "angel":
-                case "demon":
-                case "darkelf":
-                    VampireBuffs.applyVampireSpeedBoost(player, false); // Reset to normal speed
-                    break;
-                default:
-                    player.sendMessage("No race effects applied.");
-                    break;
+//            String race = profile.getSelectedRace();
+//            switch (race) {
+//                case "vampire":
+//                    VampireBuffs.applyVampireSpeedBoost(player, true); // Apply speed boost to vampires
+//                    player.sendMessage("You are a vampire! Speed boost has been applied.");
+//                    break;
+//                case "human":
+//                case "elf":
+//                case "orc":
+//                case "dwarf":
+//                case "angel":
+//                case "demon":
+//                case "darkelf":
+//                    VampireBuffs.applyVampireSpeedBoost(player, false); // Reset to normal speed
+//                    break;
+//                default:
+//                    player.sendMessage("No race effects applied.");
+//                    break;
+//            }
+
+            if (!profileManager.getProfile(playerName).isLoggedIn()) {
+                // Make the player's screen black with a message
+                player.sendTitle("§7lYou must log in!", "§7Please use /login <password>", 10, 70, 20); // Title + Subtitle
+
+                // Apply an ActionBar message to prompt login as well
+                player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§7You must log in first!"));
+
             }
         }
     }

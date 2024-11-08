@@ -33,6 +33,11 @@ public class SelectRace implements CommandExecutor {
 
         String race = args[0].toLowerCase();
 
+        if (!race.isEmpty()) {
+            sender.sendMessage("Still considering to add on game or not");
+            return true;
+        }
+
         // Check if the player can select a new element
         if (!profile.canSelectNewRace()) {
             player.sendMessage("You cannot switch races for another 10 minutes.");

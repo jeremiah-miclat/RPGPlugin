@@ -26,6 +26,7 @@ public class CurrencyConverter implements CommandExecutor {
         currencyMaterials.put("emerald", Material.EMERALD);
         currencyMaterials.put("iron", Material.IRON_INGOT);
         currencyMaterials.put("enderpearl", Material.ENDER_PEARL);
+        currencyMaterials.put("netherite", Material.NETHERITE_INGOT);
     }
 
 

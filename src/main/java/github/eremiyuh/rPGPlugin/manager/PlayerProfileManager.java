@@ -102,23 +102,28 @@ public class PlayerProfileManager {
 
         //currencies
         config.set("diamond",profile.getDiamond());
-        // Save currencies
-        config.set("diamond", profile.getDiamond());
         config.set("emerald", profile.getCurrency("emerald"));
         config.set("iron", profile.getCurrency("iron"));
         config.set("lapis", profile.getCurrency("lapis"));
         config.set("gold", profile.getCurrency("gold"));
+        config.set("netherite", profile.getCurrency("netherite"));
+
 
         // TO ADD
         config.set("enderpearl", profile.getCurrency("enderpearl"));
         config.set("stamina", profile.getStamina());
         config.set("durability", profile.getDurability());
+        config.set("abysspoints",profile.getAbyssPoints());
 
         //claimPoints
         config.set("claimPoints",profile.getClaimPoints());
 
         //potion
         config.set("potion",profile.getPotion());
+
+        //login
+        config.set("password",profile.getPassword());
+        config.set("loggedin",profile.isLoggedIn());
 
         try {
             config.save(profileFile);
@@ -204,11 +209,13 @@ public class PlayerProfileManager {
         profile.setCurrency("iron", config.getDouble("iron", 0));
         profile.setCurrency("lapis", config.getDouble("lapis", 0));
         profile.setCurrency("gold", config.getDouble("gold", 0));
+        profile.setCurrency("netherite", config.getDouble("netherite", 0));
 
 
         profile.setCurrency("enderpearl", config.getInt("enderpearl", 100));
         profile.setStamina(config.getInt("stamina", 10000));
         profile.setDurability(config.getInt("durability", 10000));
+        profile.setAbyssPoints(config.getDouble("abysspoints",0));
 
         //claim points
         profile.setClaimPoints(config.getDouble("claimPoints",100));
@@ -246,6 +253,10 @@ public class PlayerProfileManager {
             }
         }
 
+        // login
+        profile.setPassword(config.getString("password",""));
+        profile.setLoggedIn(config.getBoolean("loggedin",false));
+
         playerProfiles.put(playerName, profile);
     }
 
@@ -257,4 +268,30 @@ public class PlayerProfileManager {
         attributes.setVit(config.getInt(path + ".vit", 0));
         attributes.setLuk(config.getInt(path + ".luk", 0));
     }
+
+    public void resetLoginStatus() {
+        if (!profilesFolder.exists()) {
+            return; // No profiles to reset
+        }
+
+        File[] profileFiles = profilesFolder.listFiles();
+        if (profileFiles == null) return;
+
+        for (File profileFile : profileFiles) {
+            if (!profileFile.isFile() || !profileFile.getName().endsWith(".yml")) continue;
+
+            FileConfiguration config = YamlConfiguration.loadConfiguration(profileFile);
+
+            // Set the "loggedin" field to false
+            config.set("loggedin", false);
+
+            try {
+                config.save(profileFile);
+                plugin.getLogger().info("Reset login status for: " + profileFile.getName());
+            } catch (IOException e) {
+                plugin.getLogger().log(Level.SEVERE, "Could not reset login status for profile: " + profileFile.getName(), e);
+            }
+        }
+    }
+
 }

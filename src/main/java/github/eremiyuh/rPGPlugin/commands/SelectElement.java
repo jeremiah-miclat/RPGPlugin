@@ -25,16 +25,22 @@ public class SelectElement implements CommandExecutor {
         Player player = (Player) sender;
         UserProfile profile = profileManager.getProfile(player.getName());
 
+
         if (args.length != 1) {
-            player.sendMessage("Usage: /selectelement <fire|water|earth|air>");
+            player.sendMessage("Usage: /selectelement <fire|water|air>");
             return true;
         }
 
         String element = args[0].toLowerCase();
 
-        // Check if the player can select a new element
-        if (!profile.canSelectNewElement()) {
-            player.sendMessage("You cannot switch elements for another 10 minutes.");
+        if (profile.getSelectedElement().equalsIgnoreCase(element)) {
+            player.sendMessage("Current element is " + element);
+            return true;
+        }
+
+
+        if (profile.getLapiz()<10 && !profile.getSelectedElement().equalsIgnoreCase("none")) {
+            player.sendMessage("Need 10 lapis to reselect element");
             return true;
         }
 
@@ -46,6 +52,7 @@ public class SelectElement implements CommandExecutor {
 //            case "lightning":
             case "water":
             case "ice":
+                profile.setLapiz(profile.getLapiz()-10);
                 profile.setSelectedElement(element);
                 player.sendMessage("You have chosen the " + element + " element!");
                 break;

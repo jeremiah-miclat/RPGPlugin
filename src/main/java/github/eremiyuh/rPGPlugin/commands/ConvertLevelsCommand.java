@@ -24,58 +24,111 @@ public class ConvertLevelsCommand implements CommandExecutor {
         }
 
         Player player = (Player) sender;
-        int playerLevels = player.getLevel();
-
-        // Get the player's profile and total allocated attribute points
         UserProfile profile = profileManager.getProfile(player.getName());
-        double playerClassTotalAttrib = profile.getTotalAllocatedPoints();
+        double playerClassTotalAttrib = profile.getTotalAllocatedPoints()+profile.getCurrentAttributePoints();
         double abyssPoints = profile.getAbyssPoints();
 
-        if (playerClassTotalAttrib==10000) {
+        if (playerClassTotalAttrib == 10000) {
             player.sendMessage("Max attributes reached.");
             return true;
         }
 
-        // Determine how many levels are required to convert to 1 attribute point
-        int levelsRequired = getLevelsRequiredForConversion(playerClassTotalAttrib);
+        // Determine the number of attribute points to convert
+        int pointsToConvert = 1; // default to 1 if no argument provided
+        if (args.length > 0) {
+            try {
+                pointsToConvert = Integer.parseInt(args[0]);
+                if (pointsToConvert <= 0) {
+                    player.sendMessage(ChatColor.RED + "Please specify a positive number of attribute points to convert.");
+                    return true;
+                }
+            } catch (NumberFormatException e) {
+                player.sendMessage(ChatColor.RED + "Invalid number of attribute points.");
+                return true;
+            }
+        }
 
-        // Check if the player has enough levels
-        if (playerLevels < levelsRequired) {
-            player.sendMessage(ChatColor.RED + "You need at least " + levelsRequired + " experience levels to convert to 1 attribute point.");
+        // Calculate the total abyss points needed by dynamically adjusting cost per point
+        int totalAbyssPointsRequired = 0;
+        double currentAttribPoints = playerClassTotalAttrib;
+
+        for (int i = 0; i < pointsToConvert; i++) {
+            int costForCurrentPoint = getLevelsRequiredForConversion(currentAttribPoints);
+            totalAbyssPointsRequired += costForCurrentPoint;
+            currentAttribPoints++;
+            if (currentAttribPoints >= 10000) {
+                player.sendMessage(ChatColor.RED + "Cannot exceed the maximum of 10,000 attribute points.");
+                break;
+            }
+        }
+
+        // Check if the player has enough abyss points for the entire transaction
+        if (abyssPoints < totalAbyssPointsRequired) {
+            player.sendMessage(ChatColor.RED + "You need at least " + totalAbyssPointsRequired + " abyss points to convert " + pointsToConvert + " attribute point(s).");
             return true;
         }
 
-        // Allocate 1 attribute point and reduce experience levels
-        profile.setCurrentAttributePoints(profile.getCurrentAttributePoints() + 1);
-        player.setLevel(playerLevels - levelsRequired);
+        // Perform the conversion, updating the player's profile
+        profile.setCurrentAttributePoints(profile.getCurrentAttributePoints() + pointsToConvert);
+        profile.setAbyssPoints(profile.getAbyssPoints() - totalAbyssPointsRequired);
 
         // Save the profile
         profileManager.saveProfile(player.getName());
 
-        player.sendMessage(ChatColor.GREEN + "You have converted " + levelsRequired + " levels into 1 attribute point!");
+        player.sendMessage(ChatColor.GREEN + "You have converted " + totalAbyssPointsRequired + " abyss points into " + pointsToConvert + " attribute point(s)!");
 
         return true;
     }
 
     /**
-     * This method determines how many levels are required to convert to 1 attribute point,
+     * This method determines how many abyss points are required to convert 1 attribute point,
      * based on the total allocated attribute points.
      *
      * @param totalAttrib The total allocated attribute points.
-     * @return The number of levels required for conversion.
+     * @return The number of abyss points required for conversion.
      */
     private int getLevelsRequiredForConversion(double totalAttrib) {
         // Adjust the conversion rate based on total allocated attribute points
         if (totalAttrib < 100) {
-            return 10;  // this is equal to 170 abyss points
-
-
-
+            return 200;
+        } else if (totalAttrib < 200) {
+            return 400;
+        } else if (totalAttrib < 300) {
+            return 600;
+        } else if (totalAttrib < 400) {
+            return 800;
+        } else if (totalAttrib < 500) {
+            return 1000;
+        } else if (totalAttrib < 600) {
+            return 1200;
+        } else if (totalAttrib < 700) {
+            return 1400;
+        } else if (totalAttrib < 800) {
+            return 1600;
+        } else if (totalAttrib < 900) {
+            return 1800;
         } else if (totalAttrib < 1000) {
-            return 100;  // this is equal to 29315 abyss points
+            return 4000;
         } else if (totalAttrib < 2000) {
-            return 200;  // total to 155015 abyss points
-        } else
-            return 300; // total to 380715 abyss points
+            return 8000;
+        } else if (totalAttrib < 3000) {
+            return 20000;
+        } else if (totalAttrib < 4000) {
+            return 40000;
+        } else if (totalAttrib < 5000) {
+            return 80000;
+        } else if (totalAttrib < 6000) {
+            return 160000;
+        } else if (totalAttrib < 7000) {
+            return 320000;
+        } else if (totalAttrib < 8000) {
+            return 640000;
+        } else if (totalAttrib < 9000) {
+            return 1280000;
+        } else if (totalAttrib < 10000) {
+            return 3000000;
+        } else {
+            return 3000000;
+        }
     }
 }

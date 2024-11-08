@@ -85,25 +85,19 @@ public class DeadMobListener implements Listener {
                 boolean isBoss = isBoss(mob);
                 boolean isWorldBoss = isWorldBoss(mob);
                 int bosslvl = getBossLevel(mob);
-                double chancePerLevel = 0.002;
-                double baseChance = 0.05;
 
-                // please get a list off attackers
-                // then iterate on that list checking if those were players
-                // then check if those players are near, create a method for that 40 horizontal, 10 vertical
-                // then create variable nearbyplayers
                 List<String> attackerNames = (List<String>) mob.getMetadata("attackerList").get(0).value();
                 List<Player> nearbyPlayers = new ArrayList<>();
 
                 // Iterate over the list of attacker names and check if they are players nearby
                 for (String attackerName : attackerNames) {
                     Player player = Bukkit.getPlayer(attackerName); // Get the player by name
-                    if (player != null && isPlayerNearby(player, mob.getLocation(), 40, 10)) {
+                    if (player != null && isPlayerNearby(player, mob.getLocation(), 60, 10)) {
                         nearbyPlayers.add(player); // Add player to nearby players list
                     }
                 }
 
-                if (isBoss || isWorldBoss) {
+                if ((isBoss || isWorldBoss) && bosslvl >= 10) {
                     for (Player player : nearbyPlayers) {
                         UserProfile playerProfile = profileManager.getProfile(player.getName());
                         BossDropItem dropItem = isBoss ? BossDropItem.getRandomBossDropItem(regularBossDrops) : BossDropItem.getRandomBossDropItem(worldBossDrops);
@@ -136,13 +130,13 @@ public class DeadMobListener implements Listener {
                 }
 
                 if (killerTeam.equals("none")) {
-                    applyRewards(killer, killerProfile, health, RANDOMCHANCE, dropMultiplier);
+//                    applyRewards(killer, killerProfile, health, RANDOMCHANCE, dropMultiplier);
                     distributeDrops(killer, event, dropMultiplier);
                 } else {
                     for (Player player : nearbyPlayers) {
                         UserProfile playerProfile = profileManager.getProfile(player.getName());
                         if (playerProfile.getTeam().equals(killerTeam)) {
-                            applyRewards(player, playerProfile, health, RANDOMCHANCE, dropMultiplier);
+//                            applyRewards(player, playerProfile, health, RANDOMCHANCE, dropMultiplier);
                             distributeDrops(player, event, dropMultiplier);
                         }
                     }

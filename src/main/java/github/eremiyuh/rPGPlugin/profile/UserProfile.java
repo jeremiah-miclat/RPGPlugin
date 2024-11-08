@@ -28,7 +28,8 @@ public class UserProfile {
     private  String selectedSkill = "none";
     private long lastSkillSelection = 0;    // Timestamp of the last skill selection
 
-
+    // ascend
+    private boolean isAscending;
 
 
 
@@ -41,6 +42,7 @@ public class UserProfile {
     private double iron;
     private double lapiz;
     private double gold;
+    private double netherite;
     private double claimPoints;
 
     // TEAMS
@@ -64,6 +66,13 @@ public class UserProfile {
     private int durability;
     private double abyssPoints;
 
+
+    //register and login
+    private String password;
+    private boolean loggedIn;
+
+    // boss health indicator
+    private boolean bossIndicator;
 
     //constructor
     public UserProfile(String playerName) {
@@ -92,6 +101,7 @@ public class UserProfile {
         this.iron = 0;
         this.lapiz = 0;
         this.gold = 0;
+        this.netherite=0;
 
         // other currencies
         this.enderpearl = 100;
@@ -108,6 +118,12 @@ public class UserProfile {
         //home
         this.homes = new HashMap<>();
         this.maxHomes = 5;
+
+        this.password="";
+        this.loggedIn=isLoggedIn();
+
+        this.bossIndicator = false;
+        this.isAscending=false;
 
     }
 
@@ -381,6 +397,8 @@ public class UserProfile {
                 return gold;
             case "enderpearl":
                 return enderpearl;
+            case "netherite":
+                return netherite;
             default:
                 throw new IllegalArgumentException("Invalid currency name: " + currencyName);
         }
@@ -435,6 +453,9 @@ public class UserProfile {
             case "enderpearl":
                 this.enderpearl = (int) amount;
                 break;
+            case "netherite":
+                this.netherite = amount;
+                break;
             default:
                 throw new IllegalArgumentException("Invalid currency name: " + currencyName);
         }
@@ -448,6 +469,46 @@ public class UserProfile {
         this.abyssPoints = abyssPoints;
     }
 
+    public boolean isLoggedIn() {
+        return loggedIn;
+    }
+
+    public void setLoggedIn(boolean loggedIn) {
+        this.loggedIn = loggedIn;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public boolean isBossIndicator() {
+        return bossIndicator;
+    }
+
+    public void setBossIndicator(boolean bossIndicator) {
+        this.bossIndicator = bossIndicator;
+    }
+
+    public boolean isAscending() {
+        return isAscending;
+    }
+
+    public void setAscending(boolean ascending) {
+        isAscending = ascending;
+    }
+
+    public double getNetherite() {
+        return netherite;
+    }
+
+    public void setNetherite(double netherite) {
+        this.netherite = netherite;
+    }
+
     // Inner class to hold class-specific attributes
     public static class ClassAttributes {
         private int str;
@@ -456,6 +517,7 @@ public class UserProfile {
         private int intel; // Renamed from "int" to avoid conflicts with reserved keyword
         private int vit;
         private int luk;
+        private int totalPointsSpent;
 
         public ClassAttributes() {
             this.str = 0;
@@ -464,6 +526,7 @@ public class UserProfile {
             this.intel = 0;
             this.vit = 0;
             this.luk = 0;
+            this.totalPointsSpent = 0;
         }
 
         // Getters and setters for class attributes

@@ -71,12 +71,16 @@ commands:
   giveap:
     description: "Gives attribute points to a player."
     usage: "/giveap <playername> <numberofpoints>"
+    permission: RPGPlugin.givesword
+    permission-default: op
   fly:
     description: "flight."
     usage: "/fly"
   givesword:
     description: "givesword"
     usage: /<command>
+    permission: RPGPlugin.givesword
+    permission-default: op
   buypotion:
     description: "use magic to convert your lapiz to potion"
     usage: /<command>
@@ -113,3 +117,31 @@ commands:
   tpa:
     description: "Accept a pending teleport request from another player."
     usage: /tpa <playerName>
+  register:
+    description: "Register your account by setting up a password"
+    usage: /register <password> <password>
+  login:
+    description: "Login using your password"
+    usage: /login <password>
+  toggleBossIndicator:
+    description: Toggles the boss health indicator on or off.
+    usage: /toggleBossIndicator
+  rest:
+    description: Simulate resting or sleep so won't be visited by phantoms.
+    usage: /rest
+  sv:
+    description: admin summon villager.
+    usage: /sv
+  ascendtoggle:
+    description: Toggle ascension of equips on or off.
+    usage: /ascendtoggle
+  villagerSetProf:
+    description: Sets a villager's profession by custom name.
+    usage: /villagerSetProf <villager customName> <profession>
+    permission: RPGPlugin.villagerSetProf
+    permission-default: op
+  changepassword:
+    description: "Admin command to change a player's password."
+    usage: "/changepassword <playername> <newpassword>"
+    permission: RPGPlugin.changepass
+    permission-default: op

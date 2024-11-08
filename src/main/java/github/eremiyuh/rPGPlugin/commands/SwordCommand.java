@@ -15,28 +15,75 @@ public class SwordCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        // Check if the sender is a player
+        // Check if the sender is an admin or player
         if (!(sender instanceof Player)) {
             sender.sendMessage("Only players can use this command.");
             return true;
         }
 
-        Player player = (Player) sender;
+        Player admin = (Player) sender;
 
-        // Create a new sword item stack
-        ItemStack sword = new ItemStack(Material.DIAMOND_SWORD); // You can change this to any type of sword
-        ItemMeta meta = sword.getItemMeta();
-
-        // Set the display name and lore
-        if (meta != null) {
-            meta.setDisplayName("Vit Sword"); // Optional: Give it a custom name
-            meta.setLore(Arrays.asList("Vitality: 10000")); // Set the lore
-            sword.setItemMeta(meta);
+        // Check if the sender is an admin
+        if (!admin.hasPermission("rpgplugin.give")) { // Assuming you have a permission node for admins
+            admin.sendMessage("You do not have permission to use this command.");
+            return true;
         }
 
-        // Give the sword to the player
-        player.getInventory().addItem(sword);
-        player.sendMessage("You have been given a sword");
+        // Ensure correct number of arguments
+        if (args.length != 4) {
+            admin.sendMessage("Usage: /give <playername> <item_name> <lore_name> <value>");
+            return true;
+        }
+
+        // Parse the arguments
+        String targetName = args[0]; // Player who will receive the item
+        String itemName = args[1];   // Item type (e.g., diamond_sword)
+        String loreName = args[2];   // Lore name (e.g., Agility)
+        String valueString = args[3]; // Lore value (e.g., 1000)
+
+        // Try to parse the value to an integer
+        int value;
+        try {
+            value = Integer.parseInt(valueString);
+        } catch (NumberFormatException e) {
+            admin.sendMessage("Invalid value. Please enter a valid integer for the lore.");
+            return true;
+        }
+
+        // Find the target player
+        Player targetPlayer = Bukkit.getPlayer(targetName);
+        if (targetPlayer == null || !targetPlayer.isOnline()) {
+            admin.sendMessage("Player " + targetName + " not found or is offline.");
+            return true;
+        }
+
+        // Determine the item type from the item name
+        Material itemMaterial;
+        try {
+            itemMaterial = Material.valueOf(itemName.toUpperCase()); // Convert the item name to Material
+        } catch (IllegalArgumentException e) {
+            admin.sendMessage("Invalid item name. Please use a valid item name (e.g., diamond_sword).");
+            return true;
+        }
+
+        // Create the item
+        ItemStack item = new ItemStack(itemMaterial);
+        ItemMeta meta = item.getItemMeta();
+
+        // Set the lore if meta is not null
+        if (meta != null) {
+            meta.setDisplayName(itemName.replace('_', ' ')); // Optional: Use the item name as display name
+            String lore = loreName + ": " + value;  // e.g., "Agility: 1000"
+            meta.setLore(Arrays.asList(lore)); // Set lore
+
+            // Apply the updated meta to the item
+            item.setItemMeta(meta);
+        }
+
+        // Give the item to the target player
+        targetPlayer.getInventory().addItem(item);
+        targetPlayer.sendMessage("You have been given a " + itemName + " with " + loreName + " " + value + ".");
+        admin.sendMessage("You have given " + targetName + " a " + itemName + " with " + loreName + " " + value + ".");
 
         return true;
     }

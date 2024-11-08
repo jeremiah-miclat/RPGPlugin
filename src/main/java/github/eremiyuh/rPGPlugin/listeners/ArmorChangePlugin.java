@@ -3,6 +3,7 @@ package github.eremiyuh.rPGPlugin.listeners;
 import github.eremiyuh.rPGPlugin.RPGPlugin;
 import github.eremiyuh.rPGPlugin.buffs.PlayerStatBuff;
 import github.eremiyuh.rPGPlugin.manager.PlayerProfileManager;
+import github.eremiyuh.rPGPlugin.profile.UserProfile;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
@@ -34,6 +35,10 @@ public class ArmorChangePlugin  implements Listener {
         if (!(event.getPlayer() instanceof Player)) return;
 
         Player player = (Player) event.getPlayer();
+        UserProfile profile = profileManager.getProfile(player.getName());
+
+            profile.setAscending(false);
+
         String worldName = Objects.requireNonNull(player.getLocation().getWorld()).getName();
         if (worldName.equals("world_rpg") || worldName.equals("world_labyrinth")) {
 

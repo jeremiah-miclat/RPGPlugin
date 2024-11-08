@@ -4,6 +4,7 @@ import github.eremiyuh.rPGPlugin.RPGPlugin;
 import github.eremiyuh.rPGPlugin.profile.UserProfile;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.entity.AbstractArrow;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -44,7 +45,7 @@ public class DamageAbilities {
 
                 // Tag arrow with metadata for recognition in handleLongRangeDamage
                 arrow.setMetadata("FireArrowBarrage", new FixedMetadataValue(plugin, true));
-
+                arrow.setPickupStatus(AbstractArrow.PickupStatus.DISALLOWED);
             }
         }
     }
@@ -70,7 +71,7 @@ public class DamageAbilities {
 
                 // Tag arrow with metadata for recognition in handleLongRangeDamage
                 arrow.setMetadata("FreezeArrowBarrage", new FixedMetadataValue(plugin, true));
-
+                arrow.setPickupStatus(AbstractArrow.PickupStatus.DISALLOWED);
             }
         }
 
@@ -97,7 +98,7 @@ public class DamageAbilities {
                 arrow.setShooter(Bukkit.getPlayer(profile.getPlayerName()));
                 // Tag arrow with metadata for recognition in handleLongRangeDamage
                 arrow.setMetadata("WeaknessArrowBarrage", new FixedMetadataValue(plugin, true));
-
+                arrow.setPickupStatus(AbstractArrow.PickupStatus.DISALLOWED);
             }
         }
 

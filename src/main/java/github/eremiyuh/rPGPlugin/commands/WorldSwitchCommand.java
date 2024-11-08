@@ -49,14 +49,14 @@ public class WorldSwitchCommand implements CommandExecutor {
         }
 
         if (player.getWorld().getName().equals(targetWorldName)) {
-            player.sendMessage("You are already in " + targetWorldName + " world.");
+            player.sendMessage("You are already in " + worldType + " world.");
             return true;
         }
 
         World world = plugin.getServer().getWorld(targetWorldName);
         if (world == null) {
 
-            player.sendMessage("Failed to load the world " + targetWorldName + ".");
+            player.sendMessage("Failed to load the world " + worldType + ".");
             return true;
 
 //            world = plugin.getServer().createWorld(new WorldCreator(targetWorldName));

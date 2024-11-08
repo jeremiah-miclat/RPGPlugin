@@ -6,6 +6,7 @@ import github.eremiyuh.rPGPlugin.methods.DamageAbilityManager;
 import github.eremiyuh.rPGPlugin.methods.EffectsAbilityManager;
 import github.eremiyuh.rPGPlugin.perms.PlayerBuffPerms;
 import github.eremiyuh.rPGPlugin.profile.UserProfile;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -49,7 +50,9 @@ public class DamageListener implements Listener {
             event.setCancelled(true);
             return;
         }
-
+        if (!Objects.requireNonNull(event.getDamager().getLocation().getWorld()).getName().equals("world_rpg")) {
+            return;
+        }
         // Get the entity that was damaged
         Entity damaged = event.getEntity();
 
@@ -67,7 +70,7 @@ public class DamageListener implements Listener {
         // PVP HANDLER
 
         // Melee PVP
-        if (damager instanceof Player attacker && damaged instanceof Player){
+        if (damager instanceof Player attacker && damaged instanceof Player damagedPlayer){
 
             UserProfile attackerProfile = profileManager.getProfile(attacker.getName());
             UserProfile damagedProfile = profileManager.getProfile(damaged.getName());
@@ -88,10 +91,25 @@ public class DamageListener implements Listener {
                 event.setCancelled(true);
             }
 
+            damagedProfile.setDurability(damagedProfile.getDurability()-1);
+            damagedProfile.setStamina(damagedProfile.getStamina()-1);
+
+            // Loop through all armor slots (helmet, chestplate, leggings, boots)
+            for (int i = 0; i < damagedPlayer.getInventory().getArmorContents().length; i++) {
+                ItemStack armorItem = damagedPlayer.getInventory().getArmorContents()[i];
+
+                if (armorItem != null && armorItem.getType().getMaxDurability() > 0) { // Check if the item has durability
+                    ItemMeta meta = armorItem.getItemMeta();
+                    if (meta != null) {
+                        armorItem.setDurability((short) 0); // Reset durability
+                    }
+                }
+            }
+
 
         }
         // PVP with bow
-        if (damager instanceof Projectile projectile && damaged instanceof Player && projectile.getShooter() instanceof Player shooter ){
+        if (damager instanceof Projectile projectile && damaged instanceof Player damagedPlayer && projectile.getShooter() instanceof Player shooter ){
             //bow
                 UserProfile shooterProfile = profileManager.getProfile(shooter.getName());
                 UserProfile damagedProfile = profileManager.getProfile(damaged.getName());
@@ -111,9 +129,23 @@ public class DamageListener implements Listener {
                 if (!damagedProfile.isPvpEnabled()) {
                     event.setCancelled(true);
                 }
+            damagedProfile.setDurability(damagedProfile.getDurability()-1);
+            damagedProfile.setStamina(damagedProfile.getStamina()-1);
+
+            // Loop through all armor slots (helmet, chestplate, leggings, boots)
+            for (int i = 0; i < damagedPlayer.getInventory().getArmorContents().length; i++) {
+                ItemStack armorItem = damagedPlayer.getInventory().getArmorContents()[i];
+
+                if (armorItem != null && armorItem.getType().getMaxDurability() > 0) { // Check if the item has durability
+                    ItemMeta meta = armorItem.getItemMeta();
+                    if (meta != null) {
+                        armorItem.setDurability((short) 0); // Reset durability
+                    }
+                }
+            }
         }
         // PVP with Potion
-        if (damager instanceof Projectile projectile && damaged instanceof Player && projectile instanceof ThrownPotion thrownPotion && thrownPotion.getShooter() instanceof Player thrower ){
+        if (damager instanceof Projectile projectile && damaged instanceof Player damagedPlayer && projectile instanceof ThrownPotion thrownPotion && thrownPotion.getShooter() instanceof Player thrower ){
             //bow
             UserProfile throwerProfile = profileManager.getProfile(thrower.getName());
             UserProfile damagedProfile = profileManager.getProfile(damaged.getName());
@@ -134,18 +166,31 @@ public class DamageListener implements Listener {
                 event.setCancelled(true);
             }
 
+            damagedProfile.setDurability(damagedProfile.getDurability()-1);
+            damagedProfile.setStamina(damagedProfile.getStamina()-1);
+
+            // Loop through all armor slots (helmet, chestplate, leggings, boots)
+            for (int i = 0; i < damagedPlayer.getInventory().getArmorContents().length; i++) {
+                ItemStack armorItem = damagedPlayer.getInventory().getArmorContents()[i];
+
+                if (armorItem != null && armorItem.getType().getMaxDurability() > 0) { // Check if the item has durability
+                    ItemMeta meta = armorItem.getItemMeta();
+                    if (meta != null) {
+                        armorItem.setDurability((short) 0); // Reset durability
+                    }
+                }
+            }
+
         }
 
 
 
         // END OF PVP HANDLER
 
-        if (!Objects.requireNonNull(event.getDamager().getLocation().getWorld()).getName().equals("world_rpg")) {
-            return;
-        }
+
 
         // Pve melee
-        if (damager instanceof Player attacker && damaged instanceof LivingEntity victim && !(damaged instanceof Player))
+        if (damager instanceof Player attacker && damaged instanceof LivingEntity victim)
         {
             ItemStack itemInHand = attacker.getInventory().getItemInMainHand();
             ItemMeta meta = itemInHand.getItemMeta();
@@ -172,12 +217,14 @@ public class DamageListener implements Listener {
         }
 
         //PVE with bows and potion
-        if (damager instanceof Projectile && damaged instanceof LivingEntity victim && !(damaged instanceof Player) ) {
+        if (damager instanceof Projectile && damaged instanceof LivingEntity victim) {
+
             Projectile projectile = (Projectile) event.getDamager();
             ProjectileSource shooter = projectile.getShooter();
 
             // pve with bows
             if (projectile instanceof Arrow && shooter instanceof Player attacker) {
+
                 UserProfile attackerProfile = profileManager.getProfile(attacker.getName());
                 // If the item is not null and has durability (like tools or weapons)
                 ItemStack itemInHand = attacker.getInventory().getItemInMainHand();
@@ -209,6 +256,7 @@ public class DamageListener implements Listener {
 
             //PVE with thrown instant damage
             if (projectile instanceof ThrownPotion && projectile.getShooter() instanceof Player attacker ) {
+
                 UserProfile attackerProfile = profileManager.getProfile(attacker.getName());
                 if (victim.hasMetadata("attackerList")) {
                     // Retrieve the metadata safely
@@ -232,13 +280,26 @@ public class DamageListener implements Listener {
             }
         }
 
-
+        // monster attacks player
         if (damager instanceof LivingEntity angryMob && !(damager instanceof Player) && damaged instanceof Player damagedPLayer) {
 
             if (angryMob.hasMetadata("extraDamage")) {
                 UserProfile damagedProfile = profileManager.getProfile(damagedPLayer.getName());
                 damagedProfile.setDurability(damagedProfile.getDurability()-1);
                 damagedProfile.setStamina(damagedProfile.getStamina()-1);
+
+                // Loop through all armor slots (helmet, chestplate, leggings, boots)
+                for (int i = 0; i < damagedPLayer.getInventory().getArmorContents().length; i++) {
+                    ItemStack armorItem = damagedPLayer.getInventory().getArmorContents()[i];
+
+                    if (armorItem != null && armorItem.getType().getMaxDurability() > 0) { // Check if the item has durability
+                        ItemMeta meta = armorItem.getItemMeta();
+                        if (meta != null) {
+                            armorItem.setDurability((short) 0); // Reset durability
+                        }
+                    }
+                }
+
                 double extraDamage = angryMob.getMetadata("extraDamage").get(0).asDouble();
                 if (PlayerBuffPerms.canReduceDmg(damagedProfile)) {
                     event.setDamage((event.getDamage() + extraDamage)/4);
@@ -259,6 +320,19 @@ public class DamageListener implements Listener {
         }
 
         if (damager instanceof Projectile projectile && projectile.getShooter() instanceof Monster angryMob && !(damager instanceof Player) && damaged instanceof Player damagedPLayer) {
+
+            // Loop through all armor slots (helmet, chestplate, leggings, boots)
+            for (int i = 0; i < damagedPLayer.getInventory().getArmorContents().length; i++) {
+                ItemStack armorItem = damagedPLayer.getInventory().getArmorContents()[i];
+
+                if (armorItem != null && armorItem.getType().getMaxDurability() > 0) { // Check if the item has durability
+                    ItemMeta meta = armorItem.getItemMeta();
+                    if (meta != null) {
+                        armorItem.setDurability((short) 0); // Reset durability
+                        armorItem.setItemMeta(meta); // Apply changes to the item
+                    }
+                }
+            }
 
             if (angryMob.hasMetadata("extraDamage")) {
                 UserProfile damagedProfile = profileManager.getProfile(damagedPLayer.getName());
@@ -284,6 +358,19 @@ public class DamageListener implements Listener {
         }
 
         if (damager instanceof ThrownPotion projectile && projectile.getShooter() instanceof Monster angryMob && !(damager instanceof Player) && damaged instanceof Player damagedPLayer) {
+
+            // Loop through all armor slots (helmet, chestplate, leggings, boots)
+            for (int i = 0; i < damagedPLayer.getInventory().getArmorContents().length; i++) {
+                ItemStack armorItem = damagedPLayer.getInventory().getArmorContents()[i];
+
+                if (armorItem != null && armorItem.getType().getMaxDurability() > 0) { // Check if the item has durability
+                    ItemMeta meta = armorItem.getItemMeta();
+                    if (meta != null) {
+                        armorItem.setDurability((short) 0); // Reset durability
+                        armorItem.setItemMeta(meta); // Apply changes to the item
+                    }
+                }
+            }
 
             if (angryMob.hasMetadata("extraDamage")) {
                 UserProfile damagedProfile = profileManager.getProfile(damagedPLayer.getName());
@@ -339,12 +426,31 @@ public class DamageListener implements Listener {
 
 
 
+
+
+
+
+
                     if (extraHealth > 0) {
                         double damage = event.getDamage();
 
                         if (extraHealth - damage > 0) {
                             entity.setMetadata("initialExtraHealth", new FixedMetadataValue(plugin, extraHealth - damage));
+                            if (event.getDamageSource().getCausingEntity() instanceof Player player && (entity.hasMetadata("boss") || entity.hasMetadata("worldboss"))) {
+                                UserProfile playerProfile = profileManager.getProfile(player.getName());
+                                if (playerProfile.isBossIndicator()) {
+                                    // Inside your code
+                                    if (extraHealth + ((Creature) event.getEntity()).getHealth() > -1) {
+                                        double healthRemaining = (extraHealth + ((Creature) event.getEntity()).getHealth()) - damage;
 
+                                        String message = ChatColor.RED + event.getEntity().getCustomName() +
+                                                ChatColor.RESET + ChatColor.GRAY + " health remaining: " +
+                                                ChatColor.GREEN + (int) healthRemaining;
+
+                                        player.sendMessage(message);
+                                    }
+                                }
+                            }
                             event.setDamage(0);
                         } else {
                             // Calculate excess damage
@@ -355,8 +461,9 @@ public class DamageListener implements Listener {
                             entity.setMetadata("initialExtraHealth", new FixedMetadataValue(plugin, 0.0)); // Reset extra health to 0
 
                             event.setDamage(excessDamage);
-                        }
+                     }
                     }
+
                 }
 
         }
@@ -402,12 +509,33 @@ public class DamageListener implements Listener {
 
 
     // pve melee damage
+//    private void handleMeleePveDamage(Player attacker, LivingEntity target, EntityDamageByEntityEvent event, Location damagerLocation, Location damagedLocation, UserProfile damagerProfile) {
+//        ItemStack weapon = attacker.getInventory().getItemInMainHand();
+//
+//        // Fire element check: Disable fire if not selected
+//        if (!damagerProfile.getSelectedElement().equalsIgnoreCase("fire")
+//                && (weapon.containsEnchantment(Enchantment.FLAME) || weapon.containsEnchantment(Enchantment.FIRE_ASPECT))) {
+//            event.getEntity().setFireTicks(0); // Cancel fire ticks
+//        }
+//
+//
+//
+//        double baseDamage = event.getDamage();
+//
+//        // Apply stats based on class for non-default players
+//        double damageWithStats = applyStatsToDamage(baseDamage, damagerProfile, attacker, event);
+//
+//        // Swordsman-specific ability if holding a sword
+//        if (damagerProfile.getChosenClass().equalsIgnoreCase("swordsman") && weapon.getType().toString().endsWith("_SWORD")) {
+//            effectsAbilityManager.applyAbility(damagerProfile, target, damagerLocation, damagedLocation);
+//        }
+//
+//        // Apply extra health and set final damage
+//        double finalDamage = applyExtraHealthAndDamage(target, damageWithStats, attacker);
+//        event.setDamage(finalDamage);
+//    }
+
     private void handleMeleePveDamage(Player attacker, LivingEntity target, EntityDamageByEntityEvent event, Location damagerLocation, Location damagedLocation, UserProfile damagerProfile) {
-
-
-
-//        MonsterStrengthScalingListener monsterListener = plugin.getMonsterStrengthScalingListener();
-//        Map<LivingEntity, Double> extraHealthMap = monsterListener.getExtraHealthMap();
         ItemStack weapon = attacker.getInventory().getItemInMainHand();
 
         // Fire element check: Disable fire if not selected
@@ -415,8 +543,6 @@ public class DamageListener implements Listener {
                 && (weapon.containsEnchantment(Enchantment.FLAME) || weapon.containsEnchantment(Enchantment.FIRE_ASPECT))) {
             event.getEntity().setFireTicks(0); // Cancel fire ticks
         }
-
-
 
         double baseDamage = event.getDamage();
 
@@ -430,12 +556,58 @@ public class DamageListener implements Listener {
 
         // Apply extra health and set final damage
         double finalDamage = applyExtraHealthAndDamage(target, damageWithStats, attacker);
+
+
+        if (event.getEntity() instanceof Player victim) {
+            UserProfile victimProfile = profileManager.getProfile(victim.getName());
+            if (victimProfile==null) return;
+            if (damagerProfile.getSelectedElement().equalsIgnoreCase("fire")) {finalDamage=finalDamage*1.1;}
+            if (victimProfile.getChosenClass().equalsIgnoreCase("swordsman") && !victimProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
+                finalDamage= finalDamage*.8;
+            }
+            if (victimProfile.getChosenClass().equalsIgnoreCase("swordsman") && victimProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
+                finalDamage= finalDamage*.3;
+            }
+            if (victimProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
+                finalDamage=finalDamage*1.2;
+            }
+            if (damagerProfile.getSelectedElement().equalsIgnoreCase("fire") && victimProfile.getSelectedElement().equalsIgnoreCase("ice")) {
+                finalDamage=finalDamage*1.1;
+            }
+            if (damagerProfile.getSelectedElement().equalsIgnoreCase("ice") && victimProfile.getSelectedElement().equalsIgnoreCase("water")) {
+                finalDamage=finalDamage*1.2;
+            }
+            if (damagerProfile.getSelectedElement().equalsIgnoreCase("water") && victimProfile.getSelectedElement().equalsIgnoreCase("fire")) {
+                finalDamage=finalDamage*1.2;
+            }
+            if (damagerProfile.getSelectedElement().equalsIgnoreCase("fire") && victimProfile.getSelectedElement().equalsIgnoreCase("water")) {
+                finalDamage=finalDamage*.8;
+            }
+            if (damagerProfile.getSelectedElement().equalsIgnoreCase("water") && victimProfile.getSelectedElement().equalsIgnoreCase("ice")) {
+                finalDamage=finalDamage*.8;
+            }
+            if (damagerProfile.getSelectedElement().equalsIgnoreCase("ice") && victimProfile.getSelectedElement().equalsIgnoreCase("fire")) {
+                finalDamage=finalDamage*.8;
+            }
+            if (victimProfile.getSelectedElement().equalsIgnoreCase("none")) {
+                finalDamage=finalDamage*1.3;
+            }
+        }
+
+        // Attack cooldown mechanic (charge multiplier)
+        float attackCooldown = attacker.getAttackCooldown();  // 0 = no cooldown, 1 = max cooldown
+
+        // Apply cooldown scaling to the final damage
+        finalDamage *= attackCooldown;
+
         event.setDamage(finalDamage);
     }
 
 
     // PvE Long Range Damage
     private void handleLongRangePveDamage(Player attacker, LivingEntity target, EntityDamageByEntityEvent event, Location damagerLocation, Location damagedLocation, UserProfile damagerProfile) {
+
+
 
         ItemStack weapon = attacker.getInventory().getItemInMainHand();
 
@@ -444,9 +616,6 @@ public class DamageListener implements Listener {
                 && (weapon.containsEnchantment(Enchantment.FLAME) || weapon.containsEnchantment(Enchantment.FIRE_ASPECT))) {
             event.getEntity().setFireTicks(0); // Cancel fire ticks
         }
-
-//        MonsterStrengthScalingListener monsterListener = plugin.getMonsterStrengthScalingListener();
-//        Map<LivingEntity, Double> extraHealthMap = monsterListener.getExtraHealthMap();
 
         double baseDamage = event.getDamage();
 
@@ -457,9 +626,82 @@ public class DamageListener implements Listener {
 
         // Apply extra health and set final damage
         double finalDamage = applyExtraHealthAndDamage(target, damageWithStats, attacker);
+
+        if (event.getEntity() instanceof Player victim) {
+            UserProfile victimProfile = profileManager.getProfile(victim.getName());
+            if (victimProfile==null) return;
+
+            if (victimProfile.getChosenClass().equalsIgnoreCase("swordsman") && !victimProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
+                finalDamage= finalDamage*.8;
+            }
+            if (victimProfile.getChosenClass().equalsIgnoreCase("swordsman") && victimProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
+                finalDamage= finalDamage*.3;
+            }
+            if (victimProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
+                finalDamage=finalDamage*1.2;
+            }
+            if (damagerProfile.getSelectedElement().equalsIgnoreCase("fire") && victimProfile.getSelectedElement().equalsIgnoreCase("ice")) {
+                finalDamage=finalDamage*1.2;
+            }
+            if (damagerProfile.getSelectedElement().equalsIgnoreCase("ice") && victimProfile.getSelectedElement().equalsIgnoreCase("water")) {
+                finalDamage=finalDamage*1.2;
+            }
+            if (damagerProfile.getSelectedElement().equalsIgnoreCase("water") && victimProfile.getSelectedElement().equalsIgnoreCase("fire")) {
+                finalDamage=finalDamage*1.2;
+            }
+            if (damagerProfile.getSelectedElement().equalsIgnoreCase("fire") && victimProfile.getSelectedElement().equalsIgnoreCase("water")) {
+                finalDamage=finalDamage*.8;
+            }
+            if (damagerProfile.getSelectedElement().equalsIgnoreCase("water") && victimProfile.getSelectedElement().equalsIgnoreCase("ice")) {
+                finalDamage=finalDamage*.8;
+            }
+            if (damagerProfile.getSelectedElement().equalsIgnoreCase("ice") && victimProfile.getSelectedElement().equalsIgnoreCase("fire")) {
+                finalDamage=finalDamage*.8;
+            }
+            if (victimProfile.getSelectedElement().equalsIgnoreCase("none")) {
+                finalDamage=finalDamage*1.3;
+            }
+        }
+
+        if (event.getDamager() instanceof  Arrow arrow) {
+            Location shooterLoc = attacker.getLocation();
+            double distance = shooterLoc.distance(damagedLocation);
+            if (distance <= 1) {
+                finalDamage *= 0.05;
+            } else if (distance <= 2) {
+                finalDamage *= 0.1;
+            } else if (distance <= 3) {
+                finalDamage *= 0.2;
+            } else if (distance <= 4) {
+                finalDamage *= 0.3;
+            } else if (distance <= 5) {
+                finalDamage *= 0.4;
+            } else if (distance <= 6) {
+                finalDamage *= 0.5;
+            } else if (distance <= 7) {
+                finalDamage *= 0.6;
+            } else if (distance <= 8) {
+                finalDamage *= 0.7;
+            } else if (distance <= 9) {
+                finalDamage *= 0.8;
+            } else if (distance <= 10) {
+                finalDamage *= 0.9;
+            }
+            else if (distance <= 20 && damagerProfile.getChosenClass().equalsIgnoreCase("archer")) {
+                finalDamage = finalDamage * 1.5;
+            }
+            else if (distance <= 40 && damagerProfile.getChosenClass().equalsIgnoreCase("archer")) {
+                finalDamage = finalDamage * 2;
+            }
+            else if (distance > 41 && damagerProfile.getChosenClass().equalsIgnoreCase("archer")) {
+                finalDamage = finalDamage * 3;
+            }
+
+
+        }
+
         // Archer class - Check if using bow
         if (damagerProfile.getChosenClass().equalsIgnoreCase("archer") && event.getDamager() instanceof Arrow arrow) {
-
             effectsAbilityManager.applyAbility(damagerProfile, target, damagerLocation, damagedLocation);
             if (!arrow.hasMetadata("WeaknessArrowBarrage") && !arrow.hasMetadata("FireArrowBarrage") && !arrow.hasMetadata("FreezeArrowBarrage")) {
                 double archerDex = damagerProfile.getArcherClassInfo().getDex();
@@ -472,6 +714,8 @@ public class DamageListener implements Listener {
                     damageAbilityManager.applyDamageAbility(damagerProfile, target, damagerLocation, damagedLocation, finalDamage);
                 }
             }
+
+
         }
 
         // Alchemist class - Check if using thrown potion
@@ -479,6 +723,9 @@ public class DamageListener implements Listener {
 
             effectsAbilityManager.applyAbility(damagerProfile, target, damagerLocation, damagedLocation);
         }
+
+
+
         event.setDamage(finalDamage);
     }
 
@@ -700,6 +947,7 @@ public class DamageListener implements Listener {
             double newHealth = Math.min(player.getHealth() + lifestealAmount, maxHealth); // Avoid exceeding max health
             player.setHealth(newHealth);
         }
+
         if (damagerProfile.getDurability() < 1 && !damagerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
             calculatedDamage /= 2;
         } else {
@@ -712,7 +960,6 @@ public class DamageListener implements Listener {
             damagerProfile.setStamina(damagerProfile.getStamina() - 1);
         }
 
-        damagerProfile.setStamina(damagerProfile.getStamina()-1);
         return calculatedDamage;
     }
 

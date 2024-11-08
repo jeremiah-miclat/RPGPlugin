@@ -25,6 +25,7 @@ public class SelectClassCommand implements CommandExecutor, Listener {
     private final RPGPlugin plugin;
     private final PlayerProfileManager profileManager;
     private final PlayerStatBuff playerStatBuff;
+    private final int CLASS_CHANGE_COST = 10; // Cost in diamonds for changing class
 
     public SelectClassCommand(RPGPlugin plugin, PlayerProfileManager profileManager) {
         this.plugin = plugin;
@@ -79,38 +80,42 @@ public class SelectClassCommand implements CommandExecutor, Listener {
             event.setCancelled(true);
             Player player = (Player) event.getWhoClicked();
             ItemStack clickedItem = event.getCurrentItem();
+
             if (clickedItem != null && clickedItem.hasItemMeta() && clickedItem.getItemMeta().hasDisplayName()) {
                 String displayName = clickedItem.getItemMeta().getDisplayName();
                 UserProfile profile = profileManager.getProfile(player.getName());
 
-                long currentTime = System.currentTimeMillis();
-//                long cooldownPeriod = 24 * 60 * 60 * 1000;
-                long cooldownPeriod = 0;
-                if (currentTime - profile.getLastClassSelection() < cooldownPeriod) {
-                    long timeLeft = cooldownPeriod - (currentTime - profile.getLastClassSelection());
-                    player.sendMessage("You must wait " + (timeLeft / 1000 / 60) + " minutes before choosing a class again.");
+                if (profile == null) {
+                    player.sendMessage("Profile not found.");
                     return;
                 }
 
-                if (profile != null) {
-                    switch (displayName) {
-                        case "Swordsman":
-                            profile.setChosenClass("Swordsman");
-                            break;
-                        case "Archer":
-                            profile.setChosenClass("Archer");
-                            break;
-                        case "Alchemist":
-                            profile.setChosenClass("Alchemist");
-                            break;
-                    }
-                    profile.setLastClassSelection(currentTime);
+
+
+                // Check if the player is selecting the same class
+                if (profile.getChosenClass().equalsIgnoreCase(displayName)) {
+                    player.sendMessage("You are already a " + displayName + ".");
+                    return;
+                }
+
+
+
+                // Check if the player has enough diamonds to change class
+                if (profile.getDiamond() >= 10) {
+                    // Deduct diamonds from player
+                    profile.setDiamond(profile.getDiamond()-10);
+
+                    // Update profile with the new class
+                    profile.setChosenClass(displayName);
                     profileManager.saveProfile(player.getName());
 
                     // Apply buffs based on the new class selection
                     playerStatBuff.onClassSwitchOrAttributeChange(player);
 
-                    player.sendMessage("You have selected the " + profile.getChosenClass() + " class!");
+                    player.sendMessage("You have selected the " + displayName + " class!");
+                } else {
+                    player.sendMessage("You have " + profile.getDiamond());
+                    player.sendMessage("You need at least " + CLASS_CHANGE_COST + " diamonds to change your class.");
                 }
 
                 player.closeInventory();
