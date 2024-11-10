@@ -1,6 +1,7 @@
 package github.eremiyuh.rPGPlugin;
 
 import github.eremiyuh.rPGPlugin.buffs.PlayerStatBuff;
+import github.eremiyuh.rPGPlugin.classes.TradeOffer;
 import github.eremiyuh.rPGPlugin.commands.*;
 import github.eremiyuh.rPGPlugin.commandswithgui.CheckClassCommand;
 import github.eremiyuh.rPGPlugin.commandswithgui.SelectClassCommand;
@@ -18,6 +19,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
 import java.util.Objects;
+import java.util.UUID;
 
 public class RPGPlugin extends JavaPlugin {
 
@@ -27,6 +29,7 @@ public class RPGPlugin extends JavaPlugin {
     private ChunkBorderRedVisualizer chunkBorderRedVisualizer;
     private PlayerStatBuff playerStatBuff;
     private final HashMap<String, String> teleportRequests = new HashMap<>();
+    private final HashMap<UUID, TradeOffer> activeTrades = new HashMap<>();
     private boolean serverLoaded = false;
     @Override
     public void onEnable() {
@@ -126,6 +129,7 @@ public class RPGPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new DeadMobListener(profileManager),this);
         getServer().getPluginManager().registerEvents(new MonsterInitializer(this),this);
         getServer().getPluginManager().registerEvents(new ChunkProtectionListener(chunkManager,chunkBorderBlueVisualizer,chunkBorderRedVisualizer),this);
+        getServer().getPluginManager().registerEvents(new AreaProtectionListener(this), this);
         getServer().getPluginManager().registerEvents(new WorldProtectionListener(this), this);
         playerStatBuff = new PlayerStatBuff(profileManager);
         FlyCommand flyCommand = new FlyCommand(profileManager, this);
@@ -137,7 +141,7 @@ public class RPGPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new ItemAscensionListener(profileManager), this);
         // Register the command executor
         Objects.requireNonNull(this.getCommand("checkstatus")).setExecutor(new CheckClassCommand(profileManager));
-        Objects.requireNonNull(getCommand("convertlevels")).setExecutor(new ConvertLevelsCommand(profileManager));
+        Objects.requireNonNull(getCommand("convertabysspoints")).setExecutor(new ConvertLevelsCommand(profileManager));
         Objects.requireNonNull(getCommand("selectelement")).setExecutor(new SelectElement(profileManager));
         Objects.requireNonNull(getCommand("selectrace")).setExecutor(new SelectRace(profileManager));
         Objects.requireNonNull(getCommand("selectskill")).setExecutor(new SkillsGui(this,profileManager));
@@ -153,7 +157,7 @@ public class RPGPlugin extends JavaPlugin {
         Objects.requireNonNull(getCommand("untrust")).setExecutor(new UntrustCommand(chunkManager));
         Objects.requireNonNull(getCommand("untrustall")).setExecutor(new UntrustAllCommand(chunkManager));
         Objects.requireNonNull(getCommand("buyclaim")).setExecutor(new BuyClaim(profileManager));
-        Objects.requireNonNull(getCommand("convert")).setExecutor(new ConvertToEDiamond(profileManager));
+        Objects.requireNonNull(getCommand("convertmaterial")).setExecutor(new ConvertToEDiamond(profileManager));
         Objects.requireNonNull(getCommand("convertcurrency")).setExecutor(new CurrencyConverter(profileManager));
         Objects.requireNonNull(getCommand("switchworld")).setExecutor(new WorldSwitchCommand(this,playerStatBuff));
         Objects.requireNonNull(getCommand("giveap")).setExecutor(new AttributePointsCommand(profileManager));
@@ -177,6 +181,12 @@ public class RPGPlugin extends JavaPlugin {
         Objects.requireNonNull(this.getCommand("toggleBossIndicator")).setExecutor(new ToggleBossIndicatorCommand(profileManager));
         Objects.requireNonNull(this.getCommand("villagerSetProf")).setExecutor(new VillagerSetProfessionCommand(this));
         Objects.requireNonNull(this.getCommand("changepassword")).setExecutor(new ChangePassCommand(profileManager));
+        TradeCommand tradeCommand = new TradeCommand(activeTrades,this);
+        TradeAcceptCommand tradeAcceptCommand = new TradeAcceptCommand(tradeCommand);
+        Objects.requireNonNull(this.getCommand("tm")).setExecutor(tradeCommand);
+        Objects.requireNonNull(this.getCommand("ta")).setExecutor(tradeAcceptCommand);
+        Objects.requireNonNull(this.getCommand("iteminfo")).setExecutor(new ItemInfoCommand());
+
         //auth
         getCommand("register").setExecutor(new RegisterCommand(this,profileManager));
         getCommand("login").setExecutor(new LoginCommand(this,profileManager));

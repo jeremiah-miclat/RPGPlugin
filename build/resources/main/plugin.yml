@@ -6,28 +6,95 @@ commands:
   selectclass:
     description: Opens a GUI to select your class
     usage: /<command>
+    notes: "there are 3 classes, swordsman, archer, and alchemist.
+    Swordsman have balanced atk and def,
+    Archer have high attack output the farther the target is.
+    Alchemist have high attack output but needs too much resources
+    "
   checkstatus:
-    description: Check your current class
+    description: Check information about your character
     usage: /<command>
-  convertlevels:
-    description: "Convert 100 experience levels into 1 attribute point."
-    usage: "/convertlevels"
+    notes: "Can also let players allocate attribute points they converted from abyss points.
+    Attributes are strength,Agility,Dexterity,Lucky,Vitality and intelligence.
+    Strength increases melee physical damage
+    Agility increases movespeed
+    Dexterity increase critical damage for all classes and archers crit chance and long range damage, crit damage has initial value of 150% increase damage when crit, and add 100% per 1000 dex
+    Lucky Increases crit chance, around 5000 points to have 100% crit chance
+    Vit increases health, .2 health per vitality
+    Intelligence increases elemental damage of classes skill 1 and their element effects
+    "
+  convertabysspoints:
+    description: "Convert abyss points into 1 attribute point."
+    usage: "/convertabysspoints"
+    notes: "Abyss points can only be obtained on abyss worlds
+    Please inform them about this conversion:
+     private int getLevelsRequiredForConversion(double totalAttrib) {
+        // Adjust the conversion rate of abyss points based on total allocated attribute points
+        if (totalAttrib < 100) {
+            return 200;
+        } else if (totalAttrib < 200) {
+            return 400;
+        } else if (totalAttrib < 300) {
+            return 600;
+        } else if (totalAttrib < 400) {
+            return 800;
+        } else if (totalAttrib < 500) {
+            return 1000;
+        } else if (totalAttrib < 600) {
+            return 1200;
+        } else if (totalAttrib < 700) {
+            return 1400;
+        } else if (totalAttrib < 800) {
+            return 1600;
+        } else if (totalAttrib < 900) {
+            return 1800;
+        } else if (totalAttrib < 1000) {
+            return 4000;
+        } else if (totalAttrib < 2000) {
+            return 8000;
+        } else if (totalAttrib < 3000) {
+            return 20000;
+        } else if (totalAttrib < 4000) {
+            return 40000;
+        } else if (totalAttrib < 5000) {
+            return 80000;
+        } else if (totalAttrib < 6000) {
+            return 160000;
+        } else if (totalAttrib < 7000) {
+            return 320000;
+        } else if (totalAttrib < 8000) {
+            return 640000;
+        } else if (totalAttrib < 9000) {
+            return 1280000;
+        } else if (totalAttrib < 10000) {
+            return 3000000;
+        } else {
+            return 3000000;
+        }
+    }
+    "
   selectelement:
     description: "Select an elemental affinity."
     usage: "/<command> <fire|water|ice>"
+    notes: "In pvp, fire > ice > water > fire, fire gets 10% final damage dealt, ice slows, water weakens"
   selectrace:
     description: "Join race."
     usage: "/<command> <human|elf|orc|vampire|dwarf|demon|angel|darkelf>"
+    notes: "do not add this, not yet implemented and maybe removed from the plugin"
   selectskill:
     description: Open the skill selection GUI
     usage: /selectskill
+    notes: "every class has 3 skills, skill 1 focuses on elemental effects, skill 2 and skill 3 varies per class. Swordsman skill 2 will grant lifesteal, swordsman skill 3 will grant 
+     great damage reduction.
+     "
   teamcreate:
     description: "Creates a new team with your name."
     usage: "/teamcreate"
+    notes: "It is recommended to raid abyss with a team. All members gain same exp as long you are about 40 blocks away from killed monster"
   teaminvite:
     description: Invite a player to your team.
     usage: /teaminvite <player>
-
+    notes: "Every team can have up to 5 members"
   teamleave:
     description: Leave your current team.
     usage: /teamleave
@@ -42,80 +109,154 @@ commands:
     description: Set PVP on or off
     usage: /pvpstatus <onoroff>
   cc:
-    description: claimed chunks commands
+    description: short for chunk commands
     usage: /cc <claim|check>
+    notes: "/cc claim will claim a whole chunk you are standing in. It will cost 1 claim point. /cc check will let you know claimed chunks near you, chunks surrounded
+    by soul fire belongs to you, while chunks surrounded by fire belongs to others.
+    "
   trust:
     description: claimed chunks trust command
     usage: /trust <playerName>
+    notes: "lets people you trust to interact in the claimed chunk you are standing in"
   trustall:
     description: claimed chunks trust all command
     usage: /trustall <playerName>
+    notes: "lets people you trust to interact in all your claimed chunks"
   untrust:
-    description: claimed chunks untrust command
+    description: claimed chunk untrust player command
     usage: /untrust <playerName>
   untrustall:
-    description: claimed chunks untrust all command
+    description: claimed chunks untrust player to all chunks command
     usage: /untrustall <playerName>
   buyclaim:
     description: buy claim command
     usage: /buyclaim <claimpoint>
-  convert:
+    notes: "It will cost 10 diamons per chunk"
+  convertmaterial:
     description: convert ores
     usage: /convert <orename>
+    notes: "Converts some ores/ingot to a currency which can be seen on checkstatus gui"
   convertcurrency:
     description: convert currency
     usage: /convertcurrency <ore> <amount>
+    notes: "Converts some ores/ingot currency which can be seen on checkstatus gui to a real material"
   switchworld:
-    description: go to rpg world
-    usage: /switchworld rpgworld
+    description: lets you go to abyss world
+    usage: /switchworld abyss|normal
+    notes: "For new players, it is recommended to have full netherite set with protection IV enchants before raiding the abyss.
+    Fighting in abyss will cost the stamina and durability which can be seen through /checkstatus
+    "
   giveap:
-    description: "Gives attribute points to a player."
+    description: "Gives attribute points to a player. Do not include on guide"
     usage: "/giveap <playername> <numberofpoints>"
     permission: RPGPlugin.givesword
     permission-default: op
   fly:
     description: "flight."
     usage: "/fly"
+    notes: "flying will cost 10 diamonds per minute"
   givesword:
-    description: "givesword"
+    description: "givesword. Do not include on guide"
     usage: /<command>
     permission: RPGPlugin.givesword
     permission-default: op
   buypotion:
     description: "use magic to convert your lapiz to potion"
     usage: /<command>
+    notes: "this command is for alchemist, potion let's them throw a splash potion depending on their chosen skill.
+    They will need a book on their offhand and right click on their mainhand to quickly craft a potion and throw it as they desire until they run out of potion.
+    They can check that potion is a currency too in /checkstatus
+    "
   rtp:
     description: "Randomly teleport to a location within the world borders."
     usage: "/rtp"
+    note: "cost: 1 ender pearl"
   spawn:
     description: Teleports the player to the world spawn.
     usage: "/spawn"
+    note: "cost: 1 ender pearl"
   sethome:
     description: Set player homes.
     usage: "/home <homeName>"
   home:
     description: Teleport to a saved home.
     usage: /home <homeName>
+    note: "cost: 1 ender pearl"
   homedelete:
     description: Delete a saved home.
     usage: /homedelete <homeName>
   convertfood:
     description: Convert all food in your inventory to stamina.
     usage: /convertfood
+    notes: "
+    Please inform players about the cost:
+            foodHungerMap.put(Material.CARROT, 10);
+        foodHungerMap.put(Material.BREAD, 10);
+        foodHungerMap.put(Material.BEEF, 30);
+        foodHungerMap.put(Material.CHICKEN, 30);
+        foodHungerMap.put(Material.COOKED_BEEF, 50);
+        foodHungerMap.put(Material.COOKED_CHICKEN, 50);
+        foodHungerMap.put(Material.MUTTON ,30);
+        foodHungerMap.put(Material.COOKED_MUTTON, 50);
+        foodHungerMap.put(Material.PORKCHOP ,30);
+        foodHungerMap.put(Material.COOKED_PORKCHOP, 50);
+        foodHungerMap.put(Material.RABBIT ,30);
+        foodHungerMap.put(Material.RABBIT_STEW ,60);
+        foodHungerMap.put(Material.COOKED_RABBIT, 50);
+        foodHungerMap.put(Material.COD ,30);
+        foodHungerMap.put(Material.COOKED_COD, 50);
+        foodHungerMap.put(Material.SALMON ,30);
+        foodHungerMap.put(Material.COOKED_SALMON, 50);
+        foodHungerMap.put(Material.APPLE, 10);
+        foodHungerMap.put(Material.BROWN_MUSHROOM, 5);
+        foodHungerMap.put(Material.MUSHROOM_STEW, 20);
+        foodHungerMap.put(Material.CHORUS_FRUIT, 10);
+        foodHungerMap.put(Material.DRIED_KELP, 10);
+        foodHungerMap.put(Material.MELON_SLICE, 10);
+        foodHungerMap.put(Material.PUMPKIN_PIE, 10);
+        foodHungerMap.put(Material.CAKE, 50);
+        foodHungerMap.put(Material.COOKIE, 50);
+        foodHungerMap.put(Material.SWEET_BERRIES, 5);
+        foodHungerMap.put(Material.GLOW_BERRIES, 10);
+        foodHungerMap.put(Material.HONEY_BOTTLE, 10);
+        foodHungerMap.put(Material.PUFFERFISH, 10);
+        foodHungerMap.put(Material.TROPICAL_FISH, 30);
+        foodHungerMap.put(Material.BEETROOT, 10);
+        foodHungerMap.put(Material.BEETROOT_SOUP, 20);
+        foodHungerMap.put(Material.POTATO, 10);
+        foodHungerMap.put(Material.BAKED_POTATO, 20);
+        foodHungerMap.put(Material.WHEAT, 10);
+        foodHungerMap.put(Material.ROTTEN_FLESH, 10);
+        foodHungerMap.put(Material.SPIDER_EYE, 5);
+        
+        And they cant convert back stamina to food
+    
+    "
   healthscale:
-    description: Scales health.
+    description: Scales health to always show 10 hearts.
     usage: /healthscale
+    note: "Provide more info or example scenario about how this work if you can"
   payblacksmith:
     description: Convert all ores in your inventory to durability.
     usage: /payblacksmith
+    note: "
+    Inform players about the rates:
+    
+        oresMap.put(Material.IRON_INGOT, 100);
+        oresMap.put(Material.GOLD_INGOT, 200);
+        oresMap.put(Material.EMERALD, 200);
+        oresMap.put(Material.DIAMOND, 1000);
+    "
   tphb:
-    description: If you are stuck underground, use this command to teleport nearby.
+    description: If you are stuck underground, use this command to teleport nearby highest block.
     usage: /tphb
+    note: "cost: 1 ender pearl. Explain that this is only 5 distance x z and teleports them on highest solid block found"
   tpt:
-    description: "Request to teleport to another player."
+    description: "Teleport To. Request to teleport to another player."
     usage: /tpt <playerName>
+    note: "cost: 1 ender pearl when teleported"
   tpa:
-    description: "Accept a pending teleport request from another player."
+    description: "Teleport Accept. Accept a pending teleport request from another player."
     usage: /tpa <playerName>
   register:
     description: "Register your account by setting up a password"
@@ -124,7 +265,7 @@ commands:
     description: "Login using your password"
     usage: /login <password>
   toggleBossIndicator:
-    description: Toggles the boss health indicator on or off.
+    description: Toggles the boss health indicator on or off when you damage bosses.
     usage: /toggleBossIndicator
   rest:
     description: Simulate resting or sleep so won't be visited by phantoms.
@@ -132,9 +273,13 @@ commands:
   sv:
     description: admin summon villager.
     usage: /sv
+    permission: RPGPlugin.villagerSetProf
+    permission-default: op
   ascendtoggle:
     description: Toggle ascension of equips on or off.
     usage: /ascendtoggle
+    notes: "Drag and drop same equip type to ascend equip. The dragged equip will be lost after.
+    "
   villagerSetProf:
     description: Sets a villager's profession by custom name.
     usage: /villagerSetProf <villager customName> <profession>
@@ -145,3 +290,9 @@ commands:
     usage: "/changepassword <playername> <newpassword>"
     permission: RPGPlugin.changepass
     permission-default: op
+  tm:
+    description: Initiate a trade with another player
+  ta:
+    description: Accept or reject a trade offer
+  iteminfo:
+    description: Checks the item name of the item you are holding

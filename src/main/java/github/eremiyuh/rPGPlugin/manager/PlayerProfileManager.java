@@ -212,16 +212,16 @@ public class PlayerProfileManager {
         profile.setCurrency("netherite", config.getDouble("netherite", 0));
 
 
-        profile.setCurrency("enderpearl", config.getInt("enderpearl", 100));
-        profile.setStamina(config.getInt("stamina", 10000));
-        profile.setDurability(config.getInt("durability", 10000));
+        profile.setCurrency("enderpearl", config.getInt("enderpearl", 10));
+        profile.setStamina(config.getInt("stamina", 100));
+        profile.setDurability(config.getInt("durability", 100));
         profile.setAbyssPoints(config.getDouble("abysspoints",0));
 
         //claim points
         profile.setClaimPoints(config.getDouble("claimPoints",100));
 
         //potion
-        profile.setPotion(config.getDouble("potion",1000));
+        profile.setPotion(config.getDouble("potion",100));
 
         // load team
         profile.setTeam(config.getString("team","none"));

@@ -56,9 +56,13 @@ public class PlayerJoinListener implements Listener {
 
         // If no profile was found, create a new one
         if (profile == null) {
+            World world = Bukkit.getWorld("world");
+            assert world != null;
+            Location spawnLocation = world.getSpawnLocation();
+            player.teleport(world.getSpawnLocation());
             profileManager.createProfile(playerName);
             // If the player is not logged in, trigger the blackout effect
-            if (!profileManager.getProfile(playerName).isLoggedIn()) {
+            if (!profileManager.getProfile(playerName).isLoggedIn() && !player.isOp()) {
                 // Make the player's screen black with a message
                 player.sendTitle("§0§lYou must log in", "§7Please use /login <password> or register using /register <password> <password>", 10, 70, 20); // Title + Subtitle
 
@@ -73,7 +77,7 @@ public class PlayerJoinListener implements Listener {
 
             if (Objects.requireNonNull(player.getLocation().getWorld()).getName().equals("world_rpg")) {
                 playerStatBuff.updatePlayerStatsToRPG(player);
-                player.sendMessage("on player join else listener");
+
             }
 
             // Apply race-specific effects based on the player's race
@@ -97,7 +101,7 @@ public class PlayerJoinListener implements Listener {
 //                    break;
 //            }
 
-            if (!profileManager.getProfile(playerName).isLoggedIn()) {
+            if (!profileManager.getProfile(playerName).isLoggedIn()&& !player.isOp()) {
                 // Make the player's screen black with a message
                 player.sendTitle("§7lYou must log in!", "§7Please use /login <password>", 10, 70, 20); // Title + Subtitle
 
@@ -112,16 +116,19 @@ public class PlayerJoinListener implements Listener {
     public void onPlayerRespawn(PlayerRespawnEvent event) {
         Player player = event.getPlayer();
 
-        // Get the world from the player's location directly via the event
-        String worldName = Objects.requireNonNull(event.getRespawnLocation().getWorld()).getName();
+        World world = event.getRespawnLocation().getWorld();
 
+        // Update player stats based on the respawn world
         playerStatBuff.updatePlayerStatsToNormal(player);
 
         // Check which world the player is respawning in
+        assert world != null;
+        String worldName = world.getName();
         if (worldName.equals("world_rpg")) {
             playerStatBuff.updatePlayerStatsToRPG(player);
         }
     }
+
 
 
     private Location getGroundLocation(Location location, Player player) {

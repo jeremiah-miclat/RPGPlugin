@@ -130,13 +130,13 @@ public class DeadMobListener implements Listener {
                 }
 
                 if (killerTeam.equals("none")) {
-//                    applyRewards(killer, killerProfile, health, RANDOMCHANCE, dropMultiplier);
+                    applyRewards(killer, killerProfile, health, 0, 0);
                     distributeDrops(killer, event, dropMultiplier);
                 } else {
                     for (Player player : nearbyPlayers) {
                         UserProfile playerProfile = profileManager.getProfile(player.getName());
                         if (playerProfile.getTeam().equals(killerTeam)) {
-//                            applyRewards(player, playerProfile, health, RANDOMCHANCE, dropMultiplier);
+                            applyRewards(player, playerProfile, health, 0, 0);
                             distributeDrops(player, event, dropMultiplier);
                         }
                     }
@@ -208,7 +208,7 @@ public class DeadMobListener implements Listener {
             } else {
                 // If the inventory is full, drop the item in the world
                 player.getWorld().dropItem(player.getLocation(), newDrop);
-                player.sendMessage("Your inventory was full, so the item has been dropped on the ground.");
+
             }
         }
     }
@@ -262,9 +262,6 @@ public class DeadMobListener implements Listener {
                         }
                     }
 
-                } else {
-                    // If there is no existing lore, add the new one
-                    lore.add(loreEntryPrefix + "1");
                 }
 
                 // Set the updated lore back to the item

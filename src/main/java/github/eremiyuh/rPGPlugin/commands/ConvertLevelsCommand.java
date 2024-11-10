@@ -28,7 +28,7 @@ public class ConvertLevelsCommand implements CommandExecutor {
         double playerClassTotalAttrib = profile.getTotalAllocatedPoints()+profile.getCurrentAttributePoints();
         double abyssPoints = profile.getAbyssPoints();
 
-        if (playerClassTotalAttrib == 10000) {
+        if (playerClassTotalAttrib == 20000) {
             player.sendMessage("Max attributes reached.");
             return true;
         }
@@ -88,7 +88,7 @@ public class ConvertLevelsCommand implements CommandExecutor {
      * @return The number of abyss points required for conversion.
      */
     private int getLevelsRequiredForConversion(double totalAttrib) {
-        // Adjust the conversion rate based on total allocated attribute points
+        // Adjust the conversion rate of abyss points based on total allocated attribute points
         if (totalAttrib < 100) {
             return 200;
         } else if (totalAttrib < 200) {

@@ -4,12 +4,15 @@ import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Boat;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.vehicle.VehicleCreateEvent;
@@ -79,6 +82,7 @@ public class WorldProtectionListener implements Listener {
         }
     }
 
+
     @EventHandler
     public void onVehiclePlace(VehicleCreateEvent event) {
         // Cancel vehicle (e.g., boat) placement in protected world unless in creative mode
@@ -96,6 +100,16 @@ public class WorldProtectionListener implements Listener {
     }
 
     @EventHandler
+    public void onEntitySpawn(EntitySpawnEvent event) {
+        Entity entity = event.getEntity();
+        if (isInProtectedWorld(event.getEntity().getWorld())) {
+            if (entity.getType() == EntityType.ARMOR_STAND) {
+                event.setCancelled(true);
+            }
+        }
+    }
+
+    @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
         Material item = event.getMaterial();
         // Cancel interactions with certain items that could damage the world
@@ -105,13 +119,21 @@ public class WorldProtectionListener implements Listener {
                 event.setCancelled(true);
                 event.getPlayer().sendMessage("You cannot use that item in this world.");
             }
+
+            if (item == Material.WATER_BUCKET || item == Material.LAVA_BUCKET || item == Material.BUCKET) {
+                event.setCancelled(true);
+            }
+
+
+            // Cancel interactions with trapdoors and fences
+            if (isTrapdoorOrFence(item)) {
+                event.setCancelled(true);
+                event.getPlayer().sendMessage("You cannot interact with that in this world.");
+            }
+
         }
 
-        // Cancel interactions with trapdoors and fences
-        if (isTrapdoorOrFence(item)) {
-            event.setCancelled(true);
-            event.getPlayer().sendMessage("You cannot interact with that in this world.");
-        }
+
 
     }
 

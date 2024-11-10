@@ -44,7 +44,7 @@ public class FlyCommand implements CommandExecutor {
             cancelFlyTask(); // Cancel the task if flying is turned off
         } else {
             // Check if player has diamonds
-            if (profile.getDiamond() > 10) {
+            if (profile.getDiamond() > 9) {
                 profile.setDiamond(profile.getDiamond() - 10); // Deduct 1 diamond for enabling fly mode
                 player.setAllowFlight(true);
                 player.sendMessage("Fly mode enabled. You have " + profile.getDiamond() + " diamonds remaining.");
@@ -89,9 +89,8 @@ public class FlyCommand implements CommandExecutor {
     // Method to handle flight status when the player changes worlds
     public void onPlayerWorldChange(Player player) {
         if (!player.getAllowFlight() && flyTask != null) {
-            player.sendMessage("You cannot fly in this world. Disabling fly mode.");
-            cancelFlyTask(); // Cancel the task if they cannot fly
-            player.setAllowFlight(false); // Ensure flight is disabled
+            cancelFlyTask();
+            player.setAllowFlight(false);
         }
     }
 }

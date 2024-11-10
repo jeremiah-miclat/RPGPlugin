@@ -90,7 +90,6 @@ public class TeamInviteCommand implements CommandExecutor {
 
         // Add the invitee to the inviter's invite list
         inviterProfile.getTeamInvites().add(invitee.getName());
-        profileManager.saveProfile(inviter.getName()); // Save inviter's profile to persist the invite
 
         // Notify both players
         inviter.sendMessage(ChatColor.GREEN + "You have invited " + invitee.getName() + " to your team.");

@@ -30,6 +30,9 @@ public class PlayerDeathListener implements Listener {
 
             player.sendMessage("You will not lose your items in this world.");
         }
+        if (player.getAllowFlight()) {
+            player.setAllowFlight(false);
+        }
         UserProfile profile = profileManager.getProfile(player.getName());
         if (!player.getLocation().getWorld().getName().equalsIgnoreCase("world_rpg")) return;
         int durability = profile.getDurability();

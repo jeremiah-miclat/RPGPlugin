@@ -18,13 +18,13 @@ public class PayBlackSmithCommand implements CommandExecutor {
     private final PlayerProfileManager profileManager;
 
     static {
-        // Populate the map with hunger values for each food type
+
         oresMap.put(Material.IRON_INGOT, 100);
         oresMap.put(Material.GOLD_INGOT, 200);
         oresMap.put(Material.EMERALD, 200);
         oresMap.put(Material.DIAMOND, 1000);
 
-        // Add more food items with appropriate hunger values as needed
+
     }
 
     public PayBlackSmithCommand(PlayerProfileManager profileManager) {

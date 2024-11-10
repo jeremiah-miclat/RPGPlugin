@@ -37,32 +37,44 @@ public class MonsterInitializer implements Listener {
             return;
         }
 
+        Location spawnLocation = event.getLocation();
+        if (!isPlayerOnSameYLevel(spawnLocation)) {
+            event.setCancelled(true);
+            return;
+        }
+
+
         if (event.getEntity() instanceof Phantom) {
             event.setCancelled(true);
         }
 
         if (event.getEntity() instanceof Monster || event.getEntity() instanceof Wolf || event.getEntity() instanceof IronGolem) {
-            Location spawnLocation = event.getLocation();
-
             LivingEntity mob = event.getEntity();
             initializeExtraAttributes(mob);
 
         }
     }
 
-    private Player findNearestPlayer(Location location) {
-        Player nearest = null;
-        double nearestDistance = Double.MAX_VALUE;
-
+    private boolean isPlayerNearby(Location location, double radius) {
         for (Player player : Bukkit.getOnlinePlayers()) {
-            double distance = player.getLocation().distance(location);
-            if (distance < nearestDistance) {
-                nearestDistance = distance;
-                nearest = player;
+            if (player.getWorld().equals(location.getWorld()) && player.getLocation().distance(location) <= radius) {
+                return true;
             }
         }
+        return false;
+    }
 
-        return nearest;
+    private boolean isPlayerOnSameYLevel(Location location) {
+        int entityY = location.getBlockY();
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (player.getWorld().equals(location.getWorld())) {
+                int playerY = player.getLocation().getBlockY();
+                if (Math.abs(entityY - playerY) <= 3) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     // Method to initialize extra health and extra damage metadata
@@ -96,6 +108,7 @@ public class MonsterInitializer implements Listener {
             setBossAttributes(entity, maxCoord, "Boss", ChatColor.RED);
             entity.setMetadata("boss",new FixedMetadataValue(plugin, true));
             entity.setMetadata("lvl",new FixedMetadataValue(plugin, lvl));
+            entity.setPersistent(true);
         }
 
         if (Math.random() < 0.001) {
@@ -103,6 +116,7 @@ public class MonsterInitializer implements Listener {
             setBossAttributes(entity, maxCoord, "World Boss", ChatColor.DARK_PURPLE);
             entity.setMetadata("worldboss",new FixedMetadataValue(plugin, true));
             entity.setMetadata("lvl",new FixedMetadataValue(plugin, lvl));
+            entity.setPersistent(true);
         }
 
         return extraHealth; // Use as basis for both health and extra damage

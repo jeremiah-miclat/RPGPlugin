@@ -39,11 +39,9 @@ public class ChunkProtectionListener implements Listener {
             if (ownedChunk != null && !chunkManager.isOwner(player.getName(), chunk) && !chunkManager.isTrusted(player.getName(), chunk)) {
                 event.setCancelled(true); // Prevent entity damage
                 chunkHasOwnedChunkNearbyVisualizer(chunk, player);
-                player.sendMessage("You don't have permission to attack entities in this chunk.");
             }
             if (chunkHasOwnedChunkNearby(chunk, player)) {
                 chunkHasOwnedChunkNearbyVisualizer(chunk, player);
-                player.sendMessage("There's a nearby owned chunk that is not yours. You can't attack here.");
                 event.setCancelled(true); // Prevent block placement
             }
         }
@@ -55,11 +53,9 @@ public class ChunkProtectionListener implements Listener {
                 if (ownedChunk != null && !chunkManager.isOwner(player.getName(), chunk) && !chunkManager.isTrusted(player.getName(), chunk)) {
                     event.setCancelled(true); // Prevent entity damage
                     chunkHasOwnedChunkNearbyVisualizer(chunk, player);
-                    player.sendMessage("You don't have permission to attack entities in this chunk.");
                 }
                 if (chunkHasOwnedChunkNearby(chunk, player)) {
                     chunkHasOwnedChunkNearbyVisualizer(chunk, player);
-                    player.sendMessage("There's a nearby owned chunk that is not yours. You can't attack here.");
                     event.setCancelled(true); // Prevent block placement
                 }
             }
@@ -73,11 +69,9 @@ public class ChunkProtectionListener implements Listener {
                 if (ownedChunk != null && !chunkManager.isOwner(player.getName(), chunk) && !chunkManager.isTrusted(player.getName(), chunk)) {
                     event.setCancelled(true); // Prevent entity damage
                     chunkHasOwnedChunkNearbyVisualizer(chunk, player);
-                    player.sendMessage("You don't have permission to attack entities in this chunk.");
                 }
                 if (chunkHasOwnedChunkNearby(chunk, player)) {
                     chunkHasOwnedChunkNearbyVisualizer(chunk, player);
-                    player.sendMessage("There's a nearby owned chunk that is not yours. You can't attack here.");
                     event.setCancelled(true); // Prevent block placement
                 }
             }
@@ -95,11 +89,9 @@ public class ChunkProtectionListener implements Listener {
             if (ownedChunk != null && !chunkManager.isOwner(player.getName(), chunk) && !chunkManager.isTrusted(player.getName(), chunk)) {
                 event.setCancelled(true); // Prevent interaction
                 chunkHasOwnedChunkNearbyVisualizer(chunk, player);
-                player.sendMessage("You don't have permission to interact in this chunk.");
             }
             if (chunkHasOwnedChunkNearby(chunk, player)) {
                 chunkHasOwnedChunkNearbyVisualizer(chunk,player);
-                player.sendMessage("There's a nearby owned chunk that is not yours or you are not trusted. You can't interact in this chunk");
                 event.setCancelled(true); // Prevent block placement
             }
         }
