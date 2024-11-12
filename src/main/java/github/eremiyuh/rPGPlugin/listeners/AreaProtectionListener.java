@@ -11,13 +11,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.entity.EntitySpawnEvent;
+import org.bukkit.event.entity.*;
+import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class AreaProtectionListener implements Listener {
@@ -41,11 +40,28 @@ public class AreaProtectionListener implements Listener {
     public void onEntitySpawn(EntitySpawnEvent event) {
         Entity entity = event.getEntity();
         if (isInProtectedArea(entity.getLocation().getBlockX(), entity.getLocation().getBlockZ())) {
-            if (entity.getType() != EntityType.PLAYER && entity.getType() != EntityType.ARMOR_STAND && event.getEntity() instanceof Monster) { // Allow players to spawn
+
+            if (entity.getType() != EntityType.PLAYER && entity.getType() != EntityType.ARMOR_STAND && entity instanceof Monster) {
                 event.setCancelled(true);
             }
         }
     }
+
+
+    @EventHandler
+    public void onEntityLeash(PlayerLeashEntityEvent event) {
+        if (event.getEntity() instanceof Player player) {
+            if (isInProtectedArea(player.getLocation().getBlockX(), player.getLocation().getBlockZ())&& !player.isOp()) {
+                event.setCancelled(true);
+            }
+            ItemStack item = player.getInventory().getItemInMainHand();
+
+            if (item.getType() == Material.LEAD && !player.isOp()) {
+                event.setCancelled(true);
+            }
+        }
+    }
+
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
@@ -69,6 +85,22 @@ public class AreaProtectionListener implements Listener {
     }
 
     @EventHandler
+    public void onRide(EntityMountEvent event) {
+        if (event.getEntity() instanceof  Player player && !player.isOp()) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onHangingBreakByEntity(HangingBreakByEntityEvent event) {
+
+            if (event.getRemover() instanceof Player player && !player.isOp()) {
+                event.setCancelled(true);
+            }
+
+    }
+
+    @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
 
         if (event.getClickedBlock()!= null && (isInProtectedArea(event.getClickedBlock().getLocation().getBlockX(), event.getClickedBlock().getLocation().getBlockZ()))) {
@@ -89,9 +121,14 @@ public class AreaProtectionListener implements Listener {
                         item == Material.LAVA_BUCKET ||
                         item == Material.ITEM_FRAME ||
                         item == Material.GLOW_ITEM_FRAME ||
-                        item == Material.BUCKET) && !player.isOp()) {
+                        item == Material.BUCKET ||
+                        item== Material.LEAD ||
+                        item == Material.SADDLE) && !player.isOp()) {
                     event.setCancelled(true);
                 }
+
+
+
             }
 
             if (event.getAction() == Action.LEFT_CLICK_BLOCK && event.getItem() != null) {
@@ -102,6 +139,7 @@ public class AreaProtectionListener implements Listener {
 
             }
         }
+
     }
 
     @EventHandler
@@ -162,6 +200,18 @@ public class AreaProtectionListener implements Listener {
                 event.setCancelled(true);
             }
         }
+    }
+
+    @EventHandler
+    public void onEndermanChangeBlock(EntityChangeBlockEvent event) {
+        if (isInProtectedArea(event.getEntity().getLocation().getBlockX(), event.getEntity().getLocation().getBlockZ())
+                && event.getEntity() instanceof Enderman)
+        {
+            event.setCancelled(true);
+        }
+
+
+
     }
 
 

@@ -1,7 +1,8 @@
 package github.eremiyuh.rPGPlugin;
 
 import github.eremiyuh.rPGPlugin.buffs.PlayerStatBuff;
-import github.eremiyuh.rPGPlugin.classes.TradeOffer;
+import github.eremiyuh.rPGPlugin.utils.HologramUtil;
+import github.eremiyuh.rPGPlugin.utils.TradeOffer;
 import github.eremiyuh.rPGPlugin.commands.*;
 import github.eremiyuh.rPGPlugin.commandswithgui.CheckClassCommand;
 import github.eremiyuh.rPGPlugin.commandswithgui.SelectClassCommand;
@@ -13,7 +14,6 @@ import github.eremiyuh.rPGPlugin.methods.ChunkBorderBlueVisualizer;
 import github.eremiyuh.rPGPlugin.methods.ChunkBorderRedVisualizer;
 import github.eremiyuh.rPGPlugin.methods.DamageAbilityManager;
 import github.eremiyuh.rPGPlugin.methods.EffectsAbilityManager;
-import github.eremiyuh.rPGPlugin.profile.UserProfile;
 import org.bukkit.*;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -68,26 +68,36 @@ public class RPGPlugin extends JavaPlugin {
         }
         chunkManager.saveChunkData();
         // Handle resource worlds separately
+
     }
 
-    private void loadWorld(String worldName) {
+    private void loadWorld(String worldName,int sx,int sy, int sz,int bcx,int bcz, int bs, long time, GameRule<Boolean> rule, boolean grValue, World.Environment env) {
         // Check if the world is already loaded
         World world = getServer().getWorld(worldName);
         if (world == null) {
-            world = getServer().createWorld(new WorldCreator(worldName).environment(World.Environment.NORMAL));
-            if (world==null) {getLogger().info("world STILL NULL");}
+            world = getServer().createWorld(new WorldCreator(worldName).environment(env));
+            if (world==null) {getLogger().info("world STILL NULL"); return;}
+
 
         } else {
             getLogger().info("World " + worldName + " is already loaded.");
         }
-    }
 
-    private void setNightForever() {
-        World resourceWorld = Bukkit.getWorld("world_resource");
-        if (resourceWorld != null) {
-            resourceWorld.setTime(18000); // Set to night initially
-            resourceWorld.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
+        if (!(sx ==-1) ) {
+            world.setSpawnLocation(sx,sy,sz);
         }
+
+        if (!(bcx==-1)) {
+            WorldBorder worldBorder= world.getWorldBorder();
+            worldBorder.setCenter(bcx,bcz);
+            worldBorder.setSize(bs);
+        }
+
+        if (rule!=null) {
+            world.setGameRule(rule,grValue);
+            world.setTime(time);
+        }
+
     }
 
     private void oneManSleep() {
@@ -95,6 +105,22 @@ public class RPGPlugin extends JavaPlugin {
         if (world != null) {
             world.setGameRule(GameRule.PLAYERS_SLEEPING_PERCENTAGE, 0);
         }
+        double x = 100.5, y = 70, z = 100.5;
+        String text = "&6Hello, this is a hologram!"; // Supports color codes
+
+        Location loc1 = new Location(world, -14, 75, -39);
+        Location loc2 = new Location(world, -114, 75, -139);
+
+        // Define the text for each stack
+        String[] stack1 = {"&6Welcome to the server!", "&7Have fun!", "&aEnjoy your stay!"};
+        String[] stack2 = {"&bServer Info", "&eIP: play.example.com"};
+
+        // Create arrays for the locations and stacks
+        Location[] locations = {loc1, loc2};
+        String[][] stacks = {stack1, stack2};
+
+        HologramUtil.createHologram(world, x, y, z, text);
+        HologramUtil.createMultipleStacks(world, locations, stacks);
     }
 
     public boolean isServerLoaded() {
@@ -139,6 +165,7 @@ public class RPGPlugin extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new CheckClassCommand(profileManager), this);
         getServer().getPluginManager().registerEvents(new LoginListener(this), this);
         getServer().getPluginManager().registerEvents(new ItemAscensionListener(profileManager), this);
+        getServer().getPluginManager().registerEvents(new ResetItemListener(profileManager), this);
         // Register the command executor
         Objects.requireNonNull(this.getCommand("checkstatus")).setExecutor(new CheckClassCommand(profileManager));
         Objects.requireNonNull(getCommand("convertabysspoints")).setExecutor(new ConvertLevelsCommand(profileManager));
@@ -186,6 +213,7 @@ public class RPGPlugin extends JavaPlugin {
         Objects.requireNonNull(this.getCommand("tm")).setExecutor(tradeCommand);
         Objects.requireNonNull(this.getCommand("ta")).setExecutor(tradeAcceptCommand);
         Objects.requireNonNull(this.getCommand("iteminfo")).setExecutor(new ItemInfoCommand());
+        Objects.requireNonNull(this.getCommand("grt")).setExecutor(new GiveResetTokenCommand());
 
         //auth
         getCommand("register").setExecutor(new RegisterCommand(this,profileManager));
@@ -193,29 +221,14 @@ public class RPGPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new PlayerMovementListener(this,profileManager), this);
 
 
+
         oneManSleep();
+        loadWorld("world_rpg",-1,-1,-1,-1,-1,-1,18000,GameRule.DO_DAYLIGHT_CYCLE,false, World.Environment.NORMAL);
+        loadWorld("world_labyrinth",0,64,0,0,0,100,18000,null,false, World.Environment.NORMAL);
 
-        // Load the world
-        loadWorld("world_rpg");
-
-
-        // Log to console that the plugin has been enabled
-        getLogger().info("RPGPlugin has been enabled.");
-
-
-        // Step 1: Create a new world with the desired settings
-        String worldName = "world_labyrinth";
-        WorldCreator worldCreator = new WorldCreator(worldName);
-        World world = Bukkit.createWorld(worldCreator);
-
-        if (world != null) {
-            // Step 2: Set the world border to a radius of 100 blocks
-            WorldBorder border = world.getWorldBorder();
-            border.setCenter(0, 0); // Set the center of the border, usually (0,0)
-            border.setSize(200); // Border size is diameter, so 200 for a 100-block radius
-        } else {
-            getLogger().severe("Failed to create world " + worldName);
-        }
     }
+
+
+
 
 }

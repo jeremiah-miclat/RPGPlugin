@@ -27,7 +27,7 @@ public class SelectElement implements CommandExecutor {
 
 
         if (args.length != 1) {
-            player.sendMessage("Usage: /selectelement <fire|water|air>");
+            player.sendMessage("Usage: /selectelement <fire|water|ice>");
             return true;
         }
 
@@ -44,6 +44,8 @@ public class SelectElement implements CommandExecutor {
             return true;
         }
 
+        if (!profile.getSelectedElement().equalsIgnoreCase("none")) profile.setLapiz(profile.getLapiz()-10);
+
         // Validate the chosen element and set it
         switch (element) {
             case "fire":
@@ -52,7 +54,7 @@ public class SelectElement implements CommandExecutor {
 //            case "lightning":
             case "water":
             case "ice":
-                profile.setLapiz(profile.getLapiz()-10);
+
                 profile.setSelectedElement(element);
                 player.sendMessage("You have chosen the " + element + " element!");
                 break;

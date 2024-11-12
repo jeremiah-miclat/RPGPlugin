@@ -69,7 +69,7 @@ public class MonsterInitializer implements Listener {
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (player.getWorld().equals(location.getWorld())) {
                 int playerY = player.getLocation().getBlockY();
-                if (Math.abs(entityY - playerY) <= 3) {
+                if (Math.abs(entityY - playerY) <= 4) {
                     return true;
                 }
             }
@@ -103,20 +103,18 @@ public class MonsterInitializer implements Listener {
         entity.setCustomName(normalName);
         entity.setCustomNameVisible(true);
 
-        if (Math.random() < .01) {
+        if (Math.random() < .005) {
             extraHealth = (extraHealth * 10); // Add 1000% health
             setBossAttributes(entity, maxCoord, "Boss", ChatColor.RED);
             entity.setMetadata("boss",new FixedMetadataValue(plugin, true));
             entity.setMetadata("lvl",new FixedMetadataValue(plugin, lvl));
-            entity.setPersistent(true);
         }
 
-        if (Math.random() < 0.001) {
+        if (Math.random() < 0.0005) {
             extraHealth = (extraHealth * 100); // Add 10000% health
             setBossAttributes(entity, maxCoord, "World Boss", ChatColor.DARK_PURPLE);
             entity.setMetadata("worldboss",new FixedMetadataValue(plugin, true));
             entity.setMetadata("lvl",new FixedMetadataValue(plugin, lvl));
-            entity.setPersistent(true);
         }
 
         return extraHealth; // Use as basis for both health and extra damage
@@ -126,6 +124,8 @@ public class MonsterInitializer implements Listener {
         String bossName = color + "Lvl " + (int) (Math.floor(maxCoord) / 100) + " " + type + " " + entity.getType().name();
         entity.setCustomName(bossName);
         entity.setCustomNameVisible(true);
+        entity.setRemoveWhenFarAway(false);
+        entity.setPersistent(true);
 
         // Calculate speed and jump multipliers based on maxCoord
         double speedMultiplier = 1 + (0.000075 * maxCoord); // Continuous increase for speed

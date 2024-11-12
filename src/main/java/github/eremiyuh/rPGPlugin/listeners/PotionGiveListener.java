@@ -31,8 +31,9 @@ public class PotionGiveListener implements Listener {
 
         Player player = event.getPlayer();
         UserProfile playerProfile = profileManager.getProfile(player.getName());
-        if (playerProfile.getPotion()<1) {
+        if (playerProfile.getPotion() < 1) {
             player.sendMessage("No potions");
+            return;
         }
 
         if (!playerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
@@ -45,12 +46,10 @@ public class PotionGiveListener implements Listener {
         }
 
         ItemStack mainHandItem = player.getInventory().getItemInMainHand();
-        ItemStack firstHotbarItem = player.getInventory().getItem(0);
         ItemStack offHandItem = player.getInventory().getItemInOffHand();
 
-
-        // Check if main hand is empty and off-hand has a book
-        if (player.getInventory().getHeldItemSlot() == 0 && mainHandItem.getType() == Material.AIR && offHandItem.getType() == Material.BOOK) {
+        // Check if main hand has a book and off-hand is empty
+        if (mainHandItem.getType() == Material.BOOK && offHandItem.getType() == Material.AIR) {
             // Cancel the event to prevent any default behavior
             event.setCancelled(true);
 
@@ -67,7 +66,7 @@ public class PotionGiveListener implements Listener {
                 if (playerProfile.getSelectedSkill().equalsIgnoreCase("skill 1")) {
                     potionEffect = new PotionEffect(PotionEffectType.INSTANT_DAMAGE, 1, 1);
                 } else if (playerProfile.getSelectedSkill().equalsIgnoreCase("skill 2")) {
-                    potionEffect = new PotionEffect(PotionEffectType.POISON, 450, 1); // Duration of 200 ticks (10 seconds)
+                    potionEffect = new PotionEffect(PotionEffectType.POISON, 450, 1); // Duration of 450 ticks (22.5 seconds)
                 } else if (playerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
                     potionEffect = new PotionEffect(PotionEffectType.INSTANT_HEALTH, 1, 1);
                 }
@@ -81,10 +80,10 @@ public class PotionGiveListener implements Listener {
                 potion.setItemMeta(potionMeta);
             }
 
-            // Add the potion to the player's inventory
-            player.getInventory().addItem(potion);
-            playerProfile.setPotion(playerProfile.getPotion()-1);
-
+            // Set the potion directly into the off-hand
+            player.getInventory().setItemInOffHand(potion);
+            playerProfile.setPotion(playerProfile.getPotion() - 1);
         }
     }
 }
+

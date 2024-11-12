@@ -35,8 +35,6 @@ public class UserProfile {
 
     private boolean pvpEnabled = true;
 
-    private long lastRpgSwitchTime = 0; // New field to store last RPG switch timestamp
-    private static final long RPG_COOLDOWN = 10 * 60 * 60 * 1000; // 10 hours in milliseconds
     private double diamond;
     private double emerald;
     private double iron;
@@ -104,16 +102,16 @@ public class UserProfile {
         this.netherite=0;
 
         // other currencies
-        this.enderpearl = 100;
-        this.stamina = 10000;
-        this.durability = 10000;
+        this.enderpearl = 10;
+        this.stamina = 1000;
+        this.durability = 1000;
         this.abyssPoints = 0;
 
         this.claimPoints =100;
         this.team = "none";
         this.teamMembers = getTeamMembers();
 
-        this.potion=1000;
+        this.potion=100;
 
         //home
         this.homes = new HashMap<>();
@@ -311,14 +309,6 @@ public class UserProfile {
     }
 
 
-    public long getLastRpgSwitchTime() {
-        return lastRpgSwitchTime;
-    }
-
-    public void setLastRpgSwitchTime(long switchTime) {
-        this.lastRpgSwitchTime = switchTime;
-    }
-
     public double getDiamond() {
         return diamond;
     }
@@ -327,11 +317,6 @@ public class UserProfile {
         this.diamond = diamond;
     }
 
-    // Method to check if cooldown has passed
-    public boolean canSwitchRPG() {
-        long currentTime = System.currentTimeMillis();
-        return (currentTime - lastRpgSwitchTime) >= RPG_COOLDOWN;
-    }
 
 
     public double getClaimPoints() {

@@ -7,10 +7,7 @@ import github.eremiyuh.rPGPlugin.methods.EffectsAbilityManager;
 import github.eremiyuh.rPGPlugin.perms.PlayerBuffPerms;
 import github.eremiyuh.rPGPlugin.profile.UserProfile;
 import net.md_5.bungee.api.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Particle;
-import org.bukkit.Sound;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
@@ -22,7 +19,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.projectiles.ProjectileSource;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.potion.PotionEffectType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,7 +44,7 @@ public class DamageListener implements Listener {
     }
 
 
-    @EventHandler (priority = EventPriority.HIGH)
+    @EventHandler
     public void onEntityDamage(EntityDamageByEntityEvent event) {
 
 
@@ -453,7 +453,7 @@ public class DamageListener implements Listener {
 
 
 
-    @EventHandler
+    @EventHandler (priority = EventPriority.HIGH)
     public void onModifiedEntityTakeDamage(EntityDamageEvent event) {
         if (!Objects.requireNonNull(event.getEntity().getLocation().getWorld()).getName().equals("world_rpg")) {
             return;
@@ -596,6 +596,7 @@ public class DamageListener implements Listener {
         // Swordsman-specific ability if holding a sword
         if (damagerProfile.getChosenClass().equalsIgnoreCase("swordsman") && weapon.getType().toString().endsWith("_SWORD")) {
             effectsAbilityManager.applyAbility(damagerProfile, target, damagerLocation, damagedLocation);
+
         }
 
         // Apply extra health and set final damage
@@ -650,10 +651,6 @@ public class DamageListener implements Listener {
             double newHealth = Math.min(attacker.getHealth() + lifestealAmount, maxHealth); // Avoid exceeding max health
             attacker.setHealth(newHealth);
         }
-
-
-
-
         event.setDamage(finalDamage);
     }
 
@@ -1012,6 +1009,13 @@ public class DamageListener implements Listener {
             damagerProfile.setStamina(damagerProfile.getStamina() - 1);
         }
 
+
+        String selectedElement = damagerProfile.getSelectedElement(); // Get the selected element (e.g., fire)
+
+        // If the selected element is "fire", and we want to check if the target is affected by Slowness
+//        if (selectedElement.equalsIgnoreCase("fire") && event.getEntity() instanceof LivingEntity target && target.hasPotionEffect(PotionEffectType.SLOWNESS)) {
+//                spawnFloatingHologram(event.getEntity().getLocation(), "Melt", player.getWorld(), ChatColor.AQUA);
+//        }
         return calculatedDamage;
     }
 
@@ -1127,6 +1131,49 @@ public class DamageListener implements Listener {
         return extraHealth; // Use as basis for both health and extra damage
     }
 
+    // Method to spawn the floating hologram above the monster
+    private void spawnFloatingHologram(Location location, String text, World world,
+                                       net. md_5.bungee. api. ChatColor color) {
+        // Create the ArmorStand at the given location
+        ArmorStand armorStand = (ArmorStand) world.spawnEntity(location.clone().add(0, 1, 0), EntityType.ARMOR_STAND);
 
+        String coloredText = color + text;
 
+        // Set up the hologram text
+        armorStand.setCustomName(ChatColor.translateAlternateColorCodes('&', coloredText));
+        armorStand.setCustomNameVisible(true);
+
+        // Make the ArmorStand invisible and disable its gravity to simulate a floating text
+        armorStand.setInvisible(true);
+        armorStand.setGravity(false);
+        armorStand.setInvulnerable(true);
+        armorStand.setMarker(true); // Small size and no hitbox
+
+        // Create a task to move the hologram upwards
+        moveHologramUpwards(armorStand);
+    }
+
+    // Method to move the hologram upwards
+    private void moveHologramUpwards(ArmorStand armorStand) {
+        new BukkitRunnable() {
+            private double offsetY = 0;
+
+            @Override
+            public void run() {
+                // Move the hologram upwards
+                armorStand.teleport(armorStand.getLocation().add(0, 0.1, 0)); // Move up by 0.1 blocks
+
+                // After moving upwards by a certain amount, stop the task (you can adjust this)
+                if (offsetY >= 2.0) {
+                    this.cancel(); // Stop the task after moving the hologram upwards by 2 blocks
+                    armorStand.remove(); // Optionally remove the hologram after the animation is complete
+                }
+
+                offsetY += 0.1;
+            }
+        }.runTaskTimer(plugin, 0L, 1L); // Runs every tick (1/20th of a second)
+    }
 }
+
+
+

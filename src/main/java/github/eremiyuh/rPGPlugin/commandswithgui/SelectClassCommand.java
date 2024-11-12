@@ -101,9 +101,9 @@ public class SelectClassCommand implements CommandExecutor, Listener {
 
 
                 // Check if the player has enough diamonds to change class
-                if (profile.getDiamond() >= 10) {
+                if (profile.getDiamond() >= 10 || profile.getChosenClass().equalsIgnoreCase("default")) {
                     // Deduct diamonds from player
-                    profile.setDiamond(profile.getDiamond()-10);
+                    if (!profile.getChosenClass().equalsIgnoreCase("default")) profile.setDiamond(profile.getDiamond()-10);
 
                     // Update profile with the new class
                     profile.setChosenClass(displayName);
@@ -114,7 +114,7 @@ public class SelectClassCommand implements CommandExecutor, Listener {
 
                     player.sendMessage("You have selected the " + displayName + " class!");
                 } else {
-                    player.sendMessage("You have " + profile.getDiamond());
+                    player.sendMessage("You have " + (int) profile.getDiamond() + "diamond/s");
                     player.sendMessage("You need at least " + CLASS_CHANGE_COST + " diamonds to change your class.");
                 }
 

@@ -1,4 +1,4 @@
-package github.eremiyuh.rPGPlugin.classes;
+package github.eremiyuh.rPGPlugin.utils;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

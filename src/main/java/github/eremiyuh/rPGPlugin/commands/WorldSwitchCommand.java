@@ -43,6 +43,12 @@ public class WorldSwitchCommand implements CommandExecutor {
             case "normal":
                 targetWorldName = "world";
                 break;
+            case "l":
+                targetWorldName = "world_labyrinth";
+                break;
+            case "et":
+                targetWorldName = "world_endlesstower";
+                break;
             default:
                 player.sendMessage("Invalid world specified. Use 'abyss' or 'normal'.");
                 return false;

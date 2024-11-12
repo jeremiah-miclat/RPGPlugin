@@ -1,6 +1,6 @@
 package github.eremiyuh.rPGPlugin.commands;
 
-import github.eremiyuh.rPGPlugin.classes.TradeOffer;
+import github.eremiyuh.rPGPlugin.utils.TradeOffer;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -49,6 +49,10 @@ public class TradeCommand implements CommandExecutor {
             return false;
         }
 
+        if (recipient.getName().equals(senderPlayer.getName())) {
+            senderPlayer.sendMessage("You forgot to drink your meds.");
+        }
+
         // Check if sender already has an active trade
         if (activeTrades.containsKey(senderPlayer.getUniqueId())) {
             senderPlayer.sendMessage("You already have an active trade.");
@@ -59,7 +63,7 @@ public class TradeCommand implements CommandExecutor {
         Material materialToTrade = Material.matchMaterial(args[1].toUpperCase());
         Material materialToReceive = Material.matchMaterial(args[3].toUpperCase());
         if (materialToTrade == null || materialToReceive == null) {
-            senderPlayer.sendMessage("Invalid material specified. Use correct material names. Enter /iteminfo");
+            senderPlayer.sendMessage("Invalid material specified. Use correct material names. Enter /iteminfo while holding your item to check.");
             return false;
         }
 

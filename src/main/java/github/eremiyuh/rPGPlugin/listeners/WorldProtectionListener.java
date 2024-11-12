@@ -4,6 +4,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Boat;
+import org.bukkit.entity.Enderman;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
@@ -11,6 +12,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
@@ -52,7 +54,6 @@ public class WorldProtectionListener implements Listener {
         // Cancel block break in protected world unless the player is in creative mode
         if (isInProtectedWorld(event.getBlock().getWorld()) && event.getPlayer().getGameMode() != GameMode.CREATIVE) {
             event.setCancelled(true);
-            event.getPlayer().sendMessage("Block breaking is not allowed in this world.");
         }
 
         if (isInProtectedWorld(event.getBlock().getWorld())) {
@@ -65,7 +66,6 @@ public class WorldProtectionListener implements Listener {
         // Cancel block place in protected world unless the player is in creative mode
         if (isInProtectedWorld(event.getBlock().getWorld()) && event.getPlayer().getGameMode() != GameMode.CREATIVE) {
             event.setCancelled(true);
-            event.getPlayer().sendMessage("Block placing is not allowed in this world.");
         }
 
         if (isInProtectedWorld(event.getBlock().getWorld())) {
@@ -78,7 +78,6 @@ public class WorldProtectionListener implements Listener {
         // Cancel bucket usage (water, lava) in protected world unless in creative mode
         if (isInProtectedWorld(event.getBlockClicked().getWorld()) && event.getPlayer().getGameMode() != GameMode.CREATIVE) {
             event.setCancelled(true);
-            event.getPlayer().sendMessage("Bucket usage is not allowed in this world.");
         }
     }
 
@@ -102,10 +101,20 @@ public class WorldProtectionListener implements Listener {
     @EventHandler
     public void onEntitySpawn(EntitySpawnEvent event) {
         Entity entity = event.getEntity();
+
         if (isInProtectedWorld(event.getEntity().getWorld())) {
             if (entity.getType() == EntityType.ARMOR_STAND) {
-                event.setCancelled(true);
+//                event.setCancelled(true);
             }
+        }
+    }
+
+    @EventHandler
+    public void onEndermanChangeBlock(EntityChangeBlockEvent event) {
+
+        if (event.getEntity() instanceof Enderman) {
+
+            event.setCancelled(true);
         }
     }
 
@@ -117,7 +126,6 @@ public class WorldProtectionListener implements Listener {
 
             if (item == Material.FLINT_AND_STEEL || item == Material.TNT) {
                 event.setCancelled(true);
-                event.getPlayer().sendMessage("You cannot use that item in this world.");
             }
 
             if (item == Material.WATER_BUCKET || item == Material.LAVA_BUCKET || item == Material.BUCKET) {
@@ -128,7 +136,6 @@ public class WorldProtectionListener implements Listener {
             // Cancel interactions with trapdoors and fences
             if (isTrapdoorOrFence(item)) {
                 event.setCancelled(true);
-                event.getPlayer().sendMessage("You cannot interact with that in this world.");
             }
 
         }

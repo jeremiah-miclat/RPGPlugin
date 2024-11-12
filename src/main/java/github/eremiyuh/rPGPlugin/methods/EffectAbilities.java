@@ -56,7 +56,7 @@ public class EffectAbilities {
         World world = target.getWorld();
 
 
-        for (int i = 0; i < 50; i++) {
+        for (int i = 0; i < 10; i++) {
             double xOffset = (Math.random() - 0.5) * 1.5;
             double zOffset = (Math.random() - 0.5) * 1.5;
             double yVelocity = Math.random() * 0.5 + 0.5;
@@ -86,7 +86,7 @@ public class EffectAbilities {
 
         target.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, slownessDuration+ (int)(userInt *.02), 1));
 
-        target.getWorld().spawnParticle(Particle.SNOWFLAKE, target.getLocation(), 30, 0.5, 1, 0.5);
+        target.getWorld().spawnParticle(Particle.SNOWFLAKE, target.getLocation(), 10, 0.5, .5, 0.5);
     }
 
     // Method to apply nausea effect
@@ -97,7 +97,7 @@ public class EffectAbilities {
         // Apply the nausea effect to the target
         target.addPotionEffect(new PotionEffect(PotionEffectType.NAUSEA, nauseaDuration, nauseaLevel));
 
-        target.getWorld().spawnParticle(Particle.LARGE_SMOKE,target.getLocation(), 30, 0.5, 1, 0.5);
+        target.getWorld().spawnParticle(Particle.LARGE_SMOKE,target.getLocation(), 3, 0.5, 1, 0.5);
     }
 
     // Method to apply weakness effect

@@ -54,6 +54,12 @@ task copyToServer(type: Copy) {
     include "*.jar"
 }
 
+//task copyToServer(type: Copy) {
+//    from "$buildDir/libs"
+//    into "C:/Users/USER/Desktop/Paper 1.21/plugins"
+//    include "*.jar"
+//}
+
 build {
     finalizedBy copyToServer // Run the copy task after the build
 }

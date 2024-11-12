@@ -84,6 +84,14 @@ public class ChunkCommand implements CommandExecutor {
 
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (sender instanceof Player player) {
+            if (!player.getWorld().getName().equals("world")
+                || !player.getWorld().getName().equals("world_nether")
+                || !player.getWorld().getName().equals("world_end")
+            ) {
+                player.sendMessage("Can not claim chunks on this world");
+                return true;
+            }
+
             UserProfile userProfile = profileManager.getProfile(player.getName());
             double userClaimPoints = userProfile.getClaimPoints();
 

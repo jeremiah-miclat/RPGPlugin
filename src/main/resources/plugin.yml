@@ -296,3 +296,5 @@ commands:
     description: Accept or reject a trade offer
   iteminfo:
     description: Checks the item name of the item you are holding
+  grt:
+    description: give reset token to player
