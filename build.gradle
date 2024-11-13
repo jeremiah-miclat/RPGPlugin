@@ -2,14 +2,14 @@ plugins {
     id 'java'
 }
 
-group = 'github.eremiyuh'
+group = 'github.eremiyuh.rPGPlugin'
 version = '1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
     maven {
-        name = "spigotmc-repo"
-        url = "https://hub.spigotmc.org/nexus/content/repositories/snapshots/"
+        name = "papermc-repo"
+        url = "https://repo.papermc.io/repository/maven-public/"
     }
     maven {
         name = "sonatype"
@@ -18,7 +18,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("org.spigotmc:spigot-api:1.21.1-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.21.1-R0.1-SNAPSHOT")
 }
 
 def targetJavaVersion = 21
@@ -47,20 +47,3 @@ processResources {
         expand props
     }
 }
-
-task copyToServer(type: Copy) {
-    from "$buildDir/libs" // Source folder where the .jar file is created
-    into "C:/Users/USER/Desktop/New folder/plugins" // Destination folder (your server's plugins folder)
-    include "*.jar"
-}
-
-//task copyToServer(type: Copy) {
-//    from "$buildDir/libs"
-//    into "C:/Users/USER/Desktop/Paper 1.21/plugins"
-//    include "*.jar"
-//}
-
-build {
-    finalizedBy copyToServer // Run the copy task after the build
-}
-

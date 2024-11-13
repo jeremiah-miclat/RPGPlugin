@@ -1133,7 +1133,7 @@ public class DamageListener implements Listener {
 
     // Method to spawn the floating hologram above the monster
     private void spawnFloatingHologram(Location location, String text, World world,
-                                       net. md_5.bungee. api. ChatColor color) {
+                                       ChatColor color) {
         // Create the ArmorStand at the given location
         ArmorStand armorStand = (ArmorStand) world.spawnEntity(location.clone().add(0, 1, 0), EntityType.ARMOR_STAND);
 
