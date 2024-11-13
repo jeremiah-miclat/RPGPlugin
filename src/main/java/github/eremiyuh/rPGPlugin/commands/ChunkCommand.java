@@ -88,7 +88,7 @@ public class ChunkCommand implements CommandExecutor {
                 || !player.getWorld().getName().equals("world_nether")
                 || !player.getWorld().getName().equals("world_end")
             ) {
-                player.sendMessage("Can not claim chunks on this world");
+                player.sendMessage("Can not claim chunks on this area");
                 return true;
             }
 

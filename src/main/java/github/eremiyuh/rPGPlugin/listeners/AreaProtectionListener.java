@@ -2,6 +2,7 @@ package github.eremiyuh.rPGPlugin.listeners;
 
 import github.eremiyuh.rPGPlugin.RPGPlugin;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -13,11 +14,19 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
+import org.bukkit.event.inventory.PrepareItemCraftEvent;
+import org.bukkit.event.inventory.TradeSelectEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerUnleashEntityEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.Merchant;
+import org.bukkit.inventory.MerchantRecipe;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.List;
+import java.util.Objects;
 
 public class AreaProtectionListener implements Listener {
 
@@ -41,7 +50,7 @@ public class AreaProtectionListener implements Listener {
         Entity entity = event.getEntity();
         if (isInProtectedArea(entity.getLocation().getBlockX(), entity.getLocation().getBlockZ())) {
 
-            if (entity.getType() != EntityType.PLAYER && entity.getType() != EntityType.ARMOR_STAND && entity instanceof Monster) {
+            if (entity.getType() != EntityType.PLAYER && entity.getType() != EntityType.ARMOR_STAND && entity instanceof Monster && entity.getType() != EntityType.EXPERIENCE_ORB) {
                 event.setCancelled(true);
             }
         }
@@ -50,16 +59,12 @@ public class AreaProtectionListener implements Listener {
 
     @EventHandler
     public void onEntityLeash(PlayerLeashEntityEvent event) {
-        if (event.getEntity() instanceof Player player) {
-            if (isInProtectedArea(player.getLocation().getBlockX(), player.getLocation().getBlockZ())&& !player.isOp()) {
-                event.setCancelled(true);
-            }
-            ItemStack item = player.getInventory().getItemInMainHand();
+            Entity entity = event.getEntity();
 
-            if (item.getType() == Material.LEAD && !player.isOp()) {
+            if (isInProtectedArea(entity.getLocation().getBlockX(), entity.getLocation().getBlockZ())&& !event.getPlayer().isOp()) {
                 event.setCancelled(true);
             }
-        }
+
     }
 
 
@@ -101,6 +106,22 @@ public class AreaProtectionListener implements Listener {
     }
 
     @EventHandler
+    public void onUnlead(PlayerUnleashEntityEvent event) {
+        Entity entity = event.getEntity();
+        if (isInProtectedArea(entity.getLocation().getBlockX(), entity.getLocation().getBlockZ())&& !event.getPlayer().isOp()) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onFeed(EntityBreedEvent event) {
+        Entity entity = event.getEntity();
+        if (isInProtectedArea(entity.getLocation().getBlockX(), entity.getLocation().getBlockZ())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
 
         if (event.getClickedBlock()!= null && (isInProtectedArea(event.getClickedBlock().getLocation().getBlockX(), event.getClickedBlock().getLocation().getBlockZ()))) {
@@ -123,8 +144,9 @@ public class AreaProtectionListener implements Listener {
                         item == Material.GLOW_ITEM_FRAME ||
                         item == Material.BUCKET ||
                         item== Material.LEAD ||
-                        item == Material.SADDLE) && !player.isOp()) {
+                        item == Material.SADDLE)  && !player.isOp()) {
                     event.setCancelled(true);
+                    player.sendMessage("not allowed");
                 }
 
 
@@ -187,6 +209,7 @@ public class AreaProtectionListener implements Listener {
                     || entity.getType() == EntityType.GLOW_ITEM_FRAME
                     || entity instanceof Animals
                     || entity instanceof Fish
+                    || entity instanceof WanderingTrader
             ) {
                 if (event instanceof EntityDamageByEntityEvent) {
                     Entity damager = ((EntityDamageByEntityEvent) event).getDamager();
@@ -213,6 +236,31 @@ public class AreaProtectionListener implements Listener {
 
 
     }
+
+//    @EventHandler
+//    public void onTradeSelect(TradeSelectEvent event) {
+//        Player player = (Player) event.getWhoClicked();
+//        Merchant merchant = event.getMerchant();
+//        int selectedTradeIndex = event.getIndex();
+//
+//
+//        List<MerchantRecipe> recipes = merchant.getRecipes();
+//        int totalTrades = recipes.size();
+//
+//
+//        MerchantRecipe selectedTrade = recipes.get(selectedTradeIndex);
+//        selectedTrade.setUses(0);
+//
+//        int experienceAmount = 5*totalTrades;
+//        player.giveExp(experienceAmount);
+//
+//        World world = player.getWorld();
+//        world.spawn(player.getLocation(), ExperienceOrb.class, orb -> {
+//            orb.setExperience(experienceAmount);
+//        });
+//        player.sendMessage("c");
+//
+//    }
 
 
 

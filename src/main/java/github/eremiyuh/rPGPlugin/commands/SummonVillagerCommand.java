@@ -35,34 +35,85 @@ public class SummonVillagerCommand implements CommandExecutor {
         Player player = (Player) sender;
         Villager villager = (Villager) player.getWorld().spawnEntity(player.getLocation(), EntityType.VILLAGER);
         villager.setAI(false);
-            villager.setProfession(Villager.Profession.CLERIC);
-            villager.setVillagerExperience(1);
-            villager.setCustomName("Super");
+            villager.setProfession(Villager.Profession.ARMORER);
+        villager.setVillagerLevel(5);
+            villager.setCustomName("Armorer");
             List<MerchantRecipe> trades = new ArrayList<>();
 
             ItemStack emerald = new ItemStack(Material.EMERALD, 1);
 
             // Trade 1: Emerald for Iron Sword
-            ItemStack ironSword = new ItemStack(Material.IRON_SWORD, 1);
-            MerchantRecipe trade1 = new MerchantRecipe(ironSword, Integer.MAX_VALUE);
-            trade1.setIngredients(Collections.singletonList(emerald));
+            ItemStack coal = new ItemStack(Material.COAL, 10);
+            ItemStack emeraldGiven = new ItemStack(Material.EMERALD, 1);
+            MerchantRecipe trade1 = new MerchantRecipe(emeraldGiven, Integer.MAX_VALUE);
+            trade1.setIngredients(Collections.singletonList(coal));
             trades.add(trade1);
 
             // Trade 2: Emerald for Diamond Pickaxe
-            ItemStack diamondPickaxe = new ItemStack(Material.DIAMOND_PICKAXE, 1);
-            MerchantRecipe trade2 = new MerchantRecipe(diamondPickaxe, Integer.MAX_VALUE);
-            trade2.setIngredients(Collections.singletonList(emerald));
-            trades.add(trade2);
+        ItemStack emeraldForIH = new ItemStack(Material.EMERALD, 3);
+        ItemStack ironHelm = new ItemStack(Material.IRON_HELMET, 1);
+        MerchantRecipe trade2= new MerchantRecipe(ironHelm, Integer.MAX_VALUE);
+        trade2.setIngredients(Collections.singletonList(emeraldForIH));
+        trades.add(trade2);
 
             // Trade 3: Emerald for Enchanted Book (Sharpness V)
-            ItemStack enchantedBook = new ItemStack(Material.ENCHANTED_BOOK, 1);
-            enchantedBook.addUnsafeEnchantment(Enchantment.SHARPNESS, 5);
-            MerchantRecipe trade3 = new MerchantRecipe(enchantedBook, Integer.MAX_VALUE);
-            trade3.setIngredients(Collections.singletonList(emerald));
+            ItemStack emerald4CP = new ItemStack(Material.EMERALD, 7);
+        ItemStack ironCP = new ItemStack(Material.IRON_CHESTPLATE, 1);
+            MerchantRecipe trade3 = new MerchantRecipe(ironCP, Integer.MAX_VALUE);
+            trade3.setIngredients(Collections.singletonList(emerald4CP));
             trades.add(trade3);
 
-            villager.setRecipes(trades);
+            ItemStack emerald4IL = new ItemStack(Material.EMERALD, 5);
+            ItemStack ironL = new ItemStack(Material.IRON_LEGGINGS,1);
+            MerchantRecipe trade4 = new MerchantRecipe(ironL,Integer.MAX_VALUE);
+        trade4.setIngredients(Collections.singletonList(emerald4IL));
+        trades.add(trade4);
 
+        ItemStack emerald4B = new ItemStack(Material.EMERALD, 4);
+        ItemStack ironB = new ItemStack(Material.IRON_BOOTS,1);
+        MerchantRecipe trade5 = new MerchantRecipe(ironB,Integer.MAX_VALUE);
+        trade5.setIngredients(Collections.singletonList(emerald4B));
+        trades.add(trade5);
+
+        ItemStack emerald4I = new ItemStack(Material.EMERALD, 1);
+        ItemStack ironI = new ItemStack(Material.IRON_INGOT,3);
+        MerchantRecipe trade6 = new MerchantRecipe(emerald4I,Integer.MAX_VALUE);
+        trade6.setIngredients(Collections.singletonList(ironI));
+        trades.add(trade6);
+
+        ItemStack bell = new ItemStack(Material.BELL, 1);
+        ItemStack emerald4Bell = new ItemStack(Material.EMERALD,28);
+        MerchantRecipe trade7 = new MerchantRecipe(bell,Integer.MAX_VALUE);
+        trade7.setIngredients(Collections.singletonList(emerald4Bell));
+        trades.add(trade7);
+
+        ItemStack lavabucket = new ItemStack(Material.LAVA_BUCKET, 1);
+        ItemStack emerald4LB = new ItemStack(Material.EMERALD,1);
+        MerchantRecipe trade8 = new MerchantRecipe(lavabucket,Integer.MAX_VALUE);
+        trade8.setIngredients(Collections.singletonList(emerald4LB));
+        trades.add(trade8);
+
+        ItemStack diamond = new ItemStack(Material.DIAMOND, 1);
+        ItemStack emerald4D = new ItemStack(Material.EMERALD,1);
+        MerchantRecipe trade9 = new MerchantRecipe(diamond,Integer.MAX_VALUE);
+        trade9.setIngredients(Collections.singletonList(emerald4D));
+        trades.add(trade9);
+
+        ItemStack shield = new ItemStack(Material.SHIELD, 1);
+        ItemStack e4s = new ItemStack(Material.EMERALD,3);
+        MerchantRecipe trade10 = new MerchantRecipe(shield,Integer.MAX_VALUE);
+        trade10.setIngredients(Collections.singletonList(emerald4D));
+        trades.add(trade10);
+
+
+
+
+
+
+
+
+
+            villager.setRecipes(trades);
             player.sendMessage("A Super Trader Villager has been summoned with custom trades and profession!");
             villager.setAI(true);  // Re-enable AI after setting properties
 

@@ -154,9 +154,11 @@ public class RPGPlugin extends JavaPlugin {
         }
         double x = 100.5, y = 70, z = 100.5;
         String text = "&6Hello, this is a hologram!"; // Supports color codes
+        HologramUtil.createHologram(world, x, y, z, text);
+
 
         Location loc1 = new Location(world, -14, 75, -39);
-        Location loc2 = new Location(world, -114, 75, -139);
+        Location loc2 = new Location(world, -30, 75, -55);
 
         // Define the text for each stack
         String[] stack1 = {"&6Welcome to the server!", "&7Have fun!", "&aEnjoy your stay!"};
@@ -166,7 +168,7 @@ public class RPGPlugin extends JavaPlugin {
         Location[] locations = {loc1, loc2};
         String[][] stacks = {stack1, stack2};
 
-        HologramUtil.createHologram(world, x, y, z, text);
+
         HologramUtil.createMultipleStacks(world, locations, stacks);
     }
 
