@@ -298,3 +298,9 @@ commands:
     description: Checks the item name of the item you are holding
   grt:
     description: give reset token to player
+  vault:
+    description: Opens a vault for the player.
+    usage: /vault <number>
+  enderchest:
+    description: Opens ender chest.
+    usage: /enderchest

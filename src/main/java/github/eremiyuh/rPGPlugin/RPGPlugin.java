@@ -1,6 +1,7 @@
 package github.eremiyuh.rPGPlugin;
 
 import github.eremiyuh.rPGPlugin.buffs.PlayerStatBuff;
+import github.eremiyuh.rPGPlugin.manager.VaultManager;
 import github.eremiyuh.rPGPlugin.utils.HologramUtil;
 import github.eremiyuh.rPGPlugin.utils.TradeOffer;
 import github.eremiyuh.rPGPlugin.commands.*;
@@ -31,6 +32,8 @@ public class RPGPlugin extends JavaPlugin {
     private final HashMap<String, String> teleportRequests = new HashMap<>();
     private final HashMap<UUID, TradeOffer> activeTrades = new HashMap<>();
     private boolean serverLoaded = false;
+    private VaultManager vaultManager;
+
     @Override
     public void onEnable() {
 
@@ -49,27 +52,71 @@ public class RPGPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        // Save all profiles when the server is shutting down
-        profileManager.saveAllProfiles();
-        getLogger().info("All player profiles have been saved on server shutdown.");
+        // Log that the shutdown process has started
+        getLogger().info("RPGPlugin is shutting down...");
 
-        // Log to console that the plugin has been disabled
-        getLogger().info("RPGPlugin has been disabled.");
+        // Ensure all player profiles are saved before other operations
+        try {
+            profileManager.saveAllProfiles();
+            getLogger().info("All player profiles have been saved on server shutdown.");
+        } catch (Exception e) {
+            getLogger().severe("Error saving player profiles: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        // Log that we are saving world data
+        getLogger().info("Saving world data...");
+
+        // Save worlds asynchronously if needed to avoid blocking the main thread
         World world = getServer().getWorld("world_rpg");
         if (world != null) {
-            world.save();
-            getLogger().info("world rpg was SAVED.");
+            try {
+                world.save();
+                getLogger().info("World 'world_rpg' has been saved.");
+            } catch (Exception e) {
+                getLogger().severe("Error saving world 'world_rpg': " + e.getMessage());
+                e.printStackTrace();
+            }
+        } else {
+            getLogger().warning("World 'world_rpg' was not found.");
         }
 
+        // Save labyrinth world
         World labyrinthWorld = getServer().getWorld("world_labyrinth");
         if (labyrinthWorld != null) {
-            labyrinthWorld.save();
-            getLogger().info("world labyrinth was SAVED.");
+            try {
+                labyrinthWorld.save();
+                getLogger().info("World 'world_labyrinth' has been saved.");
+            } catch (Exception e) {
+                getLogger().severe("Error saving world 'world_labyrinth': " + e.getMessage());
+                e.printStackTrace();
+            }
+        } else {
+            getLogger().warning("World 'world_labyrinth' was not found.");
         }
-        chunkManager.saveChunkData();
-        // Handle resource worlds separately
 
+        // Save chunk data
+        try {
+            chunkManager.saveChunkData();
+            getLogger().info("Chunk data has been saved.");
+        } catch (Exception e) {
+            getLogger().severe("Error saving chunk data: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        // Handle vault data saving
+        try {
+            vaultManager.saveAllVaults();
+            getLogger().info("All vault data has been saved.");
+        } catch (Exception e) {
+            getLogger().severe("Error saving vault data: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        // Log to console that the plugin has been disabled successfully
+        getLogger().info("RPGPlugin has been successfully disabled.");
     }
+
 
     private void loadWorld(String worldName,int sx,int sy, int sz,int bcx,int bcz, int bs, long time, GameRule<Boolean> rule, boolean grValue, World.Environment env) {
         // Check if the world is already loaded
@@ -133,6 +180,8 @@ public class RPGPlugin extends JavaPlugin {
         profileManager = new PlayerProfileManager(this);
 
         profileManager.resetLoginStatus();
+        vaultManager = new VaultManager(this, this.getDataFolder());
+        Objects.requireNonNull(this.getCommand("vault")).setExecutor(new VaultCommand(vaultManager));
 
         this.chunkManager = new ChunkManager(getDataFolder());
         EffectsAbilityManager effectsAbilityManager = new EffectsAbilityManager(this);
@@ -140,7 +189,7 @@ public class RPGPlugin extends JavaPlugin {
         MonsterStrengthScalingListener monsterStrScaler = new MonsterStrengthScalingListener();
         // Register events
         getServer().getPluginManager().registerEvents(new PlayerJoinListener(profileManager), this);
-        getServer().getPluginManager().registerEvents(new PlayerQuitListener(profileManager), this);
+        getServer().getPluginManager().registerEvents(new PlayerQuitListener(profileManager,vaultManager), this);
         Objects.requireNonNull(getCommand("selectclass")).setExecutor(new SelectClassCommand(this, profileManager));
         getServer().getPluginManager().registerEvents(new OptimizedVampireSunlightListener(profileManager, this),this);
         DamageListener damageListenerListener = new DamageListener(profileManager, effectsAbilityManager, damageAbilityManager,this);
@@ -214,7 +263,9 @@ public class RPGPlugin extends JavaPlugin {
         Objects.requireNonNull(this.getCommand("ta")).setExecutor(tradeAcceptCommand);
         Objects.requireNonNull(this.getCommand("iteminfo")).setExecutor(new ItemInfoCommand());
         Objects.requireNonNull(this.getCommand("grt")).setExecutor(new GiveResetTokenCommand());
+        Objects.requireNonNull(this.getCommand("enderchest")).setExecutor(new EnderChestCommand());
 
+        vaultManager.loadVaults();
         //auth
         getCommand("register").setExecutor(new RegisterCommand(this,profileManager));
         getCommand("login").setExecutor(new LoginCommand(this,profileManager));
