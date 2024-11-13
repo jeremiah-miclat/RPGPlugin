@@ -1,6 +1,7 @@
 package github.eremiyuh.rPGPlugin.listeners;
 
 import github.eremiyuh.rPGPlugin.RPGPlugin;
+import io.papermc.paper.event.player.PlayerTradeEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -262,6 +263,15 @@ public class AreaProtectionListener implements Listener {
 //
 //    }
 
+    @EventHandler
+    public void onTradeSelect(PlayerTradeEvent event) {
+        Player player =event.getPlayer();
+        AbstractVillager villager = event.getVillager();
+        MerchantRecipe recipe = event.getTrade();
+        player.giveExp(5);
+        player.sendMessage("t");
+
+    }
 
 
 

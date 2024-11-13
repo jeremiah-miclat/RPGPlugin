@@ -95,8 +95,8 @@ public class SummonVillagerCommand implements CommandExecutor {
 
         ItemStack diamond = new ItemStack(Material.DIAMOND, 1);
         ItemStack emerald4D = new ItemStack(Material.EMERALD,1);
-        MerchantRecipe trade9 = new MerchantRecipe(diamond,Integer.MAX_VALUE);
-        trade9.setIngredients(Collections.singletonList(emerald4D));
+        MerchantRecipe trade9 = new MerchantRecipe(emerald4D,Integer.MAX_VALUE);
+        trade9.setIngredients(Collections.singletonList(diamond));
         trades.add(trade9);
 
         ItemStack shield = new ItemStack(Material.SHIELD, 1);
