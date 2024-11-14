@@ -269,7 +269,6 @@ public class AreaProtectionListener implements Listener {
         AbstractVillager villager = event.getVillager();
         MerchantRecipe recipe = event.getTrade();
         player.giveExp(5);
-        player.sendMessage("t");
 
     }
 

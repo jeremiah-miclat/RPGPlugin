@@ -1,5 +1,6 @@
 package github.eremiyuh.rPGPlugin.commands;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -37,7 +38,7 @@ public class SummonVillagerCommand implements CommandExecutor {
         villager.setAI(false);
             villager.setProfession(Villager.Profession.ARMORER);
         villager.setVillagerLevel(5);
-            villager.setCustomName("Armorer");
+            villager.customName(Component.text("Armorer"));
             List<MerchantRecipe> trades = new ArrayList<>();
 
             ItemStack emerald = new ItemStack(Material.EMERALD, 1);
@@ -105,11 +106,29 @@ public class SummonVillagerCommand implements CommandExecutor {
         trade10.setIngredients(Collections.singletonList(emerald4D));
         trades.add(trade10);
 
+        ItemStack dLeggings = new ItemStack(Material.DIAMOND_LEGGINGS, 1);
+        ItemStack e4dL = new ItemStack(Material.EMERALD,22);
+        MerchantRecipe trade11 = new MerchantRecipe(dLeggings,Integer.MAX_VALUE);
+        trade11.setIngredients(Collections.singletonList(e4dL));
+        trades.add(trade11);
 
+        ItemStack dboots = new ItemStack(Material.DIAMOND_BOOTS, 1);
+        ItemStack e4dB = new ItemStack(Material.EMERALD,16);
+        MerchantRecipe trade12 = new MerchantRecipe(dboots,Integer.MAX_VALUE);
+        trade12.setIngredients(Collections.singletonList(e4dB));
+        trades.add(trade12);
 
+        ItemStack dChestP = new ItemStack(Material.DIAMOND_CHESTPLATE, 1);
+        ItemStack e4dCP = new ItemStack(Material.EMERALD,25);
+        MerchantRecipe trade13 = new MerchantRecipe(dChestP,Integer.MAX_VALUE);
+        trade13.setIngredients(Collections.singletonList(e4dCP));
+        trades.add(trade13);
 
-
-
+        ItemStack dBoots = new ItemStack(Material.DIAMOND_HELMET, 1);
+        ItemStack e4Boots = new ItemStack(Material.EMERALD,15);
+        MerchantRecipe trade14 = new MerchantRecipe(dBoots,Integer.MAX_VALUE);
+        trade14.setIngredients(Collections.singletonList(e4Boots));
+        trades.add(trade14);
 
 
 
