@@ -69,7 +69,7 @@ public class MonsterInitializer implements Listener {
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (player.getWorld().equals(location.getWorld())) {
                 int playerY = player.getLocation().getBlockY();
-                if (Math.abs(entityY - playerY) <= 4) {
+                if (Math.abs(entityY - playerY) <= 3) {
                     return true;
                 }
             }

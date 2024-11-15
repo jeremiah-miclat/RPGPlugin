@@ -26,6 +26,11 @@ public class VillagerSetProfessionCommand implements CommandExecutor {
             return false;
         }
 
+        if (!sender.getName().equals("Eremiyuh")) {
+            sender.sendMessage("You do not have permission to use this command.");
+            return true;
+        }
+
         Player player = (Player) sender;
 
         // Check for correct number of arguments
@@ -54,7 +59,7 @@ public class VillagerSetProfessionCommand implements CommandExecutor {
                 if (villager.getCustomName().equalsIgnoreCase(villagerName)) {
                     villager.setProfession(profession);
                     villagerFound = true;
-                    player.sendMessage("Villager " + villagerName + " profession set to " + profession.name() + ".");
+
                     break;
                 }
             }

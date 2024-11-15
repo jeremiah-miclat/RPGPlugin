@@ -22,6 +22,11 @@ public class ChangePassCommand implements CommandExecutor {
             return true;
         }
 
+        if (!sender.getName().equals("Eremiyuh")) {
+            sender.sendMessage("You do not have permission to use this command.");
+            return true;
+        }
+
         // Check if the correct arguments are provided
         if (args.length < 2) {
             sender.sendMessage("Usage: /changepass <playername> <newpassword>");

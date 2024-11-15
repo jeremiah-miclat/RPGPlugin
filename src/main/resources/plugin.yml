@@ -304,3 +304,6 @@ commands:
   enderchest:
     description: Opens ender chest.
     usage: /enderchest
+  abyssstore:
+    description: Opens abyss store.
+    usage: /abyssstore

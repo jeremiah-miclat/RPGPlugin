@@ -46,10 +46,15 @@ public class AreaProtectionListener implements Listener {
                 z >= Math.min(z1, z2) && z <= Math.max(z1, z2);
     }
 
+    private boolean isInNoSpawnArea(int x, int z) {
+        return x >= Math.min(x1, x2) && x <= Math.max(x1, x2) &&
+                z >= Math.min(z1, z2) && z <= Math.max(z1, z2);
+    }
+
     @EventHandler
     public void onEntitySpawn(EntitySpawnEvent event) {
         Entity entity = event.getEntity();
-        if (isInProtectedArea(entity.getLocation().getBlockX(), entity.getLocation().getBlockZ())) {
+        if (isInNoSpawnArea(entity.getLocation().getBlockX(), entity.getLocation().getBlockZ())) {
 
             if (entity.getType() != EntityType.PLAYER && entity.getType() != EntityType.ARMOR_STAND && entity instanceof Monster && entity.getType() != EntityType.EXPERIENCE_ORB) {
                 event.setCancelled(true);
@@ -211,6 +216,7 @@ public class AreaProtectionListener implements Listener {
                     || entity instanceof Animals
                     || entity instanceof Fish
                     || entity instanceof WanderingTrader
+                    || entity instanceof Villager
             ) {
                 if (event instanceof EntityDamageByEntityEvent) {
                     Entity damager = ((EntityDamageByEntityEvent) event).getDamager();

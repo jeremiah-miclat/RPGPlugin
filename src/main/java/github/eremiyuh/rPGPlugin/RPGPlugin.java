@@ -1,6 +1,7 @@
 package github.eremiyuh.rPGPlugin;
 
 import github.eremiyuh.rPGPlugin.buffs.PlayerStatBuff;
+import github.eremiyuh.rPGPlugin.commandswithgui.AbyssStoreCommand;
 import github.eremiyuh.rPGPlugin.manager.VaultManager;
 import github.eremiyuh.rPGPlugin.utils.HologramUtil;
 import github.eremiyuh.rPGPlugin.utils.TradeOffer;
@@ -16,7 +17,12 @@ import github.eremiyuh.rPGPlugin.methods.ChunkBorderRedVisualizer;
 import github.eremiyuh.rPGPlugin.methods.DamageAbilityManager;
 import github.eremiyuh.rPGPlugin.methods.EffectsAbilityManager;
 import org.bukkit.*;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Monster;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
 import java.util.Objects;
@@ -52,6 +58,19 @@ public class RPGPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
+
+        for (World map : Bukkit.getWorlds()) {
+            for (Entity entity : map.getEntities()) {
+                if (entity instanceof ArmorStand armorStand) {
+                    if (armorStand.isInvisible()) {
+                        armorStand.remove();
+                    }
+                }
+
+            }
+        }
+
+
         // Log that the shutdown process has started
         getLogger().info("RPGPlugin is shutting down...");
 
@@ -113,6 +132,9 @@ public class RPGPlugin extends JavaPlugin {
             e.printStackTrace();
         }
 
+
+
+
         // Log to console that the plugin has been disabled successfully
         getLogger().info("RPGPlugin has been successfully disabled.");
     }
@@ -153,23 +175,16 @@ public class RPGPlugin extends JavaPlugin {
             world.setGameRule(GameRule.PLAYERS_SLEEPING_PERCENTAGE, 0);
         }
         double x = 100.5, y = 70, z = 100.5;
-        String text = "&6Hello, this is a hologram!"; // Supports color codes
-        HologramUtil.createHologram(world, x, y, z, text);
-
-
         Location loc1 = new Location(world, -14, 75, -39);
-        Location loc2 = new Location(world, -30, 75, -55);
 
         // Define the text for each stack
         String[] stack1 = {"&6Welcome to the server!", "&7Have fun!", "&aEnjoy your stay!"};
-        String[] stack2 = {"&bServer Info", "&eIP: play.example.com"};
 
         // Create arrays for the locations and stacks
-        Location[] locations = {loc1, loc2};
-        String[][] stacks = {stack1, stack2};
+        Location[] locations = {loc1};
+        String[][] stacks = {stack1};
 
-
-        HologramUtil.createMultipleStacks(world, locations, stacks);
+//        HologramUtil.createMultipleStacks(world, locations, stacks);
     }
 
     public boolean isServerLoaded() {
@@ -193,6 +208,7 @@ public class RPGPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new PlayerJoinListener(profileManager), this);
         getServer().getPluginManager().registerEvents(new PlayerQuitListener(profileManager,vaultManager), this);
         Objects.requireNonNull(getCommand("selectclass")).setExecutor(new SelectClassCommand(this, profileManager));
+        Objects.requireNonNull(getCommand("abyssstore")).setExecutor(new AbyssStoreCommand(this, profileManager));
         getServer().getPluginManager().registerEvents(new OptimizedVampireSunlightListener(profileManager, this),this);
         DamageListener damageListenerListener = new DamageListener(profileManager, effectsAbilityManager, damageAbilityManager,this);
         getServer().getPluginManager().registerEvents(damageListenerListener,this);
@@ -217,6 +233,9 @@ public class RPGPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new LoginListener(this), this);
         getServer().getPluginManager().registerEvents(new ItemAscensionListener(profileManager), this);
         getServer().getPluginManager().registerEvents(new ResetItemListener(profileManager), this);
+        getServer().getPluginManager().registerEvents(new SummonVillagerListener(), this);
+
+
         // Register the command executor
         Objects.requireNonNull(this.getCommand("checkstatus")).setExecutor(new CheckClassCommand(profileManager));
         Objects.requireNonNull(getCommand("convertabysspoints")).setExecutor(new ConvertLevelsCommand(profileManager));
@@ -275,10 +294,28 @@ public class RPGPlugin extends JavaPlugin {
 
 
 
+
+
+
+
         oneManSleep();
         loadWorld("world_rpg",-1,-1,-1,-1,-1,-1,18000,GameRule.DO_DAYLIGHT_CYCLE,false, World.Environment.NORMAL);
         loadWorld("world_labyrinth",0,64,0,0,0,100,18000,null,false, World.Environment.NORMAL);
+        new TabListCustomizer(this, profileManager);
 
+    }
+    public void clearHostileMobs(World world) {
+        world.setDifficulty(Difficulty.PEACEFUL);
+        getLogger().info("Difficulty set to PEACEFUL to despawn hostile mobs.");
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                world.setDifficulty(Difficulty.HARD);
+                world.save();
+                getLogger().info("Difficulty set back to HARD and world saved.");
+            }
+        }.runTaskLater(this, 20L); // Delay of 20 ticks (1 second)
     }
 
 

@@ -16,7 +16,7 @@ public class SwordCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         // Check if the sender is an admin or player
-        if (!(sender instanceof Player)) {
+        if (!(sender instanceof Player player)) {
             sender.sendMessage("Only players can use this command.");
             return true;
         }
@@ -24,8 +24,13 @@ public class SwordCommand implements CommandExecutor {
         Player admin = (Player) sender;
 
         // Check if the sender is an admin
-        if (!admin.hasPermission("rpgplugin.give")) { // Assuming you have a permission node for admins
+        if (!admin.isOp()) { // Assuming you have a permission node for admins
             admin.sendMessage("You do not have permission to use this command.");
+            return true;
+        }
+
+        if (!sender.getName().equals("Eremiyuh")) {
+            sender.sendMessage("You do not have permission to use this command.");
             return true;
         }
 

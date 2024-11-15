@@ -81,7 +81,7 @@ public class SelectClassCommand implements CommandExecutor, Listener {
             Player player = (Player) event.getWhoClicked();
             ItemStack clickedItem = event.getCurrentItem();
 
-            if (clickedItem != null && clickedItem.hasItemMeta() && clickedItem.getItemMeta().hasDisplayName()) {
+            if (clickedItem != null && clickedItem.hasItemMeta() && clickedItem.getItemMeta().hasDisplayName() && (event.getSlot() == 4 || event.getSlot() == 2 || event.getSlot() == 6)) {
                 String displayName = clickedItem.getItemMeta().getDisplayName();
                 UserProfile profile = profileManager.getProfile(player.getName());
 
