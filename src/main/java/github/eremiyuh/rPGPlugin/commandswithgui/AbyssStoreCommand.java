@@ -75,8 +75,8 @@ public class AbyssStoreCommand implements CommandExecutor, Listener {
             // Check if the clicked item is the Abyss Mana Stone (slot 4)
             if (event.getSlot() == 4 && event.getCurrentItem() != null && event.getCurrentItem().isSimilar(getAbyssIngot())) {
                 // Check if the player has enough Abyss Points
-                if (userProfile.getAbyssPoints() >= 1000000) {
-                    userProfile.setAbyssPoints(userProfile.getAbyssPoints() - 1000000); // Deduct Abyss Points
+                if (userProfile.getAbyssPoints() >= 100000) {
+                    userProfile.setAbyssPoints(userProfile.getAbyssPoints() - 100000); // Deduct Abyss Points
                     player.getInventory().addItem(ItemUtils.getAbyssIngot()); // Give the player the Abyss Mana Stone
                     player.sendMessage(Component.text("Successfully purchased Abyss Mana Stone!").color(TextColor.color(0, 255, 0)));
                 } else {
