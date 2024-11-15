@@ -100,35 +100,35 @@ public class ConvertLevelsCommand implements CommandExecutor {
         } else if (totalAttrib < 500) {
             return 1000;
         } else if (totalAttrib < 600) {
-            return 1200;
+            return 2000;
         } else if (totalAttrib < 700) {
-            return 1400;
-        } else if (totalAttrib < 800) {
-            return 1600;
-        } else if (totalAttrib < 900) {
-            return 1800;
-        } else if (totalAttrib < 1000) {
             return 4000;
-        } else if (totalAttrib < 2000) {
+        } else if (totalAttrib < 800) {
+            return 6000;
+        } else if (totalAttrib < 900) {
             return 8000;
-        } else if (totalAttrib < 3000) {
+        } else if (totalAttrib < 1000) {
+            return 10000;
+        } else if (totalAttrib < 2000) {
             return 20000;
+        } else if (totalAttrib < 3000) {
+            return 30000;
         } else if (totalAttrib < 4000) {
             return 40000;
         } else if (totalAttrib < 5000) {
-            return 80000;
+            return 50000;
         } else if (totalAttrib < 6000) {
-            return 160000;
+            return 60000;
         } else if (totalAttrib < 7000) {
-            return 320000;
+            return 70000;
         } else if (totalAttrib < 8000) {
-            return 640000;
+            return 80000;
         } else if (totalAttrib < 9000) {
-            return 1280000;
+            return 90000;
         } else if (totalAttrib < 10000) {
-            return 3000000;
+            return 100000;
         } else {
-            return 3000000;
+            return 100000;
         }
     }
 }

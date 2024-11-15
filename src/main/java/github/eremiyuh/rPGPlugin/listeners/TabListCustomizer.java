@@ -55,7 +55,7 @@ public class TabListCustomizer {
                 .append(Component.newline());
         TextComponent footer =
                 Component.newline().append(Component.newline())
-                        .append(Component.text(String.format("Memory Usage: %dMB/%dMB", usedMemory, maxMemory))
+                        .append(Component.text(String.format("Memory Usage: %d MB / %d MB", usedMemory, maxMemory))
                                 .color(memoryColor)).append(Component.newline()).append(Component.newline())
                         .append(Component.text("                           ENJOY YOUR STAY                           ")
                 .color(TextColor.fromCSSHexString("#3cb371"))).append(Component.newline());
