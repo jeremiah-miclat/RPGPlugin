@@ -8,11 +8,11 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class AttributePointsCommand implements CommandExecutor {
+public class GiveAbyssPoints implements CommandExecutor {
 
     private final PlayerProfileManager profileManager;
 
-    public AttributePointsCommand(PlayerProfileManager profileManager) {
+    public GiveAbyssPoints(PlayerProfileManager profileManager) {
         this.profileManager = profileManager;
     }
 
@@ -34,7 +34,7 @@ public class AttributePointsCommand implements CommandExecutor {
         }
 
         if (args.length != 2) {
-            sender.sendMessage("Usage: /giveattributepoints <playername> <numberofpoints>");
+            sender.sendMessage("Usage: /giveabysspoints <playername> <numberofpoints>");
             return true;
         }
 
@@ -62,8 +62,8 @@ public class AttributePointsCommand implements CommandExecutor {
         }
 
         // Add the attribute points to the target player's profile
-        targetProfile.setCurrentAttributePoints(targetProfile.getCurrentAttributePoints() + points);
-        sender.sendMessage("Successfully gave " + points + " attribute points to " + playerName + ".");
+        targetProfile.setAbyssPoints(targetProfile.getAbyssPoints() + points);
+        sender.sendMessage("Successfully gave " + points + " abyss points to " + playerName + ".");
         return true;
     }
 }

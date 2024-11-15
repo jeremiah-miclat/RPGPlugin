@@ -258,6 +258,7 @@ public class RPGPlugin extends JavaPlugin {
         Objects.requireNonNull(getCommand("convertcurrency")).setExecutor(new CurrencyConverter(profileManager));
         Objects.requireNonNull(getCommand("switchworld")).setExecutor(new WorldSwitchCommand(this,playerStatBuff));
         Objects.requireNonNull(getCommand("giveap")).setExecutor(new AttributePointsCommand(profileManager));
+        Objects.requireNonNull(getCommand("giveabysspoints")).setExecutor(new GiveAbyssPoints(profileManager));
         Objects.requireNonNull(getCommand("fly")).setExecutor(new FlyCommand(profileManager, this));
         Objects.requireNonNull(getCommand("buypotion")).setExecutor(new LapisToPotion(profileManager));
         Objects.requireNonNull(this.getCommand("givesword")).setExecutor(new SwordCommand());
