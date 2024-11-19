@@ -25,16 +25,13 @@ public class PotionGiveListener implements Listener {
 
     @EventHandler
     public void onPlayerRightClick(PlayerInteractEvent event) {
-        if (!event.getPlayer().getWorld().getName().equals("world_rpg")) {
+        if (!event.getPlayer().getWorld().getName().equals("world_rpg") && !event.getPlayer().getWorld().getName().contains("labyrinth")) {
             return;
         }
 
         Player player = event.getPlayer();
         UserProfile playerProfile = profileManager.getProfile(player.getName());
-        if (playerProfile.getPotion() < 1) {
-            player.sendMessage("No potions");
-            return;
-        }
+
 
         if (!playerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
             return;
@@ -50,6 +47,10 @@ public class PotionGiveListener implements Listener {
 
         // Check if main hand has a book and off-hand is empty
         if (mainHandItem.getType() == Material.BOOK && offHandItem.getType() == Material.AIR) {
+            if (playerProfile.getPotion() < 1) {
+                player.sendMessage("No potions");
+                return;
+            }
             // Cancel the event to prevent any default behavior
             event.setCancelled(true);
 

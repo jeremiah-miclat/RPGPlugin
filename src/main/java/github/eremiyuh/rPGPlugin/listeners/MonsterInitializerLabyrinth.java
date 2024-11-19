@@ -33,7 +33,7 @@ public class MonsterInitializerLabyrinth implements Listener {
     @EventHandler
     public void onCreatureSpawn(CreatureSpawnEvent event) {
         String world = Objects.requireNonNull(event.getLocation().getWorld()).getName();
-        if (!world.equals("world_labyrinth")) {
+        if (!world.contains("labyrinth")) {
             return;
         }
 
@@ -43,16 +43,53 @@ public class MonsterInitializerLabyrinth implements Listener {
             return;
         }
 
-
-        if (event.getEntity() instanceof Phantom) {
+        // Check if the spawn is a monster, not an animal
+        if (!(event.getEntity() instanceof Monster)) {
             event.setCancelled(true);
+            return;
         }
 
-        if (event.getEntity() instanceof Monster || event.getEntity() instanceof Wolf || event.getEntity() instanceof IronGolem) {
-            LivingEntity mob = event.getEntity();
+        if (event.getEntity().getType() == EntityType.PIGLIN) {
+            if (!((Piglin) event.getEntity()).isAdult()) {
+                event.setCancelled(true);
+            }
+        }
+
+        // Get the number of online players
+        int onlinePlayerCount = Bukkit.getOnlinePlayers().size();
+
+        // Count the number of mobs already in the world
+        int currentMobCount = countMobsInWorld(event.getLocation().getWorld());
+
+        // Check mob spawn limit based on online players
+        int mobLimit = Math.min(onlinePlayerCount * 6, 60);
+        if (currentMobCount >= mobLimit) {
+            event.getEntity().setAI(false);
+            event.setCancelled(true);
+            return;
+        }
+
+        // Initialize the mob
+        if (event.getEntity() instanceof Monster) {
+            Monster mob = (Monster) event.getEntity();
+
             initializeExtraAttributes(mob);
 
         }
+    }
+
+
+    private int countMobsInWorld(World world) {
+        int mobCount = 0;
+
+        // Loop through all entities in the world and count the mobs
+        for (LivingEntity entity : world.getLivingEntities()) {
+            if (entity.hasMetadata("initialExtraHealth") && !entity.hasMetadata("boss") && !entity.hasMetadata("worldboss")) {
+                mobCount++;
+            }
+        }
+
+        return mobCount;
     }
 
     private boolean isPlayerNearby(Location location, double radius) {
@@ -82,38 +119,69 @@ public class MonsterInitializerLabyrinth implements Listener {
 
         Location location = entity.getLocation();
         double extraHealth = calculateExtraAttributes(location, entity);
-        double extraDamage = extraHealth * 0.1; // Convert to damage (10% of extra health)
+        // Convert to damage (10% of extra health)
 
         // Store in metadata
         entity.setMetadata("initialExtraHealth", new FixedMetadataValue(plugin, extraHealth));
-        entity.setMetadata("extraDamage", new FixedMetadataValue(plugin, extraDamage));
+        entity.setMetadata("extraDamage", new FixedMetadataValue(plugin, extraHealth));
 
         // Initialize the list of players who have attacked this entity
         List<String> attackerList = new ArrayList<>();
         entity.setMetadata("attackerList", new FixedMetadataValue(plugin, attackerList));
+        setHealthIndicator(entity);
+    }
 
+    private void setHealthIndicator(LivingEntity entity) {
+        // Retrieve the total health (current health + extra health)
+        double totalHealth = getTotalHealth(entity);
+
+        // Format the health indicator (e.g., [99] for health 99)
+        String healthIndicator = ChatColor.YELLOW + " [" + (int) totalHealth + "]";
+
+        // Get the existing custom name from metadata, or use the default entity type if no custom name is set
+        String customName = entity.hasMetadata("customName") ? entity.getMetadata("customName").get(0).asString() : entity.getType().name();
+
+
+        // Set the updated custom name with the new health indicator
+        entity.setCustomName(customName + healthIndicator);
+//        entity.setCustomNameVisible(true);
+    }
+
+    private double getTotalHealth(LivingEntity entity) {
+        // Retrieve the extra health and current health from metadata
+        double extraHealth = entity.hasMetadata("initialExtraHealth")
+                ? entity.getMetadata("initialExtraHealth").get(0).asDouble()
+                : 0.0;
+
+        // Retrieve the current health of the entity
+        double currentHealth = entity.getHealth();
+
+        // Return total health (current health + extra health)
+        return currentHealth + extraHealth;
     }
 
     // Method to calculate extra attributes (used for both extra health and damage)
     private double calculateExtraAttributes(Location targetLocation, LivingEntity entity) {
-        int maxY = 306; // Starting height
+        int maxY = 251; // Starting height
         int minY = -63; // Minimum height
-        double baseHealth = 3000; // Base health at max height
-        double healthIncrement = 3000; // Increment per layer
+        double baseHealth = 0; // Base health at max height
+        double healthIncrement = 100; // Increment per layer
 
         // Ensure the y-coordinate is within the range
         int yCoord = Math.min(maxY, Math.max(minY, targetLocation.getBlockY()));
 
         // Calculate extra health based on the y-coordinate
-        double extraHealth = baseHealth + ((maxY - yCoord) * healthIncrement);
+        double extraHealth = baseHealth + ((1 + (double) (maxY - yCoord) / 6) * healthIncrement);
 
         // Determine the level based on the y-coordinate (1 level every 6 blocks)
         int lvl = 1 + (maxY - yCoord) / 6;
 
         // Set default name for normal monsters
-//        String normalName = ChatColor.GREEN + "Lvl " + lvl + " " + entity.getType().name();
+        String normalName = ChatColor.GREEN + "Lvl " + lvl + " " + entity.getType().name();
 //        entity.setCustomName(normalName);
 //        entity.setCustomNameVisible(true);
+
+        entity.setMetadata("customName", new FixedMetadataValue(plugin, normalName));
 
         // Boss scaling logic
         if (Math.random() < .005) {
@@ -131,6 +199,7 @@ public class MonsterInitializerLabyrinth implements Listener {
             entity.setMetadata("lvl", new FixedMetadataValue(plugin, lvl));
         }
 
+
         return extraHealth; // Use as a basis for both health and extra damage
     }
 
@@ -138,7 +207,7 @@ public class MonsterInitializerLabyrinth implements Listener {
     private void setBossAttributes(LivingEntity entity, double maxCoord, String type, ChatColor color) {
         String bossName = color + "Lvl " + (int) (Math.floor(maxCoord) / 100) + " " + type + " " + entity.getType().name();
         entity.setCustomName(bossName);
-        entity.setCustomNameVisible(true);
+//        entity.setCustomNameVisible(true);
         entity.setRemoveWhenFarAway(false);
 //        entity.setPersistent(true);
 

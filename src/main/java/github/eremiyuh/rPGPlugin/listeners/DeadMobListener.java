@@ -65,7 +65,7 @@ public class DeadMobListener implements Listener {
     @EventHandler
     public void onModifiedMobDeath(EntityDeathEvent event) {
         if (!Objects.requireNonNull(event.getEntity().getLocation().getWorld()).getName().equals("world_rpg")
-            && !Objects.requireNonNull(event.getEntity().getLocation().getWorld()).getName().equals("world_labyrinth")
+            && !Objects.requireNonNull(event.getEntity().getLocation().getWorld()).getName().contains("world_labyrinth")
         ) {
             return;
         }

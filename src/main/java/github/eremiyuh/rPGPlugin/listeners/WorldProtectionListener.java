@@ -30,7 +30,7 @@ public class WorldProtectionListener implements Listener {
 
     public WorldProtectionListener(JavaPlugin plugin) {
         this.plugin = plugin;
-        this.protectedWorldNames = Set.of("world_rpg", "world_labyrinth"); // Add all protected world names here
+        this.protectedWorldNames = Set.of("world_rpg", "world_labyrinth", "world_labyrinth2"); // Add all protected world names here
     }
 
     private static final Set<Material> ANNOYING_BLOCKS;
@@ -82,16 +82,6 @@ public class WorldProtectionListener implements Listener {
         }
     }
 
-    @EventHandler
-    public void onEntitySpawn(EntitySpawnEvent event) {
-        Entity entity = event.getEntity();
-
-        if (isInProtectedWorld(event.getEntity().getWorld())) {
-            if (entity.getType() == EntityType.ARMOR_STAND) {
-//                event.setCancelled(true);
-            }
-        }
-    }
 
     @EventHandler
     public void onEndermanChangeBlock(EntityChangeBlockEvent event) {

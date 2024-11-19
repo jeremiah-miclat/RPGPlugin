@@ -49,7 +49,7 @@ public class DamageListener implements Listener {
     @EventHandler
     public void onEntityDamage(EntityDamageByEntityEvent event) {
 
-        if (!Objects.requireNonNull(event.getDamager().getLocation().getWorld()).getName().equals("world_rpg") && !Objects.requireNonNull(event.getEntity().getLocation().getWorld()).getName().equals("world_labyrinth")) {
+        if (!Objects.requireNonNull(event.getDamager().getLocation().getWorld()).getName().equals("world_rpg") && !Objects.requireNonNull(event.getEntity().getLocation().getWorld()).getName().contains("world_labyrinth")) {
             // Get the entity that was damaged
             Entity damaged = event.getEntity();
             // Get the damager (the entity dealing the damage)
@@ -165,9 +165,9 @@ public class DamageListener implements Listener {
         }
 
 
-        if (Objects.requireNonNull(event.getDamager().getLocation().getWorld()).getName().equals("world_rpg") || Objects.requireNonNull(event.getEntity().getLocation().getWorld()).getName().equals("world_labyrinth")) {
+        if (Objects.requireNonNull(event.getDamager().getLocation().getWorld()).getName().equals("world_rpg") || Objects.requireNonNull(event.getEntity().getLocation().getWorld()).getName().contains("world_labyrinth")) {
 
-            if (!(event.getEntity() instanceof  LivingEntity)) {
+            if (!(event.getEntity() instanceof LivingEntity) && !(event.getEntity() instanceof  Monster)) {
                 return;
             }
 
@@ -238,7 +238,6 @@ public class DamageListener implements Listener {
                     }
 
                 }
-
 
 
                 UserProfile attackerProfile = profileManager.getProfile(attacker.getName());
@@ -368,6 +367,7 @@ public class DamageListener implements Listener {
                         victim.setMetadata("attackerList", new FixedMetadataValue(plugin, newAttackerList)); // Set new metadata
                     }
                     if (attackerProfile != null) {
+                        if (attackerProfile.getChosenClass().equalsIgnoreCase("alchemist") && attacker.getName().equals(victim.getName())) {event.setCancelled(true); return;}
                         handleLongRangeDamage(attacker,victim,event,damagerLocation,damagedLocation,attackerProfile);
                     }
                 }
@@ -474,13 +474,16 @@ public class DamageListener implements Listener {
 
     @EventHandler (priority = EventPriority.HIGH)
     public void onEntityTakeDamage(EntityDamageEvent event) {
+        if (!(event.getEntity() instanceof LivingEntity) && !(event.getEntity() instanceof  Monster)) {
+            return;
+        }
 
         if (event.getDamageSource().getCausingEntity() instanceof Player player && player.getAllowFlight()) {
             player.sendMessage("damaged cancelled. Disable fly mode");
             event.setCancelled(true);
             return;
         }
-        if (!Objects.requireNonNull(event.getEntity().getLocation().getWorld()).getName().equals("world_rpg") && !Objects.requireNonNull(event.getEntity().getLocation().getWorld()).getName().equals("world_labyrinth")) {
+        if (!Objects.requireNonNull(event.getEntity().getLocation().getWorld()).getName().equals("world_rpg") && !Objects.requireNonNull(event.getEntity().getLocation().getWorld()).getName().contains("world_labyrinth")) {
             return;
         }
         if (event.getEntity() instanceof Player player) {
@@ -620,16 +623,17 @@ public class DamageListener implements Listener {
         // Apply cooldown scaling to the final damage
         finalDamage *= attackCooldown;
 
-        if (PlayerBuffPerms.canLifeSteal(damagerProfile)) {
-            double lifestealAmount = finalDamage * 0.1; // 10% lifesteal
-            double maxHealth = Objects.requireNonNull(attacker.getAttribute(Attribute.GENERIC_MAX_HEALTH)).getValue(); // Get max health using attribute
-            double newHealth = Math.min(attacker.getHealth() + lifestealAmount, maxHealth); // Avoid exceeding max health
-            attacker.setHealth(newHealth);
-        }
+
         double rawDmg = event.getDamage();
         double finalDmg = event.getFinalDamage();
         double dmgReductionMultiplier = Math.max(0.2, finalDmg / rawDmg);
 
+        if (PlayerBuffPerms.canLifeSteal(damagerProfile)) {
+            double lifestealAmount = (finalDamage*dmgReductionMultiplier) * 0.1; // 10% lifesteal
+            double maxHealth = Objects.requireNonNull(attacker.getAttribute(Attribute.GENERIC_MAX_HEALTH)).getValue(); // Get max health using attribute
+            double newHealth = Math.min(attacker.getHealth() + lifestealAmount, maxHealth); // Avoid exceeding max health
+            attacker.setHealth(newHealth);
+        }
 
         event.setDamage(finalDamage*dmgReductionMultiplier);
     }

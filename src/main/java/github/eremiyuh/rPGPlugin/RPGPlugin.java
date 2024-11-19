@@ -17,6 +17,7 @@ import github.eremiyuh.rPGPlugin.methods.ChunkBorderRedVisualizer;
 import github.eremiyuh.rPGPlugin.methods.DamageAbilityManager;
 import github.eremiyuh.rPGPlugin.methods.EffectsAbilityManager;
 import org.bukkit.*;
+import org.bukkit.block.Biome;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -113,6 +114,22 @@ public class RPGPlugin extends JavaPlugin {
             getLogger().warning("World 'world_labyrinth' was not found.");
         }
 
+        // Save labyrinth world
+        World labyrinthWorld2 = getServer().getWorld("world_labyrinth2");
+        if (labyrinthWorld2 != null) {
+            try {
+
+                labyrinthWorld2.save();
+                getLogger().info("World 'world_labyrinth' has been saved.");
+            } catch (Exception e) {
+                getLogger().severe("Error saving world 'world_labyrinth2': " + e.getMessage());
+                e.printStackTrace();
+            }
+        } else {
+            getLogger().warning("World 'world_labyrinth2' was not found.");
+        }
+
+
         // Save chunk data
         try {
             chunkManager.saveChunkData();
@@ -139,34 +156,49 @@ public class RPGPlugin extends JavaPlugin {
     }
 
 
-    private void loadWorld(String worldName,int sx,int sy, int sz,int bcx,int bcz, int bs, long time, GameRule<Boolean> rule, boolean grValue, World.Environment env) {
+    private void loadWorld(String worldName, int sx, int sy, int sz, int bcx, int bcz, int bs, long time, GameRule<Boolean> rule, boolean grValue, World.Environment env, Biome biome) {
         // Check if the world is already loaded
         World world = getServer().getWorld(worldName);
         if (world == null) {
             world = getServer().createWorld(new WorldCreator(worldName).environment(env));
-            if (world==null) {getLogger().info("world STILL NULL"); return;}
+            assert world != null;
 
+            // Set the biome for a region (example: 100x100 area at coordinates (0, 64, 0))
+            for (int x = 0; x < 100; x++) {
+                for (int z = 0; z < 100; z++) {
+                    // Assuming y is set at 64 (you might want to adjust this depending on your needs)
+                    world.setBiome(x, 64, z, biome);
+                }
+            }
+
+            world.setGameRule(GameRule.SPAWN_RADIUS, 0);
+            if (world == null) {
+                getLogger().info("world STILL NULL");
+                return;
+            }
 
         } else {
+            world.setGameRule(GameRule.SPAWN_RADIUS, 0);
             getLogger().info("World " + worldName + " is already loaded.");
         }
 
-        if (!(sx ==-1) ) {
-            world.setSpawnLocation(sx,sy,sz);
+        if (sx != -1) {
+            world.setSpawnLocation(sx, sy, sz);
         }
 
-        if (!(bcx==-1)) {
-            WorldBorder worldBorder= world.getWorldBorder();
-            worldBorder.setCenter(bcx,bcz);
+        if (bcx != -1) {
+            WorldBorder worldBorder = world.getWorldBorder();
+            worldBorder.setCenter(bcx, bcz);
             worldBorder.setSize(bs);
         }
 
-        if (rule!=null) {
-            world.setGameRule(rule,grValue);
+        if (rule != null) {
+            world.setGameRule(rule, grValue);
             world.setTime(time);
         }
-
     }
+
+
 
     private void worldConfig() {
         World world = Bukkit.getWorld("world");
@@ -302,8 +334,9 @@ public class RPGPlugin extends JavaPlugin {
 
 
         worldConfig();
-        loadWorld("world_rpg",-15,72,-35,-1,-1,-1,18000,GameRule.DO_DAYLIGHT_CYCLE,false, World.Environment.NORMAL);
-        loadWorld("world_labyrinth",-23,312,-35,0,0,100,18000,null,false, World.Environment.NORMAL);
+        loadWorld("world_rpg",-15,72,-35,-1,-1,-1,18000,GameRule.DO_DAYLIGHT_CYCLE,false, World.Environment.NORMAL, Biome.PLAINS);
+        loadWorld("world_labyrinth",-23,312,-35,0,0,100,18000,null,false, World.Environment.NORMAL,Biome.NETHER_WASTES);
+        loadWorld("world_labyrinth2",-19,251,-36,0,0,100,18000,null,false, World.Environment.NETHER,Biome.NETHER_WASTES);
         new TabListCustomizer(this, profileManager);
 
     }
