@@ -17,6 +17,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -106,6 +107,8 @@ public class AbyssStoreCommand implements CommandExecutor, Listener {
                     Component.text("Can be traded for equips"),
                     Component.text("Go to trading hall and look for Yabmat.")
             ));
+            meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
+            meta.setEnchantmentGlintOverride(true);
             abyssIngot.setItemMeta(meta);
         }
 

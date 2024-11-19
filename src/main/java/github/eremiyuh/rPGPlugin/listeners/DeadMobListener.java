@@ -64,20 +64,20 @@ public class DeadMobListener implements Listener {
 
     @EventHandler
     public void onModifiedMobDeath(EntityDeathEvent event) {
-        if (!Objects.requireNonNull(event.getEntity().getLocation().getWorld()).getName().equals("world_rpg")) {
+        if (!Objects.requireNonNull(event.getEntity().getLocation().getWorld()).getName().equals("world_rpg")
+            && !Objects.requireNonNull(event.getEntity().getLocation().getWorld()).getName().equals("world_labyrinth")
+        ) {
             return;
         }
 
         double RANDOMCHANCE = .05;
-        if ((event.getEntity() instanceof Monster || event.getEntity() instanceof Wolf || event.getEntity() instanceof IronGolem) && event.getEntity().getKiller() instanceof Player killer) {
+        if (event.getEntity() instanceof Monster mob && mob.hasMetadata("extraDamage")  && event.getEntity().getKiller() instanceof Player killer) {
 
-            LivingEntity mob = event.getEntity();
 
-            if (mob.hasMetadata("extraDamage")) {
                 UserProfile killerProfile = profileManager.getProfile(killer.getName());
                 String killerTeam = killerProfile.getTeam();
 
-                double health = mob.getMetadata("extraDamage").get(0).asDouble() * 10;
+                double health = mob.getMetadata("extraDamage").get(0).asDouble();
                 RANDOMCHANCE += (health * 0.00045);
                 int dropMultiplier = (int) (1+(health * 0.01));
 
@@ -92,7 +92,7 @@ public class DeadMobListener implements Listener {
                 // Iterate over the list of attacker names and check if they are players nearby
                 for (String attackerName : attackerNames) {
                     Player player = Bukkit.getPlayer(attackerName); // Get the player by name
-                    if (player != null && isPlayerNearby(player, mob.getLocation(), 60, 10)) {
+                    if (player != null && isPlayerNearby(player, mob.getLocation(), 60, 4)) {
                         nearbyPlayers.add(player); // Add player to nearby players list
                     }
                 }
@@ -144,7 +144,7 @@ public class DeadMobListener implements Listener {
                 // Clear the original drops and experience
                 event.getDrops().clear();
                 event.setDroppedExp(0);
-            }
+
         }
     }
 

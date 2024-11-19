@@ -283,7 +283,8 @@ commands:
   ascendtoggle:
     description: Toggle ascension of equips on or off.
     usage: /ascendtoggle
-    notes: "Drag and drop same equip type to ascend equip. The dragged equip will be lost after.
+    notes: "Drag and drop same equip type and stat to ascend equip. The dragged equip will be lost after, 30% chance increase
+    target equip stat per stat on the dragged equip.
     "
   villagerSetProf:
     description: Sets a villager's profession by custom name.
@@ -297,18 +298,24 @@ commands:
     permission-default: op
   tm:
     description: Initiate a trade with another player
+    usage: /tm <playername> <offeredmaterialname> <amount> <wantedmaterialname> <amount>
   ta:
     description: Accept or reject a trade offer
+    usage: /ta <playername>
   iteminfo:
     description: Checks the item name of the item you are holding
   grt:
     description: give reset token to player
+    permission: RPGPlugin.changepass
+    permission-default: op
   vault:
     description: Opens a vault for the player.
     usage: /vault <number>
+    notes: "Currently offer 5 vaults"
   enderchest:
     description: Opens ender chest.
     usage: /enderchest
   abyssstore:
     description: Opens abyss store.
     usage: /abyssstore
+    notes: "Gain abyss points by going to abyss world - /switchworld abyss"

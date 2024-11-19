@@ -26,9 +26,6 @@ public class PlayerTeleportListener implements Listener {
     public void onPlayerTeleport(PlayerTeleportEvent event) {
         Player player = event.getPlayer();
 
-        // Get the world from the player's new location
-        String worldName = Objects.requireNonNull(Objects.requireNonNull(event.getTo()).getWorld()).getName();
-        player.sendMessage("Moved to " + worldName);
         // Handle flying status when changing worlds
         flyCommand.onPlayerWorldChange(player); // Call the method to handle fly status
     }

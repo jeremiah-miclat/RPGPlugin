@@ -21,6 +21,11 @@ public class OverworldBlastProtectionListener implements Listener {
     // Handle entity-based explosions (e.g., TNT, creepers, wither skulls)
     @EventHandler
     public void onEntityExplode(EntityExplodeEvent event) {
+        if (event.getLocation().getWorld().getName().contains("rpg")) {
+            event.blockList().removeIf(block -> block.getY() > -65);
+        }
+
+
         if (Objects.requireNonNull(event.getLocation().getWorld()).getEnvironment() == World.Environment.NORMAL) {
             event.blockList().removeIf(block -> block.getY() > SEA_LEVEL);
         }
@@ -29,6 +34,10 @@ public class OverworldBlastProtectionListener implements Listener {
     // Handle block-based explosions (e.g., beds, respawn anchors)
     @EventHandler
     public void onBlockExplode(BlockExplodeEvent event) {
+        if (event.getBlock().getWorld().getName().contains("rpg")) {
+            event.blockList().removeIf(block -> block.getY() > -65);
+        }
+
         if (event.getBlock().getWorld().getEnvironment() == World.Environment.NORMAL) {
             event.blockList().removeIf(block -> block.getY() > SEA_LEVEL);
         }

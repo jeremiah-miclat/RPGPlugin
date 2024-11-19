@@ -139,7 +139,6 @@ public class SummonVillagerListener implements Listener {
         trades.add(createTrade(Material.EMERALD, 1, Material.CAKE, 2));
         trades.add(createTrade(Material.EMERALD, 3, Material.GOLDEN_CARROT, 5));
         trades.add(createTrade(Material.EMERALD, 3, Material.GLISTERING_MELON_SLICE, 5));
-        trades.add(createTrade(Material.EMERALD, 64, Material.GOLDEN_APPLE, 64));
 
         villager.setRecipes(trades);
         villager.setAI(true);
@@ -262,7 +261,7 @@ public class SummonVillagerListener implements Listener {
         trades.add(createTradeWithTwoItems(new ItemStack(Material.SALMON,10),new ItemStack(Material.EMERALD,1),new ItemStack(Material.COOKED_SALMON,10)));
         trades.add(createTrade(Material.SALMON, 10, Material.EMERALD, 1));
         trades.add(createTrade(Material.TROPICAL_FISH, 4, Material.EMERALD, 1));
-        trades.add(createTrade(Material.PUFFERFISH, 3, Material.TIPPED_ARROW, 1));
+        trades.add(createTrade(Material.PUFFERFISH, 3, Material.EMERALD, 1));
 
 
         villager.setRecipes(trades);
@@ -811,7 +810,7 @@ public class SummonVillagerListener implements Listener {
 
     private MerchantRecipe createCustomEquipTradeFor5(ItemStack cost, ItemStack result) {
         ItemStack costStack = cost.clone(); // Clone the cost item to modify its amount
-        costStack.setAmount(5); // Set the stack size to 5
+        costStack.setAmount(10); // Set the stack size to 5
 
         MerchantRecipe recipe = new MerchantRecipe(result, Integer.MAX_VALUE); // Infinite uses
         recipe.addIngredient(costStack); // Add the single stacked cost

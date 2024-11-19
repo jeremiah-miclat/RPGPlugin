@@ -25,6 +25,12 @@ public class TeleportToHighestBlock implements CommandExecutor {
             return true;
         }
 
+        if (((Player) sender).getWorld().toString().contains("labyrinth")) {
+            sender.sendMessage("Can not teleport to highest block.");
+            return true;
+        }
+
+
         UserProfile profile = profileManager.getProfile(sender.getName());
         if (profile.getEnderPearl() < 1) {
             sender.sendMessage("You need an ender pearl to teleport.");

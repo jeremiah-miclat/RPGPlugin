@@ -2,10 +2,14 @@ package github.eremiyuh.rPGPlugin.listeners;
 
 import github.eremiyuh.rPGPlugin.manager.PlayerProfileManager;
 import github.eremiyuh.rPGPlugin.profile.UserProfile;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
@@ -34,7 +38,9 @@ public class PlayerDeathListener implements Listener {
             player.setAllowFlight(false);
         }
         UserProfile profile = profileManager.getProfile(player.getName());
-        if (!player.getLocation().getWorld().getName().equalsIgnoreCase("world_rpg")) return;
+        if (!player.getLocation().getWorld().getName().equalsIgnoreCase("world_rpg")) {player.teleport(Objects.requireNonNull(Bukkit.getWorld("world")).getSpawnLocation());} else {
+
+
         int durability = profile.getDurability();
         int newDurability = (int) Math.floor(durability * 0.80);
         profile.setDurability(newDurability < 1 ? 0 : newDurability);
@@ -48,6 +54,10 @@ public class PlayerDeathListener implements Listener {
         int newAbyssPoints = (int) Math.floor(abyssPoints * 0.80);
         profile.setAbyssPoints(newAbyssPoints < 1 ? 0 : newAbyssPoints);
 
+        player.teleport(Objects.requireNonNull(Bukkit.getWorld("world")).getSpawnLocation());
+        }
 
     }
+
+
 }

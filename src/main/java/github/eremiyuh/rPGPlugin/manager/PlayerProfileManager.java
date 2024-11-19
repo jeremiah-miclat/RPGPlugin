@@ -106,6 +106,7 @@ public class PlayerProfileManager {
         config.set("iron", profile.getCurrency("iron"));
         config.set("lapis", profile.getCurrency("lapis"));
         config.set("gold", profile.getCurrency("gold"));
+        config.set("copper", profile.getCurrency("copper"));
         config.set("netherite", profile.getCurrency("netherite"));
 
 
@@ -209,6 +210,7 @@ public class PlayerProfileManager {
         profile.setCurrency("iron", config.getDouble("iron", 0));
         profile.setCurrency("lapis", config.getDouble("lapis", 0));
         profile.setCurrency("gold", config.getDouble("gold", 0));
+        profile.setCurrency("copper", config.getDouble("copper", 0));
         profile.setCurrency("netherite", config.getDouble("netherite", 0));
 
 
@@ -218,7 +220,7 @@ public class PlayerProfileManager {
         profile.setAbyssPoints(config.getDouble("abysspoints",0));
 
         //claim points
-        profile.setClaimPoints(config.getDouble("claimPoints",100));
+        profile.setClaimPoints(config.getDouble("claimPoints",10));
 
         //potion
         profile.setPotion(config.getDouble("potion",100));

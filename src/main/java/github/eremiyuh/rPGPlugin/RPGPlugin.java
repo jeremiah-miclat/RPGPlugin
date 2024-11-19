@@ -19,8 +19,6 @@ import github.eremiyuh.rPGPlugin.methods.EffectsAbilityManager;
 import org.bukkit.*;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Monster;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -104,6 +102,7 @@ public class RPGPlugin extends JavaPlugin {
         World labyrinthWorld = getServer().getWorld("world_labyrinth");
         if (labyrinthWorld != null) {
             try {
+
                 labyrinthWorld.save();
                 getLogger().info("World 'world_labyrinth' has been saved.");
             } catch (Exception e) {
@@ -169,22 +168,24 @@ public class RPGPlugin extends JavaPlugin {
 
     }
 
-    private void oneManSleep() {
+    private void worldConfig() {
         World world = Bukkit.getWorld("world");
         if (world != null) {
+            world.setSpawnLocation(-14,72,-36);
+            world.setGameRule(GameRule.SPAWN_RADIUS, 0);
             world.setGameRule(GameRule.PLAYERS_SLEEPING_PERCENTAGE, 0);
         }
-        double x = 100.5, y = 70, z = 100.5;
+
         Location loc1 = new Location(world, -14, 75, -39);
 
         // Define the text for each stack
-        String[] stack1 = {"&6Welcome to the server!", "&7Have fun!", "&aEnjoy your stay!"};
+        String[] stack1 = {"&aEnjoy your stay!","&7Have fun!","&6Welcome to the server!" };
 
         // Create arrays for the locations and stacks
         Location[] locations = {loc1};
         String[][] stacks = {stack1};
 
-//        HologramUtil.createMultipleStacks(world, locations, stacks);
+        HologramUtil.createMultipleStacks(world, locations, stacks);
     }
 
     public boolean isServerLoaded() {
@@ -221,6 +222,7 @@ public class RPGPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new AlchemistThrowPotion(profileManager, this),this);
         getServer().getPluginManager().registerEvents(new DeadMobListener(profileManager),this);
         getServer().getPluginManager().registerEvents(new MonsterInitializer(this),this);
+        getServer().getPluginManager().registerEvents(new MonsterInitializerLabyrinth(this),this);
         getServer().getPluginManager().registerEvents(new ChunkProtectionListener(chunkManager,chunkBorderBlueVisualizer,chunkBorderRedVisualizer),this);
         getServer().getPluginManager().registerEvents(new AreaProtectionListener(this), this);
         getServer().getPluginManager().registerEvents(new WorldProtectionListener(this), this);
@@ -261,7 +263,7 @@ public class RPGPlugin extends JavaPlugin {
         Objects.requireNonNull(getCommand("giveabysspoints")).setExecutor(new GiveAbyssPoints(profileManager));
         Objects.requireNonNull(getCommand("fly")).setExecutor(new FlyCommand(profileManager, this));
         Objects.requireNonNull(getCommand("buypotion")).setExecutor(new LapisToPotion(profileManager));
-        Objects.requireNonNull(this.getCommand("givesword")).setExecutor(new SwordCommand());
+        Objects.requireNonNull(this.getCommand("givesword")).setExecutor(new SwordCommand(this));
         Objects.requireNonNull(this.getCommand("rtp")).setExecutor(new RTPCommand(this));
         Objects.requireNonNull(this.getCommand("spawn")).setExecutor(new SpawnCommand(profileManager));
         Objects.requireNonNull(this.getCommand("sethome")).setExecutor(new SetHomeCommand(profileManager));
@@ -299,9 +301,9 @@ public class RPGPlugin extends JavaPlugin {
 
 
 
-        oneManSleep();
-        loadWorld("world_rpg",-1,-1,-1,-1,-1,-1,18000,GameRule.DO_DAYLIGHT_CYCLE,false, World.Environment.NORMAL);
-        loadWorld("world_labyrinth",0,64,0,0,0,100,18000,null,false, World.Environment.NORMAL);
+        worldConfig();
+        loadWorld("world_rpg",-15,72,-35,-1,-1,-1,18000,GameRule.DO_DAYLIGHT_CYCLE,false, World.Environment.NORMAL);
+        loadWorld("world_labyrinth",-23,312,-35,0,0,100,18000,null,false, World.Environment.NORMAL);
         new TabListCustomizer(this, profileManager);
 
     }

@@ -30,6 +30,13 @@ public class RTPCommand implements CommandExecutor {
 
         Player player = (Player) sender;
         World world = player.getWorld();
+
+        if (player.getWorld().getName().contains("nether")) {
+            player.sendMessage("Not allowed on nether");
+            return true;
+        }
+
+
         WorldBorder border = world.getWorldBorder();
 
         // Define border limits

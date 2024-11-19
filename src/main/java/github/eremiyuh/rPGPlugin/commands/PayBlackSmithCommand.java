@@ -19,7 +19,9 @@ public class PayBlackSmithCommand implements CommandExecutor {
 
     static {
 
+        oresMap.put(Material.BONE, 10);
         oresMap.put(Material.IRON_INGOT, 100);
+        oresMap.put(Material.COPPER_INGOT, 100);
         oresMap.put(Material.GOLD_INGOT, 200);
         oresMap.put(Material.EMERALD, 200);
         oresMap.put(Material.DIAMOND, 1000);
@@ -78,7 +80,7 @@ public class PayBlackSmithCommand implements CommandExecutor {
         userProfile.setDurability(newDura);
 
         // Send feedback to player
-        player.sendMessage("Blacksmith restored " + duraAdded + " durability using your ores!");
+        player.sendMessage("Blacksmith restored " + duraAdded + " durability using your materials!");
         player.sendMessage("Your total durability is now: " + newDura);
     }
 

@@ -40,6 +40,7 @@ public class UserProfile {
     private double iron;
     private double lapiz;
     private double gold;
+    private double copper;
     private double netherite;
     private double claimPoints;
 
@@ -98,6 +99,7 @@ public class UserProfile {
         this.emerald = 0;
         this.iron = 0;
         this.lapiz = 0;
+        this.copper = 0;
         this.gold = 0;
         this.netherite=0;
 
@@ -107,7 +109,7 @@ public class UserProfile {
         this.durability = 1000;
         this.abyssPoints = 0;
 
-        this.claimPoints =100;
+        this.claimPoints =10;
         this.team = "none";
         this.teamMembers = getTeamMembers();
 
@@ -384,6 +386,8 @@ public class UserProfile {
                 return enderpearl;
             case "netherite":
                 return netherite;
+            case "copper":
+                return netherite;
             default:
                 throw new IllegalArgumentException("Invalid currency name: " + currencyName);
         }
@@ -441,6 +445,9 @@ public class UserProfile {
             case "netherite":
                 this.netherite = amount;
                 break;
+            case "copper":
+                this.netherite = amount;
+                break;
             default:
                 throw new IllegalArgumentException("Invalid currency name: " + currencyName);
         }
@@ -492,6 +499,14 @@ public class UserProfile {
 
     public void setNetherite(double netherite) {
         this.netherite = netherite;
+    }
+
+    public double getCopper() {
+        return copper;
+    }
+
+    public void setCopper(double copper) {
+        this.copper = copper;
     }
 
     // Inner class to hold class-specific attributes

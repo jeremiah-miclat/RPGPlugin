@@ -3,10 +3,7 @@ package github.eremiyuh.rPGPlugin.listeners;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.entity.Boat;
-import org.bukkit.entity.Enderman;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -15,10 +12,10 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.EntitySpawnEvent;
+import org.bukkit.event.entity.EntityTameEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.vehicle.VehicleCreateEvent;
-
 import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -29,10 +26,11 @@ import java.util.Set;
 public class WorldProtectionListener implements Listener {
 
     private final JavaPlugin plugin;
-    private final String protectedWorldName = "world_rpg"; // Name of the protected world
+    private final Set<String> protectedWorldNames; // Set of protected world names
 
     public WorldProtectionListener(JavaPlugin plugin) {
         this.plugin = plugin;
+        this.protectedWorldNames = Set.of("world_rpg", "world_labyrinth"); // Add all protected world names here
     }
 
     private static final Set<Material> ANNOYING_BLOCKS;
@@ -51,40 +49,27 @@ public class WorldProtectionListener implements Listener {
             return;
         }
 
-        // Cancel block break in protected world unless the player is in creative mode
         if (isInProtectedWorld(event.getBlock().getWorld()) && event.getPlayer().getGameMode() != GameMode.CREATIVE) {
-            event.setCancelled(true);
-        }
-
-        if (isInProtectedWorld(event.getBlock().getWorld())) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
-        // Cancel block place in protected world unless the player is in creative mode
         if (isInProtectedWorld(event.getBlock().getWorld()) && event.getPlayer().getGameMode() != GameMode.CREATIVE) {
-            event.setCancelled(true);
-        }
-
-        if (isInProtectedWorld(event.getBlock().getWorld())) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler
     public void onBucketEmpty(PlayerBucketEmptyEvent event) {
-        // Cancel bucket usage (water, lava) in protected world unless in creative mode
         if (isInProtectedWorld(event.getBlockClicked().getWorld()) && event.getPlayer().getGameMode() != GameMode.CREATIVE) {
             event.setCancelled(true);
         }
     }
 
-
     @EventHandler
     public void onVehiclePlace(VehicleCreateEvent event) {
-        // Cancel vehicle (e.g., boat) placement in protected world unless in creative mode
         if (isInProtectedWorld(event.getVehicle().getWorld())) {
             event.setCancelled(true);
         }
@@ -92,7 +77,6 @@ public class WorldProtectionListener implements Listener {
 
     @EventHandler
     public void onVehicleRide(VehicleEnterEvent event) {
-        // Cancel vehicle (e.g., boat) placement in protected world unless in creative mode
         if (isInProtectedWorld(event.getVehicle().getWorld())) {
             event.setCancelled(true);
         }
@@ -111,9 +95,7 @@ public class WorldProtectionListener implements Listener {
 
     @EventHandler
     public void onEndermanChangeBlock(EntityChangeBlockEvent event) {
-
         if (event.getEntity() instanceof Enderman) {
-
             event.setCancelled(true);
         }
     }
@@ -121,9 +103,7 @@ public class WorldProtectionListener implements Listener {
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
         Material item = event.getMaterial();
-        // Cancel interactions with certain items that could damage the world
         if (isInProtectedWorld(event.getPlayer().getWorld()) && event.getPlayer().getGameMode() != GameMode.CREATIVE) {
-
             if (item == Material.FLINT_AND_STEEL || item == Material.TNT) {
                 event.setCancelled(true);
             }
@@ -131,42 +111,40 @@ public class WorldProtectionListener implements Listener {
             if (item == Material.WATER_BUCKET || item == Material.LAVA_BUCKET || item == Material.BUCKET) {
                 event.setCancelled(true);
             }
-
-
-            // Cancel interactions with trapdoors and fences
-            if (isTrapdoorOrFence(item)) {
-                event.setCancelled(true);
-            }
-
         }
-
-
-
     }
 
     @EventHandler
     public void onEntityExplode(EntityExplodeEvent event) {
-        // Prevent block damage from explosions caused by entities in the protected world
         if (isInProtectedWorld(Objects.requireNonNull(event.getLocation().getWorld()))) {
-            event.blockList().clear(); // Clear the list of blocks to prevent them from being destroyed
+            event.blockList().clear();
         }
     }
 
     @EventHandler
     public void onBlockExplode(BlockExplodeEvent event) {
-        // Prevent block damage from explosions caused by blocks (e.g., TNT) in the protected world
         if (isInProtectedWorld(event.getBlock().getWorld())) {
-            event.blockList().clear(); // Clear the list of blocks to prevent them from being destroyed
+            event.blockList().clear();
         }
     }
 
-    // Helper method to check if the event occurs in the protected world
-    private boolean isInProtectedWorld(World world) {
-        return world.getName().equalsIgnoreCase(protectedWorldName);
+    @EventHandler
+    public void onTame(EntityTameEvent event) {
+        if (!isInProtectedWorld(event.getEntity().getWorld())) return;
+
+        Entity entity = event.getEntity();
+        AnimalTamer tamer = event.getOwner();
+
+        if (tamer instanceof Player player) {
+            if (!player.isOp()) {
+                event.setCancelled(true);
+                player.sendMessage("You are not allowed to tame this animal!");
+            }
+        }
     }
 
-    // Helper method to check if the material is a trapdoor or fence
-    private boolean isTrapdoorOrFence(Material material) {
-        return material.name().contains("TRAPDOOR") || material.name().contains("FENCE");
+    // Helper method to check if the event occurs in a protected world
+    private boolean isInProtectedWorld(World world) {
+        return protectedWorldNames.contains(world.getName().toLowerCase());
     }
 }

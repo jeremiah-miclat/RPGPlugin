@@ -40,7 +40,8 @@ public class ItemUtils {
             meta.displayName(Component.text("Abyss Mana Stone").color(TextColor.color(250,250,8)));
             meta.lore(Arrays.asList(
                     Component.text("Can be traded for equipment"),
-                    Component.text("Go to trading hall and look for Yabmat.")
+                    Component.text("Go to trading hall and look for Yabmat."),
+                    Component.text("Buy at /abyssstore for 100,000 abyss points.")
             ));
             meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
             meta.setEnchantmentGlintOverride(true);

@@ -25,6 +25,7 @@ public class ConvertToEDiamond implements CommandExecutor {
         currencyMaterials.put("lapis", Material.LAPIS_LAZULI);
         currencyMaterials.put("emerald", Material.EMERALD);
         currencyMaterials.put("iron", Material.IRON_INGOT);
+        currencyMaterials.put("copper", Material.COPPER_INGOT);
         currencyMaterials.put("enderpearl", Material.ENDER_PEARL);
         currencyMaterials.put("netherite", Material.NETHERITE_INGOT);
 

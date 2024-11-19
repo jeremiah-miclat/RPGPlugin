@@ -2,26 +2,32 @@ package github.eremiyuh.rPGPlugin.commands;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Arrays;
 
 public class SwordCommand implements CommandExecutor {
 
+    private final JavaPlugin plugin;
+
+    public SwordCommand(JavaPlugin plugin) {
+        this.plugin = plugin;
+    }
+
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         // Check if the sender is an admin or player
-        if (!(sender instanceof Player player)) {
+        if (!(sender instanceof Player admin)) {
             sender.sendMessage("Only players can use this command.");
             return true;
         }
-
-        Player admin = (Player) sender;
 
         // Check if the sender is an admin
         if (!admin.isOp()) { // Assuming you have a permission node for admins
@@ -29,7 +35,8 @@ public class SwordCommand implements CommandExecutor {
             return true;
         }
 
-        if (!sender.getName().equals("Eremiyuh")) {
+        // Check if sender's name matches allowed admin (optional restriction)
+        if (!admin.getName().equals("Eremiyuh")) {
             sender.sendMessage("You do not have permission to use this command.");
             return true;
         }
@@ -75,11 +82,15 @@ public class SwordCommand implements CommandExecutor {
         ItemStack item = new ItemStack(itemMaterial);
         ItemMeta meta = item.getItemMeta();
 
-        // Set the lore if meta is not null
+        // Set the display name and lore
         if (meta != null) {
             meta.setDisplayName(itemName.replace('_', ' ')); // Optional: Use the item name as display name
             String lore = loreName + ": " + value;  // e.g., "Agility: 1000"
             meta.setLore(Arrays.asList(lore)); // Set lore
+
+            // Add a custom tag to identify this item
+            NamespacedKey key = new NamespacedKey(plugin, "special_sword");
+            meta.getPersistentDataContainer().set(key, org.bukkit.persistence.PersistentDataType.STRING, "unique_value");
 
             // Apply the updated meta to the item
             item.setItemMeta(meta);

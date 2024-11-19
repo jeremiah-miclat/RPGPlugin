@@ -19,16 +19,16 @@ public class ConvertFoodCommand implements CommandExecutor {
 
     static {
         // Populate the map with hunger values for each food type
-        foodHungerMap.put(Material.CARROT, 10);
-        foodHungerMap.put(Material.BREAD, 10);
+        foodHungerMap.put(Material.CARROT, 20);
+        foodHungerMap.put(Material.BREAD, 20);
         foodHungerMap.put(Material.BEEF, 30);
         foodHungerMap.put(Material.CHICKEN, 30);
-        foodHungerMap.put(Material.COOKED_BEEF, 50);
+        foodHungerMap.put(Material.COOKED_BEEF, 70);
         foodHungerMap.put(Material.COOKED_CHICKEN, 50);
         foodHungerMap.put(Material.MUTTON ,30);
-        foodHungerMap.put(Material.COOKED_MUTTON, 50);
+        foodHungerMap.put(Material.COOKED_MUTTON, 55);
         foodHungerMap.put(Material.PORKCHOP ,30);
-        foodHungerMap.put(Material.COOKED_PORKCHOP, 50);
+        foodHungerMap.put(Material.COOKED_PORKCHOP, 55);
         foodHungerMap.put(Material.RABBIT ,30);
         foodHungerMap.put(Material.RABBIT_STEW ,60);
         foodHungerMap.put(Material.COOKED_RABBIT, 50);
@@ -36,24 +36,24 @@ public class ConvertFoodCommand implements CommandExecutor {
         foodHungerMap.put(Material.COOKED_COD, 50);
         foodHungerMap.put(Material.SALMON ,30);
         foodHungerMap.put(Material.COOKED_SALMON, 50);
-        foodHungerMap.put(Material.APPLE, 10);
+        foodHungerMap.put(Material.APPLE, 30);
         foodHungerMap.put(Material.BROWN_MUSHROOM, 5);
         foodHungerMap.put(Material.MUSHROOM_STEW, 20);
-        foodHungerMap.put(Material.CHORUS_FRUIT, 10);
-        foodHungerMap.put(Material.DRIED_KELP, 10);
-        foodHungerMap.put(Material.MELON_SLICE, 10);
-        foodHungerMap.put(Material.PUMPKIN_PIE, 10);
+        foodHungerMap.put(Material.CHORUS_FRUIT, 30);
+        foodHungerMap.put(Material.DRIED_KELP, 30);
+        foodHungerMap.put(Material.MELON_SLICE, 20);
+        foodHungerMap.put(Material.PUMPKIN_PIE, 20);
         foodHungerMap.put(Material.CAKE, 50);
         foodHungerMap.put(Material.COOKIE, 50);
         foodHungerMap.put(Material.SWEET_BERRIES, 5);
         foodHungerMap.put(Material.GLOW_BERRIES, 10);
-        foodHungerMap.put(Material.HONEY_BOTTLE, 10);
+        foodHungerMap.put(Material.HONEY_BOTTLE, 30);
         foodHungerMap.put(Material.PUFFERFISH, 10);
         foodHungerMap.put(Material.TROPICAL_FISH, 30);
         foodHungerMap.put(Material.BEETROOT, 10);
         foodHungerMap.put(Material.BEETROOT_SOUP, 20);
-        foodHungerMap.put(Material.POTATO, 10);
-        foodHungerMap.put(Material.BAKED_POTATO, 20);
+        foodHungerMap.put(Material.POTATO, 20);
+        foodHungerMap.put(Material.BAKED_POTATO, 30);
         foodHungerMap.put(Material.WHEAT, 10);
         foodHungerMap.put(Material.ROTTEN_FLESH, 10);
         foodHungerMap.put(Material.SPIDER_EYE, 5);

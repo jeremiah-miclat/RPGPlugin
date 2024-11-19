@@ -9,6 +9,8 @@ import github.eremiyuh.rPGPlugin.profile.UserProfile;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.damage.DamageSource;
+import org.bukkit.damage.DamageType;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -47,19 +49,32 @@ public class DamageListener implements Listener {
     @EventHandler
     public void onEntityDamage(EntityDamageByEntityEvent event) {
 
-
-
-
-        if (!Objects.requireNonNull(event.getDamager().getLocation().getWorld()).getName().equals("world_rpg")) {
-            if (event.getDamager() instanceof Player player && player.getAllowFlight()) {
-                player.sendMessage("you can't attack while flying");
-                event.setCancelled(true);
-                return;
-            }
+        if (!Objects.requireNonNull(event.getDamager().getLocation().getWorld()).getName().equals("world_rpg") && !Objects.requireNonNull(event.getEntity().getLocation().getWorld()).getName().equals("world_labyrinth")) {
             // Get the entity that was damaged
             Entity damaged = event.getEntity();
             // Get the damager (the entity dealing the damage)
             Entity damager = event.getDamager();
+            if (event.getDamager() instanceof Player player && player.getAllowFlight()) {
+                player.sendMessage("damaged cancelled. Disable fly mode");
+                event.setCancelled(true);
+                return;
+            }
+
+
+            if (damaged instanceof Tameable tameable) {
+                AnimalTamer owner = tameable.getOwner();
+
+                // Check if the tameable has an owner
+                if (owner != null && damager instanceof Player player) {
+                    UserProfile ownerProfile = profileManager.getProfile(player.getName());
+                    UserProfile profile = profileManager.getProfile(player.getName());
+                    if ((profile.getTeam().equalsIgnoreCase(ownerProfile.getTeam())) && !profile.getTeam().equalsIgnoreCase("none")) return;
+                    if (!(profile.isPvpEnabled() && ownerProfile.isPvpEnabled())) return;
+                    event.setCancelled(true);
+                }
+            }
+
+
 
             // Get the location of the damaged entity
             Location damagedLocation = damaged.getLocation();
@@ -150,23 +165,53 @@ public class DamageListener implements Listener {
         }
 
 
-        if (Objects.requireNonNull(event.getDamager().getLocation().getWorld()).getName().equals("world_rpg")) {
-            if (event.getDamager() instanceof Player player && player.getAllowFlight()) {
-                player.sendMessage("you can't attack while flying");
-                event.setCancelled(true);
+        if (Objects.requireNonNull(event.getDamager().getLocation().getWorld()).getName().equals("world_rpg") || Objects.requireNonNull(event.getEntity().getLocation().getWorld()).getName().equals("world_labyrinth")) {
+
+            if (!(event.getEntity() instanceof  LivingEntity)) {
                 return;
             }
+
+            if (event.getEntity() instanceof LivingEntity entity) {
+                // Remove the Absorption effect if the entity has it
+                entity.removePotionEffect(PotionEffectType.ABSORPTION);
+            }
+
             // Get the entity that was damaged
             Entity damaged = event.getEntity();
             // Get the damager (the entity dealing the damage)
             Entity damager = event.getDamager();
 
+
+
             // Get the location of the damaged entity
             Location damagedLocation = damaged.getLocation();
             // Get the location of the damager entity (if damager exists)
             Location damagerLocation = damager.getLocation();
+
+            if (damaged instanceof Player damagedPLayer) {
+
+                for (int i = 0; i < damagedPLayer.getInventory().getArmorContents().length; i++) {
+                    ItemStack armorItem = damagedPLayer.getInventory().getArmorContents()[i];
+
+                    if (armorItem != null && armorItem.getType().getMaxDurability() > 0) { // Check if the item has durability
+                        ItemMeta meta = armorItem.getItemMeta();
+                        if (meta != null) {
+                            armorItem.setDurability((short) 0); // Reset durability
+                        }
+                    }
+                }
+
+            }
+
+
+
             if (damager instanceof Player attacker && damaged instanceof LivingEntity victim)
             {
+                ItemStack itemInHand = attacker.getInventory().getItemInMainHand();
+                ItemMeta meta = itemInHand.getItemMeta();
+                if (meta != null) {
+                    itemInHand.setDurability((short) 0); // Reset durability
+                }
                 if (damaged instanceof Player damagedPlayer) {
 
                     UserProfile attackerProfile = profileManager.getProfile(attacker.getName());
@@ -194,11 +239,7 @@ public class DamageListener implements Listener {
 
                 }
 
-                ItemStack itemInHand = attacker.getInventory().getItemInMainHand();
-                ItemMeta meta = itemInHand.getItemMeta();
-                if (meta != null) {
-                    itemInHand.setDurability((short) 0); // Reset durability
-                }
+
 
                 UserProfile attackerProfile = profileManager.getProfile(attacker.getName());
 
@@ -224,6 +265,11 @@ public class DamageListener implements Listener {
                 ProjectileSource shooter = projectile.getShooter();
 
                 if (projectile instanceof Arrow && shooter instanceof Player attacker) {
+                    ItemStack itemInHand = attacker.getInventory().getItemInMainHand();
+                    ItemMeta meta = itemInHand.getItemMeta();
+                    if (meta != null) {
+                        itemInHand.setDurability((short) 0); // Reset durability
+                    }
 
                     if (damaged instanceof Player damagedPlayer) {
 
@@ -250,12 +296,7 @@ public class DamageListener implements Listener {
                             event.setCancelled(true);
                         }
 
-                        if (damagedProfile.getChosenClass().equalsIgnoreCase("swordsman") && damagedProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
-                            event.setDamage(event.getDamage()/4);
-                        }
-                        if (damagedProfile.getChosenClass().equalsIgnoreCase("swordsman")) {
-                            event.setDamage(event.getDamage()*.8);
-                        }
+
 
                     }
 
@@ -263,11 +304,6 @@ public class DamageListener implements Listener {
 
 
 
-                    ItemStack itemInHand = attacker.getInventory().getItemInMainHand();
-                    ItemMeta meta = itemInHand.getItemMeta();
-                    if (meta != null) {
-                        itemInHand.setDurability((short) 0); // Reset durability
-                    }
                     if (victim.hasMetadata("attackerList")) {
 
                         List<String> attackerList = (List<String>) victim.getMetadata("attackerList").get(0).value();
@@ -288,7 +324,6 @@ public class DamageListener implements Listener {
                     }
                 }
 
-                //PVE with thrown instant damage
                 if (projectile instanceof ThrownPotion && projectile.getShooter() instanceof Player attacker ) {
                     if (damaged instanceof Player damagedPlayer) {
 
@@ -345,29 +380,24 @@ public class DamageListener implements Listener {
                 if (angryMob.hasMetadata("extraDamage")) {
                     UserProfile damagedProfile = profileManager.getProfile(damagedPLayer.getName());
                     // Loop through all armor slots (helmet, chestplate, leggings, boots)
-                    for (int i = 0; i < damagedPLayer.getInventory().getArmorContents().length; i++) {
-                        ItemStack armorItem = damagedPLayer.getInventory().getArmorContents()[i];
 
-                        if (armorItem != null && armorItem.getType().getMaxDurability() > 0) { // Check if the item has durability
-                            ItemMeta meta = armorItem.getItemMeta();
-                            if (meta != null) {
-                                armorItem.setDurability((short) 0); // Reset durability
-                            }
-                        }
-                    }
 
                     double extraDamage = angryMob.getMetadata("extraDamage").getFirst().asDouble();
+                    double rawDmg = event.getDamage();
+                    double finalDmg = event.getFinalDamage();
+                    double dmgReductionMultiplier = Math.max(0.2, finalDmg / rawDmg);
                     if (PlayerBuffPerms.canReduceDmg(damagedProfile)) {
-                        event.setDamage((event.getDamage() + extraDamage)/4);
+
+                        event.setDamage(((event.getDamage() + extraDamage)*dmgReductionMultiplier)/4);
                     }
                     else if (damagedProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
-                        event.setDamage((event.getDamage() + extraDamage)*1.2);
+                        event.setDamage(((event.getDamage() + extraDamage)*dmgReductionMultiplier)*1.2);
                     }
                     else {
                         if (damagedProfile.getChosenClass().equalsIgnoreCase("swordsman")) {
-                            event.setDamage((event.getDamage() + extraDamage)/1.25);
+                            event.setDamage(((event.getDamage() + extraDamage)*dmgReductionMultiplier)/1.25);
                         } else {
-                            event.setDamage((event.getDamage() + extraDamage));
+                            event.setDamage(((event.getDamage() + extraDamage)*dmgReductionMultiplier));
                         }
                     }
 
@@ -377,31 +407,25 @@ public class DamageListener implements Listener {
 
             if (damager instanceof Projectile projectile && projectile.getShooter() instanceof Monster angryMob && !(damager instanceof Player) && damaged instanceof Player damagedPLayer) {
 
-                for (int i = 0; i < damagedPLayer.getInventory().getArmorContents().length; i++) {
-                    ItemStack armorItem = damagedPLayer.getInventory().getArmorContents()[i];
-
-                    if (armorItem != null && armorItem.getType().getMaxDurability() > 0) { // Check if the item has durability
-                        ItemMeta meta = armorItem.getItemMeta();
-                        if (meta != null) {
-                            armorItem.setDurability((short) 0); // Reset durability
-                        }
-                    }
-                }
 
                 if (angryMob.hasMetadata("extraDamage")) {
                     UserProfile damagedProfile = profileManager.getProfile(damagedPLayer.getName());
                     double extraDamage = angryMob.getMetadata("extraDamage").getFirst().asDouble();
+                    double rawDmg = event.getDamage();
+                    double finalDmg = event.getFinalDamage();
+                    double dmgReductionMultiplier = Math.max(0.2, finalDmg / rawDmg);
                     if (PlayerBuffPerms.canReduceDmg(damagedProfile)) {
-                        event.setDamage((event.getDamage() + extraDamage)/4);
+
+                        event.setDamage(((event.getDamage() + extraDamage)*dmgReductionMultiplier)/4);
                     }
                     else if (damagedProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
-                        event.setDamage((event.getDamage() + extraDamage)*1.2);
+                        event.setDamage(((event.getDamage() + extraDamage)*dmgReductionMultiplier)*1.2);
                     }
                     else {
                         if (damagedProfile.getChosenClass().equalsIgnoreCase("swordsman")) {
-                            event.setDamage((event.getDamage() + extraDamage)/1.25);
+                            event.setDamage(((event.getDamage() + extraDamage)*dmgReductionMultiplier)/1.25);
                         } else {
-                            event.setDamage((event.getDamage() + extraDamage));
+                            event.setDamage(((event.getDamage() + extraDamage)*dmgReductionMultiplier));
                         }
                     }
 
@@ -410,38 +434,33 @@ public class DamageListener implements Listener {
             }
 
             if (damager instanceof ThrownPotion projectile && projectile.getShooter() instanceof Monster angryMob && !(damager instanceof Player) && damaged instanceof Player damagedPLayer) {
-                for (int i = 0; i < damagedPLayer.getInventory().getArmorContents().length; i++) {
-                    ItemStack armorItem = damagedPLayer.getInventory().getArmorContents()[i];
-
-                    if (armorItem != null && armorItem.getType().getMaxDurability() > 0) { // Check if the item has durability
-                        ItemMeta meta = armorItem.getItemMeta();
-                        if (meta != null) {
-                            armorItem.setDurability((short) 0); // Reset durability
-                        }
-                    }
-                }
 
                 if (angryMob.hasMetadata("extraDamage")) {
                     UserProfile damagedProfile = profileManager.getProfile(damagedPLayer.getName());
-
                     double extraDamage = angryMob.getMetadata("extraDamage").getFirst().asDouble();
+                    double rawDmg = event.getDamage();
+                    double finalDmg = event.getFinalDamage();
+                    double dmgReductionMultiplier = Math.max(0.2, finalDmg / rawDmg);
                     if (PlayerBuffPerms.canReduceDmg(damagedProfile)) {
-                        event.setDamage((event.getDamage() + extraDamage)/4);
+
+                        event.setDamage(((event.getDamage() + extraDamage)*dmgReductionMultiplier)/4);
                     }
                     else if (damagedProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
-                        event.setDamage((event.getDamage() + extraDamage)*1.2);
+                        event.setDamage(((event.getDamage() + extraDamage)*dmgReductionMultiplier)*1.2);
                     }
                     else {
                         if (damagedProfile.getChosenClass().equalsIgnoreCase("swordsman")) {
-                            event.setDamage((event.getDamage() + extraDamage)/1.25);
+                            event.setDamage(((event.getDamage() + extraDamage)*dmgReductionMultiplier)/1.25);
                         } else {
-                            event.setDamage((event.getDamage() + extraDamage));
+                            event.setDamage(((event.getDamage() + extraDamage)*dmgReductionMultiplier));
                         }
                     }
 
 
                 }
             }
+
+
 
         }
 
@@ -454,8 +473,14 @@ public class DamageListener implements Listener {
 
 
     @EventHandler (priority = EventPriority.HIGH)
-    public void onModifiedEntityTakeDamage(EntityDamageEvent event) {
-        if (!Objects.requireNonNull(event.getEntity().getLocation().getWorld()).getName().equals("world_rpg")) {
+    public void onEntityTakeDamage(EntityDamageEvent event) {
+
+        if (event.getDamageSource().getCausingEntity() instanceof Player player && player.getAllowFlight()) {
+            player.sendMessage("damaged cancelled. Disable fly mode");
+            event.setCancelled(true);
+            return;
+        }
+        if (!Objects.requireNonNull(event.getEntity().getLocation().getWorld()).getName().equals("world_rpg") && !Objects.requireNonNull(event.getEntity().getLocation().getWorld()).getName().equals("world_labyrinth")) {
             return;
         }
         if (event.getEntity() instanceof Player player) {
@@ -477,9 +502,16 @@ public class DamageListener implements Listener {
         }
 
         double damage = event.getDamage();
+        // Create floating text using an ArmorStand
+//        spawnFloatingHologram(event.getEntity().getLocation(), ((int) damage)+"", event.getEntity().getWorld(), net.md_5.bungee.api.ChatColor.RED);
+
+        // Update the health indicator
+
+        resetHealthIndicator((LivingEntity) event.getEntity(), damage);
         if (event.getEntity() instanceof LivingEntity entity && event.getEntity().hasMetadata("initialExtraHealth") && event.getEntity().getMetadata("initialExtraHealth").getFirst().asDouble()  > 0) {
             // Retrieve extra health attribute from entity's metadata or custom attribute
             double extraHealth = event.getEntity().getMetadata("initialExtraHealth").getFirst().asDouble();
+
                 if (extraHealth - damage > 0) {
                             entity.setMetadata("initialExtraHealth", new FixedMetadataValue(plugin, extraHealth - damage));
                             if (event.getDamageSource().getCausingEntity() instanceof Player player && (entity.hasMetadata("boss") || entity.hasMetadata("worldboss"))) {
@@ -497,87 +529,30 @@ public class DamageListener implements Listener {
                                     }
                                 }
                             }
-                            event.setDamage(0);
-                        } else {
-                            // Calculate excess damage
-                            double excessDamage = damage - extraHealth;
-                            entity.setHealth(Math.max(0, entity.getHealth() - excessDamage)); // Ensure health doesn't drop below 0
 
-                            // Clear the extra health metadata as it has been depleted
-                            entity.setMetadata("initialExtraHealth", new FixedMetadataValue(plugin, 0.0)); // Reset extra health to 0
 
-                            event.setDamage(excessDamage);
-                     }
+                    event.setDamage(0);
+
+                        }
+                else {
+                    // Calculate excess damage
+                    double excessDamage = damage - extraHealth;
+                    entity.setHealth(Math.max(0, entity.getHealth() - excessDamage)); // Ensure health doesn't drop below 0
+
+                    // Clear the extra health metadata as it has been depleted
+                    entity.setMetadata("initialExtraHealth", new FixedMetadataValue(plugin, 0.0)); // Reset extra health to 0
+
+                    event.setDamage(excessDamage);
+
+                }
+
+
+
 
 
         }
     }
 
-//    @EventHandler
-//    public void onEntityHitByCustomSkill(EntityDamageByEntityEvent event) {
-//        if (event.getEntity() instanceof Monster || event.getEntity() instanceof IronGolem || event.getEntity() instanceof Wolf) {
-//
-//            // Get the entity and damage cause
-//            LivingEntity entity = (LivingEntity) event.getEntity();
-//
-//            // Check if the damage cause is one of the specified types (poison, fire, drowning, freezing, etc.)
-//            if (event.getDamager() instanceof Arrow arrow){
-//            if (arrow.hasMetadata("FireArrowBarrage") || arrow.hasMetadata("FreezeArrowBarrage") || arrow.hasMetadata("WeaknessArrowBarrage"))
-//            {
-//                if (entity.hasMetadata("initialExtraHealth")) {
-//                    // Retrieve extra health attribute from entity's metadata or custom attribute
-//                    double extraHealth = entity.getMetadata("initialExtraHealth").getFirst().asDouble();
-//
-//                    if (extraHealth > 0) {
-//                        double damage = event.getDamage();
-//
-//                        if (extraHealth - damage > 0) {
-//                            entity.setMetadata("initialExtraHealth", new FixedMetadataValue(plugin, extraHealth - damage));
-//                            event.setDamage(0);
-//                        } else {
-//                            // Calculate excess damage
-//                            double excessDamage = damage - extraHealth;
-//                            entity.setHealth(Math.max(0, entity.getHealth() - excessDamage)); // Ensure health doesn't drop below 0
-//
-//                            // Clear the extra health metadata as it has been depleted
-//                            entity.setMetadata("initialExtraHealth", new FixedMetadataValue(plugin, 0.0)); // Reset extra health to 0
-//
-//                            event.setDamage(excessDamage);
-//                        }
-//                    }
-//                }
-//            }
-//            }
-//        }
-//    }
-
-
-    // pve melee damage
-//    private void handleMeleePveDamage(Player attacker, LivingEntity target, EntityDamageByEntityEvent event, Location damagerLocation, Location damagedLocation, UserProfile damagerProfile) {
-//        ItemStack weapon = attacker.getInventory().getItemInMainHand();
-//
-//        // Fire element check: Disable fire if not selected
-//        if (!damagerProfile.getSelectedElement().equalsIgnoreCase("fire")
-//                && (weapon.containsEnchantment(Enchantment.FLAME) || weapon.containsEnchantment(Enchantment.FIRE_ASPECT))) {
-//            event.getEntity().setFireTicks(0); // Cancel fire ticks
-//        }
-//
-//
-//
-//        double baseDamage = event.getDamage();
-//
-//        // Apply stats based on class for non-default players
-//        double damageWithStats = applyStatsToDamage(baseDamage, damagerProfile, attacker, event);
-//
-//        // Swordsman-specific ability if holding a sword
-//        if (damagerProfile.getChosenClass().equalsIgnoreCase("swordsman") && weapon.getType().toString().endsWith("_SWORD")) {
-//            effectsAbilityManager.applyAbility(damagerProfile, target, damagerLocation, damagedLocation);
-//        }
-//
-//        // Apply extra health and set final damage
-//        double finalDamage = applyExtraHealthAndDamage(target, damageWithStats, attacker);
-//        event.setDamage(finalDamage);
-//    }
 
     private void handleMeleeDamage(Player attacker, LivingEntity target, EntityDamageByEntityEvent event, Location damagerLocation, Location damagedLocation, UserProfile damagerProfile) {
         ItemStack weapon = attacker.getInventory().getItemInMainHand();
@@ -651,7 +626,12 @@ public class DamageListener implements Listener {
             double newHealth = Math.min(attacker.getHealth() + lifestealAmount, maxHealth); // Avoid exceeding max health
             attacker.setHealth(newHealth);
         }
-        event.setDamage(finalDamage);
+        double rawDmg = event.getDamage();
+        double finalDmg = event.getFinalDamage();
+        double dmgReductionMultiplier = Math.max(0.2, finalDmg / rawDmg);
+
+
+        event.setDamage(finalDamage*dmgReductionMultiplier);
     }
 
 
@@ -775,9 +755,11 @@ public class DamageListener implements Listener {
             effectsAbilityManager.applyAbility(damagerProfile, target, damagerLocation, damagedLocation);
         }
 
+        double rawDmg = event.getDamage();
+        double finalDmg = event.getFinalDamage();
+        double dmgReductionMultiplier = Math.max(0.2, finalDmg / rawDmg);
 
-
-        event.setDamage(finalDamage);
+        event.setDamage(finalDamage*dmgReductionMultiplier);
     }
 
     // Method to apply stats to damage
@@ -996,6 +978,7 @@ public class DamageListener implements Listener {
 
         if (damagerProfile.getDurability() ==0 && !damagerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
             calculatedDamage /= 2;
+            player.sendMessage("Durability depleted. You will deal less damage");
         } else {
             damagerProfile.setDurability(damagerProfile.getDurability() - 1);
         }
@@ -1172,6 +1155,40 @@ public class DamageListener implements Listener {
                 offsetY += 0.1;
             }
         }.runTaskTimer(plugin, 0L, 1L); // Runs every tick (1/20th of a second)
+    }
+
+
+    private void resetHealthIndicator(LivingEntity entity, double damage) {
+        // Retrieve the total health (current health + extra health)
+        double totalHealth = getTotalHealth(entity);
+
+        int totalRemainingHealth = (int) Math.floor(totalHealth - damage);
+
+        if (totalRemainingHealth< 0) {
+            totalRemainingHealth = 0;
+        }
+
+        // Format the health indicator (e.g., [99] for health 99)
+        String healthIndicator = org.bukkit.ChatColor.YELLOW + " [" + totalRemainingHealth + "]";
+
+        // Get the existing custom name from metadata, or use the default entity type if no custom name is set
+        String customName = entity.hasMetadata("customName") ? entity.getMetadata("customName").get(0).asString() : entity.getType().name();
+
+        // Set the updated custom name with the new health indicator
+        entity.setCustomName(customName + healthIndicator);
+        entity.setCustomNameVisible(true);
+    }
+    private double getTotalHealth(LivingEntity entity) {
+        // Retrieve the extra health and current health from metadata
+        double extraHealth = entity.hasMetadata("initialExtraHealth")
+                ? entity.getMetadata("initialExtraHealth").get(0).asDouble()
+                : 0.0;
+
+        // Retrieve the current health of the entity
+        double currentHealth = entity.getHealth();
+
+        // Return total health (current health + extra health)
+        return currentHealth + extraHealth;
     }
 }
 

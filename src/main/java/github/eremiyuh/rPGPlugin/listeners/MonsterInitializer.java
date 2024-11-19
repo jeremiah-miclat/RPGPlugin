@@ -1,68 +1,80 @@
 package github.eremiyuh.rPGPlugin.listeners;
 
 import github.eremiyuh.rPGPlugin.RPGPlugin;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
-import java.util.stream.Collectors;
-
-import static org.bukkit.Bukkit.getLogger;
 
 public class MonsterInitializer implements Listener {
 
     private final RPGPlugin plugin;
     private final Random random = new Random();
 
-
-
     public MonsterInitializer(RPGPlugin plugin) {
         this.plugin = plugin;
-
     }
 
     @EventHandler
     public void onCreatureSpawn(CreatureSpawnEvent event) {
         String world = Objects.requireNonNull(event.getLocation().getWorld()).getName();
+
         if (!world.equals("world_rpg")) {
             return;
         }
 
-        Location spawnLocation = event.getLocation();
-        if (!isPlayerOnSameYLevel(spawnLocation)) {
+        // Get the number of online players
+        int onlinePlayerCount = Bukkit.getOnlinePlayers().size();
+
+        // Calculate the spawn limit based on online players
+        int mobLimit = Math.min(onlinePlayerCount * 6, 60);
+
+        // Count the number of mobs already in the world
+        int currentMobCount = countMobsInWorld(event.getLocation().getWorld());
+
+        // If the number of mobs exceeds the limit, cancel the spawn
+        if (currentMobCount >= mobLimit) {
             event.setCancelled(true);
             return;
         }
 
-
-        if (event.getEntity() instanceof Phantom) {
+        if (!isPlayerOnSameYLevel(event.getLocation())) {
             event.setCancelled(true);
+            return;
         }
 
-        if (event.getEntity() instanceof Monster || event.getEntity() instanceof Wolf || event.getEntity() instanceof IronGolem) {
-            LivingEntity mob = event.getEntity();
-            initializeExtraAttributes(mob);
+        if ((event.getEntity() instanceof Animals || event.getEntity() instanceof Phantom)
+                && !(event.getEntity() instanceof Spider) && !(event.getEntity() instanceof CaveSpider)) {
+            event.setCancelled(true);
+            return;
+        }
 
+        if (event.getEntity() instanceof Monster monster) {
+            initializeExtraAttributes(monster);
         }
     }
 
-    private boolean isPlayerNearby(Location location, double radius) {
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            if (player.getWorld().equals(location.getWorld()) && player.getLocation().distance(location) <= radius) {
-                return true;
+    private int countMobsInWorld(World world) {
+        int mobCount = 0;
+
+        // Loop through all entities in the world and count the mobs
+        for (LivingEntity entity : world.getLivingEntities()) {
+            if (entity.hasMetadata("initialExtraHealth") && !entity.hasMetadata("boss") && !entity.hasMetadata("worldboss")) {
+                mobCount++;
             }
         }
-        return false;
+
+        return mobCount;
     }
+
+
 
     private boolean isPlayerOnSameYLevel(Location location) {
         int entityY = location.getBlockY();
@@ -79,19 +91,76 @@ public class MonsterInitializer implements Listener {
 
     // Method to initialize extra health and extra damage metadata
     private void initializeExtraAttributes(LivingEntity entity) {
+        Location location = entity.getLocation();
+        double extraHealth = calculateExtraAttributes(location, entity);
 
-            Location location = entity.getLocation();
-            double extraHealth = calculateExtraAttributes(location, entity);
-            double extraDamage = extraHealth * 0.1; // Convert to damage (10% of extra health)
+        // Set extra health as metadata
+//        double baseHealth = entity.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue();
+//        entity.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(baseHealth + extraHealth);
+//        entity.setHealth(entity.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
 
-            // Store in metadata
-            entity.setMetadata("initialExtraHealth", new FixedMetadataValue(plugin, extraHealth));
-            entity.setMetadata("extraDamage", new FixedMetadataValue(plugin, extraDamage));
+        // Store metadata for extra health and damage
+        entity.setMetadata("initialExtraHealth", new FixedMetadataValue(plugin, extraHealth));
+        entity.setMetadata("extraDamage", new FixedMetadataValue(plugin, extraHealth));
+
+
 
         // Initialize the list of players who have attacked this entity
         List<String> attackerList = new ArrayList<>();
         entity.setMetadata("attackerList", new FixedMetadataValue(plugin, attackerList));
 
+        // Set health indicator without modifying other parts of the name
+        setHealthIndicator(entity);
+    }
+
+    private void setHealthIndicator(LivingEntity entity) {
+        // Retrieve the total health (current health + extra health)
+        double totalHealth = getTotalHealth(entity);
+
+        // Format the health indicator (e.g., [99] for health 99)
+        String healthIndicator = ChatColor.YELLOW + " [" + (int) totalHealth + "]";
+
+        // Get the existing custom name from metadata, or use the default entity type if no custom name is set
+        String customName = entity.hasMetadata("customName") ? entity.getMetadata("customName").get(0).asString() : entity.getType().name();
+
+
+        // Set the updated custom name with the new health indicator
+        entity.setCustomName(customName + healthIndicator);
+        entity.setCustomNameVisible(true);
+    }
+
+    private void resetHealthIndicator(LivingEntity entity, double damage) {
+        // Retrieve the total health (current health + extra health)
+        double totalHealth = getTotalHealth(entity);
+
+        int totalRemainingHealth = (int) (totalHealth-damage);
+
+        if (totalRemainingHealth< 0) {
+            totalRemainingHealth = 0;
+        }
+
+        // Format the health indicator (e.g., [99] for health 99)
+        String healthIndicator = ChatColor.YELLOW + " [" + totalRemainingHealth + "]";
+
+        // Get the existing custom name from metadata, or use the default entity type if no custom name is set
+        String customName = entity.hasMetadata("customName") ? entity.getMetadata("customName").get(0).asString() : entity.getType().name();
+
+        // Set the updated custom name with the new health indicator
+        entity.setCustomName(customName + healthIndicator);
+        entity.setCustomNameVisible(true);
+    }
+
+    private double getTotalHealth(LivingEntity entity) {
+        // Retrieve the extra health and current health from metadata
+        double extraHealth = entity.hasMetadata("initialExtraHealth")
+                ? entity.getMetadata("initialExtraHealth").get(0).asDouble()
+                : 0.0;
+
+        // Retrieve the current health of the entity
+        double currentHealth = entity.getHealth();
+
+        // Return total health (current health + extra health)
+        return currentHealth + extraHealth;
     }
 
     // Method to calculate extra attributes (used for both extra health and damage)
@@ -99,22 +168,23 @@ public class MonsterInitializer implements Listener {
         double maxCoord = Math.max(Math.abs(targetLocation.getBlockX()), Math.abs(targetLocation.getBlockZ()));
         double extraHealth = (maxCoord / 100) * 10; // 10 health for every 100 blocks
         int lvl = (int) (Math.floor(maxCoord) / 100);
-        String normalName = ChatColor.GREEN + "Lvl " + lvl + " " + entity.getType().name(); // Default level for normal monsters
+        String normalName = ChatColor.GREEN + "Lvl " + lvl + " " + entity.getType().name();
         entity.setCustomName(normalName);
         entity.setCustomNameVisible(true);
+        entity.setMetadata("customName", new FixedMetadataValue(plugin, normalName));
 
-        if (Math.random() < .005) {
+        if (Math.random() < .005) { //.005
             extraHealth = (extraHealth * 10); // Add 1000% health
             setBossAttributes(entity, maxCoord, "Boss", ChatColor.RED);
-            entity.setMetadata("boss",new FixedMetadataValue(plugin, true));
-            entity.setMetadata("lvl",new FixedMetadataValue(plugin, lvl));
+            entity.setMetadata("boss", new FixedMetadataValue(plugin, true));
+            entity.setMetadata("lvl", new FixedMetadataValue(plugin, lvl));
         }
 
-        if (Math.random() < 0.0005) {
+        if (Math.random() < .0005) { //.0005
             extraHealth = (extraHealth * 100); // Add 10000% health
             setBossAttributes(entity, maxCoord, "World Boss", ChatColor.DARK_PURPLE);
-            entity.setMetadata("worldboss",new FixedMetadataValue(plugin, true));
-            entity.setMetadata("lvl",new FixedMetadataValue(plugin, lvl));
+            entity.setMetadata("worldboss", new FixedMetadataValue(plugin, true));
+            entity.setMetadata("lvl", new FixedMetadataValue(plugin, lvl));
         }
 
         return extraHealth; // Use as basis for both health and extra damage
@@ -126,6 +196,10 @@ public class MonsterInitializer implements Listener {
         entity.setCustomNameVisible(true);
         entity.setRemoveWhenFarAway(false);
         entity.setPersistent(true);
+        entity.setMetadata("customName", new FixedMetadataValue(plugin, bossName));
+
+        // Update health indicator
+        setHealthIndicator(entity);
 
         // Calculate speed and jump multipliers based on maxCoord
         double speedMultiplier = 1 + (0.000075 * maxCoord); // Continuous increase for speed
@@ -148,15 +222,52 @@ public class MonsterInitializer implements Listener {
         // Set extra safe fall distance if applicable
         if (entity.getAttribute(Attribute.GENERIC_SAFE_FALL_DISTANCE) != null) {
             double baseSafeFallDistance = Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_SAFE_FALL_DISTANCE)).getBaseValue();
-            Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_SAFE_FALL_DISTANCE)).setBaseValue(baseSafeFallDistance * jumpMultiplier+1);
+            Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_SAFE_FALL_DISTANCE)).setBaseValue(baseSafeFallDistance * jumpMultiplier + 1);
         }
     }
 
-    // Ensure normal monsters are green
-    private void setNormalMonsterName(LivingEntity entity) {
 
+
+    // Method to spawn the floating hologram above the monster
+    private void spawnFloatingHologram(Location location, String text, World world,
+                                       net.md_5.bungee.api.ChatColor color) {
+        // Create the ArmorStand at the given location
+        ArmorStand armorStand = (ArmorStand) world.spawnEntity(location.clone().add(0, 1, 0), EntityType.ARMOR_STAND);
+
+        String coloredText = color + text;
+
+        // Set up the hologram text
+        armorStand.setCustomName(net.md_5.bungee.api.ChatColor.translateAlternateColorCodes('&', coloredText));
+        armorStand.setCustomNameVisible(true);
+
+        // Make the ArmorStand invisible and disable its gravity to simulate a floating text
+        armorStand.setInvisible(true);
+        armorStand.setGravity(false);
+        armorStand.setInvulnerable(true);
+        armorStand.setMarker(true); // Small size and no hitbox
+
+        // Create a task to move the hologram upwards
+        moveHologramUpwards(armorStand);
     }
 
+    // Method to move the hologram upwards
+    private void moveHologramUpwards(ArmorStand armorStand) {
+        new BukkitRunnable() {
+            private double offsetY = 0;
 
+            @Override
+            public void run() {
+                // Move the hologram upwards
+                armorStand.teleport(armorStand.getLocation().add(0, 0.1, 0)); // Move up by 0.1 blocks
 
+                // After moving upwards by a certain amount, stop the task (you can adjust this)
+                if (offsetY >= 2.0) {
+                    this.cancel(); // Stop the task after moving the hologram upwards by 2 blocks
+                    armorStand.remove(); // Optionally remove the hologram after the animation is complete
+                }
+
+                offsetY += 0.1;
+            }
+        }.runTaskTimer(plugin, 0L, 1L); // Runs every tick (1/20th of a second)
+    }
 }

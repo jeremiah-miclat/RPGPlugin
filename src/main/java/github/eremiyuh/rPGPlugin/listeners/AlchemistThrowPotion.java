@@ -95,7 +95,6 @@ public class AlchemistThrowPotion implements Listener {
                     }
 
                     for (LivingEntity target : event.getAffectedEntities()) {
-                        thrower.sendMessage("Your name: " + thrower.getName() + ", Target: " + target.getName());
 
                         int finalIntensity = baseIntensity + intensity;
                         int finalDuration = baseDuration + duration;
@@ -118,7 +117,7 @@ public class AlchemistThrowPotion implements Listener {
 
                         if (target instanceof Player targetPlayer && isNegativeEffect) {
                             UserProfile targetProfile = profileManager.getProfile(targetPlayer.getName());
-                            if (throwerProfile.getTeam().equals(targetProfile.getTeam())) {
+                            if (throwerProfile.getTeam().equals(targetProfile.getTeam()) && !throwerProfile.getTeam().equalsIgnoreCase("none")) {
                                 targetPlayer.removePotionEffect(effect.getType());
                             }
                         }

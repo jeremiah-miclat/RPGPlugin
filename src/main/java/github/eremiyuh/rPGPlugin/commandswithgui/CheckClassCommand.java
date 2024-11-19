@@ -66,6 +66,7 @@ public class CheckClassCommand implements CommandExecutor, Listener {
             currencyLore.add("§bDiamonds: §7" + (int) profile.getCurrency("diamond"));
             currencyLore.add("§aEmeralds: §7" + (int) profile.getCurrency("emerald"));
             currencyLore.add("§fIron: §7" + (int) profile.getCurrency("iron"));
+            currencyLore.add("§cCopper: §7" + (int) profile.getCurrency("copper"));
             currencyLore.add("§9Lapis: §7" + (int) profile.getCurrency("lapis"));
             currencyLore.add("§6Gold: §7" + (int) profile.getCurrency("gold"));
             currencyLore.add("§dNetherite: §7" +  (int)profile.getCurrency("netherite"));

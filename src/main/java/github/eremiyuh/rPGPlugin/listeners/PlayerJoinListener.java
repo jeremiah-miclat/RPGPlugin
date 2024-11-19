@@ -37,6 +37,9 @@ public class PlayerJoinListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         String playerName = player.getName();
+
+
+
         UserProfile profile = profileManager.getProfile(playerName);
 
         Location playerLocation = player.getLocation();
@@ -75,7 +78,7 @@ public class PlayerJoinListener implements Listener {
             player.sendMessage("Welcome back! Your profile has been loaded.");
 
 
-            if (Objects.requireNonNull(player.getLocation().getWorld()).getName().equals("world_rpg")) {
+            if (Objects.requireNonNull(player.getLocation().getWorld()).getName().equals("world_rpg") || Objects.requireNonNull(player.getLocation().getWorld()).getName().equals("world_labyrinth")) {
                 playerStatBuff.updatePlayerStatsToRPG(player);
 
             }
@@ -124,7 +127,7 @@ public class PlayerJoinListener implements Listener {
         // Check which world the player is respawning in
         assert world != null;
         String worldName = world.getName();
-        if (worldName.equals("world_rpg")) {
+        if (worldName.equals("world_rpg") || worldName.equals("world_labyrinth")) {
             playerStatBuff.updatePlayerStatsToRPG(player);
         }
     }

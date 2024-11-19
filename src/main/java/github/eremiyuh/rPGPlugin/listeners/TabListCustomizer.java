@@ -50,32 +50,33 @@ public class TabListCustomizer {
         onlinePlayers.sort((player1, player2) -> player1.getName().compareToIgnoreCase(player2.getName()));
 
         // Set header and footer dynamically (set once for all players)
-        TextComponent header = Component.newline().append(Component.text("                           SEIZON SMP                           ")
-                .color(TextColor.fromCSSHexString("#3cb371")).append(Component.newline())).append(Component.text("Online Players: " + onlinePlayersCount).color(TextColor.fromCSSHexString("#00ff55")))
+        TextComponent header = Component.newline().append(Component.text("                                   §lSEIZON SMP                           ")
+                        .color(TextColor.fromCSSHexString("#53ff1a")).append(Component.newline())).append(Component.newline()).append(Component.text("Online Players: " + onlinePlayersCount).color(TextColor.fromCSSHexString("#00ff55")))
                 .append(Component.newline());
         TextComponent footer =
                 Component.newline().append(Component.newline())
                         .append(Component.text(String.format("Memory Usage: %d MB / %d MB", usedMemory, maxMemory))
                                 .color(memoryColor)).append(Component.newline()).append(Component.newline())
-                        .append(Component.text("                           ENJOY YOUR STAY                           ")
-                .color(TextColor.fromCSSHexString("#3cb371"))).append(Component.newline());
+                        .append(Component.text("                                §oENJOY YOUR STAY                           ")
+                                .color(TextColor.fromCSSHexString("#53ff1a"))).append(Component.newline());
 
         // Set the header and footer for all players once
         for (Player player : onlinePlayers) {
             player.sendPlayerListHeaderAndFooter(header, footer);
         }
 
-        // Update player list names
+
         for (Player player : onlinePlayers) {
             TextComponent rank = Component.text(getPlayerRank(player));  // Get the player's rank
             TextComponent health = Component.text("HP: " + (int) player.getHealth());  // Get player's health as a string
             TextComponent world = Component.text(player.getWorld().toString());
 
-            // Format the player's list name
+
+
             Component formattedName = formatPlayerName(player, rank, health, world);
 
-            // Correct method to set the player list name
-            player.playerListName(formattedName);  // Use setPlayerListName instead of playerListName
+
+            player.playerListName(formattedName);
         }
     }
 
