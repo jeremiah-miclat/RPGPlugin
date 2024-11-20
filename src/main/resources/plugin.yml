@@ -140,9 +140,9 @@ commands:
     description: convert currency
     usage: /convertcurrency <ore> <amount>
     notes: "Converts some ores/ingot currency which can be seen on checkstatus gui to a real material"
-  switchworld:
+  warp:
     description: lets you go to abyss world
-    usage: /switchworld abyss|normal
+    usage: /warp a|ad|o
     notes: "For new players, it is recommended to have full netherite set with protection IV enchants before raiding the abyss.
     Fighting in abyss will cost the stamina and durability which can be seen through /checkstatus
     "
@@ -269,9 +269,9 @@ commands:
   login:
     description: "Login using your password"
     usage: /login <password>
-  toggleBossIndicator:
-    description: Toggles the boss health indicator on or off when you damage bosses.
-    usage: /toggleBossIndicator
+  sdw:
+    description: Toggles the warning for stamina and durability.
+    usage: /sdw
   rest:
     description: Simulate resting or sleep so won't be visited by phantoms.
     usage: /rest
@@ -318,4 +318,4 @@ commands:
   abyssstore:
     description: Opens abyss store.
     usage: /abyssstore
-    notes: "Gain abyss points by going to abyss world - /switchworld abyss"
+    notes: "Gain abyss points by going to abyss world - /warp abyss"

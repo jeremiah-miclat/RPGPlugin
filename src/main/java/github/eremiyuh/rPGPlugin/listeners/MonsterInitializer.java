@@ -166,7 +166,7 @@ public class MonsterInitializer implements Listener {
     // Method to calculate extra attributes (used for both extra health and damage)
     private double calculateExtraAttributes(Location targetLocation, LivingEntity entity) {
         double maxCoord = Math.max(Math.abs(targetLocation.getBlockX()), Math.abs(targetLocation.getBlockZ()));
-        double extraHealth = (maxCoord / 100) * 10; // 10 health for every 100 blocks
+        double extraHealth = (maxCoord / 100) * 100; // 10 health for every 100 blocks
         int lvl = (int) (Math.floor(maxCoord) / 100);
         String normalName = ChatColor.GREEN + "Lvl " + lvl + " " + entity.getType().name();
         entity.setCustomName(normalName);

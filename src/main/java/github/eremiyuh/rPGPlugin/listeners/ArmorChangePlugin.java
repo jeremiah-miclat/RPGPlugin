@@ -40,14 +40,14 @@ public class ArmorChangePlugin  implements Listener {
             profile.setAscending(false);
 
         String worldName = Objects.requireNonNull(player.getLocation().getWorld()).getName();
-        if (worldName.equals("world_rpg") || worldName.equals("world_labyrinth")) {
+        if (worldName.equals("world_rpg") || worldName.contains("world_labyrinth")) {
 
 
                 playerStatBuff.updatePlayerStatsToRPG(player);
 
 
 
-        } if (worldName.equals("world") || worldName.equals("world_labyrinth")) {
+        } if (worldName.equals("world")) {
 
                 playerStatBuff.updatePlayerStatsToNormal(player);
 
@@ -62,7 +62,7 @@ public class ArmorChangePlugin  implements Listener {
         new BukkitRunnable() {
             @Override
             public void run() {
-                if (worldName.equals("world_rpg") || worldName.equals("world_labyrinth")) {
+                if (worldName.equals("world_rpg") || worldName.contains("world_labyrinth")) {
                     playerStatBuff.updatePlayerStatsToRPG(player);
                 } else {
                     playerStatBuff.updatePlayerStatsToNormal(player);

@@ -47,7 +47,7 @@ public class SpawnCommand implements CommandExecutor {
         // Teleport the player to the spawn location of "world"
         userProfile.setEnderPearl(userProfile.getEnderPearl()-1);
         player.teleport(spawnLocation);
-        player.sendMessage("You have been teleported to the spawn location of the main world.");
+        player.sendMessage("You teleported to overworld spawn area.");
 
         return true;
     }

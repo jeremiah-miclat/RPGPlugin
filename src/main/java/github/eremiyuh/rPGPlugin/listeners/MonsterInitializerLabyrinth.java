@@ -55,6 +55,14 @@ public class MonsterInitializerLabyrinth implements Listener {
             }
         }
 
+        if (event.getEntity() instanceof PigZombie zombifiedPiglin) {
+
+            if (!zombifiedPiglin.isAdult()) {
+
+                event.setCancelled(true);
+            }
+        }
+
         // Get the number of online players
         int onlinePlayerCount = Bukkit.getOnlinePlayers().size();
 
@@ -62,7 +70,7 @@ public class MonsterInitializerLabyrinth implements Listener {
         int currentMobCount = countMobsInWorld(event.getLocation().getWorld());
 
         // Check mob spawn limit based on online players
-        int mobLimit = Math.min(onlinePlayerCount * 6, 60);
+        int mobLimit = Math.min(onlinePlayerCount * 20, 60);
         if (currentMobCount >= mobLimit) {
             event.getEntity().setAI(false);
             event.setCancelled(true);
@@ -106,7 +114,7 @@ public class MonsterInitializerLabyrinth implements Listener {
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (player.getWorld().equals(location.getWorld())) {
                 int playerY = player.getLocation().getBlockY();
-                if (Math.abs(entityY - playerY) <= 1) {
+                if (Math.abs(entityY - playerY) <= 2) {
                     return true;
                 }
             }
@@ -144,7 +152,7 @@ public class MonsterInitializerLabyrinth implements Listener {
 
         // Set the updated custom name with the new health indicator
         entity.setCustomName(customName + healthIndicator);
-//        entity.setCustomNameVisible(true);
+        entity.setCustomNameVisible(true);
     }
 
     private double getTotalHealth(LivingEntity entity) {
@@ -163,9 +171,9 @@ public class MonsterInitializerLabyrinth implements Listener {
     // Method to calculate extra attributes (used for both extra health and damage)
     private double calculateExtraAttributes(Location targetLocation, LivingEntity entity) {
         int maxY = 251; // Starting height
-        int minY = -63; // Minimum height
+        int minY = 3; // Minimum height
         double baseHealth = 0; // Base health at max height
-        double healthIncrement = 100; // Increment per layer
+        double healthIncrement = 200; // Increment per layer
 
         // Ensure the y-coordinate is within the range
         int yCoord = Math.min(maxY, Math.max(minY, targetLocation.getBlockY()));
@@ -206,7 +214,7 @@ public class MonsterInitializerLabyrinth implements Listener {
 
     private void setBossAttributes(LivingEntity entity, double maxCoord, String type, ChatColor color) {
         String bossName = color + "Lvl " + (int) (Math.floor(maxCoord) / 100) + " " + type + " " + entity.getType().name();
-        entity.setCustomName(bossName);
+        entity.setMetadata("customName", new FixedMetadataValue(plugin, bossName));
 //        entity.setCustomNameVisible(true);
         entity.setRemoveWhenFarAway(false);
 //        entity.setPersistent(true);

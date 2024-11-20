@@ -72,7 +72,7 @@ public class PlayerStatBuff {
             equipVitality*=1.1;
         }
 
-        return baseHealth + healthPerVitality * (classVitality + equipVitality);
+        return baseHealth + (healthPerVitality * (classVitality + equipVitality));
     }
 
     /**

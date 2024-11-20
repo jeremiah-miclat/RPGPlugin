@@ -33,6 +33,12 @@ public class FlyCommand implements CommandExecutor {
         }
 
         Player player = (Player) sender;
+
+        if (player.getWorld().getName().contains("labyrinth")) {
+            player.sendMessage("Not allowed here");
+            return true;
+        }
+
         UserProfile profile = profileManager.getProfile(player.getName());
         String world = Objects.requireNonNull(player.getLocation().getWorld()).getName();
         // Check if player is allowed to fly

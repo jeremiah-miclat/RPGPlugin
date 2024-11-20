@@ -73,13 +73,11 @@ public class DeadMobListener implements Listener {
         double RANDOMCHANCE = .05;
         if (event.getEntity() instanceof Monster mob && mob.hasMetadata("extraDamage")  && event.getEntity().getKiller() instanceof Player killer) {
 
-
                 UserProfile killerProfile = profileManager.getProfile(killer.getName());
                 String killerTeam = killerProfile.getTeam();
-
                 double health = mob.getMetadata("extraDamage").get(0).asDouble();
                 RANDOMCHANCE += (health * 0.00045);
-                int dropMultiplier = (int) (1+(health * 0.01));
+                int dropMultiplier = (int) (1+(health * .001));
 
                 String customName = mob.getCustomName();
                 boolean isBoss = isBoss(mob);
@@ -104,7 +102,7 @@ public class DeadMobListener implements Listener {
                         if (player.getName().equals(killer.getName())) {
                             applyRewards(player, playerProfile, health, 1, dropMultiplier);
                         } else {
-                            applyRewards(player, playerProfile, health, RANDOMCHANCE, dropMultiplier);
+                            applyRewards(player, playerProfile, health, (double) bosslvl /40, dropMultiplier);
                         }
                         distributeDrops(player, event, dropMultiplier);
                         if (dropItem != null) {

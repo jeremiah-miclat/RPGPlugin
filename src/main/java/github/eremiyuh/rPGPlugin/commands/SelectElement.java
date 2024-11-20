@@ -39,12 +39,12 @@ public class SelectElement implements CommandExecutor {
         }
 
 
-        if (profile.getLapiz()<10 && !profile.getSelectedElement().equalsIgnoreCase("none")) {
-            player.sendMessage("Need 10 lapis to reselect element");
+        if (profile.getLapiz()<100 && !profile.getSelectedElement().equalsIgnoreCase("none")) {
+            player.sendMessage("Need 100 lapis to reselect element");
             return true;
         }
 
-        if (!profile.getSelectedElement().equalsIgnoreCase("none")) profile.setLapiz(profile.getLapiz()-10);
+        if (!profile.getSelectedElement().equalsIgnoreCase("none")) profile.setLapiz(profile.getLapiz()-100);
 
         // Validate the chosen element and set it
         switch (element) {

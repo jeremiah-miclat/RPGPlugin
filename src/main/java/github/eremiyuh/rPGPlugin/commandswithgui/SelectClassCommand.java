@@ -25,7 +25,7 @@ public class SelectClassCommand implements CommandExecutor, Listener {
     private final RPGPlugin plugin;
     private final PlayerProfileManager profileManager;
     private final PlayerStatBuff playerStatBuff;
-    private final int CLASS_CHANGE_COST = 10; // Cost in diamonds for changing class
+    private final int CLASS_CHANGE_COST = 100; // Cost in diamonds for changing class
 
     public SelectClassCommand(RPGPlugin plugin, PlayerProfileManager profileManager) {
         this.plugin = plugin;
@@ -101,7 +101,7 @@ public class SelectClassCommand implements CommandExecutor, Listener {
 
 
                 // Check if the player has enough diamonds to change class
-                if (profile.getDiamond() >= 10 || profile.getChosenClass().equalsIgnoreCase("default")) {
+                if (profile.getDiamond() >= 100 || profile.getChosenClass().equalsIgnoreCase("default")) {
                     // Deduct diamonds from player
                     if (!profile.getChosenClass().equalsIgnoreCase("default")) profile.setDiamond(profile.getDiamond()-10);
 

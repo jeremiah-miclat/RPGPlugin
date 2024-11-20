@@ -37,35 +37,35 @@ public class WorldSwitchCommand implements CommandExecutor {
         String targetWorldName;
 
         switch (worldType) {
-            case "abyss":
+            case "a":
                 targetWorldName = "world_rpg";
                 break;
-            case "normal":
+            case "o":
                 targetWorldName = "world";
                 break;
-            case "l":
-                targetWorldName = "world_labyrinth";
-                break;
-            case "e":
-                targetWorldName = "world_the_end";
-                break;
-            case "l2":
+//            case "l":
+//                targetWorldName = "world_labyrinth";
+//                break;
+//            case "e":
+//                targetWorldName = "world_the_end";
+//                break;
+            case "ad":
                 targetWorldName = "world_labyrinth2";
                 break;
             default:
-                player.sendMessage("Invalid world specified. Use 'abyss' or 'normal'.");
+                player.sendMessage("/warp a or ad or o | a for abyss | ad for abyss dungeon | o for Overworld");
                 return false;
         }
 
         if (player.getWorld().getName().equals(targetWorldName)) {
-            player.sendMessage("You are already in " + worldType + " world.");
+            player.sendMessage("You are already in the world.");
             return true;
         }
 
         World world = plugin.getServer().getWorld(targetWorldName);
         if (world == null) {
 
-            player.sendMessage("Failed to load the world " + worldType + ".");
+            player.sendMessage("Failed to load the world ");
             return true;
 
 //            world = plugin.getServer().createWorld(new WorldCreator(targetWorldName));
@@ -77,7 +77,7 @@ public class WorldSwitchCommand implements CommandExecutor {
 
         playerStatBuff.updatePlayerStatsToNormal(player);
 
-        if (targetWorldName.contains("rpg")) {
+        if (targetWorldName.contains("rpg") ||targetWorldName.contains("labyrinth")) {
             playerStatBuff.updatePlayerStatsToRPG(player);
         }
 

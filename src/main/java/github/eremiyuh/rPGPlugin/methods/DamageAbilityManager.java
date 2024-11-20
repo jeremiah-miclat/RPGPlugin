@@ -35,7 +35,7 @@ public class DamageAbilityManager {
 
         abilityActions.put(
                 profile -> abilityPerms.canSummonWeaknessArrowBarrage(profile),
-                (profile, location, target, damage) -> playerAbility.summonWeaknessArrowBarrage(profile, location, target, damage)
+                (profile, location, target, damage) -> playerAbility.summonNauseaArrowBarrage(profile, location, target, damage)
         );
 
     }

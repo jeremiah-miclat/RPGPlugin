@@ -28,7 +28,7 @@ public class PlayerAbilityPerms {
         return (profile.getChosenClass().equalsIgnoreCase("Alchemist") ||
                 profile.getChosenClass().equalsIgnoreCase("Archer") ||
                 profile.getChosenClass().equalsIgnoreCase("Swordsman"))
-                && profile.getSelectedElement().equalsIgnoreCase("Earth")
+                && profile.getSelectedElement().equalsIgnoreCase("Water")
                 && profile.getSelectedSkill().equalsIgnoreCase("Skill 1");
     }
 
@@ -38,7 +38,7 @@ public class PlayerAbilityPerms {
         return (profile.getChosenClass().equalsIgnoreCase("Alchemist") ||
                 profile.getChosenClass().equalsIgnoreCase("Archer") ||
                 profile.getChosenClass().equalsIgnoreCase("Swordsman"))
-                && profile.getSelectedElement().equalsIgnoreCase("Water")
+                && profile.getSelectedElement().equalsIgnoreCase("Earth")
                 && profile.getSelectedSkill().equalsIgnoreCase("Skill 1");
     }
 

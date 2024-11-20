@@ -489,14 +489,16 @@ public class DamageListener implements Listener {
         if (event.getEntity() instanceof Player player) {
             UserProfile profile = profileManager.getProfile(player.getName());
                 if (profile.getDurability()<=0) {
-                    player.sendMessage("Durability depleted. You will take extra damage");
+                    if (profile.isBossIndicator()) {
+                        player.sendMessage("Durability depleted. You will take extra damage. /sdw to turn off this warnings");
+                    }
                     profile.setDurability(0);
                     event.setDamage(event.getDamage()*1.5);
                 } else {
                     profile.setDurability(profile.getDurability()-1);
                 }
             if (profile.getStamina()==0) {
-                player.sendMessage("Stamina depleted. You will deal less damage");
+                if (profile.isBossIndicator()) player.sendMessage("Stamina depleted. You will deal less damage. /sdw to turn off this warnings");
                 profile.setStamina(0);
             } else {
                 profile.setStamina(profile.getStamina()-1);
@@ -517,21 +519,6 @@ public class DamageListener implements Listener {
 
                 if (extraHealth - damage > 0) {
                             entity.setMetadata("initialExtraHealth", new FixedMetadataValue(plugin, extraHealth - damage));
-                            if (event.getDamageSource().getCausingEntity() instanceof Player player && (entity.hasMetadata("boss") || entity.hasMetadata("worldboss"))) {
-                                UserProfile playerProfile = profileManager.getProfile(player.getName());
-                                if (playerProfile.isBossIndicator()) {
-                                    // Inside your code
-                                    if (extraHealth + ((Creature) event.getEntity()).getHealth() > -1) {
-                                        double healthRemaining = (extraHealth + ((Creature) event.getEntity()).getHealth()) - damage;
-
-                                        String message = ChatColor.RED + event.getEntity().getCustomName() +
-                                                ChatColor.RESET + ChatColor.GRAY + " health remaining: " +
-                                                ChatColor.GREEN + (int) healthRemaining;
-
-                                        player.sendMessage(message);
-                                    }
-                                }
-                            }
 
 
                     event.setDamage(0);
@@ -540,12 +527,11 @@ public class DamageListener implements Listener {
                 else {
                     // Calculate excess damage
                     double excessDamage = damage - extraHealth;
-                    entity.setHealth(Math.max(0, entity.getHealth() - excessDamage)); // Ensure health doesn't drop below 0
 
                     // Clear the extra health metadata as it has been depleted
                     entity.setMetadata("initialExtraHealth", new FixedMetadataValue(plugin, 0.0)); // Reset extra health to 0
 
-                    event.setDamage(excessDamage);
+                    event.setDamage(Math.max(entity.getHealth(),excessDamage));
 
                 }
 
@@ -919,10 +905,10 @@ public class DamageListener implements Listener {
             if (damagerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
                 if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 1")) {
                     elementalDamage += 6;
-                    elementalDamage += (intel*.4);
+                    elementalDamage += (intel*.6);
 
                 } else {
-                    elementalDamage += 4 + (intel*.2);
+                    elementalDamage += 4 + (intel*.4);
                 }
             }else if (damagerProfile.getChosenClass().equalsIgnoreCase("swordsman")) {
                 elementalDamage+=(2+ (intel * 0.05));
@@ -982,15 +968,16 @@ public class DamageListener implements Listener {
 
         if (damagerProfile.getDurability() ==0 && !damagerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
             calculatedDamage /= 2;
-            player.sendMessage("Durability depleted. You will deal less damage");
+            if (damagerProfile.isBossIndicator()) player.sendMessage("Durability depleted. You will deal less damage. /sdw to turn off this warnings");
         } else {
             damagerProfile.setDurability(damagerProfile.getDurability() - 1);
         }
 
         if (damagerProfile.getStamina() <= 0) {
-            player.sendMessage("");
             damagerProfile.setStamina(0);
-            player.sendMessage("Stamina depleted. You will deal less damage");
+            if (damagerProfile.isBossIndicator()) {
+                player.sendMessage("Stamina depleted. You will deal less damage. /sdw to turn off this warnings");
+            }
             calculatedDamage /= 2;
         } else {
             damagerProfile.setStamina(damagerProfile.getStamina() - 1);

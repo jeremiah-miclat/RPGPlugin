@@ -39,7 +39,6 @@ public class PlayerJoinListener implements Listener {
         String playerName = player.getName();
 
 
-
         UserProfile profile = profileManager.getProfile(playerName);
 
         Location playerLocation = player.getLocation();
@@ -53,7 +52,8 @@ public class PlayerJoinListener implements Listener {
 
         playerStatBuff.updatePlayerStatsToNormal(player);
 
-        if (Objects.requireNonNull(player.getLocation().getWorld()).getName().equals("world_rpg")) {
+        if (Objects.requireNonNull(player.getLocation().getWorld()).getName().equals("world_rpg") ||
+                player.getLocation().getWorld().getName().contains("labyrinth") ) {
             playerStatBuff.updatePlayerStatsToRPG(player);
         }
 

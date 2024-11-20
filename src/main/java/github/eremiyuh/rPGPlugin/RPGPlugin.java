@@ -39,6 +39,7 @@ public class RPGPlugin extends JavaPlugin {
     private boolean serverLoaded = false;
     private VaultManager vaultManager;
 
+
     @Override
     public void onEnable() {
 
@@ -156,7 +157,7 @@ public class RPGPlugin extends JavaPlugin {
     }
 
 
-    private void loadWorld(String worldName, int sx, int sy, int sz, int bcx, int bcz, int bs, long time, GameRule<Boolean> rule, boolean grValue, World.Environment env, Biome biome) {
+    private void loadWorld(String worldName, int sx, int sy, int sz, int syaw,  int spitch ,int bcx, int bcz, int bs, long time, GameRule<Boolean> rule, boolean grValue, World.Environment env, Biome biome) {
         // Check if the world is already loaded
         World world = getServer().getWorld(worldName);
         if (world == null) {
@@ -183,7 +184,12 @@ public class RPGPlugin extends JavaPlugin {
         }
 
         if (sx != -1) {
-            world.setSpawnLocation(sx, sy, sz);
+            Location spawnLocation = new Location(
+                    Bukkit.getWorld(worldName), // Specify the world
+                    sx, sy, sz,             // Coordinates
+                    syaw, spitch                     // Yaw (90° East), Pitch (0° level)
+            );
+            world.setSpawnLocation(spawnLocation);
         }
 
         if (bcx != -1) {
@@ -290,7 +296,7 @@ public class RPGPlugin extends JavaPlugin {
         Objects.requireNonNull(getCommand("buyclaim")).setExecutor(new BuyClaim(profileManager));
         Objects.requireNonNull(getCommand("convertmaterial")).setExecutor(new ConvertToEDiamond(profileManager));
         Objects.requireNonNull(getCommand("convertcurrency")).setExecutor(new CurrencyConverter(profileManager));
-        Objects.requireNonNull(getCommand("switchworld")).setExecutor(new WorldSwitchCommand(this,playerStatBuff));
+        Objects.requireNonNull(getCommand("warp")).setExecutor(new WorldSwitchCommand(this,playerStatBuff));
         Objects.requireNonNull(getCommand("giveap")).setExecutor(new AttributePointsCommand(profileManager));
         Objects.requireNonNull(getCommand("giveabysspoints")).setExecutor(new GiveAbyssPoints(profileManager));
         Objects.requireNonNull(getCommand("fly")).setExecutor(new FlyCommand(profileManager, this));
@@ -310,7 +316,7 @@ public class RPGPlugin extends JavaPlugin {
         Objects.requireNonNull(getCommand("tphb")).setExecutor(new TeleportToHighestBlock(profileManager));
         Objects.requireNonNull(getCommand("tpt")).setExecutor(new TptCommand(this,teleportRequests,profileManager));
         Objects.requireNonNull(getCommand("tpa")).setExecutor(new TpaCommand(this,teleportRequests,profileManager));
-        Objects.requireNonNull(this.getCommand("toggleBossIndicator")).setExecutor(new ToggleBossIndicatorCommand(profileManager));
+        Objects.requireNonNull(this.getCommand("sdw")).setExecutor(new ToggleBossIndicatorCommand(profileManager));
         Objects.requireNonNull(this.getCommand("villagerSetProf")).setExecutor(new VillagerSetProfessionCommand(this));
         Objects.requireNonNull(this.getCommand("changepassword")).setExecutor(new ChangePassCommand(profileManager));
         TradeCommand tradeCommand = new TradeCommand(activeTrades,this);
@@ -334,9 +340,9 @@ public class RPGPlugin extends JavaPlugin {
 
 
         worldConfig();
-        loadWorld("world_rpg",-15,72,-35,-1,-1,-1,18000,GameRule.DO_DAYLIGHT_CYCLE,false, World.Environment.NORMAL, Biome.PLAINS);
-        loadWorld("world_labyrinth",-23,312,-35,0,0,100,18000,null,false, World.Environment.NORMAL,Biome.NETHER_WASTES);
-        loadWorld("world_labyrinth2",-19,251,-36,0,0,100,18000,null,false, World.Environment.NETHER,Biome.NETHER_WASTES);
+        loadWorld("world_rpg",-15,72,-35, 270,0,-1,-1,-1,18000,GameRule.DO_DAYLIGHT_CYCLE,false, World.Environment.NORMAL, Biome.PLAINS);
+        loadWorld("world_labyrinth",-23,312,-35, 270,0,0,0,100,18000,null,false, World.Environment.NORMAL,Biome.NETHER_WASTES);
+        loadWorld("world_labyrinth2",-19,251,-36,270,0,0,0,100,18000,null,false, World.Environment.NETHER,Biome.NETHER_WASTES);
         new TabListCustomizer(this, profileManager);
 
     }

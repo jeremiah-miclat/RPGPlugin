@@ -18,8 +18,8 @@ public class ChunkCommand implements CommandExecutor {
     private final ChunkBorderBlueVisualizer chunkBorderBlueVisualizer;
     private final ChunkBorderRedVisualizer chunkBorderRedVisualizer;
 
-    private final int xx1 = -150, zz1 = 150;
-    private final int xx2 = 90, zz2 = -110;
+    private final int xx1 = 292, zz1 = -293;
+    private final int xx2 = -338, zz2 = 330;
 
     public ChunkCommand(ChunkManager chunkManager, PlayerProfileManager profileManager, ChunkBorderBlueVisualizer chunkBorderBlueVisualizer, ChunkBorderRedVisualizer chunkBorderRedVisualizer) {
         this.chunkManager = chunkManager;
@@ -93,6 +93,8 @@ public class ChunkCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (sender instanceof Player player) {
             if (player.getWorld().getName().equals("world_rpg")
+                    || player.getWorld().getName().contains("labyrinth")
+
 
             ) {
                 player.sendMessage("Can not claim chunks on this area");

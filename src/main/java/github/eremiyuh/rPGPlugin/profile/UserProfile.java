@@ -122,7 +122,7 @@ public class UserProfile {
         this.password="";
         this.loggedIn=isLoggedIn();
 
-        this.bossIndicator = false;
+        this.bossIndicator = true;
         this.isAscending=false;
 
     }

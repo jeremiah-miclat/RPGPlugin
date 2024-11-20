@@ -32,9 +32,9 @@ public class ToggleBossIndicatorCommand implements CommandExecutor {
 
         // Provide feedback to the player
         if (userProfile.isBossIndicator()) {
-            player.sendMessage("Boss health indicator enabled.");
+            player.sendMessage("Stamina and Durability depletion warning enabled.");
         } else {
-            player.sendMessage("Boss health indicator disabled.");
+            player.sendMessage("Stamina and Durability depletion warning disabled.");
         }
 
         return true;
