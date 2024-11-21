@@ -28,7 +28,7 @@ public class AbyssOreListener implements Listener {
         // Ensure the event is a right-click and item is not null
         if (item != null
                 && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)
-                && item.isSimilar(ItemUtils.getAbyssPotion())) {
+                && item.isSimilar(ItemUtils.getAbyssOre())) {
 
             event.setCancelled(true); // Prevent the default right-click action
 
