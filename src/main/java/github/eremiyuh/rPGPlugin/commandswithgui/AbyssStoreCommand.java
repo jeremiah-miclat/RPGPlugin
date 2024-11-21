@@ -23,6 +23,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
 
+import static github.eremiyuh.rPGPlugin.utils.ItemUtils.getAbyssPotion;
+
 public class AbyssStoreCommand implements CommandExecutor, Listener {
     private final RPGPlugin plugin;
     private final PlayerProfileManager profileManager;
@@ -54,10 +56,14 @@ public class AbyssStoreCommand implements CommandExecutor, Listener {
 
 
 
-        abyssStore.setItem(4, abyssIngot); // Place the Abyss Mana Stone in the center of the inventory
+        abyssStore.setItem(3, abyssIngot); // Place the Abyss Mana Stone in the center of the inventory
 
         // Open the Abyss Store GUI for the player
         player.openInventory(abyssStore);
+
+
+        ItemStack abyssPotion = getAbyssPotion();
+        abyssStore.setItem(5, abyssPotion);
     }
 
     @EventHandler
@@ -73,13 +79,25 @@ public class AbyssStoreCommand implements CommandExecutor, Listener {
                 return;
             }
 
-            // Check if the clicked item is the Abyss Mana Stone (slot 4)
-            if (event.getSlot() == 4 && event.getCurrentItem() != null && event.getCurrentItem().isSimilar(getAbyssIngot())) {
+            // Check if the clicked item is the Abyss Mana Stone (slot 3)
+            if (event.getSlot() == 3 && event.getCurrentItem() != null && event.getCurrentItem().isSimilar(getAbyssIngot())) {
                 // Check if the player has enough Abyss Points
                 if (userProfile.getAbyssPoints() >= 100000) {
                     userProfile.setAbyssPoints(userProfile.getAbyssPoints() - 100000); // Deduct Abyss Points
                     player.getInventory().addItem(ItemUtils.getAbyssIngot()); // Give the player the Abyss Mana Stone
                     player.sendMessage(Component.text("Successfully purchased Abyss Mana Stone!").color(TextColor.color(0, 255, 0)));
+                } else {
+                    player.sendMessage(Component.text("You do not have enough Abyss Points!").color(TextColor.color(255, 0, 0)));
+                }
+            }
+
+
+            if (event.getSlot() == 5 && event.getCurrentItem() != null && event.getCurrentItem().isSimilar(getAbyssPotion())) {
+                // Check if the player has enough Abyss Points
+                if (userProfile.getAbyssPoints() >= 1000) {
+                    userProfile.setAbyssPoints(userProfile.getAbyssPoints() - 1000); // Deduct Abyss Points
+                    player.getInventory().addItem(ItemUtils.getAbyssPotion()); // Give the player the Abyss Mana Stone
+                    player.sendMessage(Component.text("Successfully purchased Abyss Potion!").color(TextColor.color(0, 255, 0)));
                 } else {
                     player.sendMessage(Component.text("You do not have enough Abyss Points!").color(TextColor.color(255, 0, 0)));
                 }

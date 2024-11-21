@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.ItemStack;
 
 public class ResetItemListener implements Listener {
@@ -18,12 +19,12 @@ public class ResetItemListener implements Listener {
     }
 
     @EventHandler
-    public void onPlayerRightClick(PlayerInteractEvent event) {
+    public void onPlayerRightClick(PlayerItemConsumeEvent event) {
         Player player = event.getPlayer();
         ItemStack item = event.getItem();
 
         // Check if item matches the reset item
-        if (item != null && item.isSimilar(ItemUtils.getResetItem())) {
+        if (item.isSimilar(ItemUtils.getResetItem())) {
             // Assuming you have a method to get the player's UserProfile
             UserProfile profile = profileManager.getProfile(player.getName());
             int allocatedTotal = profile.getTotalAllocatedPoints();
@@ -40,8 +41,12 @@ public class ResetItemListener implements Listener {
             // Provide feedback to the player
             player.sendMessage("All class attributes have been reset, and points refunded.");
 
-            // Optionally remove the reset item
-            item.setAmount(item.getAmount() - 1);
+            int newAmount = item.getAmount() - 1;
+            if (newAmount > 0) {
+                item.setAmount(newAmount);
+            } else {
+                player.getInventory().remove(item);
+            }
             profileManager.saveProfile(player.getName());
             // Prevent further interactions
             event.setCancelled(true);

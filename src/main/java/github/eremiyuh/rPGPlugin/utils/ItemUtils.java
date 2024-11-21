@@ -54,6 +54,25 @@ public class ItemUtils {
         return abyssIngot;
     }
 
+    public static ItemStack getAbyssPotion() {
+        ItemStack resetItem = new ItemStack(Material.POTION); // Choose any material you prefer
+        ItemMeta meta = resetItem.getItemMeta();
+
+        if (meta != null) {
+            meta.displayName(Component.text("Abyss Heal Potion").color(TextColor.color(255,0,0)));
+            meta.lore(Arrays.asList(
+                    Component.text("Right-click to use"),
+                    Component.text("Health will be restored.")
+            ));
+
+            meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
+            meta.setEnchantmentGlintOverride(true);
+            resetItem.setItemMeta(meta);
+        }
+
+        return resetItem;
+    }
+
 
 
 
