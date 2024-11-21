@@ -41,11 +41,14 @@ public class ResetItemListener implements Listener {
             // Provide feedback to the player
             player.sendMessage("All class attributes have been reset, and points refunded.");
 
-            int newAmount = item.getAmount() - 1;
-            if (newAmount > 0) {
-                item.setAmount(newAmount);
-            } else {
-                player.getInventory().remove(item);
+            ItemStack itemInHand = player.getInventory().getItemInMainHand();
+            if (itemInHand.isSimilar(item)) {
+                int newAmount = itemInHand.getAmount() - 1;
+                if (newAmount > 0) {
+                    itemInHand.setAmount(newAmount);
+                } else {
+                    player.getInventory().setItemInMainHand(null);
+                }
             }
             profileManager.saveProfile(player.getName());
             // Prevent further interactions

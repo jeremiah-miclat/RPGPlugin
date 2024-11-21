@@ -29,7 +29,7 @@ public class AttributePointsCommand implements CommandExecutor {
         }
 
         if ( !sender.getName().equals("Eremiyuh") ) {
-            sender.sendMessage("Hire someone better.");
+            sender.sendMessage("No permission.");
             return true;
         }
 

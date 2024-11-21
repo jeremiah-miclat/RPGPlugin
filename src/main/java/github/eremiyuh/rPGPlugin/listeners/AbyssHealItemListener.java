@@ -21,22 +21,25 @@ public class AbyssHealItemListener implements Listener {
         Player player = event.getPlayer();
         ItemStack item = event.getItem();
 
-
+        // Check if the consumed item is the Abyss Potion
         if (item.isSimilar(ItemUtils.getAbyssPotion())) {
             event.setCancelled(true);
 
-
+            // Heal the player to full health
             player.setHealth(Objects.requireNonNull(player.getAttribute(Attribute.GENERIC_MAX_HEALTH)).getValue());
-
             player.sendMessage("§aYou have been healed to full health!");
 
-
-            int newAmount = item.getAmount() - 1;
-            if (newAmount > 0) {
-                item.setAmount(newAmount);
-            } else {
-                player.getInventory().remove(item);
+            // Reduce the stack size of the item in hand
+            ItemStack itemInHand = player.getInventory().getItemInMainHand();
+            if (itemInHand.isSimilar(item)) {
+                int newAmount = itemInHand.getAmount() - 1;
+                if (newAmount > 0) {
+                    itemInHand.setAmount(newAmount);
+                } else {
+                    player.getInventory().setItemInMainHand(null); // Remove the item entirely
+                }
             }
         }
     }
 }
+

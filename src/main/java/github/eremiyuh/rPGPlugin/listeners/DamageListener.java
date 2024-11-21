@@ -1142,7 +1142,7 @@ public class DamageListener implements Listener {
 
     private void resetHealthIndicator(LivingEntity entity, double damage) {
         // Retrieve the total health (current health + extra health)
-        double totalHealth = getTotalHealth(entity) - entity.getHealth();
+        double totalHealth = getTotalHealth(entity);
 
         int totalRemainingHealth = (int) Math.floor(totalHealth - damage);
 
