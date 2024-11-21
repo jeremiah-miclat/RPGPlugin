@@ -58,6 +58,7 @@ public class MonsterInitializer implements Listener {
 
         if (event.getEntity() instanceof Monster monster) {
             initializeExtraAttributes(monster);
+
         }
     }
 
@@ -66,7 +67,7 @@ public class MonsterInitializer implements Listener {
 
         // Loop through all entities in the world and count the mobs
         for (LivingEntity entity : world.getLivingEntities()) {
-            if (entity.hasMetadata("initialExtraHealth") && !entity.hasMetadata("boss") && !entity.hasMetadata("worldboss")) {
+            if (entity instanceof Monster && !entity.hasMetadata("boss") && !entity.hasMetadata("worldboss")) {
                 mobCount++;
             }
         }
@@ -92,7 +93,7 @@ public class MonsterInitializer implements Listener {
     // Method to initialize extra health and extra damage metadata
     private void initializeExtraAttributes(LivingEntity entity) {
         Location location = entity.getLocation();
-        double extraHealth = calculateExtraAttributes(location, entity);
+        calculateExtraAttributes(location, entity);
 
         // Set extra health as metadata
 //        double baseHealth = entity.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue();
@@ -100,22 +101,20 @@ public class MonsterInitializer implements Listener {
 //        entity.setHealth(entity.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
 
         // Store metadata for extra health and damage
-        entity.setMetadata("initialExtraHealth", new FixedMetadataValue(plugin, extraHealth));
-        entity.setMetadata("extraDamage", new FixedMetadataValue(plugin, extraHealth));
 
 
-
-        // Initialize the list of players who have attacked this entity
         List<String> attackerList = new ArrayList<>();
         entity.setMetadata("attackerList", new FixedMetadataValue(plugin, attackerList));
 
-        // Set health indicator without modifying other parts of the name
+
+
+
+
         setHealthIndicator(entity);
     }
 
     private void setHealthIndicator(LivingEntity entity) {
-        // Retrieve the total health (current health + extra health)
-        double totalHealth = getTotalHealth(entity);
+        double totalHealth = entity.getHealth();
 
         // Format the health indicator (e.g., [99] for health 99)
         String healthIndicator = ChatColor.YELLOW + " [" + (int) totalHealth + "]";
@@ -129,55 +128,37 @@ public class MonsterInitializer implements Listener {
         entity.setCustomNameVisible(true);
     }
 
-    private void resetHealthIndicator(LivingEntity entity, double damage) {
-        // Retrieve the total health (current health + extra health)
-        double totalHealth = getTotalHealth(entity);
-
-        int totalRemainingHealth = (int) (totalHealth-damage);
-
-        if (totalRemainingHealth< 0) {
-            totalRemainingHealth = 0;
-        }
-
-        // Format the health indicator (e.g., [99] for health 99)
-        String healthIndicator = ChatColor.YELLOW + " [" + totalRemainingHealth + "]";
-
-        // Get the existing custom name from metadata, or use the default entity type if no custom name is set
-        String customName = entity.hasMetadata("customName") ? entity.getMetadata("customName").get(0).asString() : entity.getType().name();
-
-        // Set the updated custom name with the new health indicator
-        entity.setCustomName(customName + healthIndicator);
-        entity.setCustomNameVisible(true);
-    }
-
-    private double getTotalHealth(LivingEntity entity) {
-        // Retrieve the extra health and current health from metadata
-        double extraHealth = entity.hasMetadata("initialExtraHealth")
-                ? entity.getMetadata("initialExtraHealth").get(0).asDouble()
-                : 0.0;
-
-        // Retrieve the current health of the entity
-        double currentHealth = entity.getHealth();
-
-        // Return total health (current health + extra health)
-        return currentHealth + extraHealth;
-    }
-
-    // Method to calculate extra attributes (used for both extra health and damage)
-    private double calculateExtraAttributes(Location targetLocation, LivingEntity entity) {
+    private void calculateExtraAttributes(Location targetLocation, LivingEntity entity) {
         double maxCoord = Math.max(Math.abs(targetLocation.getBlockX()), Math.abs(targetLocation.getBlockZ()));
-        double extraHealth = (maxCoord / 100) * 100; // 10 health for every 100 blocks
+
         int lvl = (int) (Math.floor(maxCoord) / 100);
         String normalName = ChatColor.GREEN + "Lvl " + lvl + " " + entity.getType().name();
         entity.setCustomName(normalName);
         entity.setCustomNameVisible(true);
+        entity.setMetadata("extraHealth", new FixedMetadataValue(plugin, maxCoord));
         entity.setMetadata("customName", new FixedMetadataValue(plugin, normalName));
+
+
+        double customMaxHealth = 100000.0;
+
+        Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_MAX_HEALTH)).setBaseValue(customMaxHealth);
+        double extraHealth = Math.max(Math.abs(entity.getLocation().getX()), Math.abs(entity.getLocation().getZ()));
+
+
+        double customDamage = Math.min(extraHealth/10, customMaxHealth);
+
+
 
         if (Math.random() < .005) { //.005
             extraHealth = (extraHealth * 10); // Add 1000% health
             setBossAttributes(entity, maxCoord, "Boss", ChatColor.RED);
             entity.setMetadata("boss", new FixedMetadataValue(plugin, true));
             entity.setMetadata("lvl", new FixedMetadataValue(plugin, lvl));
+
+
+            entity.setHealth(Math.min(extraHealth, customMaxHealth));
+            Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(customDamage*3);
+            return;
         }
 
         if (Math.random() < .0005) { //.0005
@@ -185,9 +166,15 @@ public class MonsterInitializer implements Listener {
             setBossAttributes(entity, maxCoord, "World Boss", ChatColor.DARK_PURPLE);
             entity.setMetadata("worldboss", new FixedMetadataValue(plugin, true));
             entity.setMetadata("lvl", new FixedMetadataValue(plugin, lvl));
+
+            entity.setHealth(Math.min(extraHealth, customMaxHealth));
+            Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(customDamage*10);
+            return;
         }
 
-        return extraHealth; // Use as basis for both health and extra damage
+        entity.setHealth(Math.min(extraHealth, customMaxHealth));
+        Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(customDamage);
+
     }
 
     private void setBossAttributes(LivingEntity entity, double maxCoord, String type, ChatColor color) {

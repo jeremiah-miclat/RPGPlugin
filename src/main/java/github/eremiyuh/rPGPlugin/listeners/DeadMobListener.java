@@ -6,6 +6,7 @@ import github.eremiyuh.rPGPlugin.profile.UserProfile;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.*;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
@@ -71,11 +72,11 @@ public class DeadMobListener implements Listener {
         }
 
         double RANDOMCHANCE = .05;
-        if (event.getEntity() instanceof Monster mob && mob.hasMetadata("extraDamage")  && event.getEntity().getKiller() instanceof Player killer) {
+        if (event.getEntity() instanceof Monster mob && event.getEntity().getKiller() instanceof Player killer) {
 
                 UserProfile killerProfile = profileManager.getProfile(killer.getName());
                 String killerTeam = killerProfile.getTeam();
-                double health = mob.getMetadata("extraDamage").get(0).asDouble();
+                double health = mob.hasMetadata("extraHealth") ? mob.getMetadata("extraHealth").get(0).asDouble() : 0.0;
                 RANDOMCHANCE += (health * 0.00045);
                 int dropMultiplier = (int) (1+(health * .001));
 

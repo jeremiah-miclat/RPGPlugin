@@ -3,6 +3,7 @@ package github.eremiyuh.rPGPlugin.listeners;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Monster;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.entity.EntityPotionEffectEvent;
 import org.bukkit.event.entity.PotionSplashEvent;
 import github.eremiyuh.rPGPlugin.manager.PlayerProfileManager;
 import github.eremiyuh.rPGPlugin.profile.UserProfile;
@@ -160,12 +161,21 @@ public class AlchemistThrowPotion implements Listener {
                     }
                     // Apply the effect to targets
                     for (LivingEntity target : event.getAffectedEntities()) {
-                        if (!(target instanceof Monster) && isPositiveEffect) {
+                        if (!(target instanceof Player player)) continue;
+                        UserProfile playerProfile = profileManager.getProfile(player.getName());
+                        if (isPositiveEffect && player.getName().equals(thrower.getName())) {
                             // Adjust intensity and duration and apply the effect to the target
                             int finalIntensity = baseIntensity * (1 + intensity); // Adjusted intensity
                             int finalDuration = baseDuration * (1 + duration);    // Adjusted duration
                             target.addPotionEffect(new PotionEffect(effect.getType(), finalDuration, finalIntensity, true, true));
                         }
+
+                        if (isPositiveEffect && playerProfile != null && !playerProfile.getTeam().equals("none") && playerProfile.getTeam().equalsIgnoreCase(thrower.getName())) {
+                            int finalIntensity = baseIntensity * (1 + intensity); // Adjusted intensity
+                            int finalDuration = baseDuration * (1 + duration);    // Adjusted duration
+                            target.addPotionEffect(new PotionEffect(effect.getType(), finalDuration, finalIntensity, true, true));
+                        }
+
                     }
                 }
 
@@ -175,4 +185,5 @@ public class AlchemistThrowPotion implements Listener {
         }
 
     }
+
 }

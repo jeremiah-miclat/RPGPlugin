@@ -362,106 +362,21 @@ public class DamageListener implements Listener {
 
             }
 
-            // monster attacks player
-            if (damager instanceof LivingEntity angryMob && !(damager instanceof Player) && damaged instanceof Player damagedPLayer) {
-
-                if (angryMob.hasMetadata("extraDamage")) {
-                    UserProfile damagedProfile = profileManager.getProfile(damagedPLayer.getName());
-                    // Loop through all armor slots (helmet, chestplate, leggings, boots)
-
-
-                    double extraDamage = angryMob.getMetadata("extraDamage").getFirst().asDouble();
-                    double rawDmg = event.getDamage();
-                    double finalDmg = event.getFinalDamage();
-//                    double dmgReductionMultiplier = Math.max(0.2, finalDmg / rawDmg);
-                    double dmgReductionMultiplier = finalDmg / rawDmg;
-                    if (PlayerBuffPerms.canReduceDmg(damagedProfile)) {
-
-                        event.setDamage(((event.getDamage() + extraDamage)*dmgReductionMultiplier)/4);
-
-                    }
-                    else if (damagedProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
-                        event.setDamage(((event.getDamage() + extraDamage)*dmgReductionMultiplier)*1.2);
-
-                    }
-                    else {
-                        if (damagedProfile.getChosenClass().equalsIgnoreCase("swordsman")) {
-                            event.setDamage(((event.getDamage() + extraDamage)*dmgReductionMultiplier)/1.25);
-                        } else {
-                            event.setDamage(((event.getDamage() + extraDamage)*dmgReductionMultiplier));
-
-                        }
-                    }
-
-
+            if (event.getDamager() instanceof Projectile projectile) {
+                // Check for custom damage metadata
+                if (projectile.getShooter() instanceof Monster mob && mob.hasMetadata("extraHealth")) {
+                    double customDamage = mob.getMetadata("extraHealth").get(0).asDouble();
+                    event.setDamage(event.getFinalDamage()+(customDamage/10));
                 }
             }
 
-            if (damager instanceof Projectile projectile && projectile.getShooter() instanceof Monster angryMob && !(damager instanceof Player) && damaged instanceof Player damagedPLayer) {
-
-
-                if (angryMob.hasMetadata("extraDamage")) {
-                    UserProfile damagedProfile = profileManager.getProfile(damagedPLayer.getName());
-                    double extraDamage = angryMob.getMetadata("extraDamage").getFirst().asDouble();
-                    double rawDmg = event.getDamage();
-                    double finalDmg = event.getFinalDamage();
-//                    double dmgReductionMultiplier = Math.max(0.2, finalDmg / rawDmg);
-                    double dmgReductionMultiplier = finalDmg / rawDmg;
-                    if (PlayerBuffPerms.canReduceDmg(damagedProfile)) {
-
-                        event.setDamage(((event.getDamage() + extraDamage)*dmgReductionMultiplier)/4);
-
-                    }
-                    else if (damagedProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
-                        event.setDamage(((event.getDamage() + extraDamage)*dmgReductionMultiplier)*1.2);
-
-                    }
-                    else {
-                        if (damagedProfile.getChosenClass().equalsIgnoreCase("swordsman")) {
-                            event.setDamage(((event.getDamage() + extraDamage)*dmgReductionMultiplier)/1.25);
-                        } else {
-                            event.setDamage(((event.getDamage() + extraDamage)*dmgReductionMultiplier));
-
-                        }
-                    }
-
-
+            if (event.getDamager() instanceof ThrownPotion projectile) {
+                // Check for custom damage metadata
+                if (projectile.getShooter() instanceof Monster mob && mob.hasMetadata("extraHealth")) {
+                    double customDamage = mob.getMetadata("extraHealth").get(0).asDouble();
+                    event.setDamage(event.getFinalDamage()+(customDamage/10));
                 }
             }
-
-            if (damager instanceof ThrownPotion projectile && projectile.getShooter() instanceof Monster angryMob && !(damager instanceof Player) && damaged instanceof Player damagedPLayer) {
-
-                if (angryMob.hasMetadata("extraDamage")) {
-                    UserProfile damagedProfile = profileManager.getProfile(damagedPLayer.getName());
-                    double extraDamage = angryMob.getMetadata("extraDamage").getFirst().asDouble();
-                    double rawDmg = event.getDamage();
-                    double finalDmg = event.getFinalDamage();
-//                    double dmgReductionMultiplier = Math.max(0.2, finalDmg / rawDmg);
-                    double dmgReductionMultiplier = finalDmg / rawDmg;
-                    if (PlayerBuffPerms.canReduceDmg(damagedProfile)) {
-
-                        event.setDamage(((event.getDamage() + extraDamage)*dmgReductionMultiplier)/4);
-
-                    }
-                    else if (damagedProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
-                        event.setDamage(((event.getDamage() + extraDamage)*dmgReductionMultiplier)*1.2);
-
-                    }
-                    else {
-                        if (damagedProfile.getChosenClass().equalsIgnoreCase("swordsman")) {
-                            event.setDamage(((event.getDamage() + extraDamage)*dmgReductionMultiplier)/1.25);
-                        } else {
-                            event.setDamage(((event.getDamage() + extraDamage)*dmgReductionMultiplier));
-
-                        }
-                    }
-
-
-                }
-            }
-
-
-
         }
 
 
@@ -479,7 +394,7 @@ public class DamageListener implements Listener {
         }
 
 
-        if (!(event.getEntity() instanceof LivingEntity) && !(event.getEntity() instanceof  Monster) && !event.getEntity().hasMetadata("initialExtraHealth")) {
+        if (!(event.getEntity() instanceof LivingEntity) && !(event.getEntity() instanceof  Monster)) {
             return;
         }
 
@@ -502,6 +417,15 @@ public class DamageListener implements Listener {
                     profile.setDurability(profile.getDurability()-1);
                 }
 
+            if (profile.getChosenClass().equalsIgnoreCase("alchemist")) {
+                event.setDamage(event.getFinalDamage()*1.2);
+            }
+            if (profile.getChosenClass().equalsIgnoreCase("swordsman") && profile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
+                event.setDamage(event.getFinalDamage()*.5);
+            }
+            if (profile.getChosenClass().equalsIgnoreCase("swordsman") && !profile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
+                event.setDamage(event.getFinalDamage()*.8);
+            }
         }
 
         double damage = event.getDamage();
@@ -511,35 +435,24 @@ public class DamageListener implements Listener {
         // Update the health indicator
 
         resetHealthIndicator((LivingEntity) event.getEntity(), damage);
-        if (event.getEntity() instanceof LivingEntity entity && event.getEntity().hasMetadata("initialExtraHealth") && event.getEntity().getMetadata("initialExtraHealth").getFirst().asDouble()  > 0) {
-            // Retrieve extra health attribute from entity's metadata or custom attribute
-            double extraHealth = event.getEntity().getMetadata("initialExtraHealth").getFirst().asDouble();
 
-                if (extraHealth - damage > 0) {
-                            entity.setMetadata("initialExtraHealth", new FixedMetadataValue(plugin, extraHealth - damage));
+    }
 
 
-                    event.setDamage(0);
-
-                        }
-                else {
-                    // Calculate excess damage
-                    double excessDamage = damage - extraHealth;
-
-                    // Clear the extra health metadata as it has been depleted
-                    entity.setMetadata("initialExtraHealth", new FixedMetadataValue(plugin, 0.0)); // Reset extra health to 0
-
-                    event.setDamage(Math.max(entity.getHealth(),excessDamage));
-
+    @EventHandler
+    public void onCreeperExplode(EntityExplodeEvent event) {
+        if (event.getEntity() instanceof Creeper creeper && creeper.hasMetadata("extraHealth")) {
+            double customDamage = creeper.getMetadata("extraHealth").get(0).asDouble();
+            // Apply custom damage logic to nearby entities
+            for (Entity nearby : event.getEntity().getNearbyEntities(5, 5, 5)) { // 5-block radius
+                if (nearby instanceof LivingEntity target) {
+                    double baseDamage = 20.0; // Default Creeper explosion damage
+                    target.damage(baseDamage + (customDamage/4), creeper); // Custom damage
                 }
-
-
-
-
+            }
 
         }
     }
-
 
     private void handleMeleeDamage(Player attacker, LivingEntity target, EntityDamageByEntityEvent event, Location damagerLocation, Location damagedLocation, UserProfile damagerProfile) {
         ItemStack weapon = attacker.getInventory().getItemInMainHand();
@@ -569,15 +482,6 @@ public class DamageListener implements Listener {
             UserProfile victimProfile = profileManager.getProfile(victim.getName());
             if (victimProfile==null) return;
             if (damagerProfile.getSelectedElement().equalsIgnoreCase("fire")) {finalDamage=finalDamage*1.1;}
-            if (victimProfile.getChosenClass().equalsIgnoreCase("swordsman") && !victimProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
-                finalDamage= finalDamage*.8;
-            }
-            if (victimProfile.getChosenClass().equalsIgnoreCase("swordsman") && victimProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
-                finalDamage= finalDamage*.3;
-            }
-            if (victimProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
-                finalDamage=finalDamage*1.2;
-            }
             if (damagerProfile.getSelectedElement().equalsIgnoreCase("fire") && victimProfile.getSelectedElement().equalsIgnoreCase("ice")) {
                 finalDamage=finalDamage*1.1;
             }
@@ -996,38 +900,15 @@ public class DamageListener implements Listener {
     // Method to apply extra health and return adjusted damage
     private double applyExtraHealthAndDamage(LivingEntity target, double calculatedDamage, Player player) {
         if (target instanceof Monster || target instanceof IronGolem || target instanceof Wolf) {
-//            initializeExtraAttributes(target, player);
+
         }
-//
-//        // Retrieve and apply existing extra health
-//        double initialExtraHealth = 0;
-//
-//        if (target.hasMetadata("initialExtraHealth")) {
-//            initialExtraHealth += target.getMetadata("initialExtraHealth").get(0).asDouble();
-//        }
-//
-//        return applyDamageWithExtraHealth(target, calculatedDamage, initialExtraHealth, player);
+
         return  calculatedDamage;
     }
 
 
 
 
-    // Method to initialize extra health and extra damage metadata
-    private void initializeExtraAttributes(LivingEntity entity, Player player) {
-        if (!entity.hasMetadata("extraHealthApplied")) {
-            // Calculate extra health and damage
-            Location location = entity.getLocation();
-            double extraHealth = calculateExtraAttributes(location,entity);
-            double extraDamage = extraHealth * 0.1; // Convert to damage (10% of extra health)
-
-            // Store in metadata
-            entity.setMetadata("initialExtraHealth", new FixedMetadataValue(plugin, extraHealth));
-            entity.setMetadata("extraDamage", new FixedMetadataValue(plugin, extraDamage));
-            entity.setMetadata("extraHealthApplied", new FixedMetadataValue(plugin, true)); // Mark as applied
-
-              }
-    }
 
     // Method to calculate extra attributes (used for both extra health and damage)
     private double calculateExtraAttributes(Location targetLocation, LivingEntity entity) {
@@ -1142,7 +1023,7 @@ public class DamageListener implements Listener {
 
     private void resetHealthIndicator(LivingEntity entity, double damage) {
         // Retrieve the total health (current health + extra health)
-        double totalHealth = getTotalHealth(entity);
+        double totalHealth = entity.getHealth();
 
         int totalRemainingHealth = (int) Math.floor(totalHealth - damage);
 
@@ -1160,18 +1041,7 @@ public class DamageListener implements Listener {
         entity.setCustomName(customName + healthIndicator);
         entity.setCustomNameVisible(true);
     }
-    private double getTotalHealth(LivingEntity entity) {
-        // Retrieve the extra health and current health from metadata
-        double extraHealth = entity.hasMetadata("initialExtraHealth")
-                ? entity.getMetadata("initialExtraHealth").get(0).asDouble()
-                : 0.0;
 
-        // Retrieve the current health of the entity
-        double currentHealth = entity.getHealth();
-
-        // Return total health (current health + extra health)
-        return currentHealth + extraHealth;
-    }
 }
 
 

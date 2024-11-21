@@ -7,6 +7,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.Objects;
+
 public class AddAttributeCommand implements CommandExecutor {
 
     private final PlayerProfileManager profileManager;
@@ -46,6 +48,24 @@ public class AddAttributeCommand implements CommandExecutor {
 
         if (userProfile.getCurrentAttributePoints() < points) {
             player.sendMessage("You don't have enough attribute points to allocate.");
+            return true;
+        }
+
+        UserProfile profile = profileManager.getProfile(player.getName());
+
+        if (Objects.equals(profile.getChosenClass(), "default")) {
+            player.sendMessage("You cannot allocate points while in the default class.");
+            return true;
+        }
+
+        double allocatedPoints = 0;
+
+        if (profile.getChosenClass().equalsIgnoreCase("archer")) allocatedPoints = profile.getTotalArcherAllocatedPoints();
+        if (profile.getChosenClass().equalsIgnoreCase("alchemist")) allocatedPoints = profile.getTotalAlchemistAllocatedPoints();
+        if (profile.getChosenClass().equalsIgnoreCase("swordsman")) allocatedPoints = profile.getTotalSwordsmanAllocatedPoints();
+
+        if (points + allocatedPoints > 10000) {
+            player.sendMessage("Max attribute allocation per class reached.");
             return true;
         }
 

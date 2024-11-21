@@ -10,13 +10,9 @@ import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.*;
-import java.util.stream.Collectors;
-
-import static org.bukkit.Bukkit.getLogger;
 
 public class MonsterInitializerLabyrinth implements Listener {
 
@@ -126,22 +122,19 @@ public class MonsterInitializerLabyrinth implements Listener {
     private void initializeExtraAttributes(LivingEntity entity) {
 
         Location location = entity.getLocation();
-        double extraHealth = calculateExtraAttributes(location, entity);
-        // Convert to damage (10% of extra health)
+        calculateExtraAttributes(location, entity);
 
-        // Store in metadata
-        entity.setMetadata("initialExtraHealth", new FixedMetadataValue(plugin, extraHealth));
-        entity.setMetadata("extraDamage", new FixedMetadataValue(plugin, extraHealth));
 
         // Initialize the list of players who have attacked this entity
         List<String> attackerList = new ArrayList<>();
         entity.setMetadata("attackerList", new FixedMetadataValue(plugin, attackerList));
+
         setHealthIndicator(entity);
     }
 
     private void setHealthIndicator(LivingEntity entity) {
         // Retrieve the total health (current health + extra health)
-        double totalHealth = getTotalHealth(entity);
+        double totalHealth = entity.getHealth();
 
         // Format the health indicator (e.g., [99] for health 99)
         String healthIndicator = ChatColor.YELLOW + " [" + (int) totalHealth + "]";
@@ -155,21 +148,9 @@ public class MonsterInitializerLabyrinth implements Listener {
         entity.setCustomNameVisible(true);
     }
 
-    private double getTotalHealth(LivingEntity entity) {
-        // Retrieve the extra health and current health from metadata
-        double extraHealth = entity.hasMetadata("initialExtraHealth")
-                ? entity.getMetadata("initialExtraHealth").get(0).asDouble()
-                : 0.0;
-
-        // Retrieve the current health of the entity
-        double currentHealth = entity.getHealth();
-
-        // Return total health (current health + extra health)
-        return currentHealth + extraHealth;
-    }
 
     // Method to calculate extra attributes (used for both extra health and damage)
-    private double calculateExtraAttributes(Location targetLocation, LivingEntity entity) {
+    private void calculateExtraAttributes(Location targetLocation, LivingEntity entity) {
         int maxY = 251; // Starting height
         int minY = 3; // Minimum height
         double baseHealth = 0; // Base health at max height
@@ -178,16 +159,21 @@ public class MonsterInitializerLabyrinth implements Listener {
         // Ensure the y-coordinate is within the range
         int yCoord = Math.min(maxY, Math.max(minY, targetLocation.getBlockY()));
 
+        entity.setMetadata("extraHealth", new FixedMetadataValue(plugin, yCoord));
+        double customMaxHealth = 100000.0;
+        Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_MAX_HEALTH)).setBaseValue(customMaxHealth);
+
+
         // Calculate extra health based on the y-coordinate
         double extraHealth = baseHealth + ((1 + (double) (maxY - yCoord) / 6) * healthIncrement);
+        double customDamage = Math.min(extraHealth, customMaxHealth);
 
         // Determine the level based on the y-coordinate (1 level every 6 blocks)
         int lvl = 1 + (maxY - yCoord) / 6;
 
         // Set default name for normal monsters
         String normalName = ChatColor.GREEN + "Lvl " + lvl + " " + entity.getType().name();
-//        entity.setCustomName(normalName);
-//        entity.setCustomNameVisible(true);
+
 
         entity.setMetadata("customName", new FixedMetadataValue(plugin, normalName));
 
@@ -197,6 +183,10 @@ public class MonsterInitializerLabyrinth implements Listener {
             setBossAttributes(entity, targetLocation.getBlockY(), "Boss", ChatColor.RED);
             entity.setMetadata("boss", new FixedMetadataValue(plugin, true));
             entity.setMetadata("lvl", new FixedMetadataValue(plugin, lvl));
+
+            entity.setHealth(Math.min(extraHealth, customMaxHealth));
+            Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(customDamage*3);
+            return;
         }
 
         // World Boss scaling logic
@@ -205,50 +195,50 @@ public class MonsterInitializerLabyrinth implements Listener {
             setBossAttributes(entity, targetLocation.getBlockY(), "World Boss", ChatColor.DARK_PURPLE);
             entity.setMetadata("worldboss", new FixedMetadataValue(plugin, true));
             entity.setMetadata("lvl", new FixedMetadataValue(plugin, lvl));
+
+            entity.setHealth(Math.min(extraHealth, customMaxHealth));
+            Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(customDamage*6);
+            return;
         }
+        entity.setHealth(Math.min(extraHealth, customMaxHealth));
+        Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(customDamage);
 
 
-        return extraHealth; // Use as a basis for both health and extra damage
     }
 
 
     private void setBossAttributes(LivingEntity entity, double maxCoord, String type, ChatColor color) {
+        // Set the boss name based on the Y-level (maxCoord) and other parameters
         String bossName = color + "Lvl " + (int) (Math.floor(maxCoord) / 100) + " " + type + " " + entity.getType().name();
         entity.setMetadata("customName", new FixedMetadataValue(plugin, bossName));
-//        entity.setCustomNameVisible(true);
         entity.setRemoveWhenFarAway(false);
-//        entity.setPersistent(true);
 
-        // Calculate speed and jump multipliers based on maxCoord
-        double speedMultiplier = 1 + (0.000075 * maxCoord); // Continuous increase for speed
-        double jumpMultiplier = 1 + (0.00015 * maxCoord);  // Continuous increase for jump
+        // Calculate speed multiplier based on the floor (Y-level)
+        // At Y-level 3, multiplier = 5; at Y-level 251, multiplier = 1
+        double speedMultiplier = 1 + 4 * (251 - maxCoord) / 248.0;  // Interpolates the speed multiplier between 5 and 1
+
+        // Calculate jump multiplier, scaled similarly to speed (e.g., 1.5 times the speed multiplier)
+        double jumpMultiplier = speedMultiplier * 1.5;
 
         // Set extra movement speed if the attribute is available
         if (entity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED) != null) {
             double baseSpeed = Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)).getBaseValue();
-            double newSpeed = baseSpeed * speedMultiplier; // Apply the calculated multiplier
+            double newSpeed = baseSpeed * speedMultiplier; // Apply the calculated speed multiplier
             Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)).setBaseValue(newSpeed);
         }
 
         // Set extra jump strength if applicable
         if (entity.getAttribute(Attribute.GENERIC_JUMP_STRENGTH) != null) {
             double baseJumpStrength = Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_JUMP_STRENGTH)).getBaseValue();
-            double newJumpStrength = baseJumpStrength * jumpMultiplier; // Apply the calculated multiplier
+            double newJumpStrength = baseJumpStrength * jumpMultiplier; // Apply the calculated jump multiplier
             Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_JUMP_STRENGTH)).setBaseValue(newJumpStrength);
         }
 
         // Set extra safe fall distance if applicable
         if (entity.getAttribute(Attribute.GENERIC_SAFE_FALL_DISTANCE) != null) {
             double baseSafeFallDistance = Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_SAFE_FALL_DISTANCE)).getBaseValue();
-            Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_SAFE_FALL_DISTANCE)).setBaseValue(baseSafeFallDistance * jumpMultiplier+1);
+            Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_SAFE_FALL_DISTANCE)).setBaseValue(baseSafeFallDistance * jumpMultiplier + 1);
         }
     }
-
-    // Ensure normal monsters are green
-    private void setNormalMonsterName(LivingEntity entity) {
-
-    }
-
-
 
 }

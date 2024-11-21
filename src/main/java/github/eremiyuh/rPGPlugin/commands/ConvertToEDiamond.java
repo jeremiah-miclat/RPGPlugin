@@ -8,9 +8,11 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class ConvertToEDiamond implements CommandExecutor {
 
@@ -62,7 +64,7 @@ public class ConvertToEDiamond implements CommandExecutor {
         // Count the number of specified currency in the player's inventory
         int itemCount = 0;
         for (ItemStack item : inventoryContents) {
-            if (item != null && item.getType() == currencyMaterial) {
+            if (item != null && item.getType() == currencyMaterial && !hasLore(item)) {
                 itemCount += item.getAmount();
             }
         }
@@ -92,5 +94,17 @@ public class ConvertToEDiamond implements CommandExecutor {
         player.sendMessage("Your new " + currencyName + " balance is: " + newBalance + ".");
 
         return true; // Indicates the command was processed successfully
+    }
+
+    public boolean hasLore(ItemStack item) {
+        // Check if the item is not null and has ItemMeta
+        if (item == null || !item.hasItemMeta()) {
+            return false;
+        }
+
+        ItemMeta meta = item.getItemMeta();
+
+        // Check if the meta has lore
+        return meta != null && meta.hasLore();
     }
 }

@@ -22,7 +22,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
+import java.util.function.BiConsumer;
 
+import static github.eremiyuh.rPGPlugin.utils.ItemUtils.getAbyssOre;
 import static github.eremiyuh.rPGPlugin.utils.ItemUtils.getAbyssPotion;
 
 public class AbyssStoreCommand implements CommandExecutor, Listener {
@@ -64,6 +66,10 @@ public class AbyssStoreCommand implements CommandExecutor, Listener {
 
         ItemStack abyssPotion = getAbyssPotion();
         abyssStore.setItem(5, abyssPotion);
+
+
+        ItemStack abyssOre = getAbyssOre();
+        abyssStore.setItem(1, abyssOre);
     }
 
     @EventHandler
@@ -75,35 +81,61 @@ public class AbyssStoreCommand implements CommandExecutor, Listener {
 
             // Ensure the player has a valid profile
             if (userProfile == null) {
-                player.sendMessage("Profile not found!");
+                player.sendMessage(Component.text("Profile not found!").color(TextColor.color(255, 0, 0)));
                 return;
             }
 
-            // Check if the clicked item is the Abyss Mana Stone (slot 3)
-            if (event.getSlot() == 3 && event.getCurrentItem() != null && event.getCurrentItem().isSimilar(getAbyssIngot())) {
-                // Check if the player has enough Abyss Points
-                if (userProfile.getAbyssPoints() >= 100000) {
-                    userProfile.setAbyssPoints(userProfile.getAbyssPoints() - 100000); // Deduct Abyss Points
-                    player.getInventory().addItem(ItemUtils.getAbyssIngot()); // Give the player the Abyss Mana Stone
-                    player.sendMessage(Component.text("Successfully purchased Abyss Mana Stone!").color(TextColor.color(0, 255, 0)));
+            // Handle item purchase logic
+            if (event.getSlot() == 1 && event.getCurrentItem() != null && event.getCurrentItem().isSimilar(getAbyssOre())) {
+                if (userProfile.getAbyssPoints() >= 1000) {
+                    userProfile.setAbyssPoints(userProfile.getAbyssPoints() - 1000); // Deduct Abyss Points
+                    dropOrNotify(player, ItemUtils.getAbyssOre(), "Successfully purchased Abyss Ore!");
                 } else {
                     player.sendMessage(Component.text("You do not have enough Abyss Points!").color(TextColor.color(255, 0, 0)));
                 }
             }
 
+            if (event.getSlot() == 3 && event.getCurrentItem() != null && event.getCurrentItem().isSimilar(getAbyssIngot())) {
+                if (userProfile.getAbyssPoints() >= 100000) {
+                    userProfile.setAbyssPoints(userProfile.getAbyssPoints() - 100000); // Deduct Abyss Points
+                    dropOrNotify(player, ItemUtils.getAbyssIngot(), "Successfully purchased Abyss Mana Stone!");
+                } else {
+                    player.sendMessage(Component.text("You do not have enough Abyss Points!").color(TextColor.color(255, 0, 0)));
+                }
+            }
 
             if (event.getSlot() == 5 && event.getCurrentItem() != null && event.getCurrentItem().isSimilar(getAbyssPotion())) {
-                // Check if the player has enough Abyss Points
                 if (userProfile.getAbyssPoints() >= 1000) {
                     userProfile.setAbyssPoints(userProfile.getAbyssPoints() - 1000); // Deduct Abyss Points
-                    player.getInventory().addItem(ItemUtils.getAbyssPotion()); // Give the player the Abyss Mana Stone
-                    player.sendMessage(Component.text("Successfully purchased Abyss Potion!").color(TextColor.color(0, 255, 0)));
+                    dropOrNotify(player, ItemUtils.getAbyssPotion(), "Successfully purchased Abyss Potion!");
                 } else {
                     player.sendMessage(Component.text("You do not have enough Abyss Points!").color(TextColor.color(255, 0, 0)));
                 }
             }
         }
     }
+
+    /**
+     * Drops the item near the player if their inventory is full, or adds it to their inventory.
+     *
+     * @param player The player receiving the item.
+     * @param item   The item to give.
+     * @param successMessage The message to send on successful purchase.
+     */
+    private void dropOrNotify(Player player, ItemStack item, String successMessage) {
+        if (player.getInventory().firstEmpty() != -1) {
+            // Add item to inventory
+            player.getInventory().addItem(item);
+            player.sendMessage(Component.text(successMessage).color(TextColor.color(0, 255, 0)));
+        } else {
+            // Drop item at player's location
+            player.getWorld().dropItemNaturally(player.getLocation(), item);
+            player.sendMessage(Component.text("Your inventory is full! The item has been dropped near you.")
+                    .color(TextColor.color(255, 255, 0)));
+        }
+    }
+
+
 
     @EventHandler
     public void onInventoryDrag(InventoryDragEvent event) {

@@ -74,6 +74,25 @@ public class ItemUtils {
         return resetItem;
     }
 
+    public static ItemStack getAbyssOre() {
+        ItemStack pointItem = new ItemStack(Material.FLINT); // Choose any material you prefer
+        ItemMeta meta = pointItem.getItemMeta();
+
+        if (meta != null) {
+            meta.displayName(Component.text("Abyss Ore").color(TextColor.color(255,0,0)));
+            meta.lore(Arrays.asList(
+                    Component.text("Cost: 1,000 abyss points."),
+                    Component.text("Right-click to gain 1,000 abyss points")
+            ));
+
+            meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
+            meta.setEnchantmentGlintOverride(true);
+            pointItem.setItemMeta(meta);
+        }
+
+        return pointItem;
+    }
+
 
 
 

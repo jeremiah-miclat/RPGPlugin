@@ -28,7 +28,7 @@ public class ConvertLevelsCommand implements CommandExecutor {
         double playerClassTotalAttrib = profile.getTotalAllocatedPoints()+profile.getCurrentAttributePoints();
         double abyssPoints = profile.getAbyssPoints();
 
-        if (playerClassTotalAttrib == 20000) {
+        if (playerClassTotalAttrib >= 20000) {
             player.sendMessage("Max attributes reached.");
             return true;
         }
@@ -48,6 +48,11 @@ public class ConvertLevelsCommand implements CommandExecutor {
             }
         }
 
+        if (pointsToConvert+playerClassTotalAttrib > 20000) {
+            player.sendMessage("Max attributes reached.");
+            return true;
+        }
+
         // Calculate the total abyss points needed by dynamically adjusting cost per point
         int totalAbyssPointsRequired = 0;
         double currentAttribPoints = playerClassTotalAttrib;
@@ -56,10 +61,6 @@ public class ConvertLevelsCommand implements CommandExecutor {
             int costForCurrentPoint = getLevelsRequiredForConversion(currentAttribPoints);
             totalAbyssPointsRequired += costForCurrentPoint;
             currentAttribPoints++;
-            if (currentAttribPoints >= 10000) {
-                player.sendMessage(ChatColor.RED + "Cannot exceed the maximum of 10,000 attribute points.");
-                break;
-            }
         }
 
         // Check if the player has enough abyss points for the entire transaction
