@@ -173,7 +173,7 @@ public class MonsterInitializerLabyrinth implements Listener {
         int maxY = 251; // Starting height
         int minY = 3; // Minimum height
         double baseHealth = 0; // Base health at max height
-        double healthIncrement = 200; // Increment per layer
+        double healthIncrement = 480; // Increment per layer
 
         // Ensure the y-coordinate is within the range
         int yCoord = Math.min(maxY, Math.max(minY, targetLocation.getBlockY()));

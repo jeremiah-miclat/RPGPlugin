@@ -671,7 +671,7 @@ public class UserProfile {
     }
 
     // Helper method to add points to a class's attributes
-    private void addPointsToClass(ClassAttributes classAttributes, String attribute, int points) {
+    public void addPointsToClass(ClassAttributes classAttributes, String attribute, int points) {
         switch (attribute.toLowerCase()) {
             case "str":
                 classAttributes.setStr(classAttributes.getStr() + points);

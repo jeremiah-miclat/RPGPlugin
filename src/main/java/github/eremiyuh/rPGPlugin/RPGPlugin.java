@@ -326,6 +326,7 @@ public class RPGPlugin extends JavaPlugin {
         Objects.requireNonNull(this.getCommand("iteminfo")).setExecutor(new ItemInfoCommand());
         Objects.requireNonNull(this.getCommand("grt")).setExecutor(new GiveResetTokenCommand());
         Objects.requireNonNull(this.getCommand("enderchest")).setExecutor(new EnderChestCommand());
+        Objects.requireNonNull(this.getCommand("addstat")).setExecutor(new AddAttributeCommand(profileManager));
 
         vaultManager.loadVaults();
         //auth

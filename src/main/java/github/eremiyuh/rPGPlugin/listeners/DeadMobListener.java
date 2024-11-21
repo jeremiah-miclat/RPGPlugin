@@ -148,7 +148,7 @@ public class DeadMobListener implements Listener {
 
     private void applyRewards(Player player, UserProfile profile, double healthForExp, double chanceForEquipLoreAndDias, int rewardCount) {
         player.giveExp((int) (healthForExp * 2));
-        profile.setAbyssPoints(profile.getAbyssPoints()+(healthForExp * 2));
+        profile.setAbyssPoints(profile.getAbyssPoints()+(healthForExp));
         if (random.nextDouble() < chanceForEquipLoreAndDias) {
             applyRandomLoreToEquippedItem(player);
         }

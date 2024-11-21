@@ -17,8 +17,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.*;
+import org.bukkit.event.player.PlayerItemDamageEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
@@ -43,6 +43,14 @@ public class DamageListener implements Listener {
         this.effectsAbilityManager = effectsAbilityManager;
         this. damageAbilityManager = damageAbilityManager;
         this.plugin = plugin;
+    }
+
+    @EventHandler
+    public void onEquipDamage(PlayerItemDamageEvent event) {
+        if (!event.getPlayer().getWorld().getName().contains("rpg") && !event.getPlayer().getWorld().getName().contains("labyrinth")) {
+            return;
+        }
+        event.setCancelled(true);
     }
 
 
@@ -167,6 +175,7 @@ public class DamageListener implements Listener {
 
         if (Objects.requireNonNull(event.getDamager().getLocation().getWorld()).getName().equals("world_rpg") || Objects.requireNonNull(event.getEntity().getLocation().getWorld()).getName().contains("world_labyrinth")) {
 
+
             if (!(event.getEntity() instanceof LivingEntity) && !(event.getEntity() instanceof  Monster)) {
                 return;
             }
@@ -188,30 +197,13 @@ public class DamageListener implements Listener {
             // Get the location of the damager entity (if damager exists)
             Location damagerLocation = damager.getLocation();
 
-            if (damaged instanceof Player damagedPLayer) {
 
-                for (int i = 0; i < damagedPLayer.getInventory().getArmorContents().length; i++) {
-                    ItemStack armorItem = damagedPLayer.getInventory().getArmorContents()[i];
-
-                    if (armorItem != null && armorItem.getType().getMaxDurability() > 0) { // Check if the item has durability
-                        ItemMeta meta = armorItem.getItemMeta();
-                        if (meta != null) {
-                            armorItem.setDurability((short) 0); // Reset durability
-                        }
-                    }
-                }
-
-            }
 
 
 
             if (damager instanceof Player attacker && damaged instanceof LivingEntity victim)
             {
-                ItemStack itemInHand = attacker.getInventory().getItemInMainHand();
-                ItemMeta meta = itemInHand.getItemMeta();
-                if (meta != null) {
-                    itemInHand.setDurability((short) 0); // Reset durability
-                }
+
                 if (damaged instanceof Player damagedPlayer) {
 
                     UserProfile attackerProfile = profileManager.getProfile(attacker.getName());
@@ -264,11 +256,7 @@ public class DamageListener implements Listener {
                 ProjectileSource shooter = projectile.getShooter();
 
                 if (projectile instanceof Arrow && shooter instanceof Player attacker) {
-                    ItemStack itemInHand = attacker.getInventory().getItemInMainHand();
-                    ItemMeta meta = itemInHand.getItemMeta();
-                    if (meta != null) {
-                        itemInHand.setDurability((short) 0); // Reset durability
-                    }
+
 
                     if (damaged instanceof Player damagedPlayer) {
 
@@ -385,19 +373,23 @@ public class DamageListener implements Listener {
                     double extraDamage = angryMob.getMetadata("extraDamage").getFirst().asDouble();
                     double rawDmg = event.getDamage();
                     double finalDmg = event.getFinalDamage();
-                    double dmgReductionMultiplier = Math.max(0.2, finalDmg / rawDmg);
+//                    double dmgReductionMultiplier = Math.max(0.2, finalDmg / rawDmg);
+                    double dmgReductionMultiplier = finalDmg / rawDmg;
                     if (PlayerBuffPerms.canReduceDmg(damagedProfile)) {
 
                         event.setDamage(((event.getDamage() + extraDamage)*dmgReductionMultiplier)/4);
+
                     }
                     else if (damagedProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
                         event.setDamage(((event.getDamage() + extraDamage)*dmgReductionMultiplier)*1.2);
+
                     }
                     else {
                         if (damagedProfile.getChosenClass().equalsIgnoreCase("swordsman")) {
                             event.setDamage(((event.getDamage() + extraDamage)*dmgReductionMultiplier)/1.25);
                         } else {
                             event.setDamage(((event.getDamage() + extraDamage)*dmgReductionMultiplier));
+
                         }
                     }
 
@@ -413,19 +405,23 @@ public class DamageListener implements Listener {
                     double extraDamage = angryMob.getMetadata("extraDamage").getFirst().asDouble();
                     double rawDmg = event.getDamage();
                     double finalDmg = event.getFinalDamage();
-                    double dmgReductionMultiplier = Math.max(0.2, finalDmg / rawDmg);
+//                    double dmgReductionMultiplier = Math.max(0.2, finalDmg / rawDmg);
+                    double dmgReductionMultiplier = finalDmg / rawDmg;
                     if (PlayerBuffPerms.canReduceDmg(damagedProfile)) {
 
                         event.setDamage(((event.getDamage() + extraDamage)*dmgReductionMultiplier)/4);
+
                     }
                     else if (damagedProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
                         event.setDamage(((event.getDamage() + extraDamage)*dmgReductionMultiplier)*1.2);
+
                     }
                     else {
                         if (damagedProfile.getChosenClass().equalsIgnoreCase("swordsman")) {
                             event.setDamage(((event.getDamage() + extraDamage)*dmgReductionMultiplier)/1.25);
                         } else {
                             event.setDamage(((event.getDamage() + extraDamage)*dmgReductionMultiplier));
+
                         }
                     }
 
@@ -440,19 +436,23 @@ public class DamageListener implements Listener {
                     double extraDamage = angryMob.getMetadata("extraDamage").getFirst().asDouble();
                     double rawDmg = event.getDamage();
                     double finalDmg = event.getFinalDamage();
-                    double dmgReductionMultiplier = Math.max(0.2, finalDmg / rawDmg);
+//                    double dmgReductionMultiplier = Math.max(0.2, finalDmg / rawDmg);
+                    double dmgReductionMultiplier = finalDmg / rawDmg;
                     if (PlayerBuffPerms.canReduceDmg(damagedProfile)) {
 
                         event.setDamage(((event.getDamage() + extraDamage)*dmgReductionMultiplier)/4);
+
                     }
                     else if (damagedProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
                         event.setDamage(((event.getDamage() + extraDamage)*dmgReductionMultiplier)*1.2);
+
                     }
                     else {
                         if (damagedProfile.getChosenClass().equalsIgnoreCase("swordsman")) {
                             event.setDamage(((event.getDamage() + extraDamage)*dmgReductionMultiplier)/1.25);
                         } else {
                             event.setDamage(((event.getDamage() + extraDamage)*dmgReductionMultiplier));
+
                         }
                     }
 
@@ -474,6 +474,11 @@ public class DamageListener implements Listener {
 
     @EventHandler (priority = EventPriority.HIGH)
     public void onEntityTakeDamage(EntityDamageEvent event) {
+        if (!Objects.requireNonNull(event.getEntity().getLocation().getWorld()).getName().equals("world_rpg") && !Objects.requireNonNull(event.getEntity().getLocation().getWorld()).getName().contains("world_labyrinth")) {
+            return;
+        }
+
+
         if (!(event.getEntity() instanceof LivingEntity) && !(event.getEntity() instanceof  Monster)) {
             return;
         }
@@ -483,9 +488,8 @@ public class DamageListener implements Listener {
             event.setCancelled(true);
             return;
         }
-        if (!Objects.requireNonNull(event.getEntity().getLocation().getWorld()).getName().equals("world_rpg") && !Objects.requireNonNull(event.getEntity().getLocation().getWorld()).getName().contains("world_labyrinth")) {
-            return;
-        }
+
+
         if (event.getEntity() instanceof Player player) {
             UserProfile profile = profileManager.getProfile(player.getName());
                 if (profile.getDurability()<=0) {
@@ -493,7 +497,7 @@ public class DamageListener implements Listener {
                         player.sendMessage("Durability depleted. You will take extra damage. /sdw to turn off this warnings");
                     }
                     profile.setDurability(0);
-                    event.setDamage(event.getDamage()*1.5);
+                    event.setDamage(event.getDamage()*2);
                 } else {
                     profile.setDurability(profile.getDurability()-1);
                 }
