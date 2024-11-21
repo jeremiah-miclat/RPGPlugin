@@ -479,7 +479,7 @@ public class DamageListener implements Listener {
         }
 
 
-        if (!(event.getEntity() instanceof LivingEntity) && !(event.getEntity() instanceof  Monster)) {
+        if (!(event.getEntity() instanceof LivingEntity) && !(event.getEntity() instanceof  Monster) && !event.getEntity().hasMetadata("initialExtraHealth")) {
             return;
         }
 
@@ -501,12 +501,6 @@ public class DamageListener implements Listener {
                 } else {
                     profile.setDurability(profile.getDurability()-1);
                 }
-            if (profile.getStamina()==0) {
-                if (profile.isBossIndicator()) player.sendMessage("Stamina depleted. You will deal less damage. /sdw to turn off this warnings");
-                profile.setStamina(0);
-            } else {
-                profile.setStamina(profile.getStamina()-1);
-            }
 
         }
 
@@ -624,7 +618,7 @@ public class DamageListener implements Listener {
             double newHealth = Math.min(attacker.getHealth() + lifestealAmount, maxHealth); // Avoid exceeding max health
             attacker.setHealth(newHealth);
         }
-
+        if (target instanceof Player) finalDamage*=10;
         event.setDamage(finalDamage*dmgReductionMultiplier);
     }
 
@@ -752,7 +746,7 @@ public class DamageListener implements Listener {
         double rawDmg = event.getDamage();
         double finalDmg = event.getFinalDamage();
         double dmgReductionMultiplier = Math.max(0.2, finalDmg / rawDmg);
-
+        if (target instanceof Player) finalDamage*=10;
         event.setDamage(finalDamage*dmgReductionMultiplier);
     }
 
@@ -970,13 +964,6 @@ public class DamageListener implements Listener {
 
 
 
-        if (damagerProfile.getDurability() ==0 && !damagerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
-            calculatedDamage /= 2;
-            if (damagerProfile.isBossIndicator()) player.sendMessage("Durability depleted. You will deal less damage. /sdw to turn off this warnings");
-        } else {
-            damagerProfile.setDurability(damagerProfile.getDurability() - 1);
-        }
-
         if (damagerProfile.getStamina() <= 0) {
             damagerProfile.setStamina(0);
             if (damagerProfile.isBossIndicator()) {
@@ -1155,7 +1142,7 @@ public class DamageListener implements Listener {
 
     private void resetHealthIndicator(LivingEntity entity, double damage) {
         // Retrieve the total health (current health + extra health)
-        double totalHealth = getTotalHealth(entity);
+        double totalHealth = getTotalHealth(entity) - entity.getHealth();
 
         int totalRemainingHealth = (int) Math.floor(totalHealth - damage);
 
