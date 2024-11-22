@@ -166,7 +166,7 @@ public class MonsterInitializerLabyrinth implements Listener {
 
         // Calculate extra health based on the y-coordinate
         double extraHealth = baseHealth + ((1 + (double) (maxY - yCoord) / 6) * healthIncrement);
-        double customDamage = Math.min(extraHealth, customMaxHealth);
+        double customDamage = Math.min(extraHealth/10, customMaxHealth);
 
         // Determine the level based on the y-coordinate (1 level every 6 blocks)
         int lvl = 1 + (maxY - yCoord) / 6;

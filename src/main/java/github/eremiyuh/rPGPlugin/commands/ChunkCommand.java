@@ -12,6 +12,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.List;
+
 public class ChunkCommand implements CommandExecutor {
     private final ChunkManager chunkManager;
     private final PlayerProfileManager profileManager;
@@ -93,16 +95,13 @@ public class ChunkCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (sender instanceof Player player) {
             if (player.getWorld().getName().equals("world_rpg")
-                    || player.getWorld().getName().contains("labyrinth")
-
-
-            ) {
-                player.sendMessage("Can not claim chunks on this area");
+                    || player.getWorld().getName().contains("labyrinth")) {
+                player.sendMessage("Cannot claim chunks in this area.");
                 return true;
             }
 
-            if (isInProtectedArea(player.getLocation().getBlockX(),player.getLocation().getBlockZ())) {
-                player.sendMessage("Can not claim chunks on this area");
+            if (isInProtectedArea(player.getLocation().getBlockX(), player.getLocation().getBlockZ())) {
+                player.sendMessage("Cannot claim chunks in this area.");
                 return true;
             }
 
@@ -112,28 +111,29 @@ public class ChunkCommand implements CommandExecutor {
             Chunk chunk = player.getLocation().getChunk();
             OwnedChunk ownedChunk = chunkManager.getOwnedChunk(chunk);
 
-            switch (args[0]) {
-
+            switch (args[0].toLowerCase()) {
                 case "claim":
-                   if (chunkHasOwnedChunkNearby(chunk,player)) {
-                       chunkHasOwnedChunkNearbyVisualizer(chunk,player);
-                       player.sendMessage("There's a nearby owned chunk");
-                       break;
-                   }
-                   if (userClaimPoints>1) {
-                       if (ownedChunk == null) {
-                           userProfile.setClaimPoints(userClaimPoints-1);
-                           profileManager.saveProfile(userProfile.getPlayerName());
-                       }
-                       chunkManager.claimChunk(player,chunk);
-                       chunkHasOwnedChunkNearbyVisualizer(chunk,player);
-                   } else {
-                       player.sendMessage("No claim points :(");
-                   }
+                    if (chunkHasOwnedChunkNearby(chunk, player)) {
+                        chunkHasOwnedChunkNearbyVisualizer(chunk, player);
+                        player.sendMessage("There's a nearby owned chunk.");
+                        break;
+                    }
+                    if (userClaimPoints > 1) {
+                        if (ownedChunk == null) {
+                            userProfile.setClaimPoints(userClaimPoints - 1);
+                            profileManager.saveProfile(userProfile.getPlayerName());
+                        }
+                        chunkManager.claimChunk(player, chunk);
+                        chunkHasOwnedChunkNearbyVisualizer(chunk, player);
+                    } else {
+                        player.sendMessage("No claim points :(");
+                    }
                     break;
+
                 case "check":
-                    chunkHasOwnedChunkNearbyVisualizer(chunk,player);
+                    chunkHasOwnedChunkNearbyVisualizer(chunk, player);
                     break;
+
                 case "unclaim":
                     if (ownedChunk != null && ownedChunk.getOwner().equals(player.getName())) {
                         chunkManager.unclaimChunk(player, chunk);
@@ -144,13 +144,46 @@ public class ChunkCommand implements CommandExecutor {
                         player.sendMessage("You cannot unclaim this chunk.");
                     }
                     break;
+
+                case "unclaimall":
+                    List<OwnedChunk> ownedChunks = chunkManager.getOwnedChunksByOwner(player.getName());
+                    if (ownedChunks.isEmpty()) {
+                        player.sendMessage("You don't own any chunks.");
+                        break;
+                    }
+
+                    for (OwnedChunk oc : ownedChunks) {
+                        chunkManager.unclaimChunk(player, oc.getChunk());
+                    }
+
+                    // Restore claim points based on the number of chunks unclaimed
+                    userProfile.setClaimPoints(userProfile.getClaimPoints() + ownedChunks.size());
+                    profileManager.saveProfile(userProfile.getPlayerName());
+                    player.sendMessage("Successfully unclaimed all chunks.");
+                    break;
+
+                case "claimlist":
+                    List<OwnedChunk> playerChunks = chunkManager.getOwnedChunksByOwner(player.getName());
+                    if (playerChunks.isEmpty()) {
+                        player.sendMessage("You don't own any chunks.");
+                    } else {
+                        player.sendMessage("Your claimed chunks:");
+                        for (OwnedChunk oc : playerChunks) {
+                            Chunk c = oc.getChunk();
+                            player.sendMessage("- World: " + c.getWorld().getName() + " | X: " + c.getX() + " | Z: " + c.getZ());
+                        }
+                    }
+                    break;
+
                 default:
-                    player.sendMessage("Unknown command.");
+                    player.sendMessage("Enter /cc <claim> or <unclaim> or <unclaimall> or <check> or <claimlist>");
                     break;
             }
         }
         return true;
     }
+
+
 
 
 }

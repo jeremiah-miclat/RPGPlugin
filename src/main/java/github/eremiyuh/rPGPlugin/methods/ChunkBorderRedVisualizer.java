@@ -6,6 +6,7 @@ import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,7 +27,6 @@ public class ChunkBorderRedVisualizer {
             return; // Exit if already visualizing this chunk
         }
 
-        World world = chunk.getWorld();
         int chunkX = chunk.getX() * 16;
         int chunkZ = chunk.getZ() * 16;
         int y = player.getLocation().getBlockY();
@@ -46,7 +46,7 @@ public class ChunkBorderRedVisualizer {
                     playerVisualizations.remove(chunk);
                     return;
                 }
-                drawChunkBorder(world, particleType, chunkX, y, chunkZ);
+                drawChunkBorder(player, particleType, chunkX, y, chunkZ);
             }
         };
 
@@ -55,17 +55,17 @@ public class ChunkBorderRedVisualizer {
         playerVisualizations.put(chunk, task);
     }
 
-    private void drawChunkBorder(World world, Particle particle, int chunkX, int startY, int chunkZ) {
+    private void drawChunkBorder(Player player, Particle particle, int chunkX, int startY, int chunkZ) {
         for (int y = startY; y < startY + 3; y++) {
             for (int i = 0; i <= 16; i++) {
                 // Bottom edge (X)
-                world.spawnParticle(particle, chunkX + i, y, chunkZ, 1, 0.1, 0.1, 0.1, 0);
+                player.spawnParticle(particle, chunkX + i, y, chunkZ, 1, 0.1, 0.1, 0.1, 0);
                 // Right edge (Z)
-                world.spawnParticle(particle, chunkX + 16, y, chunkZ + i, 1, 0.1, 0.1, 0.1, 0);
+                player.spawnParticle(particle, chunkX + 16, y, chunkZ + i, 1, 0.1, 0.1, 0.1, 0);
                 // Top edge (X)
-                world.spawnParticle(particle, chunkX + 16 - i, y, chunkZ + 16, 1, 0.1, 0.1, 0.1, 0);
+                player.spawnParticle(particle, chunkX + 16 - i, y, chunkZ + 16, 1, 0.1, 0.1, 0.1, 0);
                 // Left edge (Z)
-                world.spawnParticle(particle, chunkX, y, chunkZ + 16 - i, 1, 0.1, 0.1, 0.1, 0);
+                player.spawnParticle(particle, chunkX, y, chunkZ + 16 - i, 1, 0.1, 0.1, 0.1, 0);
             }
         }
     }

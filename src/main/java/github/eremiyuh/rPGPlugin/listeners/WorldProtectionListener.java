@@ -9,10 +9,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.entity.EntityChangeBlockEvent;
-import org.bukkit.event.entity.EntityExplodeEvent;
-import org.bukkit.event.entity.EntitySpawnEvent;
-import org.bukkit.event.entity.EntityTameEvent;
+import org.bukkit.event.entity.*;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.vehicle.VehicleCreateEvent;
@@ -131,6 +128,19 @@ public class WorldProtectionListener implements Listener {
                 player.sendMessage("You are not allowed to tame this animal!");
             }
         }
+    }
+
+    @EventHandler
+    public void entitySpawn(EntityPlaceEvent event) {
+        Entity entity = event.getEntity();
+        if (!entity.getWorld().getName().contains("labyrinth") && !entity.getWorld().getName().equals("world_rpg")) {
+            return;
+        }
+
+        if (isInProtectedWorld(event.getEntity().getWorld())) {
+            event.setCancelled(true);
+        }
+
     }
 
     // Helper method to check if the event occurs in a protected world

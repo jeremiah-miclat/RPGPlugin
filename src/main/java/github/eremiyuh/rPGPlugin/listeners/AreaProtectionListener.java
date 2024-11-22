@@ -99,6 +99,19 @@ public class AreaProtectionListener implements Listener {
 
     }
 
+    @EventHandler
+    public void entitySpawn(EntityPlaceEvent event) {
+        Entity entity = event.getEntity();
+        if (!entity.getWorld().getName().equals(world.getName()) && !entity.getWorld().getName().equals("world_rpg")) {
+            return;
+        }
+
+        if (isInProtectedArea(entity.getLocation().getBlockX(), entity.getLocation().getBlockZ())&& !Objects.requireNonNull(event.getPlayer()).isOp()) {
+            event.setCancelled(true);
+        }
+
+    }
+
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {

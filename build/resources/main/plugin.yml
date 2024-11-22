@@ -241,9 +241,9 @@ commands:
     description: Scales health to always show 10 hearts.
     usage: /healthscale
     note: "Provide more info or example scenario about how this work if you can"
-  payblacksmith:
+  durability:
     description: Convert all ores in your inventory to durability.
-    usage: /payblacksmith
+    usage: /durability
     note: "
     Inform players about the rates:
     

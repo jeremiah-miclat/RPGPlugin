@@ -398,6 +398,11 @@ public class DamageListener implements Listener {
             return;
         }
 
+        if (event.getEntity() instanceof Monster monsterWithoutMeta && !monsterWithoutMeta.hasMetadata("extraHealth")) {
+            monsterWithoutMeta.setHealth(0);
+            return;
+        }
+
         if (event.getDamageSource().getCausingEntity() instanceof Player player && player.getAllowFlight()) {
             player.sendMessage("damaged cancelled. Disable fly mode");
             event.setCancelled(true);

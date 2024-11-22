@@ -28,5 +28,12 @@ public class PlayerTeleportListener implements Listener {
 
         // Handle flying status when changing worlds
         flyCommand.onPlayerWorldChange(player); // Call the method to handle fly status
+        playerStatBuff.updatePlayerStatsToNormal(player);
+        if (player.getWorld().getName().contains("rpg") || player.getWorld().getName().contains("labyrinth")) {
+            playerStatBuff.updatePlayerStatsToRPG(player);
+        }
+
+
+
     }
 }

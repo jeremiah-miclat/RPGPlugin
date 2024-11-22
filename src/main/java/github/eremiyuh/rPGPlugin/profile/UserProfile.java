@@ -387,7 +387,7 @@ public class UserProfile {
             case "netherite":
                 return netherite;
             case "copper":
-                return netherite;
+                return copper;
             default:
                 throw new IllegalArgumentException("Invalid currency name: " + currencyName);
         }
@@ -446,7 +446,7 @@ public class UserProfile {
                 this.netherite = amount;
                 break;
             case "copper":
-                this.netherite = amount;
+                this.copper = amount;
                 break;
             default:
                 throw new IllegalArgumentException("Invalid currency name: " + currencyName);

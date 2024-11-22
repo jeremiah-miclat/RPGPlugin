@@ -3,9 +3,7 @@ package github.eremiyuh.rPGPlugin.methods;
 import github.eremiyuh.rPGPlugin.RPGPlugin;
 import org.bukkit.Chunk;
 import org.bukkit.Particle;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
@@ -28,7 +26,6 @@ public class ChunkBorderBlueVisualizer {
             return; // Exit if already visualizing this chunk
         }
 
-        World world = chunk.getWorld();
         int chunkX = chunk.getX() * 16;
         int chunkZ = chunk.getZ() * 16;
         int y = player.getLocation().getBlockY();
@@ -48,7 +45,8 @@ public class ChunkBorderBlueVisualizer {
                     playerVisualizations.remove(chunk);
                     return;
                 }
-                drawChunkBorder(world, particleType, chunkX, y, chunkZ);
+                // Pass the player to ensure only this player sees the particles
+                drawChunkBorder(player, particleType, chunkX, y, chunkZ);
             }
         };
 
@@ -57,17 +55,17 @@ public class ChunkBorderBlueVisualizer {
         playerVisualizations.put(chunk, task);
     }
 
-    private void drawChunkBorder(World world, Particle particle, int chunkX, int startY, int chunkZ) {
+    private void drawChunkBorder(Player player, Particle particle, int chunkX, int startY, int chunkZ) {
         for (int y = startY; y < startY + 3; y++) {
             for (int i = 0; i <= 16; i++) {
                 // Bottom edge (X)
-                world.spawnParticle(particle, chunkX + i, y, chunkZ, 1, 0.1, 0.1, 0.1, 0);
+                player.spawnParticle(particle, chunkX + i, y, chunkZ, 1, 0.1, 0.1, 0.1, 0);
                 // Right edge (Z)
-                world.spawnParticle(particle, chunkX + 16, y, chunkZ + i, 1, 0.1, 0.1, 0.1, 0);
+                player.spawnParticle(particle, chunkX + 16, y, chunkZ + i, 1, 0.1, 0.1, 0.1, 0);
                 // Top edge (X)
-                world.spawnParticle(particle, chunkX + 16 - i, y, chunkZ + 16, 1, 0.1, 0.1, 0.1, 0);
+                player.spawnParticle(particle, chunkX + 16 - i, y, chunkZ + 16, 1, 0.1, 0.1, 0.1, 0);
                 // Left edge (Z)
-                world.spawnParticle(particle, chunkX, y, chunkZ + 16 - i, 1, 0.1, 0.1, 0.1, 0);
+                player.spawnParticle(particle, chunkX, y, chunkZ + 16 - i, 1, 0.1, 0.1, 0.1, 0);
             }
         }
     }

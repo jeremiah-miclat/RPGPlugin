@@ -58,6 +58,8 @@ public class RPGPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        int x1 = -150, z1 = 150;
+        int x2 = 90, z2 = -110;
 
         for (World map : Bukkit.getWorlds()) {
             for (Entity entity : map.getEntities()) {
@@ -276,6 +278,7 @@ public class RPGPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new SummonVillagerListener(), this);
         getServer().getPluginManager().registerEvents(new AbyssHealItemListener(), this);
         getServer().getPluginManager().registerEvents(new AbyssOreListener(profileManager), this);
+        getServer().getPluginManager().registerEvents(new CreateShopListener(this,chunkManager,profileManager), this);
 
 
         // Register the command executor
@@ -310,7 +313,7 @@ public class RPGPlugin extends JavaPlugin {
         Objects.requireNonNull(this.getCommand("home")).setExecutor(new HomeCommand(profileManager));
         Objects.requireNonNull(this.getCommand("homedelete")).setExecutor(new DeleteHomeCommand(profileManager));
         Objects.requireNonNull(this.getCommand("convertfood")).setExecutor(new ConvertFoodCommand(profileManager));
-        Objects.requireNonNull(this.getCommand("payblacksmith")).setExecutor(new PayBlackSmithCommand(profileManager));
+        Objects.requireNonNull(this.getCommand("durability")).setExecutor(new PayBlackSmithCommand(profileManager));
         Objects.requireNonNull(getCommand("healthscale")).setExecutor(new HealthScale(this));
         Objects.requireNonNull(this.getCommand("sv")).setExecutor(new SummonVillagerCommand(this));
         Objects.requireNonNull(getCommand("rest")).setExecutor(new ResetRestCommand(profileManager));
