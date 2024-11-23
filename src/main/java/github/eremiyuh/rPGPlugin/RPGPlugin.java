@@ -2,6 +2,7 @@ package github.eremiyuh.rPGPlugin;
 
 import github.eremiyuh.rPGPlugin.buffs.PlayerStatBuff;
 import github.eremiyuh.rPGPlugin.commandswithgui.AbyssStoreCommand;
+import github.eremiyuh.rPGPlugin.manager.ShopsManager;
 import github.eremiyuh.rPGPlugin.manager.VaultManager;
 import github.eremiyuh.rPGPlugin.utils.HologramUtil;
 import github.eremiyuh.rPGPlugin.utils.TradeOffer;
@@ -38,6 +39,7 @@ public class RPGPlugin extends JavaPlugin {
     private final HashMap<UUID, TradeOffer> activeTrades = new HashMap<>();
     private boolean serverLoaded = false;
     private VaultManager vaultManager;
+    private ShopsManager shopsManager;
 
 
     @Override
@@ -61,16 +63,16 @@ public class RPGPlugin extends JavaPlugin {
         int x1 = -150, z1 = 150;
         int x2 = 90, z2 = -110;
 
-        for (World map : Bukkit.getWorlds()) {
-            for (Entity entity : map.getEntities()) {
-                if (entity instanceof ArmorStand armorStand) {
-                    if (armorStand.isInvisible()) {
-                        armorStand.remove();
-                    }
-                }
-
-            }
-        }
+//        for (World map : Bukkit.getWorlds()) {
+//            for (Entity entity : map.getEntities()) {
+//                if (entity instanceof ArmorStand armorStand) {
+//                    if (armorStand.isInvisible()) {
+//                        armorStand.remove();
+//                    }
+//                }
+//
+//            }
+//        }
 
 
         // Log that the shutdown process has started
@@ -236,10 +238,12 @@ public class RPGPlugin extends JavaPlugin {
         // Load your data, initialize managers, etc.
         // Initialize the profile manager
         profileManager = new PlayerProfileManager(this);
-
+        shopsManager = new ShopsManager(this);
+        shopsManager.loadAllShops();
         profileManager.resetLoginStatus();
         vaultManager = new VaultManager(this, this.getDataFolder());
         Objects.requireNonNull(this.getCommand("vault")).setExecutor(new VaultCommand(vaultManager));
+
 
         this.chunkManager = new ChunkManager(getDataFolder());
         EffectsAbilityManager effectsAbilityManager = new EffectsAbilityManager(this);
@@ -263,7 +267,7 @@ public class RPGPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new DeadMobListener(profileManager),this);
         getServer().getPluginManager().registerEvents(new MonsterInitializer(this),this);
         getServer().getPluginManager().registerEvents(new MonsterInitializerLabyrinth(this),this);
-        getServer().getPluginManager().registerEvents(new ChunkProtectionListener(chunkManager,chunkBorderBlueVisualizer,chunkBorderRedVisualizer),this);
+        getServer().getPluginManager().registerEvents(new ChunkProtectionListener(chunkManager,chunkBorderBlueVisualizer,chunkBorderRedVisualizer,shopsManager),this);
         getServer().getPluginManager().registerEvents(new AreaProtectionListener(this), this);
         getServer().getPluginManager().registerEvents(new WorldProtectionListener(this), this);
         playerStatBuff = new PlayerStatBuff(profileManager);
@@ -278,7 +282,7 @@ public class RPGPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new SummonVillagerListener(), this);
         getServer().getPluginManager().registerEvents(new AbyssHealItemListener(), this);
         getServer().getPluginManager().registerEvents(new AbyssOreListener(profileManager), this);
-        getServer().getPluginManager().registerEvents(new CreateShopListener(this,chunkManager,profileManager), this);
+        getServer().getPluginManager().registerEvents(new CreateShopListener(this,chunkManager,profileManager,shopsManager), this);
 
 
         // Register the command executor

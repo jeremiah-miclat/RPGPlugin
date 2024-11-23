@@ -101,9 +101,9 @@ public class DeadMobListener implements Listener {
                         UserProfile playerProfile = profileManager.getProfile(player.getName());
                         BossDropItem dropItem = isBoss ? BossDropItem.getRandomBossDropItem(regularBossDrops) : BossDropItem.getRandomBossDropItem(worldBossDrops);
                         if (player.getName().equals(killer.getName())) {
-                            applyRewards(player, playerProfile, health, 1, dropMultiplier);
+                            applyRewards(player, playerProfile, health*1.5, 1, dropMultiplier);
                         } else {
-                            applyRewards(player, playerProfile, health, (double) bosslvl /40, dropMultiplier);
+                            applyRewards(player, playerProfile, health*1.5, (double) bosslvl /40, dropMultiplier);
                         }
                         distributeDrops(player, event, dropMultiplier);
                         if (dropItem != null) {

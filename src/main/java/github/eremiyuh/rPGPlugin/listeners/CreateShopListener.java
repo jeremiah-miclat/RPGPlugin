@@ -3,6 +3,7 @@ package github.eremiyuh.rPGPlugin.listeners;
 import github.eremiyuh.rPGPlugin.RPGPlugin;
 import github.eremiyuh.rPGPlugin.manager.ChunkManager;
 import github.eremiyuh.rPGPlugin.manager.PlayerProfileManager;
+import github.eremiyuh.rPGPlugin.manager.ShopsManager;
 import github.eremiyuh.rPGPlugin.profile.UserProfile;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -11,14 +12,18 @@ import org.bukkit.block.Barrel;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Chest;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Boat;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityPlaceEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -26,6 +31,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
+
+import java.io.File;
 import java.util.Set;
 import java.util.HashSet;
 
@@ -37,63 +44,153 @@ public class CreateShopListener implements Listener {
     private final RPGPlugin plugin;
     private final ChunkManager chunkManager;
     private final PlayerProfileManager profileManager;
-
-    public CreateShopListener(RPGPlugin plugin, ChunkManager chunkManager, PlayerProfileManager profileManager) {
+    private final ShopsManager shopsManager;
+    public CreateShopListener(RPGPlugin plugin, ChunkManager chunkManager, PlayerProfileManager profileManager, ShopsManager shopsManager) {
         this.plugin = plugin;
         this.chunkManager = chunkManager;
         this.profileManager = profileManager;
+        this.shopsManager = shopsManager;
     }
 
 
+//    @EventHandler
+//    public void createShopEvent(EntityPlaceEvent event) {
+//
+//        Player player = event.getPlayer();
+//        Chunk chunk = player.getChunk();
+//
+//        Set<String> validCurrencies = new HashSet<>();
+//        validCurrencies.add("diamond");
+//        validCurrencies.add("emerald");
+//        validCurrencies.add("iron");
+//        validCurrencies.add("lapis");
+//        validCurrencies.add("gold");
+//        validCurrencies.add("enderpearl");
+//        validCurrencies.add("netherite");
+//        validCurrencies.add("copper");
+//
+//        // Check if the chunk is owned by the player
+//        if (chunkManager.getOwner(chunk) != null && chunkManager.getOwner(chunk).equalsIgnoreCase(player.getName())) {
+//            player.sendMessage("Chunk owned");
+//            // Check if the placed entity is an Armor Stand
+//            if (event.getEntity() instanceof Boat boat) {
+//                player.sendMessage("Boat placed");
+//                // Get the block below the Armor Stand to check if it's a Barrel
+//                Block blockBelow = event.getBlock().getLocation().getBlock();
+//                if (blockBelow.getType() == Material.CHEST) {
+//                    player.sendMessage("Block Below");
+//                    Chest barrel = (Chest) blockBelow.getState();
+//                    Inventory inventory = barrel.getInventory();
+//
+//                    String boatName = boat.getCustomName();
+//                    if (boatName != null && boatName.matches("\\d+\\s+\\w+\\s+\\d+")) {
+//                        player.sendMessage("Boat name");
+//                        // Boat name is in the correct format, use it
+//                        String[] boatDetails = boatName.split(" ");
+//                        int numberOfItems = Integer.parseInt(boatDetails[0]); // Number of items inside the barrel that being traded
+//                        String itemBeingTraded = boatDetails[1]; // Item being traded
+//                        int numberOfItemsBeingTraded = Integer.parseInt(boatDetails[2]); // Number of items being traded
+//
+//
+//                        if (!validCurrencies.contains(itemBeingTraded.toLowerCase())) {
+//                            player.sendMessage("Invalid currency: " + itemBeingTraded);
+//                            event.setCancelled(true);
+//                            return; // Stop further processing if the currency is invalid
+//                        }
+//
+//                        // Check only the first item in the Barrel
+//                        ItemStack firstItem = inventory.getItem(0);
+//                        if (firstItem != null) {
+//                            player.sendMessage("First");
+//                            event.setCancelled(true);
+//                            String itemName = firstItem.getType().toString(); // Default to item type as name
+//
+//                            // Create floating text with item name and lore (if any)
+//                            if (hasLore(firstItem)) {
+//
+//                                TextComponent customDisplay = (TextComponent) firstItem.getItemMeta().displayName();
+//                                assert customDisplay != null;
+//
+//                                TextComponent boatTextComponent = Component.text(customDisplay.content() + " "
+//                                        + numberOfItems + " " + itemBeingTraded + " " + numberOfItemsBeingTraded
+//
+//                                );
+//                                String[] stack = {boatTextComponent.content() ,getItemLore(firstItem), customDisplay.content()};
+//                                createHologramStack(boat.getWorld(), boat.getX(), boat.getY(), boat.getZ(), stack);
+//                                shopsManager.saveShopForPlayer(player.getName(), firstItem,numberOfItems,numberOfItemsBeingTraded,itemBeingTraded, barrel.getLocation());
+//                                setBarrelMetaData(barrel, player.getName(), firstItem, numberOfItems, itemBeingTraded, Integer.parseInt(String.valueOf(numberOfItemsBeingTraded)));
+//                                return;
+//                            }
+//
+//                                TextComponent boatTextComponent = Component.text(itemName + " "
+//                                        + numberOfItems + " " + itemBeingTraded + " " + numberOfItemsBeingTraded
+//
+//                                );
+//                                String[] stack = {boatTextComponent.content(),itemName};
+//                                createHologramStack(boat.getWorld(), boat.getX(), boat.getY(), boat.getZ(), stack);
+//                            shopsManager.saveShopForPlayer(player.getName(), firstItem,numberOfItems,numberOfItemsBeingTraded,itemBeingTraded, barrel.getLocation());
+//                            setBarrelMetaData(barrel, player.getName(), firstItem, numberOfItems, itemBeingTraded, Integer.parseInt(String.valueOf(numberOfItemsBeingTraded)));
+//                        }
+//
+//                    }
+//
+//                }
+//            }
+//        }
+//    }
+
     @EventHandler
-    public void createShopEvent(EntityPlaceEvent event) {
-
+    public void onSignChange(SignChangeEvent event) {
         Player player = event.getPlayer();
-        Chunk chunk = player.getChunk();
+        Block signBlock = event.getBlock();
+        String[] lines = event.getLines();
 
-        Set<String> validCurrencies = new HashSet<>();
-        validCurrencies.add("diamond");
-        validCurrencies.add("emerald");
-        validCurrencies.add("iron");
-        validCurrencies.add("lapis");
-        validCurrencies.add("gold");
-        validCurrencies.add("enderpearl");
-        validCurrencies.add("netherite");
-        validCurrencies.add("copper");
+        // Debugging: Print all lines to console
+        for (int i = 0; i < lines.length; i++) {
+            System.out.println("Line " + i + ": " + lines[i]);
+        }
 
-        // Check if the chunk is owned by the player
-        if (chunkManager.getOwner(chunk) != null && chunkManager.getOwner(chunk).equalsIgnoreCase(player.getName())) {
-            // Check if the placed entity is an Armor Stand
-            if (event.getEntity() instanceof Boat boat) {
-                // Get the block below the Armor Stand to check if it's a Barrel
-                Block blockBelow = event.getBlock().getLocation().getBlock();
-                if (blockBelow.getType() == Material.CHEST) {
-                    Chest barrel = (Chest) blockBelow.getState();
-                    Inventory inventory = barrel.getInventory();
+        // Count non-empty lines
+        int nonEmptyLines = 0;
+        for (String line : lines) {
+            if (!line.trim().isEmpty()) {
+                nonEmptyLines++;
+            }
+        }
 
-                    String boatName = boat.getCustomName();
-                    if (boatName != null && boatName.matches("\\d+\\s+\\w+\\s+\\d+")) {
-                        // Boat name is in the correct format, use it
-                        String[] boatDetails = boatName.split(" ");
-                        int numberOfItems = Integer.parseInt(boatDetails[0]); // Number of items inside the barrel that being traded
-                        String itemBeingTraded = boatDetails[1]; // Item being traded
-                        String numberOfItemsBeingTraded = boatDetails[2]; // Number of items being traded
+        // Check if at least 3 lines are filled
+        if (nonEmptyLines < 3) {
+            player.sendMessage("You must fill at least 3 lines of the sign!");
+            event.setCancelled(true);
+            return;
+        }
 
+        Set<String> validCurrencies = Set.of("diamond", "emerald", "iron", "lapis", "gold", "enderpearl", "netherite", "copper");
 
-                        if (!validCurrencies.contains(itemBeingTraded.toLowerCase())) {
-                            player.sendMessage("Invalid currency: " + itemBeingTraded);
-                            event.setCancelled(true);
-                            return; // Stop further processing if the currency is invalid
-                        }
+        try {
+            int numberOfItems = Integer.parseInt(lines[0].trim());
+            String itemBeingTraded = lines[1].trim().toLowerCase();
+            int numberOfItemsBeingTraded = Integer.parseInt(lines[2].trim());
 
-                        // Check only the first item in the Barrel
-                        ItemStack firstItem = inventory.getItem(0);
-                        if (firstItem != null) {
-                            event.setCancelled(true);
-                            String itemName = firstItem.getType().toString(); // Default to item type as name
+            if (!validCurrencies.contains(itemBeingTraded)) {
+                player.sendMessage("Invalid currency: " + itemBeingTraded);
+                event.setCancelled(true);
+                return;
+            }
 
-                            // Create floating text with item name and lore (if any)
-                            if (hasLore(firstItem)) {
+            player.sendMessage("Valid sign format detected");
+
+            // Proceed with shop creation logic
+            // Example: Check the block below the sign
+            Block blockBelow = signBlock.getRelative(0, -1, 0);
+            if (blockBelow.getType() == Material.CHEST) {
+                Chest chest = (Chest) blockBelow.getState();
+                Inventory inventory = chest.getInventory();
+
+                ItemStack firstItem = inventory.getItem(0);
+                if (firstItem != null) {
+
+                    if (hasLore(firstItem)) {
 
                                 TextComponent customDisplay = (TextComponent) firstItem.getItemMeta().displayName();
                                 assert customDisplay != null;
@@ -103,26 +200,45 @@ public class CreateShopListener implements Listener {
 
                                 );
                                 String[] stack = {boatTextComponent.content() ,getItemLore(firstItem), customDisplay.content()};
-                                createHologramStack(boat.getWorld(), boat.getX(), boat.getY(), boat.getZ(), stack);
-                                setBarrelMetaData(barrel, player.getName(), firstItem, numberOfItems, itemBeingTraded, Integer.parseInt(numberOfItemsBeingTraded));
+                                createHologramStack(blockBelow.getWorld(), blockBelow.getX(), blockBelow.getY(), blockBelow.getZ(), stack);
+
+                                shopsManager.saveShopForPlayer(player.getName(), firstItem,numberOfItems,numberOfItemsBeingTraded,itemBeingTraded, chest.getLocation());
+                                setBarrelMetaData(chest, player.getName(), firstItem, numberOfItems, itemBeingTraded, Integer.parseInt(String.valueOf(numberOfItemsBeingTraded)));
+                                signBlock.breakNaturally();
+                                player.sendMessage("First item found in chest");
                                 return;
                             }
-
-                                TextComponent boatTextComponent = Component.text(itemName + " "
+                    String itemName = firstItem.getType().toString(); // Default to item type as name
+                    TextComponent boatTextComponent = Component.text(itemName + " "
                                         + numberOfItems + " " + itemBeingTraded + " " + numberOfItemsBeingTraded
 
                                 );
                                 String[] stack = {boatTextComponent.content(),itemName};
-                                createHologramStack(boat.getWorld(), boat.getX(), boat.getY(), boat.getZ(), stack);
+                                createHologramStack(blockBelow.getWorld(), blockBelow.getX(), blockBelow.getY() + 1, blockBelow.getZ(), stack);
+                            shopsManager.saveShopForPlayer(player.getName(), firstItem,numberOfItems,numberOfItemsBeingTraded,itemBeingTraded, chest.getLocation());
+                            setBarrelMetaData( chest, player.getName(), firstItem, numberOfItems, itemBeingTraded, Integer.parseInt(String.valueOf(numberOfItemsBeingTraded)));
 
-                        }
 
-                    }
+                    player.sendMessage("First item found in chest");
 
+
+                    signBlock.breakNaturally();
+
+                    player.sendMessage("Shop successfully created!");
+                } else {
+                    player.sendMessage("The chest is empty!");
                 }
+            } else {
+                player.sendMessage("The sign must be placed on top of a chest!");
+                event.setCancelled(true);
             }
+        } catch (NumberFormatException e) {
+            player.sendMessage("Invalid number format! Ensure the first and third lines are numbers.");
+            event.setCancelled(true);
         }
     }
+
+
 
     // Helper method to check if the first item in the inventory has lore
     public boolean hasLore(ItemStack item) {
@@ -186,15 +302,37 @@ public class CreateShopListener implements Listener {
                 }
             }
 
+
+
             // Clear metadata from the barrel or chest
             BlockState state = block.getState();
             if (state instanceof Chest) {
                 Chest chest = (Chest) state;
+                if (!chest.hasMetadata("seller")) return;
+
+                String ownerName =chest.getMetadata("seller").getFirst().asString();
+                event.getPlayer().sendMessage("Owner is: " + ownerName);
+                int shopID = getShopIDFromLocation(ownerName, blockLocation); // Implement this method to find the shop ID
+
+                if (shopID != -1) {
+                    boolean removed = shopsManager.removeShopRecord(ownerName, shopID);
+                    if (removed) {
+                        event.getPlayer().sendMessage(ChatColor.GREEN + "Shop removed successfully!");
+                    } else {
+                        event.getPlayer().sendMessage(ChatColor.RED + "Failed to remove shop!");
+                    }
+                }
+//                shopsManager.removeShopForPlayer(chest.getMetadata("seller").getFirst().asString(),blockLocation);
+            }
+            if (state instanceof Chest) {
+                Chest chest = (Chest) state;
+
                 chest.removeMetadata("seller", plugin);
                 chest.removeMetadata("item", plugin);
                 chest.removeMetadata("numberOfItem", plugin);
                 chest.removeMetadata("currency", plugin);
                 chest.removeMetadata("amountOfCurrency", plugin);
+
             }
         }
     }
@@ -216,24 +354,39 @@ public class CreateShopListener implements Listener {
     @EventHandler
     public void onPlayerRightClickBarrel(PlayerInteractEvent event) {
         // Ensure that the player clicked on a barrel with the necessary metadata
-        if (event.getClickedBlock() != null && event.getClickedBlock().getState() instanceof Chest barrel && barrel.hasMetadata("seller")) {
+        if (event.getClickedBlock() != null &&
+                event.getClickedBlock().getState() instanceof Chest barrel &&
+                barrel.hasMetadata("seller") &&
+                event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 
-            Player seller = Bukkit.getPlayer(barrel.getMetadata("seller").getFirst().asString());
+            String seller = barrel.getMetadata("seller").get(0).asString(); // Safely retrieve metadata
             Player player = event.getPlayer();
-            if (seller==null) {return;}
-            if (player.getName().equals(seller.getName())) {return;}
-            event.setCancelled(true);
-            // Ensure that the barrel has the necessary metadata and that the seller is valid
-            if (barrel.hasMetadata("item")) {
+
+            if (seller == null ) {
+                event.setCancelled(true); // Cancel interaction for seller or invalid data
+                return;
+            }
+
+            if (player.getName().equals(seller)) {return;}
+
+            // Ensure that the barrel has the necessary metadata and the player is not the seller
+            if (barrel.hasMetadata("item") && barrel.hasMetadata("numberOfItem") &&
+                    barrel.hasMetadata("currency") && barrel.hasMetadata("amountOfCurrency")) {
+
                 // Retrieve player profiles for the seller and the player
-                UserProfile sellerProfile = profileManager.getProfile(seller.getName());
+                UserProfile sellerProfile = profileManager.getProfile(seller);
                 UserProfile playerProfile = profileManager.getProfile(player.getName());
 
+                if (sellerProfile == null || playerProfile == null) {
+                    player.sendMessage(ChatColor.RED + "Transaction failed due to missing profiles.");
+                    return;
+                }
+
                 // Retrieve the item from metadata and other transaction details
-                ItemStack storedItem = (ItemStack) barrel.getMetadata("item").getFirst().value(); // Item being sold
-                int itemAmount = barrel.getMetadata("numberOfItem").getFirst().asInt(); // Amount given to player for purchase
-                String currency = barrel.getMetadata("currency").getFirst().asString(); // Currency type
-                int currencyAmount = barrel.getMetadata("amountOfCurrency").getFirst().asInt(); // Currency per item
+                ItemStack storedItem = (ItemStack) barrel.getMetadata("item").get(0).value(); // Item being sold
+                int itemAmount = barrel.getMetadata("numberOfItem").get(0).asInt(); // Amount given to player for purchase
+                String currency = barrel.getMetadata("currency").get(0).asString(); // Currency type
+                int currencyAmount = barrel.getMetadata("amountOfCurrency").get(0).asInt(); // Currency per item
 
                 // Retrieve the seller's and player's currency balances
                 double sellerCurrency = sellerProfile.getCurrency(currency);
@@ -249,30 +402,36 @@ public class CreateShopListener implements Listener {
 
                     if (sellerStock >= itemAmount) {
                         // Proceed with the transaction:
-
-                        // Deduct currency from the player and add to the seller
                         playerProfile.setCurrency(currency, playerCurrency - totalCost); // Player loses currency
                         sellerProfile.setCurrency(currency, sellerCurrency + totalCost); // Seller gains currency
 
                         // Add the items to the player's inventory
                         ItemStack itemToGive = storedItem.clone();
-                        giveItemsToBuyer(player,itemToGive,itemAmount);
+                        giveItemsToBuyer(player, itemToGive, itemAmount);
 
                         // Reduce the item stock in the barrel by the amount sold
                         reduceItemStock(barrel, storedItem, itemAmount);
 
                         // Send messages to both the seller and the player
-                        player.sendMessage("You have successfully bought " + itemAmount + " " + storedItem.getType() + " for " + totalCost + " " + currency + ".");
-                        seller.sendMessage("You have sold " + itemAmount + " " + storedItem.getType() + " for " + totalCost + " " + currency + ".");
+                        player.sendMessage(ChatColor.GREEN + "You have successfully bought " + itemAmount + " " + storedItem.getType() + " for " + totalCost + " " + currency + ".");
+
+                        // Notify the seller if online
+                        Player sellerPlayer = Bukkit.getPlayer(seller);
+                        if (sellerPlayer != null && sellerPlayer.isOnline()) {
+                            sellerPlayer.sendMessage(ChatColor.GREEN + "You have successfully sold " + itemAmount + " " + storedItem.getType() + " for " + totalCost + " " + currency + ".");
+                        }
                     } else {
-                        player.sendMessage("The seller does not have enough stock of the item.");
+                        player.sendMessage(ChatColor.RED + "The seller does not have enough stock of the item.");
                     }
                 } else {
-                    player.sendMessage("You do not have enough " + currency + " to complete this purchase.");
+                    player.sendMessage(ChatColor.RED + "You do not have enough " + currency + " to complete this purchase.");
                 }
+            } else {
+                player.sendMessage(ChatColor.RED + "This shop is not properly set up.");
             }
         }
     }
+
 
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
@@ -405,6 +564,32 @@ public class CreateShopListener implements Listener {
         barrel.setMetadata("amountOfCurrency", new FixedMetadataValue(plugin,amountOfCurrency));
     }
 
+    private int getShopIDFromLocation(String playerName, Location location) {
+        File playerShopsFile = new File(plugin.getDataFolder(), playerName + "_shops.yml");
+        if (!playerShopsFile.exists()) return -1;
+
+        YamlConfiguration shopsConfig = YamlConfiguration.loadConfiguration(playerShopsFile);
+        ConfigurationSection shopsSection = shopsConfig.getConfigurationSection("shops");
+        if (shopsSection == null) return -1;
+
+        for (String key : shopsSection.getKeys(false)) {
+            ConfigurationSection shopSection = shopsSection.getConfigurationSection(key);
+            if (shopSection != null) {
+                String world = shopSection.getString("id.world");
+                double x = shopSection.getDouble("id.x");
+                double y = shopSection.getDouble("id.y");
+                double z = shopSection.getDouble("id.z");
+
+                if (location.getWorld().getName().equals(world) &&
+                        location.getX() == x &&
+                        location.getY() == y &&
+                        location.getZ() == z) {
+                    return Integer.parseInt(key.replace("shop", ""));
+                }
+            }
+        }
+        return -1; // Return -1 if no matching shop is found
+    }
 
 
 

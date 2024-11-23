@@ -97,20 +97,24 @@ public class DamageListener implements Listener {
                     attacker.sendMessage("Your profile or target's profile can not be found. contact developer to fix files");
                     damaged.sendMessage("Your profile or dude's profile can not be found. contact developer to fix files");
                     event.setCancelled(true);
+                    return;
                 }
 
                 assert attackerProfile != null;
                 if (!attackerProfile.isPvpEnabled()) {
                     event.setCancelled(true);
+                    return;
                 }
 
                 assert damagedProfile != null;
                 if (!damagedProfile.isPvpEnabled()) {
                     event.setCancelled(true);
+                    return;
                 }
 
                 if (!Objects.equals(damagedProfile.getTeam(), "none") && Objects.equals(damagedProfile.getTeam(), attackerProfile.getTeam())) {
                     event.setCancelled(true);
+                    return;
                 }
 
             }
@@ -124,19 +128,23 @@ public class DamageListener implements Listener {
                     shooter.sendMessage("Your profile or target's profile can not be found. contact developer to fix files");
                     damaged.sendMessage("Your profile or dude's profile can not be found. contact developer to fix files");
                     event.setCancelled(true);
+                    return;
                 }
 
                 assert shooterProfile != null;
                 if (!shooterProfile.isPvpEnabled()) {
                     event.setCancelled(true);
+                    return;
                 }
 
                 assert damagedProfile != null;
                 if (!damagedProfile.isPvpEnabled()) {
                     event.setCancelled(true);
+                    return;
                 }
                 if (!Objects.equals(damagedProfile.getTeam(), "none") && Objects.equals(damagedProfile.getTeam(), shooterProfile.getTeam())) {
                     event.setCancelled(true);
+                    return;
                 }
 
             }
@@ -151,20 +159,24 @@ public class DamageListener implements Listener {
                     thrower.sendMessage("Your profile or target's profile can not be found. contact developer to fix files");
                     damaged.sendMessage("Your profile or dude's profile can not be found. contact developer to fix files");
                     event.setCancelled(true);
+                    return;
                 }
 
                 assert throwerProfile != null;
                 if (!throwerProfile.isPvpEnabled()) {
                     event.setCancelled(true);
+                    return;
                 }
 
                 assert damagedProfile != null;
                 if (!damagedProfile.isPvpEnabled()) {
                     event.setCancelled(true);
+                    return;
                 }
 
                 if (!Objects.equals(damagedProfile.getTeam(), "none") && Objects.equals(damagedProfile.getTeam(), throwerProfile.getTeam())) {
                     event.setCancelled(true);
+                    return;
                 }
 
 
@@ -213,20 +225,24 @@ public class DamageListener implements Listener {
                         attacker.sendMessage("Your profile or target's profile can not be found. contact developer to fix files");
                         damaged.sendMessage("Your profile or dude's profile can not be found. contact developer to fix files");
                         event.setCancelled(true);
+                        return;
                     }
 
                     assert attackerProfile != null;
                     if (!attackerProfile.isPvpEnabled()) {
                         event.setCancelled(true);
+                        return;
                     }
 
                     assert damagedProfile != null;
                     if (!damagedProfile.isPvpEnabled()) {
                         event.setCancelled(true);
+                        return;
                     }
 
                     if (!Objects.equals(damagedProfile.getTeam(), "none") && Objects.equals(damagedProfile.getTeam(), attackerProfile.getTeam())) {
                         event.setCancelled(true);
+                        return;
                     }
 
                 }
@@ -267,20 +283,24 @@ public class DamageListener implements Listener {
                             attacker.sendMessage("Your profile or target's profile can not be found. contact developer to fix files");
                             damaged.sendMessage("Your profile or dude's profile can not be found. contact developer to fix files");
                             event.setCancelled(true);
+                            return;
                         }
 
                         assert attackerProfile != null;
                         if (!attackerProfile.isPvpEnabled()) {
                             event.setCancelled(true);
+                            return;
                         }
 
                         assert damagedProfile != null;
                         if (!damagedProfile.isPvpEnabled()) {
                             event.setCancelled(true);
+                            return;
                         }
 
                         if (!Objects.equals(damagedProfile.getTeam(), "none") && Objects.equals(damagedProfile.getTeam(), attackerProfile.getTeam())) {
                             event.setCancelled(true);
+                            return;
                         }
 
 
@@ -321,20 +341,24 @@ public class DamageListener implements Listener {
                             attacker.sendMessage("Your profile or target's profile can not be found. contact developer to fix files");
                             damaged.sendMessage("Your profile or dude's profile can not be found. contact developer to fix files");
                             event.setCancelled(true);
+                            return;
                         }
 
                         assert attackerProfile != null;
                         if (!attackerProfile.isPvpEnabled()) {
                             event.setCancelled(true);
+                            return;
                         }
 
                         assert damagedProfile != null;
                         if (!damagedProfile.isPvpEnabled()) {
                             event.setCancelled(true);
+                            return;
                         }
 
                         if (!Objects.equals(damagedProfile.getTeam(), "none") && Objects.equals(damagedProfile.getTeam(), attackerProfile.getTeam())) {
                             event.setCancelled(true);
+                            return;
                         }
 
                     }
@@ -397,17 +421,17 @@ public class DamageListener implements Listener {
         if (!(event.getEntity() instanceof LivingEntity) && !(event.getEntity() instanceof  Monster)) {
             return;
         }
-
-        if (event.getEntity() instanceof Monster monsterWithoutMeta && !monsterWithoutMeta.hasMetadata("extraHealth")) {
-            monsterWithoutMeta.setHealth(0);
-            return;
-        }
-
-        if (event.getDamageSource().getCausingEntity() instanceof Player player && player.getAllowFlight()) {
-            player.sendMessage("damaged cancelled. Disable fly mode");
-            event.setCancelled(true);
-            return;
-        }
+//
+//        if (event.getEntity() instanceof Monster monsterWithoutMeta && !monsterWithoutMeta.hasMetadata("extraHealth")) {
+//            monsterWithoutMeta.remove();
+//            return;
+//        }
+//
+//        if (event.getDamageSource().getCausingEntity() instanceof Player player && player.getAllowFlight()) {
+//            player.sendMessage("damaged cancelled. Disable fly mode");
+//            event.setCancelled(true);
+//            return;
+//        }
 
 
         if (event.getEntity() instanceof Player player) {
@@ -439,7 +463,16 @@ public class DamageListener implements Listener {
 
         // Update the health indicator
 
-        resetHealthIndicator((LivingEntity) event.getEntity(), damage);
+        if (event.getEntity().hasMetadata("extraHealth")) {
+            resetHealthIndicator((LivingEntity) event.getEntity(), damage);
+        }
+
+        if (!(event.getEntity() instanceof LivingEntity target)) return;
+
+        double newHealth = target.getHealth() - event.getFinalDamage();
+
+
+
 
     }
 
@@ -648,15 +681,30 @@ public class DamageListener implements Listener {
 
         // Alchemist class - Check if using thrown potion
         if (damagerProfile.getChosenClass().equalsIgnoreCase("alchemist") && event.getDamager() instanceof ThrownPotion) {
-
+            event.setDamage(finalDamage);
             effectsAbilityManager.applyAbility(damagerProfile, target, damagerLocation, damagedLocation);
+            return;
         }
 
         double rawDmg = event.getDamage();
         double finalDmg = event.getFinalDamage();
-        double dmgReductionMultiplier = Math.max(0.2, finalDmg / rawDmg);
+
+        double dmgReductionMultiplier = 1.0;
+
+        if (rawDmg > 0) {
+            // Only calculate dmgReductionMultiplier if rawDmg is greater than 0
+            if (finalDmg >= 0) {
+                dmgReductionMultiplier = finalDmg / rawDmg;
+            }
+        }
+
+
+        if (Double.isNaN(dmgReductionMultiplier)) {
+            dmgReductionMultiplier = 1.0;
+        }
         if (target instanceof Player) finalDamage*=10;
-        event.setDamage(finalDamage*dmgReductionMultiplier);
+        double damageApplied = finalDamage*dmgReductionMultiplier;
+        event.setDamage(damageApplied);
     }
 
     // Method to apply stats to damage

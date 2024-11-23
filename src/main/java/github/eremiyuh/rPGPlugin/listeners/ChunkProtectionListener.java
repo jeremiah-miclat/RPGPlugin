@@ -1,10 +1,12 @@
 package github.eremiyuh.rPGPlugin.listeners;
 
 import github.eremiyuh.rPGPlugin.manager.ChunkManager;
+import github.eremiyuh.rPGPlugin.manager.ShopsManager;
 import github.eremiyuh.rPGPlugin.methods.ChunkBorderBlueVisualizer;
 import github.eremiyuh.rPGPlugin.methods.ChunkBorderRedVisualizer;
 import github.eremiyuh.rPGPlugin.profile.OwnedChunk;
 import org.bukkit.Chunk;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -22,12 +24,14 @@ public class ChunkProtectionListener implements Listener {
     private final ChunkManager chunkManager;
     private final ChunkBorderBlueVisualizer chunkBorderBlueVisualizer;
     private final ChunkBorderRedVisualizer chunkBorderRedVisualizer;
+    private final ShopsManager shopsManager;
 
 
-    public ChunkProtectionListener(ChunkManager chunkManager, ChunkBorderBlueVisualizer chunkBorderBlueVisualizer, ChunkBorderRedVisualizer chunkBorderRedVisualizer) {
+    public ChunkProtectionListener(ChunkManager chunkManager, ChunkBorderBlueVisualizer chunkBorderBlueVisualizer, ChunkBorderRedVisualizer chunkBorderRedVisualizer, ShopsManager shopsManager) {
         this.chunkManager = chunkManager;
         this.chunkBorderBlueVisualizer = chunkBorderBlueVisualizer;
         this.chunkBorderRedVisualizer = chunkBorderRedVisualizer;
+        this.shopsManager = shopsManager;
     }
 
     // Additional EventHandler for damaging entities
@@ -83,16 +87,27 @@ public class ChunkProtectionListener implements Listener {
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
+
         if (event.hasBlock()) { // Check if the interaction involves a block
+            Block block = event.getClickedBlock();
+            assert block != null;
+
             Chunk chunk = Objects.requireNonNull(event.getClickedBlock()).getChunk();
             OwnedChunk ownedChunk = chunkManager.getOwnedChunk(chunk);
             if (ownedChunk != null && !chunkManager.isOwner(player.getName(), chunk) && !chunkManager.isTrusted(player.getName(), chunk)) {
                 event.setCancelled(true); // Prevent interaction
+                if (shopsManager.isShop(block.getLocation())) {
+                    return;
+                }
                 chunkHasOwnedChunkNearbyVisualizer(chunk, player);
             }
             if (chunkHasOwnedChunkNearby(chunk, player)) {
-                chunkHasOwnedChunkNearbyVisualizer(chunk,player);
                 event.setCancelled(true); // Prevent block placement
+                if (shopsManager.isShop(block.getLocation())) {
+                    return;
+                }
+                chunkHasOwnedChunkNearbyVisualizer(chunk,player);
+
             }
         }
 
