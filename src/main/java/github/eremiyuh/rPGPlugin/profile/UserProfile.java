@@ -388,6 +388,8 @@ public class UserProfile {
                 return netherite;
             case "copper":
                 return copper;
+            case "abysspoints":
+                return abyssPoints;
             default:
                 throw new IllegalArgumentException("Invalid currency name: " + currencyName);
         }

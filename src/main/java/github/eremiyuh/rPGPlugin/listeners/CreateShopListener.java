@@ -75,7 +75,7 @@ public class CreateShopListener implements Listener {
         }
 
         // List of valid currencies
-        Set<String> validCurrencies = Set.of("diamond", "emerald", "iron", "lapis", "gold", "enderpearl", "netherite", "copper");
+        Set<String> validCurrencies = Set.of("diamond", "emerald", "iron", "lapis", "gold", "enderpearl", "netherite", "copper","abysspoints");
 
         try {
             int numberOfItems = Integer.parseInt(lines[0].trim());
@@ -84,7 +84,7 @@ public class CreateShopListener implements Listener {
 
             if (!validCurrencies.contains(itemBeingTraded)) {
                 player.sendMessage("Invalid currency: " + itemBeingTraded);
-                player.sendMessage("Currencies: diamond, emerald, iron, lapis, gold, enderpearl, netherite, copper");
+                player.sendMessage("Currencies: diamond, emerald, iron, lapis, gold, enderpearl, netherite, copper","abysspoints");
                 event.setCancelled(true);
                 return;
             }
@@ -132,7 +132,7 @@ public class CreateShopListener implements Listener {
         if (!lines[0].trim().matches("\\d+")) return false;
 
         // Second line must be a valid currency name (case-insensitive)
-        Set<String> validCurrencies = Set.of("diamond", "emerald", "iron", "lapis", "gold", "enderpearl", "netherite", "copper");
+        Set<String> validCurrencies = Set.of("diamond", "emerald", "iron", "lapis", "gold", "enderpearl", "netherite", "copper", "abysspoints");
         if (!validCurrencies.contains(lines[1].trim().toLowerCase())) return false;
 
         // Third line must be a valid integer
@@ -315,9 +315,11 @@ public class CreateShopListener implements Listener {
         List<String> lore = new ArrayList<>();
         lore.add(ChatColor.YELLOW + "Amount: " + itemAmount);
         assert itemDisplayName != null;
-        lore.add(ChatColor.YELLOW + "Price: " + currencyAmount + " " + currency + " per " +
-                itemAmount + " " +  itemDisplayName.content()
+        lore.add(ChatColor.YELLOW + "Price: " + currencyAmount + " " + currency
                 );
+        lore.add(ChatColor.YELLOW +"For: " +
+                itemAmount + " " +  itemDisplayName.content()
+        );
         lore.add("Stock: " + stock);
         meta.setLore(lore);
         itemDisplay.setItemMeta(meta);
