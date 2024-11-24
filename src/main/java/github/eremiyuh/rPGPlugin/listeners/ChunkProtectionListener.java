@@ -17,6 +17,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import java.util.HashMap;
@@ -115,14 +116,67 @@ public class ChunkProtectionListener implements Listener {
         }
     }
 
-    // Handle block place events to prevent block placement in protected chunks
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
         Player player = event.getPlayer();
-        Chunk chunk = event.getBlock().getChunk();
+        Block block = event.getBlock();
+        Chunk chunk = block.getChunk();
+
+        // Check if the block being placed is a piston or sticky piston
+        if (block.getType() == Material.PISTON || block.getType() == Material.STICKY_PISTON) {
+
+            // Iterate through neighboring chunks in a 1-radius around the chunk where the piston is being placed
+            for (int xOffset = -1; xOffset <= 1; xOffset++) {
+                for (int zOffset = -1; zOffset <= 1; zOffset++) {
+                    Chunk nearbyChunk = chunk.getWorld().getChunkAt(chunk.getX() + xOffset, chunk.getZ() + zOffset);
+
+                    // Skip the chunk the piston is being placed in
+                    if (nearbyChunk.equals(chunk)) continue;
+
+                    // Check if a neighboring chunk is owned by someone else
+                    String owner = chunkManager.getOwner(nearbyChunk);
+                    if (owner != null && !owner.equals(player.getName())) {
+                        // If the player is not trusted in the neighboring chunk, cancel the event
+                        if (!chunkManager.isTrusted(player.getName(), nearbyChunk)) {
+                            event.setCancelled(true);
+                            chunkHasOwnedChunkNearbyVisualizer(chunk, player);
+                            player.sendMessage("You cannot place pistons near protected chunks owned by others.");
+                            return; // Exit the method once the event is canceled
+                        }
+                    }
+                }
+            }
+        }
+
+        // Check if the current chunk is protected and the player doesn't have permission to build
         if (isInProtectedChunk(chunk, player)) {
-            event.setCancelled(true); // Prevent block placement
+            event.setCancelled(true);
             chunkHasOwnedChunkNearbyVisualizer(chunk, player);
+        }
+    }
+
+
+
+
+    @EventHandler
+    public void onBucketEmpty(PlayerBucketEmptyEvent event) {
+        Player player = event.getPlayer();
+        Block blockClicked = event.getBlockClicked(); // The block the player clicked when emptying the bucket
+        Chunk chunk = blockClicked.getChunk(); // The chunk where the player is trying to empty the bucket
+
+        // Check surrounding chunks in a 1-block radius of the clicked block's chunk
+        for (int xOffset = -1; xOffset <= 1; xOffset++) {
+            for (int zOffset = -1; zOffset <= 1; zOffset++) {
+                // Get the surrounding chunk
+                Chunk surroundingChunk = blockClicked.getWorld().getChunkAt(chunk.getX() + xOffset, chunk.getZ() + zOffset);
+
+                // If the surrounding chunk is protected and the player is not allowed to interact, cancel the event
+                if (isInProtectedChunk(surroundingChunk, player)) {
+                    event.setCancelled(true); // Cancel the event
+                    player.sendMessage("You cannot empty the bucket near a protected area.");
+                    return; // Exit once the event is cancelled
+                }
+            }
         }
     }
 
