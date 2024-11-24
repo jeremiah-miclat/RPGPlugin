@@ -24,6 +24,8 @@ public class PayBlackSmithCommand implements CommandExecutor {
         oresMap.put(Material.COPPER_INGOT, 100);
         oresMap.put(Material.GOLD_INGOT, 200);
         oresMap.put(Material.EMERALD, 200);
+        oresMap.put(Material.LAPIS_LAZULI, 100);
+        oresMap.put(Material.NETHERITE_INGOT, 2000);
         oresMap.put(Material.DIAMOND, 1000);
 
 
