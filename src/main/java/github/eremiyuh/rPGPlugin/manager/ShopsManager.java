@@ -105,9 +105,9 @@ public class ShopsManager {
     private boolean hasShopMetadata(Chest chest) {
         return chest.hasMetadata("seller") &&
                 chest.hasMetadata("item") &&
-                chest.hasMetadata("numberOfItem") &&
+                chest.hasMetadata("itemAmount") &&
                 chest.hasMetadata("currency") &&
-                chest.hasMetadata("amountOfCurrency");
+                chest.hasMetadata("currencyAmount");
     }
 
     /**
@@ -118,9 +118,9 @@ public class ShopsManager {
     private boolean hasShopMetadata(Barrel barrel) {
         return barrel.hasMetadata("seller") &&
                 barrel.hasMetadata("item") &&
-                barrel.hasMetadata("numberOfItem") &&
+                barrel.hasMetadata("itemAmount") &&
                 barrel.hasMetadata("currency") &&
-                barrel.hasMetadata("amountOfCurrency");
+                barrel.hasMetadata("currencyAmount");
     }
 
 
@@ -198,9 +198,9 @@ public class ShopsManager {
             // Set metadata on the block
             block.setMetadata("seller", new FixedMetadataValue(plugin, seller));
             block.setMetadata("item", new FixedMetadataValue(plugin, item));
-            block.setMetadata("numberOfItem", new FixedMetadataValue(plugin, itemAmount));
+            block.setMetadata("itemAmount", new FixedMetadataValue(plugin, itemAmount));
             block.setMetadata("currency", new FixedMetadataValue(plugin, currency));
-            block.setMetadata("amountOfCurrency", new FixedMetadataValue(plugin, currencyAmount));
+            block.setMetadata("currencyAmount", new FixedMetadataValue(plugin, currencyAmount));
 
             plugin.getLogger().info("Loaded shop " + shopKey + " for player: " + playerName);
         }

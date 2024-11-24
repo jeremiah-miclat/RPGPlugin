@@ -231,9 +231,9 @@ public class CreateShopListener implements Listener {
 
                 chest.removeMetadata("seller", plugin);
                 chest.removeMetadata("item", plugin);
-                chest.removeMetadata("numberOfItem", plugin);
+                chest.removeMetadata("itemAmount", plugin);
                 chest.removeMetadata("currency", plugin);
-                chest.removeMetadata("amountOfCurrency", plugin);
+                chest.removeMetadata("currencyAmount", plugin);
 
             }
         }
@@ -253,94 +253,13 @@ public class CreateShopListener implements Listener {
         return null;  // No ArmorStand found at this location
     }
 
-//    @EventHandler
-//    public void onPlayerRightClickBarrel(PlayerInteractEvent event) {
-//        // Ensure that the player clicked on a chest with the necessary metadata
-//        if (event.getClickedBlock() != null &&
-//                event.getClickedBlock().getState() instanceof Chest chest &&
-//                chest.hasMetadata("seller") &&
-//                event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-//
-//            String seller = chest.getMetadata("seller").get(0).asString(); // Safely retrieve metadata
-//            Player player = event.getPlayer();
-//
-//            if (seller == null ) {
-//                event.setCancelled(true); // Cancel interaction for seller or invalid data
-//                return;
-//            }
-//
-//            if (player.getName().equals(seller)) {return;}
-//
-//            // Ensure that the chest has the necessary metadata and the player is not the seller
-//            if (chest.hasMetadata("item") && chest.hasMetadata("numberOfItem") &&
-//                    chest.hasMetadata("currency") && chest.hasMetadata("amountOfCurrency")) {
-//
-//                // Retrieve player profiles for the seller and the player
-//                UserProfile sellerProfile = profileManager.getProfile(seller);
-//                UserProfile playerProfile = profileManager.getProfile(player.getName());
-//
-//                if (sellerProfile == null || playerProfile == null) {
-//                    player.sendMessage(ChatColor.RED + "Transaction failed due to missing profiles.");
-//                    return;
-//                }
-//
-//                // Retrieve the item from metadata and other transaction details
-//                ItemStack storedItem = (ItemStack) chest.getMetadata("item").get(0).value(); // Item being sold
-//                int itemAmount = chest.getMetadata("numberOfItem").get(0).asInt(); // Amount given to player for purchase
-//                String currency = chest.getMetadata("currency").get(0).asString(); // Currency type
-//                int currencyAmount = chest.getMetadata("amountOfCurrency").get(0).asInt(); // Currency per item
-//
-//                // Retrieve the seller's and player's currency balances
-//                double sellerCurrency = sellerProfile.getCurrency(currency);
-//                double playerCurrency = playerProfile.getCurrency(currency);
-//
-//                // Calculate the total cost of the purchase (based on how many items the player wants)
-//                double totalCost = currencyAmount * itemAmount;
-//
-//                // Check if the player has enough currency to buy the items
-//                if (playerCurrency >= totalCost) {
-//                    // Check if the seller has enough stock of the item
-//                    int sellerStock = getItemStock(chest, storedItem); // Check the number of items in the chest
-//
-//                    if (sellerStock >= itemAmount) {
-//                        // Proceed with the transaction:
-//                        playerProfile.setCurrency(currency, playerCurrency - totalCost); // Player loses currency
-//                        sellerProfile.setCurrency(currency, sellerCurrency + totalCost); // Seller gains currency
-//
-//                        // Add the items to the player's inventory
-//                        ItemStack itemToGive = storedItem.clone();
-//                        giveItemsToBuyer(player, itemToGive, itemAmount);
-//
-//                        // Reduce the item stock in the chest by the amount sold
-//                        reduceItemStock(chest, storedItem, itemAmount);
-//
-//                        // Send messages to both the seller and the player
-//                        player.sendMessage(ChatColor.GREEN + "You have successfully bought " + itemAmount + " " + storedItem.getType() + " for " + totalCost + " " + currency + ".");
-//
-//                        // Notify the seller if online
-//                        Player sellerPlayer = Bukkit.getPlayer(seller);
-//                        if (sellerPlayer != null && sellerPlayer.isOnline()) {
-//                            sellerPlayer.sendMessage(ChatColor.GREEN + "You have successfully sold " + itemAmount + " " + storedItem.getType() + " for " + totalCost + " " + currency + ".");
-//                        }
-//                    } else {
-//                        player.sendMessage(ChatColor.RED + "The seller does not have enough stock of the item.");
-//                    }
-//                } else {
-//                    player.sendMessage(ChatColor.RED + "You do not have enough " + currency + " to complete this purchase.");
-//                }
-//            } else {
-//                player.sendMessage(ChatColor.RED + "This shop is not properly set up.");
-//            }
-//        }
-//    }
-
     @EventHandler
     public void onPlayerRightClickShop(PlayerInteractEvent event) {
         Player player = event.getPlayer();
 
         if (event.getClickedBlock() != null &&
                 event.getClickedBlock().getType().name().endsWith("_WALL_SIGN")  &&
-                event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+                event.getAction() == Action.RIGHT_CLICK_BLOCK && player.getInventory().getItemInMainHand().getType() == Material.PAPER) {
 
             Block chestBlock = getAttachedBlock(event.getClickedBlock());
             assert chestBlock != null;
@@ -361,14 +280,14 @@ public class CreateShopListener implements Listener {
                 return;
             }
 
-            if (chestBlock.hasMetadata("item") && chestBlock.hasMetadata("numberOfItem") &&
-                    chestBlock.hasMetadata("currency") && chestBlock.hasMetadata("amountOfCurrency")) {
+            if (chestBlock.hasMetadata("item") && chestBlock.hasMetadata("itemAmount") &&
+                    chestBlock.hasMetadata("currency") && chestBlock.hasMetadata("currencyAmount")) {
 
                 ItemStack storedItem = (ItemStack) chestBlock.getMetadata("item").get(0).value();
                 assert storedItem != null;
-                int itemAmount = chestBlock.getMetadata("numberOfItem").get(0).asInt();
+                int itemAmount = chestBlock.getMetadata("itemAmount").get(0).asInt();
                 String currency = chestBlock.getMetadata("currency").get(0).asString();
-                int currencyAmount = chestBlock.getMetadata("amountOfCurrency").get(0).asInt();
+                int currencyAmount = chestBlock.getMetadata("currencyAmount").get(0).asInt();
 //
 //
 
@@ -416,8 +335,8 @@ public class CreateShopListener implements Listener {
                 if (holder==null) return;
                 Chest sellerChest = holder.getSellerChest();
 
-                if (sellerChest.hasMetadata("item") && sellerChest.hasMetadata("numberOfItem") &&
-                        sellerChest.hasMetadata("currency") && sellerChest.hasMetadata("amountOfCurrency")) {
+                if (sellerChest.hasMetadata("item") && sellerChest.hasMetadata("itemAmount") &&
+                        sellerChest.hasMetadata("currency") && sellerChest.hasMetadata("currencyAmount")) {
                     String seller = sellerChest.getMetadata("seller").get(0).asString();
                     // Retrieve player profiles for the seller and the player
                     UserProfile sellerProfile = profileManager.getProfile(seller);
@@ -430,9 +349,9 @@ public class CreateShopListener implements Listener {
 
                     // Retrieve the item from metadata and other transaction details
                     ItemStack storedItem = (ItemStack) sellerChest.getMetadata("item").get(0).value(); // Item being sold
-                    int itemAmount = sellerChest.getMetadata("numberOfItem").get(0).asInt(); // Amount given to player for purchase
+                    int itemAmount = sellerChest.getMetadata("itemAmount").get(0).asInt(); // Amount given to player for purchase
                     String currency = sellerChest.getMetadata("currency").get(0).asString(); // Currency type
-                    int currencyAmount = sellerChest.getMetadata("amountOfCurrency").get(0).asInt(); // Currency per item
+                    int currencyAmount = sellerChest.getMetadata("currencyAmount").get(0).asInt(); // Currency per item
 
                     // Retrieve the seller's and player's currency balances
                     double sellerCurrency = sellerProfile.getCurrency(currency);
@@ -498,9 +417,9 @@ public class CreateShopListener implements Listener {
                 // Ensure no leftover metadata exists when placing a new chest/barrel
                 chest.removeMetadata("seller", plugin);
                 chest.removeMetadata("item", plugin);
-                chest.removeMetadata("numberOfItem", plugin);
+                chest.removeMetadata("itemAmount", plugin);
                 chest.removeMetadata("currency", plugin);
-                chest.removeMetadata("amountOfCurrency", plugin);
+                chest.removeMetadata("currencyAmount", plugin);
             }
         }
     }
@@ -612,9 +531,9 @@ public class CreateShopListener implements Listener {
     public void setBarrelMetaData(Chest barrel,String sellerName ,ItemStack item, int numberOfItem, String currency, int amountOfCurrency) {
         barrel.setMetadata("seller", new FixedMetadataValue(plugin,sellerName));
         barrel.setMetadata("item", new FixedMetadataValue(plugin,item));
-        barrel.setMetadata("numberOfItem", new FixedMetadataValue(plugin,numberOfItem));
+        barrel.setMetadata("itemAmount", new FixedMetadataValue(plugin,numberOfItem));
         barrel.setMetadata("currency", new FixedMetadataValue(plugin,currency));
-        barrel.setMetadata("amountOfCurrency", new FixedMetadataValue(plugin,amountOfCurrency));
+        barrel.setMetadata("currencyAmount", new FixedMetadataValue(plugin,amountOfCurrency));
     }
 
     private int getShopIDFromLocation(String playerName, Location location) {
