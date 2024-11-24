@@ -105,12 +105,23 @@ public class ChunkManager {
             List<String> trustedPlayers = new ArrayList<>(ownedChunk.getTrustedPlayers());
             config.set(key + ".trustedPlayers", trustedPlayers);
         }
+
+        // Now, remove the entries from the config that are no longer in ownedChunks (unclaimed chunks)
+        Set<String> existingKeys = new HashSet<>(config.getKeys(false)); // Get all existing keys
+        for (String key : existingKeys) {
+            if (!ownedChunks.containsKey(key)) {
+                config.set(key, null); // Remove the chunk's data from the config
+            }
+        }
+
         try {
-            config.save(dataFile);
+            config.save(dataFile); // Save the updated data to the file
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
+
 
     private void loadChunkData() {
         for (String key : config.getKeys(false)) {

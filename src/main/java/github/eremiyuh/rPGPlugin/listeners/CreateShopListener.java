@@ -213,7 +213,7 @@ public class CreateShopListener implements Listener {
                 if (!chest.hasMetadata("seller")) return;
 
                 String ownerName =chest.getMetadata("seller").getFirst().asString();
-                event.getPlayer().sendMessage("Owner is: " + ownerName);
+
                 int shopID = getShopIDFromLocation(ownerName, blockLocation); // Implement this method to find the shop ID
 
                 if (shopID != -1) {
@@ -276,9 +276,9 @@ public class CreateShopListener implements Listener {
                 return;
             }
 
-            if (player.getName().equals(seller)) {
-                return;
-            }
+//            if (player.getName().equals(seller)) {
+//                return;
+//            }
 
             if (chestBlock.hasMetadata("item") && chestBlock.hasMetadata("itemAmount") &&
                     chestBlock.hasMetadata("currency") && chestBlock.hasMetadata("currencyAmount")) {
