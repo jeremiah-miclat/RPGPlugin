@@ -366,7 +366,6 @@ public class CreateShopListener implements Listener {
 
                 ItemStack storedItem = (ItemStack) chestBlock.getMetadata("item").get(0).value();
                 assert storedItem != null;
-                storedItem.setAmount(1);
                 int itemAmount = chestBlock.getMetadata("numberOfItem").get(0).asInt();
                 String currency = chestBlock.getMetadata("currency").get(0).asString();
                 int currencyAmount = chestBlock.getMetadata("amountOfCurrency").get(0).asInt();
@@ -374,7 +373,7 @@ public class CreateShopListener implements Listener {
 //
 
                 if (chestBlock.getState() instanceof Chest chest) {
-                    openTransactionGui(player, storedItem, itemAmount, currency, currencyAmount, chest);
+                    openTransactionGui(player, storedItem, itemAmount, currency, currencyAmount, chest, getItemStock(chest ,storedItem));
                 } else {
                     player.sendMessage(ChatColor.RED + "This shop does not have a valid chest!");
                 }
@@ -385,14 +384,13 @@ public class CreateShopListener implements Listener {
         }
     }
 
-    private void openTransactionGui(Player player, ItemStack item, int itemAmount, String currency, int currencyAmount, Chest chest) {
+    private void openTransactionGui(Player player, ItemStack item, int itemAmount, String currency, int currencyAmount, Chest chest, int stock) {
         Inventory gui = Bukkit.createInventory(new ShopInventoryHolder(chest), 9, ChatColor.DARK_GREEN + "Shop Transaction");
 
         // Configure the item to display in the GUI
         ItemStack itemDisplay = item.clone();
         TextComponent itemDisplayName = (TextComponent) itemDisplay.getItemMeta().displayName();
         itemDisplayName = itemDisplayName != null ? itemDisplayName : Component.text(itemDisplay.getType().name());
-        int stock = getItemStock(chest, itemDisplay);
         ItemMeta meta = itemDisplay.getItemMeta();
         List<String> lore = new ArrayList<>();
         lore.add(ChatColor.YELLOW + "Amount: " + itemAmount);
@@ -468,6 +466,11 @@ public class CreateShopListener implements Listener {
                             if (sellerPlayer != null && sellerPlayer.isOnline()) {
                                 sellerPlayer.sendMessage(ChatColor.GREEN + "You have successfully sold " + itemAmount + " " + storedItem.getType() + " for " + totalCost + " " + currency + ".");
                             }
+
+                            // **Update the stock in the player's GUI**
+                            int newStock = sellerStock - itemAmount;  // Updated stock after purchase
+                            openTransactionGui(player, storedItem, itemAmount, currency, currencyAmount, sellerChest, newStock);  // Refresh GUI with new stock
+
                         } else {
                             player.sendMessage(ChatColor.RED + "The seller does not have enough stock of the item.");
                         }
