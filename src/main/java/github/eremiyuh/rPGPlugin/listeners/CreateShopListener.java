@@ -62,8 +62,19 @@ public class CreateShopListener implements Listener {
         String[] lines = event.getLines();
         Block chestBlock = getAttachedBlock(signBlock);
 
-        if (chestBlock!=null && chestBlock.hasMetadata("seller")) return;
+        // Allow regular sign placement if the format doesn't match shop creation
+        if (!isShopFormat(lines)) {
+            return; // Exit the event handler to allow normal sign placement
+        }
 
+        // Ensure the chest is part of the shop setup and doesn't already belong to another shop
+        if (chestBlock != null && chestBlock.hasMetadata("seller")) {
+            player.sendMessage("This chest is already being used as a shop!");
+            event.setCancelled(true);
+            return;
+        }
+
+        // List of valid currencies
         Set<String> validCurrencies = Set.of("diamond", "emerald", "iron", "lapis", "gold", "enderpearl", "netherite", "copper");
 
         try {
@@ -73,62 +84,33 @@ public class CreateShopListener implements Listener {
 
             if (!validCurrencies.contains(itemBeingTraded)) {
                 player.sendMessage("Invalid currency: " + itemBeingTraded);
+                player.sendMessage("Currencies: diamond, emerald, iron, lapis, gold, enderpearl, netherite, copper");
                 event.setCancelled(true);
                 return;
             }
 
-
-            // Proceed with shop creation logic
-            // Example: Check the block below the sign
-//            Block chestBlock = signBlock.getRelative(0, -1, 0);
-
-            if (chestBlock.getType() == Material.CHEST) {
+            if (chestBlock != null && chestBlock.getType() == Material.CHEST) {
                 Chest chest = (Chest) chestBlock.getState();
                 Inventory inventory = chest.getInventory();
 
                 ItemStack firstItem = inventory.getItem(0);
                 if (firstItem != null) {
+                    String itemName = firstItem.hasItemMeta() && firstItem.getItemMeta().hasDisplayName()
+                            ? firstItem.getItemMeta().getDisplayName()
+                            : firstItem.getType().toString();
 
-                    if (hasLore(firstItem)) {
-
-                                TextComponent customDisplay = (TextComponent) firstItem.getItemMeta().displayName();
-                                assert customDisplay != null;
-
-                                TextComponent boatTextComponent = Component.text(customDisplay.content() + " "
-                                        + numberOfItems + " " + itemBeingTraded + " " + numberOfItemsBeingTraded
-
-                                );
-                                String[] stack = {boatTextComponent.content() ,getItemLore(firstItem), customDisplay.content()};
-//                                createHologramStack(chestBlock.getWorld(), chestBlock.getX(), chestBlock.getY(), chestBlock.getZ(), stack);
-
-                                shopsManager.saveShopForPlayer(player.getName(), firstItem,numberOfItems,numberOfItemsBeingTraded,itemBeingTraded, chest.getLocation());
-                                setBarrelMetaData(chest, player.getName(), firstItem, numberOfItems, itemBeingTraded, Integer.parseInt(String.valueOf(numberOfItemsBeingTraded)));
-                                signBlock.breakNaturally();
-
-                        player.sendMessage("Shop successfully created!");
-                                return;
-                            }
-                    String itemName = firstItem.getType().toString(); // Default to item type as name
-                    TextComponent boatTextComponent = Component.text(itemName + " "
-                                        + numberOfItems + " " + itemBeingTraded + " " + numberOfItemsBeingTraded
-
-                                );
-                                String[] stack = {boatTextComponent.content(),itemName};
-//                                createHologramStack(chestBlock.getWorld(), chestBlock.getX(), chestBlock.getY() + 1, chestBlock.getZ(), stack);
-                            shopsManager.saveShopForPlayer(player.getName(), firstItem,numberOfItems,numberOfItemsBeingTraded,itemBeingTraded, chest.getLocation());
-                            setBarrelMetaData( chest, player.getName(), firstItem, numberOfItems, itemBeingTraded, Integer.parseInt(String.valueOf(numberOfItemsBeingTraded)));
-
-
-
+                    shopsManager.saveShopForPlayer(
+                            player.getName(), firstItem, numberOfItems, numberOfItemsBeingTraded, itemBeingTraded, chest.getLocation()
+                    );
+                    setBarrelMetaData(chest, player.getName(), firstItem, numberOfItems, itemBeingTraded, numberOfItemsBeingTraded);
 
                     signBlock.breakNaturally();
-
                     player.sendMessage("Shop successfully created!");
                 } else {
-                    player.sendMessage("The chest is empty!");
+                    player.sendMessage("The chest is either empty or the item you want to sell is not on first slot.");
                 }
             } else {
-                player.sendMessage("The sign must be placed on top of a chest!");
+                player.sendMessage("Plugin error, report to admin");
                 event.setCancelled(true);
             }
         } catch (NumberFormatException e) {
@@ -136,6 +118,27 @@ public class CreateShopListener implements Listener {
             event.setCancelled(true);
         }
     }
+
+    /**
+     * Checks if the lines of the sign follow the expected shop format.
+     *
+     * @param lines the lines of the sign
+     * @return true if the sign format is valid for creating a shop
+     */
+    private boolean isShopFormat(String[] lines) {
+        if (lines.length < 3) return false;
+
+        // First line must be a valid integer
+        if (!lines[0].trim().matches("\\d+")) return false;
+
+        // Second line must be a valid currency name (case-insensitive)
+        Set<String> validCurrencies = Set.of("diamond", "emerald", "iron", "lapis", "gold", "enderpearl", "netherite", "copper");
+        if (!validCurrencies.contains(lines[1].trim().toLowerCase())) return false;
+
+        // Third line must be a valid integer
+        return lines[2].trim().matches("\\d+");
+    }
+
 
 
 
