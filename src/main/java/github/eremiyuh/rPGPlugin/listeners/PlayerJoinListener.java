@@ -160,15 +160,23 @@ public class PlayerJoinListener implements Listener {
                 }
             }
         } else {
-            // If not in the Nether, find the highest solid block at the player's current location
-            for (int y = world.getMaxHeight() - 1; y >= 0; y--) {
-                Location currentLocation = new Location(world, centerX, y, centerZ);
-                Material blockType = currentLocation.getBlock().getType();
+            // If not in the Nether, search in a radius of 5
+            for (int x = -5; x <= 5; x++) {
+                for (int z = -5; z <= 5; z++) {
+                    for (int y = world.getMaxHeight() - 1; y >= 0; y--) {
+                        Location currentLocation = new Location(world, centerX + x, y, centerZ + z);
+                        Material blockType = currentLocation.getBlock().getType();
 
-                // Check if the block is solid
-                if (blockType.isSolid()) {
-                    // Return location one block above the highest solid block
-                    return currentLocation.add(0, 1, 0);
+                        // Check if the block is solid or water
+                        if (blockType.isSolid() || blockType == Material.WATER) {
+                            // Check if there are two air blocks above
+                            if (currentLocation.clone().add(0, 1, 0).getBlock().getType() == Material.AIR &&
+                                    currentLocation.clone().add(0, 2, 0).getBlock().getType() == Material.AIR) {
+                                // Return location one block above the block
+                                return currentLocation.add(0, 1, 0);
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -176,6 +184,7 @@ public class PlayerJoinListener implements Listener {
         // If no valid ground location found, return the world's spawn location instead of null
         return world.getSpawnLocation(); // Always returns a valid location
     }
+
 
 
 
