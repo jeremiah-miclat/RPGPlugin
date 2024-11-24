@@ -45,7 +45,7 @@ public class ConvertToEDiamond implements CommandExecutor {
         }
 
         if (args.length == 0) {
-            player.sendMessage("Please specify a currency to convert (diamond, gold, lapis, emerald, iron).");
+            player.sendMessage("Please specify a currency to convert (diamond, gold, lapis, emerald, iron, enderpearl, copper, netherite).");
             return true;
         }
 
@@ -53,7 +53,7 @@ public class ConvertToEDiamond implements CommandExecutor {
         Material currencyMaterial = currencyMaterials.get(currencyName);
 
         if (currencyMaterial == null) {
-            player.sendMessage("Invalid currency type. Available types: diamond, gold, lapis, emerald, iron, enderpearl.");
+            player.sendMessage("Invalid currency type. Available types: (diamond, gold, lapis, emerald, iron, enderpearl, copper, netherite).");
             return true;
         }
 

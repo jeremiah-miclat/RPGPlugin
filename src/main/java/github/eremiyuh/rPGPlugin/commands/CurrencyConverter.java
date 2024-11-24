@@ -43,7 +43,7 @@ public class CurrencyConverter implements CommandExecutor {
         }
 
         if (args.length < 2) {
-            player.sendMessage("Please specify a currency (diamond, gold, lapis, emerald, iron, ender pearl) and an amount.");
+            player.sendMessage("Please specify a currency (diamond, gold, lapis, emerald, iron, enderpearl, copper, netherite) and an amount.");
             return true;
         }
 
@@ -51,7 +51,7 @@ public class CurrencyConverter implements CommandExecutor {
         Material currencyMaterial = currencyMaterials.get(currencyName);
 
         if (currencyMaterial == null) {
-            player.sendMessage("Invalid currency type. Available types: diamond, gold, lapis, emerald, iron.");
+            player.sendMessage("Invalid currency type. Available types: (diamond, gold, lapis, emerald, iron, enderpearl, copper, netherite).");
             return true;
         }
 
