@@ -338,6 +338,9 @@ public class CreateShopListener implements Listener {
                 if (sellerChest.hasMetadata("item") && sellerChest.hasMetadata("itemAmount") &&
                         sellerChest.hasMetadata("currency") && sellerChest.hasMetadata("currencyAmount")) {
                     String seller = sellerChest.getMetadata("seller").get(0).asString();
+
+                    if (player.getName().equals(seller)) {player.sendMessage(ChatColor.RED + "$_$"); return;}
+
                     // Retrieve player profiles for the seller and the player
                     UserProfile sellerProfile = profileManager.getProfile(seller);
                     UserProfile playerProfile = profileManager.getProfile(player.getName());
