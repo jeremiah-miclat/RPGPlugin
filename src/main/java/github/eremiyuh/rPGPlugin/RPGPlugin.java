@@ -283,6 +283,7 @@ public class RPGPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new AbyssHealItemListener(), this);
         getServer().getPluginManager().registerEvents(new AbyssOreListener(profileManager), this);
         getServer().getPluginManager().registerEvents(new CreateShopListener(this,chunkManager,profileManager,shopsManager), this);
+        getServer().getPluginManager().registerEvents(new CustomItemRecipeListener(), this);
 
 
         // Register the command executor
