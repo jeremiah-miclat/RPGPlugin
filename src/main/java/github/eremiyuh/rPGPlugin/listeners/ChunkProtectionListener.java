@@ -104,10 +104,9 @@ public class ChunkProtectionListener implements Listener {
                 if (block.getType().name().endsWith("_WALL_SIGN")) {
                     boolean isWallSign = block.getType().name().endsWith("_WALL_SIGN");
                     boolean isRightClick = event.getAction() == Action.RIGHT_CLICK_BLOCK;
-                    boolean isHoldingPaper = player.getInventory().getItemInMainHand().getType() == Material.PAPER;
                     boolean isShop = shopsManager.isShop(Objects.requireNonNull(getAttachedBlock(block)).getLocation());
 
-                    if ((isWallSign && isRightClick && isHoldingPaper && isShop)) return;
+                    if ((isWallSign && isRightClick && isShop)) return;
                 }
 
                 chunkHasOwnedChunkNearbyVisualizer(chunk, player);

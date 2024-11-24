@@ -259,7 +259,7 @@ public class CreateShopListener implements Listener {
 
         if (event.getClickedBlock() != null &&
                 event.getClickedBlock().getType().name().endsWith("_WALL_SIGN")  &&
-                event.getAction() == Action.RIGHT_CLICK_BLOCK && player.getInventory().getItemInMainHand().getType() == Material.PAPER) {
+                event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 
             Block chestBlock = getAttachedBlock(event.getClickedBlock());
             assert chestBlock != null;
@@ -282,7 +282,7 @@ public class CreateShopListener implements Listener {
 
             if (chestBlock.hasMetadata("item") && chestBlock.hasMetadata("itemAmount") &&
                     chestBlock.hasMetadata("currency") && chestBlock.hasMetadata("currencyAmount")) {
-
+                event.setCancelled(true);
                 ItemStack storedItem = (ItemStack) chestBlock.getMetadata("item").get(0).value();
                 assert storedItem != null;
                 int itemAmount = chestBlock.getMetadata("itemAmount").get(0).asInt();
@@ -296,8 +296,9 @@ public class CreateShopListener implements Listener {
                 } else {
                     player.sendMessage(ChatColor.RED + "This shop does not have a valid chest!");
                 }
-                event.setCancelled(true);
+
             } else {
+                event.setCancelled(true);
                 player.sendMessage(ChatColor.RED + "This shop is not properly set up.");
             }
         }
