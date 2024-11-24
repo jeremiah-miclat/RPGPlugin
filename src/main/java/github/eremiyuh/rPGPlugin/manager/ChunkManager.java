@@ -40,12 +40,14 @@ public class ChunkManager {
 
         if (ownedChunk != null && ownedChunk.getOwner().equals(player.getName())) {
             ownedChunks.remove(key);
-            saveChunkData();
+            saveChunkData(); // Ensure this is being called
+            Bukkit.getLogger().info("Chunk " + key + " unclaimed by " + player.getName());
             player.sendMessage("Chunk unclaimed successfully!");
         } else {
             player.sendMessage("You do not own this chunk or it is not claimed.");
         }
     }
+
 
     public boolean isOwner(String playerName, Chunk chunk) {
         OwnedChunk ownedChunk = ownedChunks.get(generateChunkKey(chunk));
@@ -110,6 +112,7 @@ public class ChunkManager {
         Set<String> existingKeys = new HashSet<>(config.getKeys(false)); // Get all existing keys
         for (String key : existingKeys) {
             if (!ownedChunks.containsKey(key)) {
+                Bukkit.getLogger().info("Removing chunk data for key: " + key);
                 config.set(key, null); // Remove the chunk's data from the config
             }
         }
@@ -120,6 +123,7 @@ public class ChunkManager {
             e.printStackTrace();
         }
     }
+
 
 
 
