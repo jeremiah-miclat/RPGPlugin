@@ -94,7 +94,7 @@ public class DeadMobListener implements Listener {
                 List<String> attackerNames = (List<String>) mob.getMetadata("attackerList").get(0).value();
                 List<Player> nearbyPlayers = new ArrayList<>();
 
-                if (world.getName().contains("labyrinth")) xValidRange = 10; yValidRange = 3;
+                if (world.getName().contains("labyrinth")) {xValidRange = 10; yValidRange = 3;}
 
                 // Iterate over the list of attacker names and check if they are players nearby
                 for (String attackerName : attackerNames) {
@@ -141,19 +141,23 @@ public class DeadMobListener implements Listener {
                     return;
                 }
 
-                if (killerTeam.equals("none")) {
-                    applyRewards(killer, killerProfile, health, 0, 0);
-                    distributeDrops(killer, event, dropMultiplier);
-                } else {
-                    for (Player player : nearbyPlayers) {
-                        UserProfile playerProfile = profileManager.getProfile(player.getName());
-                        if (playerProfile.getTeam().equals(killerTeam)) {
-                            applyRewards(player, playerProfile, health, 0, 0);
-                            distributeDrops(player, event, dropMultiplier);
-                        }
+            applyRewards(killer, killerProfile, health, 0, 0);
+            distributeDrops(killer, event, dropMultiplier);
+
+            if (!killerTeam.equals("none")) {
+                for (Player player : nearbyPlayers) {
+                    // Skip the killer to avoid duplicate rewards
+                    if (player.equals(killer)) continue;
+
+                    UserProfile playerProfile = profileManager.getProfile(player.getName());
+                    if (playerProfile.getTeam().equals(killerTeam)) {
+                        applyRewards(player, playerProfile, health, 0, 0);
+                        distributeDrops(player, event, dropMultiplier);
                     }
                 }
-                // Clear the original drops and experience
+            }
+
+            // Clear the original drops and experience
                 event.getDrops().clear();
                 event.setDroppedExp(0);
 

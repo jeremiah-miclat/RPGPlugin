@@ -127,8 +127,9 @@ public class PlayerStatBuff {
                 player.sendMessage("You have reached max ms from agi. Increasing it over 1k points is not recommended");
             }
             player.setWalkSpeed((float) Math.min(newSpeed, 1.0f)); // Cap speed at 1.0 for safety
-        } finally {
-
+        }  catch (Exception e) {
+            // Handle exceptions gracefully, log the error, etc.
+            e.printStackTrace();
         }
     }
 

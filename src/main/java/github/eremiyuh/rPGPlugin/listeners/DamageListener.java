@@ -251,7 +251,11 @@ public class DamageListener implements Listener {
                 UserProfile attackerProfile = profileManager.getProfile(attacker.getName());
 
                 if (attackerProfile != null) {
-                    handleMeleeDamage(attacker,victim,event,damagerLocation,damagedLocation,attackerProfile);
+                    try {
+                        handleMeleeDamage(attacker,victim,event,damagerLocation,damagedLocation,attackerProfile);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
                 }
 
                 if (victim instanceof Monster) {
@@ -336,7 +340,11 @@ public class DamageListener implements Listener {
                         victim.setMetadata("attackerList", new FixedMetadataValue(plugin, newAttackerList)); // Set new metadata
                     }
                     if (attackerProfile != null) {
-                        handleLongRangeDamage(attacker,victim,event,damagerLocation,damagedLocation,attackerProfile);
+                      try {
+                          handleLongRangeDamage(attacker,victim,event,damagerLocation,damagedLocation,attackerProfile);
+                      } catch (Exception e) {
+                          throw new RuntimeException(e);
+                      }
                     }
                 }
 
@@ -671,8 +679,9 @@ public class DamageListener implements Listener {
                 double newHealth = Math.min(attacker.getHealth() + lifestealAmount, maxHealth); // Avoid exceeding max health
                 attacker.setHealth(newHealth);
             }
-        } finally {
-
+        }  catch (Exception e) {
+            // Handle exceptions gracefully, log the error, etc.
+            e.printStackTrace();
         }
 
         event.setDamage(finalDamage
