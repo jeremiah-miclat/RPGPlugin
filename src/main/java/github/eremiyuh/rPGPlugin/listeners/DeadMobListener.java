@@ -6,6 +6,7 @@ import github.eremiyuh.rPGPlugin.profile.UserProfile;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -67,7 +68,9 @@ public class DeadMobListener implements Listener {
         ) {
             return;
         }
-
+        World world = event.getEntity().getWorld();
+        int xValidRange = 60;
+        int yValidRange = 20;
         double RANDOMCHANCE = .05;
         if (event.getEntity() instanceof Monster mob && event.getEntity().getKiller() instanceof Player killer) {
 
@@ -86,13 +89,17 @@ public class DeadMobListener implements Listener {
                 boolean isWorldBoss = isWorldBoss(mob);
                 int bosslvl = getBossLevel(mob);
 
+
+
                 List<String> attackerNames = (List<String>) mob.getMetadata("attackerList").get(0).value();
                 List<Player> nearbyPlayers = new ArrayList<>();
+
+                if (world.getName().contains("labyrinth")) xValidRange = 10; yValidRange = 3;
 
                 // Iterate over the list of attacker names and check if they are players nearby
                 for (String attackerName : attackerNames) {
                     Player player = Bukkit.getPlayer(attackerName); // Get the player by name
-                    if (player != null && isPlayerNearby(player, mob.getLocation(), 60, 4)) {
+                    if (player != null && isPlayerNearby(player, mob.getLocation(), xValidRange, yValidRange)) {
                         nearbyPlayers.add(player); // Add player to nearby players list
                     }
                 }

@@ -66,7 +66,7 @@ public class MonsterInitializerLabyrinth implements Listener {
         int currentMobCount = countMobsInWorld(event.getLocation().getWorld());
 
         // Check mob spawn limit based on online players
-        int mobLimit = Math.min(onlinePlayerCount * 20, 60);
+        int mobLimit = Math.min(onlinePlayerCount * 6, 60);
         if (currentMobCount >= mobLimit) {
             event.getEntity().setAI(false);
             event.setCancelled(true);
@@ -88,7 +88,7 @@ public class MonsterInitializerLabyrinth implements Listener {
 
         // Loop through all entities in the world and count the mobs
         for (LivingEntity entity : world.getLivingEntities()) {
-            if (entity.hasMetadata("initialExtraHealth") && !entity.hasMetadata("boss") && !entity.hasMetadata("worldboss")) {
+            if (entity.hasMetadata("initialExtraHealth")) {
                 mobCount++;
             }
         }
@@ -153,19 +153,20 @@ public class MonsterInitializerLabyrinth implements Listener {
     private void calculateExtraAttributes(Location targetLocation, LivingEntity entity) {
         int maxY = 251; // Starting height
         int minY = 3; // Minimum height
-        double baseHealth = 0; // Base health at max height
+        double baseHealth = entity.getHealth(); // Base health at max height
         double healthIncrement = 480; // Increment per layer
 
         // Ensure the y-coordinate is within the range
         int yCoord = Math.min(maxY, Math.max(minY, targetLocation.getBlockY()));
 
-        entity.setMetadata("extraHealth", new FixedMetadataValue(plugin, yCoord));
+
         double customMaxHealth = ((1 + (double) (maxY - yCoord) / 6) * healthIncrement)*101;
         Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_MAX_HEALTH)).setBaseValue(customMaxHealth);
 
 
         // Calculate extra health based on the y-coordinate
         double extraHealth = baseHealth + ((1 + (double) (maxY - yCoord) / 6) * healthIncrement);
+        entity.setMetadata("extraHealth", new FixedMetadataValue(plugin, extraHealth));
         double customDamage = Math.min(extraHealth/10, customMaxHealth);
 
         // Determine the level based on the y-coordinate (1 level every 6 blocks)
@@ -185,6 +186,7 @@ public class MonsterInitializerLabyrinth implements Listener {
             entity.setMetadata("lvl", new FixedMetadataValue(plugin, lvl));
 
             entity.setHealth(Math.min(extraHealth, customMaxHealth));
+            entity.setMetadata("extraHealth", new FixedMetadataValue(plugin, extraHealth));
             Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(customDamage*3);
             return;
         }
@@ -197,6 +199,7 @@ public class MonsterInitializerLabyrinth implements Listener {
             entity.setMetadata("lvl", new FixedMetadataValue(plugin, lvl));
 
             entity.setHealth(Math.min(extraHealth, customMaxHealth));
+            entity.setMetadata("extraHealth", new FixedMetadataValue(plugin, extraHealth));
             Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(customDamage*6);
             return;
         }

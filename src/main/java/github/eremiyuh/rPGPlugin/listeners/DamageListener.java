@@ -404,25 +404,65 @@ public class DamageListener implements Listener {
 
 
             if (event.getDamager() instanceof Monster mob) {
-                // Check for custom damage metadata
-                if (mob.hasMetadata("extraHealth")) {
-                    double customDamage = mob.getMetadata("extraHealth").get(0).asDouble();
-
+//                // Check for custom damage metadata
+//                if (mob.hasMetadata("extraHealth")) {
+//                    double customDamage = mob.getMetadata("extraHealth").get(0).asDouble();
+                    double mobDamage = Objects.requireNonNull(mob.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).getValue();
                     if (damaged instanceof Player player) {
                         UserProfile playerProfile = profileManager.getProfile(player.getName());
                         playerProfile.setDurability(Math.max(0,playerProfile.getDurability()-1));
-                        customDamage *= playerProfile.getDurability() == 0 ? 10 : 1;
+                        mobDamage *= playerProfile.getDurability() == 0 ? 10 : 1;
+
+
+                        if (event.getEntity() instanceof Player) {
+
+                            if (playerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
+                                mobDamage *= 1.2;
+                            }
+                            if (playerProfile.getChosenClass().equalsIgnoreCase("swordsman") && playerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
+                                mobDamage *= .5;
+                            }
+                            if (playerProfile.getChosenClass().equalsIgnoreCase("swordsman") && !playerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
+                                mobDamage *= .8;
+                            }
+                        }
+
+
+                        event.setDamage(mobDamage);
+                        player.sendMessage("mob dealth: " + event.getFinalDamage() + " custom " + mobDamage);
+                        return;
                     }
 
-                    event.setDamage(event.getFinalDamage()+(customDamage/10));
-                }
+                    event.setDamage((mobDamage));
+//                }
             }
 
             if (event.getDamager() instanceof Projectile projectile) {
                 // Check for custom damage metadata
                 if (projectile.getShooter() instanceof Monster mob && mob.hasMetadata("extraHealth")) {
                     double customDamage = mob.getMetadata("extraHealth").get(0).asDouble();
-                    event.setDamage(event.getFinalDamage()+(customDamage/10));
+                    if (damaged instanceof Player player) {
+                        UserProfile playerProfile = profileManager.getProfile(player.getName());
+                        playerProfile.setDurability(Math.max(0,playerProfile.getDurability()-1));
+                        customDamage *= playerProfile.getDurability() == 0 ? 10 : 1;
+                        customDamage/=10;
+                        if (event.getEntity() instanceof Player) {
+
+                            if (playerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
+                                customDamage *= 1.2;
+                            }
+                            if (playerProfile.getChosenClass().equalsIgnoreCase("swordsman") && playerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
+                                customDamage *= .5;
+                            }
+                            if (playerProfile.getChosenClass().equalsIgnoreCase("swordsman") && !playerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
+                                customDamage *= .8;
+                            }
+                        }
+                        event.setDamage(customDamage);
+                        player.sendMessage("mob dealth: " + event.getFinalDamage() + " custom " + customDamage);
+                        return;
+                    }
+                    event.setDamage(customDamage);
                 }
             }
 
@@ -430,7 +470,28 @@ public class DamageListener implements Listener {
                 // Check for custom damage metadata
                 if (projectile.getShooter() instanceof Monster mob && mob.hasMetadata("extraHealth")) {
                     double customDamage = mob.getMetadata("extraHealth").get(0).asDouble();
-                    event.setDamage(event.getFinalDamage()+(customDamage/10));
+                    if (damaged instanceof Player player) {
+                        UserProfile playerProfile = profileManager.getProfile(player.getName());
+                        playerProfile.setDurability(Math.max(0,playerProfile.getDurability()-1));
+                        customDamage *= playerProfile.getDurability() == 0 ? 10 : 1;
+                        customDamage/=10;
+                        if (event.getEntity() instanceof Player) {
+
+                            if (playerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
+                                customDamage *= 1.2;
+                            }
+                            if (playerProfile.getChosenClass().equalsIgnoreCase("swordsman") && playerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
+                                customDamage *= .5;
+                            }
+                            if (playerProfile.getChosenClass().equalsIgnoreCase("swordsman") && !playerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
+                                customDamage *= .8;
+                            }
+                        }
+                        event.setDamage(customDamage);
+                        player.sendMessage("mob dealth: " + event.getFinalDamage() + " custom " + customDamage);
+                        return;
+                    }
+                    event.setDamage(customDamage);
                 }
             }
         }
@@ -477,19 +538,7 @@ public class DamageListener implements Listener {
 //        }
 
 
-        if (event.getEntity() instanceof Player player) {
-            UserProfile profile = profileManager.getProfile(player.getName());
 
-            if (profile.getChosenClass().equalsIgnoreCase("alchemist")) {
-                event.setDamage(event.getFinalDamage()*1.2);
-            }
-            if (profile.getChosenClass().equalsIgnoreCase("swordsman") && profile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
-                event.setDamage(event.getFinalDamage()*.5);
-            }
-            if (profile.getChosenClass().equalsIgnoreCase("swordsman") && !profile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
-                event.setDamage(event.getFinalDamage()*.8);
-            }
-        }
 
         double damage = event.getDamage();
         // Create floating text using an ArmorStand
