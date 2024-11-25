@@ -14,6 +14,7 @@ public class PlayerStatBuff {
 
     private final PlayerProfileManager profileManager;
 
+
     public PlayerStatBuff(PlayerProfileManager profileManager) {
         this.profileManager = profileManager;
     }
@@ -107,22 +108,28 @@ public class PlayerStatBuff {
      * Updates the player's max health and movement speed based on RPG attributes.
      */
     public void updatePlayerStatsToRPG(Player player) {
-        UserProfile profile = profileManager.getProfile(player.getName());
-        if (profile == null) return;
 
-        // Set max health based on vitality
-        AttributeInstance maxHealthAttr = player.getAttribute(Attribute.GENERIC_MAX_HEALTH);
-        assert maxHealthAttr != null;
-        double newMaxHealth = calculateMaxHealth(profile, player);
-        maxHealthAttr.setBaseValue(newMaxHealth);
-        player.setHealth(Math.min(player.getHealth(), newMaxHealth)); // Prevent health from exceeding max
 
-        // Set walk speed based on agility
-        double newSpeed = calculateSpeed(profile, player);
-        if (newSpeed > 0.4) {
-            player.sendMessage("You have reached max ms from agi. Increasing it over 1k points is not recommended");
+        try {
+            UserProfile profile = profileManager.getProfile(player.getName());
+            if (profile == null) return;
+
+            // Set max health based on vitality
+            AttributeInstance maxHealthAttr = player.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+            assert maxHealthAttr != null;
+            double newMaxHealth = calculateMaxHealth(profile, player);
+            maxHealthAttr.setBaseValue(newMaxHealth);
+            player.setHealth(Math.min(player.getHealth(), newMaxHealth)); // Prevent health from exceeding max
+
+            // Set walk speed based on agility
+            double newSpeed = calculateSpeed(profile, player);
+            if (newSpeed > 0.4) {
+                player.sendMessage("You have reached max ms from agi. Increasing it over 1k points is not recommended");
+            }
+            player.setWalkSpeed((float) Math.min(newSpeed, 1.0f)); // Cap speed at 1.0 for safety
+        } finally {
+
         }
-        player.setWalkSpeed((float) Math.min(newSpeed, 1.0f)); // Cap speed at 1.0 for safety
     }
 
     /**

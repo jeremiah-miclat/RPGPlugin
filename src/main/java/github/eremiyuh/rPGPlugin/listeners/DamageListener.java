@@ -632,31 +632,52 @@ public class DamageListener implements Listener {
         finalDamage *= attackCooldown;
 
 
-        double rawDmg = event.getDamage();
-        double finalDmg = event.getFinalDamage();
-
-        double dmgReductionMultiplier = 0;
-
-        if (rawDmg > 0) {
-            // Only calculate dmgReductionMultiplier if rawDmg is greater than 0
-            if (finalDmg > 0) {
-                dmgReductionMultiplier = finalDmg / rawDmg;
+//        double rawDmg = event.getDamage();
+//        double finalDmg = event.getFinalDamage();
+//
+//        double dmgReductionMultiplier = 0;
+//
+//        if (rawDmg > 0) {
+//            // Only calculate dmgReductionMultiplier if rawDmg is greater than 0
+//            if (finalDmg > 0) {
+//                dmgReductionMultiplier = finalDmg / rawDmg;
+//            }
+//        }
+//
+//
+//        if (Double.isNaN(dmgReductionMultiplier)) {
+//            dmgReductionMultiplier = 0;
+//        }
+        if (event.getEntity() instanceof Player player) {
+            UserProfile playerProfile = profileManager.getProfile(player.getName());
+            if (playerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
+                finalDamage *= 1.2;
+            }
+            if (playerProfile.getChosenClass().equalsIgnoreCase("swordsman") && playerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
+                finalDamage *= .5;
+            }
+            if (playerProfile.getChosenClass().equalsIgnoreCase("swordsman") && !playerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
+                finalDamage *= .8;
             }
         }
 
 
-        if (Double.isNaN(dmgReductionMultiplier)) {
-            dmgReductionMultiplier = 0;
-        }
-        if (target instanceof Player) finalDamage*=10;
-        if (PlayerBuffPerms.canLifeSteal(damagerProfile)) {
-            double lifestealAmount = (finalDamage*dmgReductionMultiplier) * 0.01; // 1% lifesteal
-            double maxHealth = Objects.requireNonNull(attacker.getAttribute(Attribute.GENERIC_MAX_HEALTH)).getValue(); // Get max health using attribute
-            double newHealth = Math.min(attacker.getHealth() + lifestealAmount, maxHealth); // Avoid exceeding max health
-            attacker.setHealth(newHealth);
+        try {
+            if (PlayerBuffPerms.canLifeSteal(damagerProfile)) {
+                double lifestealAmount = (finalDamage
+//                    *dmgReductionMultiplier
+                ) * 0.01; // 1% lifesteal
+                double maxHealth = Objects.requireNonNull(attacker.getAttribute(Attribute.GENERIC_MAX_HEALTH)).getValue(); // Get max health using attribute
+                double newHealth = Math.min(attacker.getHealth() + lifestealAmount, maxHealth); // Avoid exceeding max health
+                attacker.setHealth(newHealth);
+            }
+        } finally {
+
         }
 
-        event.setDamage(finalDamage*dmgReductionMultiplier);
+        event.setDamage(finalDamage
+//                *dmgReductionMultiplier
+        );
     }
 
 
@@ -781,25 +802,37 @@ public class DamageListener implements Listener {
             return;
         }
 
-        double rawDmg = event.getDamage();
-        double finalDmg = event.getFinalDamage();
+//        double rawDmg = event.getDamage();
+//        double finalDmg = event.getFinalDamage();
+//
+//        double dmgReductionMultiplier = 0;
+//
+//        if (rawDmg > 0) {
+//            // Only calculate dmgReductionMultiplier if rawDmg is greater than 0
+//            if (finalDmg > 0) {
+//                dmgReductionMultiplier = finalDmg / rawDmg;
+//            }
+//        }
 
-        double dmgReductionMultiplier = 0;
 
-        if (rawDmg > 0) {
-            // Only calculate dmgReductionMultiplier if rawDmg is greater than 0
-            if (finalDmg > 0) {
-                dmgReductionMultiplier = finalDmg / rawDmg;
+//        if (Double.isNaN(dmgReductionMultiplier)) {
+//            dmgReductionMultiplier = 0;
+//        }
+        if (event.getEntity() instanceof Player player) {
+            UserProfile playerProfile = profileManager.getProfile(player.getName());
+            if (playerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
+                finalDamage *= 1.2;
+            }
+            if (playerProfile.getChosenClass().equalsIgnoreCase("swordsman") && playerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
+                finalDamage *= .5;
+            }
+            if (playerProfile.getChosenClass().equalsIgnoreCase("swordsman") && !playerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
+                finalDamage *= .8;
             }
         }
-
-
-        if (Double.isNaN(dmgReductionMultiplier)) {
-            dmgReductionMultiplier = 0;
-        }
-        if (target instanceof Player) finalDamage*=10;
-        double damageApplied = finalDamage*dmgReductionMultiplier;
-        event.setDamage(damageApplied);
+//        double damageApplied = finalDamage *dmgReductionMultiplier;
+//        event.setDamage(damageApplied);
+        event.setDamage(finalDamage);
     }
 
     // Method to apply stats to damage
