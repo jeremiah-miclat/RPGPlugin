@@ -62,9 +62,11 @@ public class BossDropItem {
 
         if (isWorldBoss) attributeValue *=5;
 
+        int randomStatValue = 1 + (int) (Math.random() * attributeValue);
+
         // Set the lore with the format "Attribute: Boss Level"
         List<String> lore = new ArrayList<>();
-        lore.add(selectedAttribute + ": " + attributeValue);
+        lore.add(selectedAttribute + ": " + randomStatValue);
         meta.setLore(lore);
 
         item.setItemMeta(meta);

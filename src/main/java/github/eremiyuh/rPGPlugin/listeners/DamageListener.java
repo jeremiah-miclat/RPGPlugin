@@ -395,10 +395,25 @@ public class DamageListener implements Listener {
 
             }
 
+
+
+
+
+            // DAMAGE FROM MOBS
+
+
+
             if (event.getDamager() instanceof Monster mob) {
                 // Check for custom damage metadata
                 if (mob.hasMetadata("extraHealth")) {
                     double customDamage = mob.getMetadata("extraHealth").get(0).asDouble();
+
+                    if (damaged instanceof Player player) {
+                        UserProfile playerProfile = profileManager.getProfile(player.getName());
+                        playerProfile.setDurability(Math.max(0,playerProfile.getDurability()-1));
+                        customDamage *= playerProfile.getDurability() == 0 ? 10 : 1;
+                    }
+
                     event.setDamage(event.getFinalDamage()+(customDamage/10));
                 }
             }
@@ -425,6 +440,17 @@ public class DamageListener implements Listener {
 
     }
 
+    @EventHandler
+    public void entityTarget(EntityTargetLivingEntityEvent event) {
+        if (!Objects.requireNonNull(event.getEntity().getLocation().getWorld()).getName().equals("world_rpg") && !Objects.requireNonNull(event.getEntity().getLocation().getWorld()).getName().contains("world_labyrinth")) {
+            return;
+        }
+        if (event.getEntity() instanceof Monster mob) {
+            if (!mob.hasMetadata("extraHealth")) {
+                mob.remove();
+            }
+        }
+    }
 
 
 
@@ -453,15 +479,6 @@ public class DamageListener implements Listener {
 
         if (event.getEntity() instanceof Player player) {
             UserProfile profile = profileManager.getProfile(player.getName());
-                if (profile.getDurability()<=0) {
-                    if (profile.isBossIndicator()) {
-                        player.sendMessage("Durability depleted. You will take extra damage. /sdw to turn off this warnings");
-                    }
-                    profile.setDurability(0);
-                    event.setDamage(event.getDamage()*2);
-                } else {
-                    profile.setDurability(profile.getDurability()-1);
-                }
 
             if (profile.getChosenClass().equalsIgnoreCase("alchemist")) {
                 event.setDamage(event.getFinalDamage()*1.2);
@@ -484,9 +501,8 @@ public class DamageListener implements Listener {
             resetHealthIndicator((LivingEntity) event.getEntity(), damage);
         }
 
-        if (!(event.getEntity() instanceof LivingEntity target)) return;
 
-        double newHealth = target.getHealth() - event.getFinalDamage();
+
 
 
 
@@ -583,14 +599,14 @@ public class DamageListener implements Listener {
         if (Double.isNaN(dmgReductionMultiplier)) {
             dmgReductionMultiplier = 0;
         }
-
+        if (target instanceof Player) finalDamage*=10;
         if (PlayerBuffPerms.canLifeSteal(damagerProfile)) {
-            double lifestealAmount = (finalDamage*dmgReductionMultiplier) * 0.1; // 10% lifesteal
+            double lifestealAmount = (finalDamage*dmgReductionMultiplier) * 0.01; // 1% lifesteal
             double maxHealth = Objects.requireNonNull(attacker.getAttribute(Attribute.GENERIC_MAX_HEALTH)).getValue(); // Get max health using attribute
             double newHealth = Math.min(attacker.getHealth() + lifestealAmount, maxHealth); // Avoid exceeding max health
             attacker.setHealth(newHealth);
         }
-        if (target instanceof Player) finalDamage*=10;
+
         event.setDamage(finalDamage*dmgReductionMultiplier);
     }
 

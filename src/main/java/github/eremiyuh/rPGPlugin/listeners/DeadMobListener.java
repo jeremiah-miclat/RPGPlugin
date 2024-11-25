@@ -100,13 +100,18 @@ public class DeadMobListener implements Listener {
                 if ((isBoss || isWorldBoss) && bosslvl >= 1) {
                     for (Player player : nearbyPlayers) {
                         UserProfile playerProfile = profileManager.getProfile(player.getName());
-                        BossDropItem dropItem = isBoss ? BossDropItem.getRandomBossDropItem(regularBossDrops) : BossDropItem.getRandomBossDropItem(worldBossDrops);
-                        if (player.getName().equals(killer.getName())) {
-                            applyRewards(player, playerProfile, health*1.5, (double) bosslvl /400, dropMultiplier);
-                        } else {
-                            applyRewards(player, playerProfile, health*1.5, (double) bosslvl /400, dropMultiplier);
-                        }
+
+//                        if (player.getName().equals(killer.getName())) {
+                        applyRewards(player, playerProfile, health*1.5, (double) bosslvl /400, dropMultiplier);
+//                        } else {
+//                            applyRewards(player, playerProfile, health*1.5, (double) bosslvl /400, dropMultiplier);
+//                        }
                         distributeDrops(player, event, dropMultiplier);
+
+                        if (bosslvl < 10) return;
+
+                        BossDropItem dropItem = isBoss ? BossDropItem.getRandomBossDropItem(regularBossDrops) : BossDropItem.getRandomBossDropItem(worldBossDrops);
+
                         if (dropItem != null) {
                             // Clone the item to ensure each player gets a separate instance
                             ItemStack itemToDrop = dropItem.getItem().clone();
@@ -149,42 +154,59 @@ public class DeadMobListener implements Listener {
     }
 
     private void applyRewards(Player player, UserProfile profile, double healthForExp, double chanceForEquipLoreAndDias, int rewardCount) {
+        // Give experience to the player based on healthForExp
         player.giveExp((int) (healthForExp * 2));
-        profile.setAbysspoints(profile.getAbysspoints()+(healthForExp));
+
+        // Update Abyss points
+        double abyssPointsGained = healthForExp;
+        profile.setAbysspoints(profile.getAbysspoints() + abyssPointsGained);
+        player.sendMessage("You have gained " + abyssPointsGained + " Abyss Points!");
+
+        // Check if the player should get lore and item rewards
         if (random.nextDouble() < chanceForEquipLoreAndDias) {
             applyRandomLoreToEquippedItem(player);
         }
+
+        // Random ore reward
         double randomed = random.nextDouble();
         if (randomed < chanceForEquipLoreAndDias) {
-            // Create a random instance
+            // Create a random instance for ore reward
             Random random = new Random();
 
             // Select a random ore type
             OreType randomOre = OreType.values()[random.nextInt(OreType.values().length)];
+            int randomValue = 1 + (int) (Math.random() * rewardCount);
 
-            // Give rewardCount to the selected ore only
+            // Give the reward for the selected ore
             switch (randomOre) {
                 case DIAMOND:
-                    profile.setDiamond(profile.getDiamond() + rewardCount);
+                    profile.setDiamond(profile.getDiamond() + randomValue);
+                    player.sendMessage("You have received " + randomValue + " Diamond(s)!");
                     break;
                 case EMERALD:
-                    profile.setEmerald(profile.getEmerald() + rewardCount);
+                    profile.setEmerald(profile.getEmerald() + randomValue);
+                    player.sendMessage("You have received " + randomValue + " Emerald(s)!");
                     break;
                 case GOLD:
-                    profile.setGold(profile.getGold() + rewardCount);
+                    profile.setGold(profile.getGold() + randomValue);
+                    player.sendMessage("You have received " + randomValue + " Gold ingot(s)!");
                     break;
                 case IRON:
-                    profile.setIron(profile.getIron() + rewardCount);
+                    profile.setIron(profile.getIron() + randomValue);
+                    player.sendMessage("You have received " + randomValue + " Iron ingot(s)!");
                     break;
                 case LAPIS:
-                    profile.setLapiz(profile.getLapiz() + rewardCount);
+                    profile.setLapiz(profile.getLapiz() + randomValue);
+                    player.sendMessage("You have received " + randomValue + " Lapis Lazuli(s)!");
+                    break;
                 case COPPER:
-                    profile.setCopper(profile.getCopper() + rewardCount);
+                    profile.setCopper(profile.getCopper() + randomValue);
+                    player.sendMessage("You have received " + randomValue + " Copper ingot(s)!");
                     break;
             }
         }
-
     }
+
 
     enum OreType {
         DIAMOND,
@@ -273,7 +295,7 @@ public class DeadMobListener implements Listener {
 
                 // Feedback message
                 if (!lore.isEmpty() && lore.get(lore.size() - 1).startsWith(loreEntryPrefix)) {
-                    player.sendMessage("You have incremented: " + selectedAttribute.getDisplayName() + " on " + selectedItem.getType());
+                    player.sendMessage("Item ascended after boss kill. +1 " + selectedAttribute.getDisplayName() + " on " + selectedItem.getType());
                 }
             }
         }
