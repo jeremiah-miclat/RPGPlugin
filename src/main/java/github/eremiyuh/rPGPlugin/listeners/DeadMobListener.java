@@ -169,7 +169,8 @@ public class DeadMobListener implements Listener {
         player.giveExp((int) (healthForExp * 2));
 
         // Update Abyss points
-        double abyssPointsGained = healthForExp;
+        int randomAbyssPoints = (int) (healthForExp/4  + (int) (Math.random() * healthForExp));
+        double abyssPointsGained = randomAbyssPoints;
         profile.setAbysspoints(profile.getAbysspoints() + abyssPointsGained);
         player.sendMessage("You have gained " + abyssPointsGained + " Abyss Points!");
 

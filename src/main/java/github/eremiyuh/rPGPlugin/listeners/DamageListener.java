@@ -415,11 +415,17 @@ public class DamageListener implements Listener {
 //                // Check for custom damage metadata
 //                if (mob.hasMetadata("extraHealth")) {
 //                    double customDamage = mob.getMetadata("extraHealth").get(0).asDouble();
+
                     double mobDamage = Objects.requireNonNull(mob.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).getValue();
+
+                    if (mob instanceof Creeper) {
+                        mobDamage *=2;
+                    }
+
                     if (damaged instanceof Player player) {
                         UserProfile playerProfile = profileManager.getProfile(player.getName());
                         playerProfile.setDurability(Math.max(0,playerProfile.getDurability()-1));
-                        mobDamage *= playerProfile.getDurability() == 0 ? 10 : 1;
+                        mobDamage *= playerProfile.getDurability() == 0 ? 2 : 1;
 
 
                         if (event.getEntity() instanceof Player) {
@@ -437,7 +443,7 @@ public class DamageListener implements Listener {
 
 
                         event.setDamage(mobDamage);
-                        player.sendMessage("mob dealth: " + event.getFinalDamage() + " custom " + mobDamage);
+
                         return;
                     }
 
@@ -452,9 +458,9 @@ public class DamageListener implements Listener {
                     if (damaged instanceof Player player) {
                         UserProfile playerProfile = profileManager.getProfile(player.getName());
                         playerProfile.setDurability(Math.max(0,playerProfile.getDurability()-1));
-                        customDamage *= playerProfile.getDurability() == 0 ? 10 : 1;
+                        customDamage *= playerProfile.getDurability() == 0 ? 2 : 1;
                         customDamage/=10;
-                        if (event.getEntity() instanceof Player) {
+
 
                             if (playerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
                                 customDamage *= 1.2;
@@ -465,9 +471,9 @@ public class DamageListener implements Listener {
                             if (playerProfile.getChosenClass().equalsIgnoreCase("swordsman") && !playerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
                                 customDamage *= .8;
                             }
-                        }
+
                         event.setDamage(customDamage);
-                        player.sendMessage("mob dealth: " + event.getFinalDamage() + " custom " + customDamage);
+
                         return;
                     }
                     event.setDamage(customDamage);
@@ -481,9 +487,9 @@ public class DamageListener implements Listener {
                     if (damaged instanceof Player player) {
                         UserProfile playerProfile = profileManager.getProfile(player.getName());
                         playerProfile.setDurability(Math.max(0,playerProfile.getDurability()-1));
-                        customDamage *= playerProfile.getDurability() == 0 ? 10 : 1;
+                        customDamage *= playerProfile.getDurability() == 0 ? 2 : 1;
                         customDamage/=10;
-                        if (event.getEntity() instanceof Player) {
+
 
                             if (playerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
                                 customDamage *= 1.2;
@@ -494,9 +500,9 @@ public class DamageListener implements Listener {
                             if (playerProfile.getChosenClass().equalsIgnoreCase("swordsman") && !playerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
                                 customDamage *= .8;
                             }
-                        }
+
                         event.setDamage(customDamage);
-                        player.sendMessage("mob dealth: " + event.getFinalDamage() + " custom " + customDamage);
+
                         return;
                     }
                     event.setDamage(customDamage);
@@ -539,11 +545,11 @@ public class DamageListener implements Listener {
 //            return;
 //        }
 //
-//        if (event.getDamageSource().getCausingEntity() instanceof Player player && player.getAllowFlight()) {
-//            player.sendMessage("damaged cancelled. Disable fly mode");
-//            event.setCancelled(true);
-//            return;
-//        }
+        if (event.getDamageSource().getCausingEntity() instanceof Player player && player.getAllowFlight()) {
+            player.sendMessage("damaged cancelled. Disable fly mode");
+            event.setCancelled(true);
+            return;
+        }
 
 
 
@@ -566,21 +572,6 @@ public class DamageListener implements Listener {
 
     }
 
-
-    @EventHandler
-    public void onCreeperExplode(EntityExplodeEvent event) {
-        if (event.getEntity() instanceof Creeper creeper && creeper.hasMetadata("extraHealth")) {
-            double customDamage = creeper.getMetadata("extraHealth").get(0).asDouble();
-            // Apply custom damage logic to nearby entities
-            for (Entity nearby : event.getEntity().getNearbyEntities(5, 5, 5)) { // 5-block radius
-                if (nearby instanceof LivingEntity target) {
-                    double baseDamage = 20.0; // Default Creeper explosion damage
-                    target.damage(baseDamage + (customDamage/4), creeper); // Custom damage
-                }
-            }
-
-        }
-    }
 
     private void handleMeleeDamage(Player attacker, LivingEntity target, EntityDamageByEntityEvent event, Location damagerLocation, Location damagedLocation, UserProfile damagerProfile) {
         ItemStack weapon = attacker.getInventory().getItemInMainHand();
@@ -658,6 +649,12 @@ public class DamageListener implements Listener {
 //        }
         if (event.getEntity() instanceof Player player) {
             UserProfile playerProfile = profileManager.getProfile(player.getName());
+
+
+            playerProfile.setDurability(Math.max(0,playerProfile.getDurability()-1));
+            finalDamage *= playerProfile.getDurability() == 0 ? 2 : 1;
+
+
             if (playerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
                 finalDamage *= 1.2;
             }
@@ -668,6 +665,7 @@ public class DamageListener implements Listener {
                 finalDamage *= .8;
             }
         }
+
 
 
         try {
@@ -829,6 +827,9 @@ public class DamageListener implements Listener {
 //        }
         if (event.getEntity() instanceof Player player) {
             UserProfile playerProfile = profileManager.getProfile(player.getName());
+
+            playerProfile.setDurability(Math.max(0,playerProfile.getDurability()-1));
+            finalDamage *= playerProfile.getDurability() == 0 ? 2 : 1;
             if (playerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
                 finalDamage *= 1.2;
             }
@@ -934,24 +935,24 @@ public class DamageListener implements Listener {
 
 
                 if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 2") && player.getInventory().getItemInMainHand().getType().toString().endsWith("_SWORD")) {
-                    statDmg += str*.2;
+                    statDmg += str*.6;
                 } else {
                     statDmg += str*.1;
                 }
 
 
                 if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 1") && player.getInventory().getItemInMainHand().getType().toString().endsWith("_SWORD")) {
-                    elementalDamage += (4 + (intel * 0.6));
+                    elementalDamage += (4 + (intel * 1));
                 } else {
-                    elementalDamage += (2 + (intel * 0.1));
+                    elementalDamage += (1 + (intel * 0.1));
                 }
             } else if (damagerProfile.getChosenClass().equalsIgnoreCase("archer")) {
-                statDmg +=(str*.05) ;
-                elementalDamage+=(2+ (intel * 0.1));
+                statDmg +=(str*.1) ;
+                elementalDamage+=(1+ (intel * 0.1));
             }
             else if (damagerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
-                statDmg += (str*.05);
-                elementalDamage+=(4+ (intel * 0.1));
+                statDmg += (str*.1);
+                elementalDamage+=(1+ (intel * 0.1));
             }
         }
 
@@ -964,11 +965,11 @@ public class DamageListener implements Listener {
 
 
                 if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
-                    statDmg += (dex*.6);
+                    statDmg += (dex*1);
                 }
 
                 if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 2")) {
-                    statDmg += (dex*.4);
+                    statDmg += (dex*.6);
                     elementalDamage += (intel*.4);
                 }
 
@@ -979,11 +980,11 @@ public class DamageListener implements Listener {
                     elementalDamage += 2 + (intel*.1);
                 }
             }else if (damagerProfile.getChosenClass().equalsIgnoreCase("swordsman")) {
-                statDmg +=(dex*.05) ;
+                statDmg +=(dex*.1) ;
                 elementalDamage+=(2+ (intel * 0.1));
             }
             else if (damagerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
-                statDmg += (dex*.05);
+                statDmg += (dex*.1);
                 elementalDamage+=(4+ (intel * 0.1));
             }
 
@@ -997,16 +998,16 @@ public class DamageListener implements Listener {
             if (damagerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
                 if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 1")) {
                     elementalDamage += 6;
-                    elementalDamage += (intel*.6);
+                    elementalDamage += (intel*2);
 
                 } else {
                     elementalDamage += 4 + (intel*.4);
                 }
             }else if (damagerProfile.getChosenClass().equalsIgnoreCase("swordsman")) {
-                elementalDamage+=(2+ (intel * 0.05));
+                elementalDamage+=(2+ (intel * 0.1));
             }
             else if (damagerProfile.getChosenClass().equalsIgnoreCase("archer")) {
-                elementalDamage+=(2+ (intel * 0.05));
+                elementalDamage+=(2+ (intel * 0.1));
             }
 
 
