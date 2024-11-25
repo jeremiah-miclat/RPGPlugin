@@ -139,7 +139,7 @@ public class MonsterInitializer implements Listener {
         entity.setMetadata("customName", new FixedMetadataValue(plugin, normalName));
 
 
-        double customMaxHealth = maxCoord*6;
+        double customMaxHealth = maxCoord*101;
 
         Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_MAX_HEALTH)).setBaseValue(customMaxHealth);
         double extraHealth = Math.max(Math.abs(entity.getLocation().getX()), Math.abs(entity.getLocation().getZ()));

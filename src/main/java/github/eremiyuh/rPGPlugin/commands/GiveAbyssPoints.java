@@ -29,7 +29,7 @@ public class GiveAbyssPoints implements CommandExecutor {
         }
 
         if ( !sender.getName().equals("Eremiyuh") ) {
-            sender.sendMessage("Hire someone better.");
+            sender.sendMessage("Not allowed.");
             return true;
         }
 

@@ -160,7 +160,7 @@ public class MonsterInitializerLabyrinth implements Listener {
         int yCoord = Math.min(maxY, Math.max(minY, targetLocation.getBlockY()));
 
         entity.setMetadata("extraHealth", new FixedMetadataValue(plugin, yCoord));
-        double customMaxHealth = 100000.0;
+        double customMaxHealth = ((1 + (double) (maxY - yCoord) / 6) * healthIncrement)*101;
         Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_MAX_HEALTH)).setBaseValue(customMaxHealth);
 
 

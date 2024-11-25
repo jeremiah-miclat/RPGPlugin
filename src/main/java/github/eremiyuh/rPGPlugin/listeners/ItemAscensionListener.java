@@ -18,7 +18,7 @@ public class ItemAscensionListener implements Listener {
 
     private final PlayerProfileManager profileManager;
     private final Random random = new Random();
-    private static final int COST_PER_ATTEMPT = 1;  // The cost per attempt
+    private static final int COST_PER_ATTEMPT = 100;  // The cost per attempt
 
     public ItemAscensionListener(PlayerProfileManager profileManager) {
         this.profileManager = profileManager;
@@ -114,7 +114,7 @@ public class ItemAscensionListener implements Listener {
         boolean successfulAscension = false;
 
         for (int i = 0; i < attributeValue; i++) {
-            if (random.nextDouble() <= 0.60) {  // 60% chance
+            if (random.nextDouble() <= 0.50) {  // 60% chance
                 successfulAscension = true;
                 incrementAttribute(targetLores, attribute);
             }

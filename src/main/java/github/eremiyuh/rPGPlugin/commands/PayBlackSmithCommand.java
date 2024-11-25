@@ -3,6 +3,7 @@ package github.eremiyuh.rPGPlugin.commands;
 import github.eremiyuh.rPGPlugin.manager.PlayerProfileManager;
 import github.eremiyuh.rPGPlugin.profile.UserProfile;
 import github.eremiyuh.rPGPlugin.utils.ItemUtils;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -10,8 +11,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class PayBlackSmithCommand implements CommandExecutor {
@@ -54,9 +57,8 @@ public class PayBlackSmithCommand implements CommandExecutor {
 
         // Loop through inventory to find ores
         for (ItemStack item : inventory.getContents()) {
-            if (item != null && item.getType() != Material.AIR && !item.isSimilar(ItemUtils.getAbyssOre())) {
+            if (item != null && item.getType() != Material.AIR && !hasCustomLore(item)) {
                 Material material = item.getType();
-
                 // Check if the item is in the ores map
                 if (oresMap.containsKey(material)) {
                     int duraRestored = oresMap.get(material);
@@ -86,5 +88,27 @@ public class PayBlackSmithCommand implements CommandExecutor {
         player.sendMessage("Blacksmith restored " + duraAdded + " durability using your materials!");
         player.sendMessage("Your total durability is now: " + newDura);
     }
+
+    private boolean hasCustomLore(ItemStack item) {
+        if (item == null || !item.hasItemMeta()) {
+            return false;
+        }
+
+        ItemMeta meta = item.getItemMeta();
+        if (meta == null || !meta.hasLore()) {
+            return false;
+        }
+
+        // Get the lore and check for specific text (custom lore)
+        List<Component> lore = meta.lore();
+        for (Component line : lore) {
+            if (line.toString().contains("Buy at /abyssstore for 100,000 abyss points.")) {
+                return true; // The custom lore is present
+            }
+        }
+
+        return false;
+    }
+
 
 }

@@ -36,8 +36,12 @@ public class ArmorChangePlugin  implements Listener {
 
         Player player = (Player) event.getPlayer();
         UserProfile profile = profileManager.getProfile(player.getName());
+            if (profile.isAscending()) {
+                profile.setAscending(false);
+                player.sendMessage("Equip Ascension disabled");
+            }
 
-            profile.setAscending(false);
+
 
         String worldName = Objects.requireNonNull(player.getLocation().getWorld()).getName();
         if (worldName.equals("world_rpg") || worldName.contains("world_labyrinth")) {

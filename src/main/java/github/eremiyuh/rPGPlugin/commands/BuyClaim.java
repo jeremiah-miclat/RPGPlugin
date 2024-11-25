@@ -44,22 +44,22 @@ public class BuyClaim implements CommandExecutor {
 
         // Retrieve the player's profile
         UserProfile profile = profileManager.getProfile(player.getName());
-        double playerDiamonds = profile.getDiamond();
+        double playerEmeralds = profile.getEmerald();
         double playerClaimPoints = profile.getClaimPoints();
 
         // Calculate the total cost for the requested claim points
-        double totalCost = numberOfClaims; // 1 diamond per claim point
+        double totalCost = numberOfClaims * 100; // 10 diamond per claim point
 
         // Check if the player has enough diamonds
-        if (playerDiamonds >= totalCost) {
+        if (playerEmeralds >= totalCost) {
             // Deduct the diamond cost and increase claim points
-            profile.setDiamond(playerDiamonds - totalCost);
+            profile.setDiamond(playerEmeralds - totalCost);
             profile.setClaimPoints(playerClaimPoints + numberOfClaims);
             player.sendMessage("You have successfully purchased " + numberOfClaims + " claim point(s)!");
             player.sendMessage("You now have " + (playerClaimPoints + numberOfClaims) + " claim point(s).");
         } else {
-            player.sendMessage("You do not have enough diamonds to buy " + numberOfClaims + " claim point(s).");
-            player.sendMessage("You currently have " + playerDiamonds + " diamonds.");
+            player.sendMessage("You do not have enough emerald to buy " + numberOfClaims + " claim point(s).");
+            player.sendMessage("You currently have " + playerEmeralds + " emerald.");
         }
 
         return true; // Indicates the command was processed successfully

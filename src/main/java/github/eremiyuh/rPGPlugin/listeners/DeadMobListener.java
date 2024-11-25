@@ -97,14 +97,14 @@ public class DeadMobListener implements Listener {
                     }
                 }
 
-                if ((isBoss || isWorldBoss) && bosslvl >= 10) {
+                if ((isBoss || isWorldBoss) && bosslvl >= 1) {
                     for (Player player : nearbyPlayers) {
                         UserProfile playerProfile = profileManager.getProfile(player.getName());
                         BossDropItem dropItem = isBoss ? BossDropItem.getRandomBossDropItem(regularBossDrops) : BossDropItem.getRandomBossDropItem(worldBossDrops);
                         if (player.getName().equals(killer.getName())) {
-                            applyRewards(player, playerProfile, health*1.5, 1, dropMultiplier);
+                            applyRewards(player, playerProfile, health*1.5, (double) bosslvl /400, dropMultiplier);
                         } else {
-                            applyRewards(player, playerProfile, health*1.5, (double) bosslvl /40, dropMultiplier);
+                            applyRewards(player, playerProfile, health*1.5, (double) bosslvl /400, dropMultiplier);
                         }
                         distributeDrops(player, event, dropMultiplier);
                         if (dropItem != null) {
@@ -178,6 +178,8 @@ public class DeadMobListener implements Listener {
                     break;
                 case LAPIS:
                     profile.setLapiz(profile.getLapiz() + rewardCount);
+                case COPPER:
+                    profile.setCopper(profile.getCopper() + rewardCount);
                     break;
             }
         }
@@ -189,7 +191,8 @@ public class DeadMobListener implements Listener {
         EMERALD,
         GOLD,
         IRON,
-        LAPIS
+        LAPIS,
+        COPPER
     }
 
 
