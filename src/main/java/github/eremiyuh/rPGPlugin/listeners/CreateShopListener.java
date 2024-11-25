@@ -316,7 +316,6 @@ public class CreateShopListener implements Listener {
         itemDisplayName = itemDisplayName != null ? itemDisplayName : Component.text(itemDisplay.getType().name());
         ItemMeta meta = itemDisplay.getItemMeta();
         List<String> lore = new ArrayList<>();
-        lore.add(ChatColor.YELLOW + "Amount: " + itemAmount);
         assert itemDisplayName != null;
         lore.add(ChatColor.YELLOW + "Price: " + currencyAmount + " " + currency
                 );

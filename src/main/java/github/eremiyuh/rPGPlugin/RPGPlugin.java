@@ -2,8 +2,7 @@ package github.eremiyuh.rPGPlugin;
 
 import github.eremiyuh.rPGPlugin.buffs.PlayerStatBuff;
 import github.eremiyuh.rPGPlugin.commandswithgui.AbyssStoreCommand;
-import github.eremiyuh.rPGPlugin.manager.ShopsManager;
-import github.eremiyuh.rPGPlugin.manager.VaultManager;
+import github.eremiyuh.rPGPlugin.manager.*;
 import github.eremiyuh.rPGPlugin.utils.HologramUtil;
 import github.eremiyuh.rPGPlugin.utils.TradeOffer;
 import github.eremiyuh.rPGPlugin.commands.*;
@@ -11,8 +10,6 @@ import github.eremiyuh.rPGPlugin.commandswithgui.CheckClassCommand;
 import github.eremiyuh.rPGPlugin.commandswithgui.SelectClassCommand;
 import github.eremiyuh.rPGPlugin.commandswithgui.SkillsGui;
 import github.eremiyuh.rPGPlugin.listeners.*;
-import github.eremiyuh.rPGPlugin.manager.ChunkManager;
-import github.eremiyuh.rPGPlugin.manager.PlayerProfileManager;
 import github.eremiyuh.rPGPlugin.methods.ChunkBorderBlueVisualizer;
 import github.eremiyuh.rPGPlugin.methods.ChunkBorderRedVisualizer;
 import github.eremiyuh.rPGPlugin.methods.DamageAbilityManager;
@@ -40,6 +37,7 @@ public class RPGPlugin extends JavaPlugin {
     private boolean serverLoaded = false;
     private VaultManager vaultManager;
     private ShopsManager shopsManager;
+    private ShopTpSaveManager shopTpSaveManager;
 
 
     @Override
@@ -243,6 +241,7 @@ public class RPGPlugin extends JavaPlugin {
         profileManager.resetLoginStatus();
         vaultManager = new VaultManager(this, this.getDataFolder());
         Objects.requireNonNull(this.getCommand("vault")).setExecutor(new VaultCommand(vaultManager));
+        shopTpSaveManager = new ShopTpSaveManager(this.getDataFolder());
 
 
         this.chunkManager = new ChunkManager(getDataFolder());
@@ -337,6 +336,7 @@ public class RPGPlugin extends JavaPlugin {
         Objects.requireNonNull(this.getCommand("grt")).setExecutor(new GiveResetTokenCommand());
         Objects.requireNonNull(this.getCommand("enderchest")).setExecutor(new EnderChestCommand());
         Objects.requireNonNull(this.getCommand("addstat")).setExecutor(new AddAttributeCommand(profileManager));
+        Objects.requireNonNull(this.getCommand("shopsavetploc")).setExecutor(new ShopTpSaveCommand(shopTpSaveManager));
 
         vaultManager.loadVaults();
         //auth
