@@ -322,3 +322,6 @@ commands:
   addstat:
     description: Add attributes.
     usage: /addstat attributename amount
+  shopsavetploc:
+    description: saves current location to let players tp to your shop
+    usage: shopsavetploc

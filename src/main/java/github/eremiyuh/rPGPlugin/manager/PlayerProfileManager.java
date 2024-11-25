@@ -296,4 +296,13 @@ public class PlayerProfileManager {
         }
     }
 
+    public void removeProfileOnLogout(String playerName) {
+        // Save profile data before removing it
+        saveProfile(playerName);
+
+        // Remove from memory (HashMap)
+        playerProfiles.remove(playerName);
+    }
+
+
 }

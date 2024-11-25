@@ -27,6 +27,7 @@ public class PlayerQuitListener implements Listener {
         String playerName = event.getPlayer().getName();
         UserProfile playerProfile = profileManager.getProfile(playerName);
         playerProfile.setLoggedIn(false);
-        vaultManager.saveAllVaults();
+        profileManager.removeProfileOnLogout(playerName);
+        vaultManager.saveAllVaultsForPlayer(player);
     }
 }

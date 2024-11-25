@@ -48,7 +48,6 @@ public class VaultManager {
     }
 
     // Load vault contents from the file or create a new one if not present
-    // Load vault contents from the file or create a new one if not present
     private Inventory loadVault(String playerName, int vaultNumber) {
         Inventory vault = Bukkit.createInventory(null, 27, "Vault " + vaultNumber); // 27 slots
         File playerVaultFile = new File(pluginDataFolder, playerName + "_vaults.yml");
@@ -82,7 +81,6 @@ public class VaultManager {
         return vault;
     }
 
-
     // Save a player's vault contents to the file
     public void saveVault(Player player, int vaultNumber) {
         String playerName = player.getName();
@@ -114,6 +112,24 @@ public class VaultManager {
         }
     }
 
+    // Save all vaults of a specific player
+    public void saveAllVaultsForPlayer(Player player) {
+        String playerName = player.getName();
+        Map<Integer, Inventory> vaults = playerVaults.get(playerName);
+
+        if (vaults != null) {
+            File playerVaultFile = new File(pluginDataFolder, playerName + "_vaults.yml");
+            FileConfiguration vaultData = YamlConfiguration.loadConfiguration(playerVaultFile);
+
+            for (int vaultNumber : vaults.keySet()) {
+                vaultData.set("vault" + vaultNumber, serializeVaultItems(vaults.get(vaultNumber)));
+            }
+
+            // Save after all vaults for the player are saved
+            saveFile(playerVaultFile, vaultData);
+        }
+    }
+
     // Serialize the vault contents (convert ItemStacks to a list for saving)
     private List<ItemStack> serializeVaultItems(Inventory vault) {
         ItemStack[] contents = vault.getContents();
@@ -123,7 +139,6 @@ public class VaultManager {
                 .filter(item -> item != null)  // Remove any null items from the list
                 .collect(Collectors.toList()); // Collect valid items into a list
     }
-
 
     // Save vault data to disk
     private void saveFile(File file, FileConfiguration vaultData) {
