@@ -63,7 +63,7 @@ public class UserProfile {
     private int enderpearl;
     private int stamina;
     private int durability;
-    private double abyssPoints;
+    private double abysspoints;
 
 
     //register and login
@@ -107,7 +107,7 @@ public class UserProfile {
         this.enderpearl = 10;
         this.stamina = 1000;
         this.durability = 1000;
-        this.abyssPoints = 0;
+        this.abysspoints = 0;
 
         this.claimPoints =10;
         this.team = "none";
@@ -389,7 +389,7 @@ public class UserProfile {
             case "copper":
                 return copper;
             case "abysspoints":
-                return abyssPoints;
+                return abysspoints;
             default:
                 throw new IllegalArgumentException("Invalid currency name: " + currencyName);
         }
@@ -450,17 +450,20 @@ public class UserProfile {
             case "copper":
                 this.copper = amount;
                 break;
+            case "abysspoints":
+                this.abysspoints = amount;
+                break;
             default:
                 throw new IllegalArgumentException("Invalid currency name: " + currencyName);
         }
     }
 
-    public double getAbyssPoints() {
-        return abyssPoints;
+    public double getAbysspoints() {
+        return abysspoints;
     }
 
-    public void setAbyssPoints(double abyssPoints) {
-        this.abyssPoints = abyssPoints;
+    public void setAbysspoints(double abysspoints) {
+        this.abysspoints = abysspoints;
     }
 
     public boolean isLoggedIn() {

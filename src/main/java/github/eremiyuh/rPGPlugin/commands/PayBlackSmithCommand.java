@@ -2,6 +2,7 @@ package github.eremiyuh.rPGPlugin.commands;
 
 import github.eremiyuh.rPGPlugin.manager.PlayerProfileManager;
 import github.eremiyuh.rPGPlugin.profile.UserProfile;
+import github.eremiyuh.rPGPlugin.utils.ItemUtils;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -25,7 +26,7 @@ public class PayBlackSmithCommand implements CommandExecutor {
         oresMap.put(Material.GOLD_INGOT, 200);
         oresMap.put(Material.EMERALD, 200);
         oresMap.put(Material.LAPIS_LAZULI, 100);
-        oresMap.put(Material.NETHERITE_INGOT, 2000);
+        oresMap.put(Material.NETHERITE_INGOT, 5000);
         oresMap.put(Material.DIAMOND, 1000);
 
 
@@ -53,7 +54,7 @@ public class PayBlackSmithCommand implements CommandExecutor {
 
         // Loop through inventory to find ores
         for (ItemStack item : inventory.getContents()) {
-            if (item != null && item.getType() != Material.AIR) {
+            if (item != null && item.getType() != Material.AIR && !item.isSimilar(ItemUtils.getAbyssOre())) {
                 Material material = item.getType();
 
                 // Check if the item is in the ores map

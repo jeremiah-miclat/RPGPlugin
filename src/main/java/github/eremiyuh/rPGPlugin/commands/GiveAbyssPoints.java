@@ -62,7 +62,7 @@ public class GiveAbyssPoints implements CommandExecutor {
         }
 
         // Add the attribute points to the target player's profile
-        targetProfile.setAbyssPoints(targetProfile.getAbyssPoints() + points);
+        targetProfile.setAbysspoints(targetProfile.getAbysspoints() + points);
         sender.sendMessage("Successfully gave " + points + " abyss points to " + playerName + ".");
         return true;
     }

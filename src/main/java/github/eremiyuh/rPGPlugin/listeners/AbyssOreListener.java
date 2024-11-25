@@ -10,8 +10,6 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Objects;
-
 public class AbyssOreListener implements Listener {
 
     private final PlayerProfileManager profileManager;
@@ -34,7 +32,7 @@ public class AbyssOreListener implements Listener {
 
             UserProfile profile = profileManager.getProfile(player.getName());
             if (profile != null) {
-                profile.setAbyssPoints(profile.getAbyssPoints() + 1000);
+                profile.setAbysspoints(profile.getAbysspoints() + 1000);
                 player.sendMessage("§aYou have gained 1000 Abyss Points!");
             } else {
                 player.sendMessage("§cFailed to update Abyss Points. Profile not found.");

@@ -287,7 +287,9 @@ public class CreateShopListener implements Listener {
                 }
                 event.setCancelled(true);
                 ItemStack storedItem = (ItemStack) chestBlock.getMetadata("item").get(0).value();
+
                 assert storedItem != null;
+                storedItem.setAmount(1);
                 int itemAmount = chestBlock.getMetadata("itemAmount").get(0).asInt();
                 String currency = chestBlock.getMetadata("currency").get(0).asString();
                 int currencyAmount = chestBlock.getMetadata("currencyAmount").get(0).asInt();
@@ -357,6 +359,8 @@ public class CreateShopListener implements Listener {
 
                     // Retrieve the item from metadata and other transaction details
                     ItemStack storedItem = (ItemStack) sellerChest.getMetadata("item").get(0).value(); // Item being sold
+                    assert storedItem != null;
+                    storedItem.setAmount(1);
                     int itemAmount = sellerChest.getMetadata("itemAmount").get(0).asInt(); // Amount given to player for purchase
                     String currency = sellerChest.getMetadata("currency").get(0).asString(); // Currency type
                     int currencyAmount = sellerChest.getMetadata("currencyAmount").get(0).asInt(); // Currency per item

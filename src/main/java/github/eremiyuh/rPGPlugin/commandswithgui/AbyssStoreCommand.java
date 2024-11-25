@@ -22,7 +22,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
-import java.util.function.BiConsumer;
 
 import static github.eremiyuh.rPGPlugin.utils.ItemUtils.getAbyssOre;
 import static github.eremiyuh.rPGPlugin.utils.ItemUtils.getAbyssPotion;
@@ -87,8 +86,8 @@ public class AbyssStoreCommand implements CommandExecutor, Listener {
 
             // Handle item purchase logic
             if (event.getSlot() == 1 && event.getCurrentItem() != null && event.getCurrentItem().isSimilar(getAbyssOre())) {
-                if (userProfile.getAbyssPoints() >= 1000) {
-                    userProfile.setAbyssPoints(userProfile.getAbyssPoints() - 1000); // Deduct Abyss Points
+                if (userProfile.getAbysspoints() >= 1000) {
+                    userProfile.setAbysspoints(userProfile.getAbysspoints() - 1000); // Deduct Abyss Points
                     dropOrNotify(player, ItemUtils.getAbyssOre(), "Successfully purchased Abyss Ore!");
                 } else {
                     player.sendMessage(Component.text("You do not have enough Abyss Points!").color(TextColor.color(255, 0, 0)));
@@ -96,8 +95,8 @@ public class AbyssStoreCommand implements CommandExecutor, Listener {
             }
 
             if (event.getSlot() == 3 && event.getCurrentItem() != null && event.getCurrentItem().isSimilar(getAbyssIngot())) {
-                if (userProfile.getAbyssPoints() >= 100000) {
-                    userProfile.setAbyssPoints(userProfile.getAbyssPoints() - 100000); // Deduct Abyss Points
+                if (userProfile.getAbysspoints() >= 100000) {
+                    userProfile.setAbysspoints(userProfile.getAbysspoints() - 100000); // Deduct Abyss Points
                     dropOrNotify(player, ItemUtils.getAbyssIngot(), "Successfully purchased Abyss Mana Stone!");
                 } else {
                     player.sendMessage(Component.text("You do not have enough Abyss Points!").color(TextColor.color(255, 0, 0)));
@@ -105,8 +104,8 @@ public class AbyssStoreCommand implements CommandExecutor, Listener {
             }
 
             if (event.getSlot() == 5 && event.getCurrentItem() != null && event.getCurrentItem().isSimilar(getAbyssPotion())) {
-                if (userProfile.getAbyssPoints() >= 1000) {
-                    userProfile.setAbyssPoints(userProfile.getAbyssPoints() - 1000); // Deduct Abyss Points
+                if (userProfile.getAbysspoints() >= 1000) {
+                    userProfile.setAbysspoints(userProfile.getAbysspoints() - 1000); // Deduct Abyss Points
                     dropOrNotify(player, ItemUtils.getAbyssPotion(), "Successfully purchased Abyss Potion!");
                 } else {
                     player.sendMessage(Component.text("You do not have enough Abyss Points!").color(TextColor.color(255, 0, 0)));

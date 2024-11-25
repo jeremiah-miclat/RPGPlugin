@@ -6,15 +6,12 @@ import github.eremiyuh.rPGPlugin.profile.UserProfile;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.*;
-import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.metadata.MetadataValue;
 
 import java.util.*;
 
@@ -73,6 +70,10 @@ public class DeadMobListener implements Listener {
 
         double RANDOMCHANCE = .05;
         if (event.getEntity() instanceof Monster mob && event.getEntity().getKiller() instanceof Player killer) {
+
+                if (!mob.hasMetadata("extraHealth")) {
+                    return;
+                }
 
                 UserProfile killerProfile = profileManager.getProfile(killer.getName());
                 String killerTeam = killerProfile.getTeam();
@@ -149,7 +150,7 @@ public class DeadMobListener implements Listener {
 
     private void applyRewards(Player player, UserProfile profile, double healthForExp, double chanceForEquipLoreAndDias, int rewardCount) {
         player.giveExp((int) (healthForExp * 2));
-        profile.setAbyssPoints(profile.getAbyssPoints()+(healthForExp));
+        profile.setAbysspoints(profile.getAbysspoints()+(healthForExp));
         if (random.nextDouble() < chanceForEquipLoreAndDias) {
             applyRandomLoreToEquippedItem(player);
         }

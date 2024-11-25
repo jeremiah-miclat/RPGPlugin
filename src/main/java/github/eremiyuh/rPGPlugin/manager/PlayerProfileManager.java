@@ -114,7 +114,7 @@ public class PlayerProfileManager {
         config.set("enderpearl", profile.getCurrency("enderpearl"));
         config.set("stamina", profile.getStamina());
         config.set("durability", profile.getDurability());
-        config.set("abysspoints",profile.getAbyssPoints());
+        config.set("abysspoints",profile.getAbysspoints());
 
         //claimPoints
         config.set("claimPoints",profile.getClaimPoints());
@@ -217,7 +217,7 @@ public class PlayerProfileManager {
         profile.setCurrency("enderpearl", config.getInt("enderpearl", 10));
         profile.setStamina(config.getInt("stamina", 100));
         profile.setDurability(config.getInt("durability", 100));
-        profile.setAbyssPoints(config.getDouble("abysspoints",0));
+        profile.setAbysspoints(config.getDouble("abysspoints",0));
 
         //claim points
         profile.setClaimPoints(config.getDouble("claimPoints",10));

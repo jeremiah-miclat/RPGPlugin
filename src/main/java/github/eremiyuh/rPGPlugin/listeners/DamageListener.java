@@ -253,6 +253,15 @@ public class DamageListener implements Listener {
                 if (attackerProfile != null) {
                     handleMeleeDamage(attacker,victim,event,damagerLocation,damagedLocation,attackerProfile);
                 }
+
+                if (victim instanceof Monster) {
+                    if (!victim.hasMetadata("extraHealth")) {
+                        victim.setHealth(0);
+                        attacker.sendMessage("Server removed monster rewards when it restarted");
+                        return;
+                    }
+                }
+
                 if (victim.hasMetadata("attackerList")) {
                     List<String> attackerList = (List<String>) victim.getMetadata("attackerList").get(0).value();
 
@@ -384,6 +393,14 @@ public class DamageListener implements Listener {
                     }
                 }
 
+            }
+
+            if (event.getDamager() instanceof Monster mob) {
+                // Check for custom damage metadata
+                if (mob.hasMetadata("extraHealth")) {
+                    double customDamage = mob.getMetadata("extraHealth").get(0).asDouble();
+                    event.setDamage(event.getFinalDamage()+(customDamage/10));
+                }
             }
 
             if (event.getDamager() instanceof Projectile projectile) {
@@ -552,7 +569,20 @@ public class DamageListener implements Listener {
 
         double rawDmg = event.getDamage();
         double finalDmg = event.getFinalDamage();
-        double dmgReductionMultiplier = Math.max(0.2, finalDmg / rawDmg);
+
+        double dmgReductionMultiplier = 0;
+
+        if (rawDmg > 0) {
+            // Only calculate dmgReductionMultiplier if rawDmg is greater than 0
+            if (finalDmg > 0) {
+                dmgReductionMultiplier = finalDmg / rawDmg;
+            }
+        }
+
+
+        if (Double.isNaN(dmgReductionMultiplier)) {
+            dmgReductionMultiplier = 0;
+        }
 
         if (PlayerBuffPerms.canLifeSteal(damagerProfile)) {
             double lifestealAmount = (finalDamage*dmgReductionMultiplier) * 0.1; // 10% lifesteal
@@ -689,18 +719,18 @@ public class DamageListener implements Listener {
         double rawDmg = event.getDamage();
         double finalDmg = event.getFinalDamage();
 
-        double dmgReductionMultiplier = 1.0;
+        double dmgReductionMultiplier = 0;
 
         if (rawDmg > 0) {
             // Only calculate dmgReductionMultiplier if rawDmg is greater than 0
-            if (finalDmg >= 0) {
+            if (finalDmg > 0) {
                 dmgReductionMultiplier = finalDmg / rawDmg;
             }
         }
 
 
         if (Double.isNaN(dmgReductionMultiplier)) {
-            dmgReductionMultiplier = 1.0;
+            dmgReductionMultiplier = 0;
         }
         if (target instanceof Player) finalDamage*=10;
         double damageApplied = finalDamage*dmgReductionMultiplier;

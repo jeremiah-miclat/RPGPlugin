@@ -26,7 +26,7 @@ public class ConvertLevelsCommand implements CommandExecutor {
         Player player = (Player) sender;
         UserProfile profile = profileManager.getProfile(player.getName());
         double playerClassTotalAttrib = profile.getTotalAllocatedPoints()+profile.getCurrentAttributePoints();
-        double abyssPoints = profile.getAbyssPoints();
+        double abyssPoints = profile.getAbysspoints();
 
         if (playerClassTotalAttrib >= 20000) {
             player.sendMessage("Max attributes reached.");
@@ -71,7 +71,7 @@ public class ConvertLevelsCommand implements CommandExecutor {
 
         // Perform the conversion, updating the player's profile
         profile.setCurrentAttributePoints(profile.getCurrentAttributePoints() + pointsToConvert);
-        profile.setAbyssPoints(profile.getAbyssPoints() - totalAbyssPointsRequired);
+        profile.setAbysspoints(profile.getAbysspoints() - totalAbyssPointsRequired);
 
         // Save the profile
         profileManager.saveProfile(player.getName());
