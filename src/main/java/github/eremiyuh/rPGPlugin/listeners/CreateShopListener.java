@@ -282,6 +282,9 @@ public class CreateShopListener implements Listener {
 
             if (chestBlock.hasMetadata("item") && chestBlock.hasMetadata("itemAmount") &&
                     chestBlock.hasMetadata("currency") && chestBlock.hasMetadata("currencyAmount")) {
+                if (player.getInventory().getItemInMainHand().getType().name().endsWith("_DYE") || player.getInventory().getItemInMainHand().getType() == Material.GLOW_INK_SAC) {
+                    return;
+                }
                 event.setCancelled(true);
                 ItemStack storedItem = (ItemStack) chestBlock.getMetadata("item").get(0).value();
                 assert storedItem != null;
