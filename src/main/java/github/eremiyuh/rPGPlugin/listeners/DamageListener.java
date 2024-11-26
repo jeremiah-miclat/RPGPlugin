@@ -425,6 +425,9 @@ public class DamageListener implements Listener {
                     if (damaged instanceof Player player) {
                         UserProfile playerProfile = profileManager.getProfile(player.getName());
                         playerProfile.setDurability(Math.max(0,playerProfile.getDurability()-1));
+                        if (playerProfile.isBossIndicator() && playerProfile.getDurability() <= 0) {
+                            player.sendMessage("Durability depleted. You will receive more damage. /sdw to turn off this warnings");
+                        }
                         mobDamage *= playerProfile.getDurability() == 0 ? 2 : 1;
 
 
@@ -458,6 +461,9 @@ public class DamageListener implements Listener {
                     if (damaged instanceof Player player) {
                         UserProfile playerProfile = profileManager.getProfile(player.getName());
                         playerProfile.setDurability(Math.max(0,playerProfile.getDurability()-1));
+                        if (playerProfile.isBossIndicator() && playerProfile.getDurability() <= 0) {
+                            player.sendMessage("Durability depleted. You will receive more damage. /sdw to turn off this warnings");
+                        }
                         customDamage *= playerProfile.getDurability() == 0 ? 2 : 1;
                         customDamage/=10;
 
@@ -487,6 +493,9 @@ public class DamageListener implements Listener {
                     if (damaged instanceof Player player) {
                         UserProfile playerProfile = profileManager.getProfile(player.getName());
                         playerProfile.setDurability(Math.max(0,playerProfile.getDurability()-1));
+                        if (playerProfile.isBossIndicator() && playerProfile.getDurability() <= 0) {
+                            player.sendMessage("Durability depleted. You will receive more damage. /sdw to turn off this warnings");
+                        }
                         customDamage *= playerProfile.getDurability() == 0 ? 2 : 1;
                         customDamage/=10;
 
@@ -652,6 +661,9 @@ public class DamageListener implements Listener {
 
 
             playerProfile.setDurability(Math.max(0,playerProfile.getDurability()-1));
+            if (playerProfile.isBossIndicator() && playerProfile.getDurability() <= 0) {
+                player.sendMessage("Durability depleted. You will receive more damage. /sdw to turn off this warnings");
+            }
             finalDamage *= playerProfile.getDurability() == 0 ? 2 : 1;
 
 
@@ -829,6 +841,9 @@ public class DamageListener implements Listener {
             UserProfile playerProfile = profileManager.getProfile(player.getName());
 
             playerProfile.setDurability(Math.max(0,playerProfile.getDurability()-1));
+            if (playerProfile.isBossIndicator() && playerProfile.getDurability() <= 0) {
+                player.sendMessage("Durability depleted. You will receive more damage. /sdw to turn off this warnings");
+            }
             finalDamage *= playerProfile.getDurability() == 0 ? 2 : 1;
             if (playerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
                 finalDamage *= 1.2;
