@@ -12,6 +12,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -236,6 +238,55 @@ public class ShopsManager {
 
         plugin.getLogger().info("Successfully removed shop " + shopID + " for player: " + playerName);
         return true;
+    }
+
+    public List<Location> listPlayerShops(String playerName) {
+        // Define the file path for the player's shops
+        shopsFile = new File(plugin.getDataFolder(), playerName + "_shops.yml");
+
+        // Create a list to store the locations
+        List<Location> shopLocations = new ArrayList<>();
+
+        // Check if the file exists
+        if (!shopsFile.exists()) {
+            plugin.getLogger().warning("No shop file found for player: " + playerName);
+            return shopLocations; // Return an empty list if no shops are found
+        }
+
+        // Load the configuration
+        shopsConfig = YamlConfiguration.loadConfiguration(shopsFile);
+
+        // Ensure the 'shops' section exists
+        if (!shopsConfig.contains("shops")) {
+            plugin.getLogger().warning("No shops found for player: " + playerName);
+            return shopLocations; // Return an empty list if no shops are found
+        }
+
+        // Iterate through each shop entry and collect the location details
+        for (String shopKey : shopsConfig.getConfigurationSection("shops").getKeys(false)) {
+            String shopPath = "shops." + shopKey;
+
+            // Get the location details
+            String worldName = shopsConfig.getString(shopPath + ".id.world");
+            World world = plugin.getServer().getWorld(worldName);
+            if (world == null) {
+                plugin.getLogger().warning("World not found for shop: " + shopKey + " for player: " + playerName);
+                continue; // Skip this shop if the world is not found
+            }
+
+            double x = shopsConfig.getDouble(shopPath + ".id.x");
+            double y = shopsConfig.getDouble(shopPath + ".id.y");
+            double z = shopsConfig.getDouble(shopPath + ".id.z");
+            float pitch = (float) shopsConfig.getDouble(shopPath + ".id.pitch");
+            float yaw = (float) shopsConfig.getDouble(shopPath + ".id.yaw");
+
+            // Create the Location object and add it to the list
+            Location location = new Location(world, x, y, z, yaw, pitch);
+            shopLocations.add(location);
+        }
+
+        // Return the list of shop locations
+        return shopLocations;
     }
 
 

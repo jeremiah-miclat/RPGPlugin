@@ -283,6 +283,7 @@ public class RPGPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new AbyssOreListener(profileManager), this);
         getServer().getPluginManager().registerEvents(new CreateShopListener(this,chunkManager,profileManager,shopsManager), this);
         getServer().getPluginManager().registerEvents(new CustomItemRecipeListener(), this);
+        getServer().getPluginManager().registerEvents(new VaultCloseListener(vaultManager), this);
 
 
         // Register the command executor
@@ -337,7 +338,7 @@ public class RPGPlugin extends JavaPlugin {
         Objects.requireNonNull(this.getCommand("enderchest")).setExecutor(new EnderChestCommand());
         Objects.requireNonNull(this.getCommand("addstat")).setExecutor(new AddAttributeCommand(profileManager));
         Objects.requireNonNull(this.getCommand("shopsavetploc")).setExecutor(new ShopTpSaveCommand(shopTpSaveManager));
-
+        Objects.requireNonNull(this.getCommand("tpshop")).setExecutor(new ShopTpCommand(shopsManager, shopTpSaveManager,profileManager));
         vaultManager.loadVaults();
         //auth
         getCommand("register").setExecutor(new RegisterCommand(this,profileManager));
