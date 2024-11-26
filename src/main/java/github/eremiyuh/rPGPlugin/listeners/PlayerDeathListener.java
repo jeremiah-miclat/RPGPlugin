@@ -59,7 +59,7 @@ public class PlayerDeathListener implements Listener {
             Player killer = player.getKiller();
             UserProfile killerProfile = profileManager.getProfile(killer.getName());
             killerProfile.setAbysspoints(killerProfile.getAbysspoints()+(abyssPoints*.10));
-            String messageToKiller = "You killed "+ player.getName()  + ". Received " + (int) abyssPoints*.10 + " abyss points.";
+            String messageToKiller = "You killed "+ player.getName()  + ". Received " + (int) (abyssPoints*.10) + " abyss points.";
             killer.sendMessage(Component.text(messageToKiller).color(TextColor.color(124,252,0)));
         }
 
