@@ -11,6 +11,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.*;
 import org.bukkit.entity.Player;
 
@@ -28,14 +29,6 @@ public class PlayerMovementListener implements Listener {
         return profile != null && !profile.isLoggedIn();
     }
 
-    @EventHandler
-    public void onInventoryOpen(InventoryOpenEvent event) {
-        Player player = (Player) event.getPlayer();
-        if (isNotLoggedIn(player) && !player.isOp()) {
-            player.closeInventory();
-            player.sendMessage("You must log in first to access your inventory.");
-        }
-    }
 
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event) {

@@ -141,8 +141,8 @@ commands:
     usage: /convertcurrency <ore> <amount>
     notes: "Converts some ores/ingot currency which can be seen on checkstatus gui to a real material"
   warp:
-    description: lets you go to abyss world
-    usage: /warp a|ad|o
+    description: switch worlds
+    usage: /warp a | ad | o
     notes: "For new players, it is recommended to have full netherite set with protection IV enchants before raiding the abyss.
     Fighting in abyss will cost the stamina and durability which can be seen through /checkstatus
     "

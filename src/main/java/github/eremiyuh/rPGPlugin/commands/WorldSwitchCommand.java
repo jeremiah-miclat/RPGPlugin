@@ -29,7 +29,7 @@ public class WorldSwitchCommand implements CommandExecutor {
         Player player = (Player) sender;
 
         if (args.length < 1) {
-            player.sendMessage("Specify the world to switch to: /switchworld <abyss|normal>");
+            player.sendMessage("/warp a or ad or o | a for abyss | ad for abyss dungeon | o for Overworld");
             return false;
         }
 
