@@ -66,103 +66,150 @@ public class AlchemistThrowPotion implements Listener {
         if (!Objects.requireNonNull(event.getEntity().getLocation().getWorld()).getName().equals("world_rpg") && !Objects.requireNonNull(event.getEntity().getLocation().getWorld()).getName().contains("labyrinth")) {
             return;
         }
-
-        if (event.getEntity().getShooter() instanceof Player thrower) {
-            UserProfile throwerProfile = profileManager.getProfile(thrower.getName());
-
-
-
-            if (throwerProfile != null && "alchemist".equalsIgnoreCase(throwerProfile.getChosenClass()) && throwerProfile.getSelectedSkill().equalsIgnoreCase("skill 2")) {
-                double intel = throwerProfile.getAlchemistClassInfo() != null ? throwerProfile.getAlchemistClassInfo().getIntel() : 0;
-
-                for (PotionEffect effect : event.getPotion().getEffects()) {
-                    int baseIntensity = effect.getAmplifier();
-                    int baseDuration = effect.getDuration();
-
-                    boolean isPositiveEffect = POSITIVE_EFFECTS.contains(effect.getType());
-                    boolean isNegativeEffect = NEGATIVE_EFFECTS.contains(effect.getType());
-
-                    double intensity = 0;
-                    int duration = 0;
-
-                    if (isPositiveEffect) {
-                        intensity = (int) (intel * 0.003);
-                        duration = (int) (intel * 0.6);
-                    } else if (isNegativeEffect) {
-                        intensity = (int) (intel * 0.003);
-                        duration = (int) (intel * 0.03);
-                    } else {
-                        continue;
-                    }
-
-                    if (effect.getType() == PotionEffectType.SPEED) {
-                        intensity = intensity/10;
-                        duration *= 2;
-                    }
-
-                    if (effect.getType() == PotionEffectType.JUMP_BOOST) {
-                        intensity = 0;
-                        duration *= 2;
-                    }
-
-                    if (effect.getType() == PotionEffectType.RESISTANCE) {
-                        intensity = 0;
-                        duration = 0;
-                    }
-
-                    if (effect.getType() == PotionEffectType.SLOWNESS) {
-                        intensity = 0;
-                    }
-
-                    if (effect.getType() == PotionEffectType.WEAKNESS) {
-                        intensity = 0;
-                    }
-
-                    for (LivingEntity target : event.getAffectedEntities()) {
-
-                        int finalIntensity = (int) (baseIntensity + intensity);
-                        int finalDuration = baseDuration + duration;
-                        target.addPotionEffect(new PotionEffect(effect.getType(), finalDuration, finalIntensity, true, true));
+        try {
+            if (event.getEntity().getShooter() instanceof Player thrower) {
+                UserProfile throwerProfile = profileManager.getProfile(thrower.getName());
 
 
-                    }
-                }
 
+                if (throwerProfile != null && "alchemist".equalsIgnoreCase(throwerProfile.getChosenClass()) && throwerProfile.getSelectedSkill().equalsIgnoreCase("skill 2")) {
+                    double intel = throwerProfile.getAlchemistClassInfo() != null ? throwerProfile.getAlchemistClassInfo().getIntel() : 0;
 
-                Bukkit.getScheduler().runTaskLater(plugin, () -> {
-                    for (LivingEntity target : event.getAffectedEntities()) {
-                        for (PotionEffect effect : event.getPotion().getEffects()) {
-                            boolean isPositiveEffect = POSITIVE_EFFECTS.contains(effect.getType());
-                            boolean isNegativeEffect = NEGATIVE_EFFECTS.contains(effect.getType());
+                    for (PotionEffect effect : event.getPotion().getEffects()) {
+                        int baseIntensity = effect.getAmplifier();
+                        int baseDuration = effect.getDuration();
 
-                        if (thrower.getName().equals(target.getName()) && isNegativeEffect) {
-                           target.removePotionEffect(effect.getType());
+                        boolean isPositiveEffect = POSITIVE_EFFECTS.contains(effect.getType());
+                        boolean isNegativeEffect = NEGATIVE_EFFECTS.contains(effect.getType());
+
+                        double intensity = 0;
+                        int duration = 0;
+
+                        if (isPositiveEffect) {
+                            intensity = (int) (intel * 0.003);
+                            duration = (int) (intel * 0.6);
+                        } else if (isNegativeEffect) {
+                            intensity = (int) (intel * 0.003);
+                            duration = (int) (intel * 0.03);
+                        } else {
+                            continue;
                         }
 
-                        if (target instanceof Player targetPlayer && isNegativeEffect) {
-                            UserProfile targetProfile = profileManager.getProfile(targetPlayer.getName());
-                            if (throwerProfile.getTeam().equals(targetProfile.getTeam()) && !throwerProfile.getTeam().equalsIgnoreCase("none")) {
-                                targetPlayer.removePotionEffect(effect.getType());
+
+
+                        for (LivingEntity target : event.getAffectedEntities()) {
+
+                            if (effect.getType() == PotionEffectType.SPEED) {
+                                intensity = intensity/10;
+                                duration /= 100;
+                                int finalIntensity = (int) (baseIntensity + intensity);
+                                int finalDuration = baseDuration + duration;
+                                target.addPotionEffect(new PotionEffect(effect.getType(), finalDuration, finalIntensity, true, true));
                             }
+
+                            if (effect.getType() == PotionEffectType.JUMP_BOOST) {
+                                intensity = 0;
+                                duration /= 100;
+                                int finalIntensity = (int) (baseIntensity + intensity);
+                                int finalDuration = baseDuration + duration;
+                                target.addPotionEffect(new PotionEffect(effect.getType(), finalDuration, finalIntensity, true, true));
+                            }
+
+                            if (effect.getType() == PotionEffectType.STRENGTH) {
+                                intensity = intensity/10;
+                                duration /= 100;
+                                int finalIntensity = (int) (baseIntensity + intensity);
+                                int finalDuration = baseDuration + duration;
+                                target.addPotionEffect(new PotionEffect(effect.getType(), finalDuration, finalIntensity, true, true));
+                            }
+
+                            if (effect.getType() == PotionEffectType.POISON) {
+                                intensity = 0;
+                                int finalIntensity = (int) (baseIntensity + intensity);
+                                int finalDuration = baseDuration + duration;
+                                target.addPotionEffect(new PotionEffect(effect.getType(), finalDuration, finalIntensity, true, true));
+                            }
+
+                            if (effect.getType() == PotionEffectType.WITHER) {
+                                intensity = 0;
+                                int finalIntensity = (int) (baseIntensity + intensity);
+                                int finalDuration = baseDuration + duration;
+                                target.addPotionEffect(new PotionEffect(effect.getType(), finalDuration, finalIntensity, true, true));
+                            }
+
+                            if (effect.getType() == PotionEffectType.FIRE_RESISTANCE) {
+                                int finalIntensity = (int) (baseIntensity + intensity);
+                                int finalDuration = baseDuration + duration;
+                                target.addPotionEffect(new PotionEffect(effect.getType(), finalDuration, finalIntensity, true, true));
+                            }
+
+                            if (effect.getType() == PotionEffectType.NIGHT_VISION) {
+                                int finalIntensity = (int) (baseIntensity + intensity);
+                                int finalDuration = baseDuration + duration;
+                                target.addPotionEffect(new PotionEffect(effect.getType(), finalDuration, finalIntensity, true, true));
+                            }
+
+                            if (effect.getType() == PotionEffectType.SLOW_FALLING) {
+                                int finalIntensity = (int) (baseIntensity + intensity);
+                                int finalDuration = baseDuration + duration;
+                                target.addPotionEffect(new PotionEffect(effect.getType(), finalDuration, finalIntensity, true, true));
+                            }
+
+                            if (effect.getType() == PotionEffectType.WATER_BREATHING) {
+                                int finalIntensity = (int) (baseIntensity + intensity);
+                                int finalDuration = baseDuration + duration;
+                                target.addPotionEffect(new PotionEffect(effect.getType(), finalDuration, finalIntensity, true, true));
+                            }
+
+                            if (effect.getType() == PotionEffectType.INVISIBILITY) {
+                                int finalIntensity = (int) (baseIntensity + intensity);
+                                int finalDuration = baseDuration + duration;
+                                target.addPotionEffect(new PotionEffect(effect.getType(), finalDuration, finalIntensity, true, true));
+                            }
+
+
+
+
                         }
-                            if (target instanceof Player targetPlayer && isPositiveEffect && !throwerProfile.getTeam().equals("none")) {
-                                UserProfile targetProfile = profileManager.getProfile(targetPlayer.getName());
-                                if (!throwerProfile.getTeam().equals(targetProfile.getTeam())) {
-                                    targetPlayer.removePotionEffect(effect.getType());
+                    }
+
+
+                    Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                        for (LivingEntity target : event.getAffectedEntities()) {
+                            for (PotionEffect effect : event.getPotion().getEffects()) {
+                                boolean isPositiveEffect = POSITIVE_EFFECTS.contains(effect.getType());
+                                boolean isNegativeEffect = NEGATIVE_EFFECTS.contains(effect.getType());
+
+                                if (thrower.getName().equals(target.getName()) && isNegativeEffect) {
+                                    target.removePotionEffect(effect.getType());
+                                    target.addPotionEffect(new PotionEffect((PotionEffectType.REGENERATION),60,0,true,true));
                                 }
+
+                                if (target instanceof Player targetPlayer && isNegativeEffect) {
+                                    UserProfile targetProfile = profileManager.getProfile(targetPlayer.getName());
+                                    if (throwerProfile.getTeam().equals(targetProfile.getTeam()) && !throwerProfile.getTeam().equalsIgnoreCase("none")) {
+                                        targetPlayer.removePotionEffect(effect.getType());
+                                        target.addPotionEffect(new PotionEffect((PotionEffectType.REGENERATION),60,0,true,true));
+                                    }
+                                }
+                                if (target instanceof Player targetPlayer && isPositiveEffect && !throwerProfile.getTeam().equals("none")) {
+                                    UserProfile targetProfile = profileManager.getProfile(targetPlayer.getName());
+                                    if (!throwerProfile.getTeam().equals(targetProfile.getTeam())) {
+                                        targetPlayer.removePotionEffect(effect.getType());
+                                    }
+                                }
+
+                                if (target instanceof Monster monster && isPositiveEffect ) {
+                                    monster.removePotionEffect(effect.getType());
+                                }
+
+
+
                             }
-
-                            if (target instanceof Monster monster && isPositiveEffect ) {
-                                monster.removePotionEffect(effect.getType());
-                            }
-
-
 
                         }
-
-                    }
                     }, 1L);
-            }
+                }
 
 //            if (throwerProfile != null && "alchemist".equalsIgnoreCase(throwerProfile.getChosenClass())&& throwerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
 //                double intel = throwerProfile.getAlchemistClassInfo() != null ? throwerProfile.getAlchemistClassInfo().getIntel() : 0;
@@ -203,46 +250,49 @@ public class AlchemistThrowPotion implements Listener {
 //                }
 //
 //            }
-            if (throwerProfile != null && "alchemist".equalsIgnoreCase(throwerProfile.getChosenClass()) && throwerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
-                double intel = throwerProfile.getAlchemistClassInfo() != null ? throwerProfile.getAlchemistClassInfo().getIntel() : 0;
+                if (throwerProfile != null && "alchemist".equalsIgnoreCase(throwerProfile.getChosenClass()) && throwerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
+                    double intel = throwerProfile.getAlchemistClassInfo() != null ? throwerProfile.getAlchemistClassInfo().getIntel() : 0;
 
-                for (PotionEffect effect : event.getPotion().getEffects()) {
-                    int baseIntensity = effect.getAmplifier();
-                    int baseDuration = effect.getDuration();
+                    for (PotionEffect effect : event.getPotion().getEffects()) {
+                        int baseIntensity = effect.getAmplifier();
+                        int baseDuration = effect.getDuration();
 
-                    boolean isPositiveEffect = HEAL_EFFECTS.contains(effect.getType());
+                        boolean isPositiveEffect = HEAL_EFFECTS.contains(effect.getType());
 
-                    int intensity = Math.max(0, (int) (intel * 0.0005));
-                    int duration = Math.max(0, Math.min(INTENSITY_CAP, (int) (intel * 0.002)));
+                        int intensity = Math.max(0, (int) (intel * 0.0005));
+                        int duration = Math.max(0, Math.min(INTENSITY_CAP, (int) (intel * 0.002)));
 
-                    for (LivingEntity target : event.getAffectedEntities()) {
-                        if (!(target instanceof Player)) continue;
+                        for (LivingEntity target : event.getAffectedEntities()) {
+                            if (!(target instanceof Player)) continue;
 
-                        Player player = (Player) target;
-                        UserProfile playerProfile = profileManager.getProfile(player.getName());
+                            Player player = (Player) target;
+                            UserProfile playerProfile = profileManager.getProfile(player.getName());
 
-                        boolean applyEffect = false;
+                            boolean applyEffect = false;
 
-                        // Apply effect if the player is the thrower or in the same team
-                        if (isPositiveEffect && player.getName().equals(thrower.getName())) {
-                            applyEffect = true;
-                        }
+                            // Apply effect if the player is the thrower or in the same team
+                            if (isPositiveEffect && player.getName().equals(thrower.getName())) {
+                                applyEffect = true;
+                            }
 
-                        if (isPositiveEffect && playerProfile != null && !playerProfile.getTeam().equals("none") && playerProfile.getTeam().equalsIgnoreCase(throwerProfile.getTeam())) {
-                            applyEffect = true;
-                        }
+                            if (isPositiveEffect && playerProfile != null && !playerProfile.getTeam().equals("none") && playerProfile.getTeam().equalsIgnoreCase(throwerProfile.getTeam())) {
+                                applyEffect = true;
+                            }
 
-                        // Apply the effect if conditions are met
-                        if (applyEffect) {
-                            int finalIntensity = baseIntensity + (int)(baseIntensity * intensity);
-                            int finalDuration = baseDuration + (int)(baseDuration * duration);
-                            target.addPotionEffect(new PotionEffect(effect.getType(), finalDuration, finalIntensity, true, true));
+                            // Apply the effect if conditions are met
+                            if (applyEffect) {
+                                int finalIntensity = baseIntensity + (int)(baseIntensity * intensity);
+                                int finalDuration = baseDuration + (int)(baseDuration * duration);
+                                target.addPotionEffect(new PotionEffect(effect.getType(), finalDuration, finalIntensity, true, true));
+                            }
                         }
                     }
                 }
+
+
             }
-
-
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
 
     }

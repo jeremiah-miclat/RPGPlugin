@@ -2,6 +2,7 @@ package github.eremiyuh.rPGPlugin.listeners;
 
 import github.eremiyuh.rPGPlugin.manager.PlayerProfileManager;
 import github.eremiyuh.rPGPlugin.profile.UserProfile;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -13,6 +14,10 @@ import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
 
 public class PotionGiveListener implements Listener {
     private final JavaPlugin plugin;
@@ -67,7 +72,23 @@ public class PotionGiveListener implements Listener {
                 if (playerProfile.getSelectedSkill().equalsIgnoreCase("skill 1")) {
                     potionEffect = new PotionEffect(PotionEffectType.INSTANT_DAMAGE, 1, 1);
                 } else if (playerProfile.getSelectedSkill().equalsIgnoreCase("skill 2")) {
-                    potionEffect = new PotionEffect(PotionEffectType.POISON, 450, 1); // Duration of 450 ticks (22.5 seconds)
+                    // Create a list of potential PotionEffectTypes for "skill 2"
+                    List<PotionEffectType> possibleEffects = Arrays.asList(
+                            PotionEffectType.POISON,
+                            PotionEffectType.WITHER,
+                            PotionEffectType.SLOWNESS,
+                            PotionEffectType.STRENGTH, // Strength
+                            PotionEffectType.SPEED,
+                            PotionEffectType.RESISTANCE // Resistance
+                    );
+
+                    // Randomly select an effect
+                    Random random = new Random();
+                    PotionEffectType selectedEffect = possibleEffects.get(random.nextInt(possibleEffects.size()));
+
+                    // Create the potion effect with a duration of 20 ticks (1 second) and amplifier 1
+                    potionEffect = new PotionEffect(selectedEffect, 100, 1);
+                    player.sendMessage(ChatColor.BLUE + "Crafted Potion: " + formatPotionEffectName(selectedEffect));
                 } else if (playerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
                     potionEffect = new PotionEffect(PotionEffectType.INSTANT_HEALTH, 1, 1);
                 }
@@ -85,6 +106,13 @@ public class PotionGiveListener implements Listener {
             player.getInventory().setItemInOffHand(potion);
             playerProfile.setPotion(playerProfile.getPotion() - 1);
         }
+    }
+
+    private String formatPotionEffectName(PotionEffectType effectType) {
+        if (effectType == null) return "Unknown Effect";
+        // Convert the effect type name to a readable format
+        String name = effectType.getName().toLowerCase().replace('_', ' ');
+        return Character.toUpperCase(name.charAt(0)) + name.substring(1);
     }
 }
 
