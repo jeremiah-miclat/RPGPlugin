@@ -82,7 +82,7 @@ public class AlchemistThrowPotion implements Listener {
                     boolean isPositiveEffect = POSITIVE_EFFECTS.contains(effect.getType());
                     boolean isNegativeEffect = NEGATIVE_EFFECTS.contains(effect.getType());
 
-                    int intensity = 0;
+                    double intensity = 0;
                     int duration = 0;
 
                     if (isPositiveEffect) {
@@ -95,9 +95,32 @@ public class AlchemistThrowPotion implements Listener {
                         continue;
                     }
 
+                    if (effect.getType() == PotionEffectType.SPEED) {
+                        intensity = intensity/10;
+                        duration *= 2;
+                    }
+
+                    if (effect.getType() == PotionEffectType.JUMP_BOOST) {
+                        intensity = 0;
+                        duration *= 2;
+                    }
+
+                    if (effect.getType() == PotionEffectType.RESISTANCE) {
+                        intensity = 0;
+                        duration = 0;
+                    }
+
+                    if (effect.getType() == PotionEffectType.SLOWNESS) {
+                        intensity = 0;
+                    }
+
+                    if (effect.getType() == PotionEffectType.WEAKNESS) {
+                        intensity = 0;
+                    }
+
                     for (LivingEntity target : event.getAffectedEntities()) {
 
-                        int finalIntensity = baseIntensity + intensity;
+                        int finalIntensity = (int) (baseIntensity + intensity);
                         int finalDuration = baseDuration + duration;
                         target.addPotionEffect(new PotionEffect(effect.getType(), finalDuration, finalIntensity, true, true));
 
