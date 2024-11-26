@@ -890,7 +890,7 @@ public class DamageListener implements Listener {
                         if (lore.startsWith("Strength: ")) {
 
                             if (damagerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
-                                str += (Math.round(1.1*parseLoreValue(lore)));
+                                str += (Math.round(1.2*parseLoreValue(lore)));
                             }
                             else {
                                 str += parseLoreValue(lore);
@@ -899,21 +899,21 @@ public class DamageListener implements Listener {
 
                         } else if (lore.startsWith("Dexterity: ")) {
                             if (damagerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
-                                dex += (Math.round(1.1*parseLoreValue(lore)));
+                                dex += (Math.round(1.2*parseLoreValue(lore)));
                             }
                             else {
                                 dex += parseLoreValue(lore);
                             }
                         } else if (lore.startsWith("Intelligence: ")) {
                             if (damagerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
-                                intel += (Math.round(1.1*parseLoreValue(lore)));
+                                intel += (Math.round(1.2*parseLoreValue(lore)));
                             }
                             else {
                                 intel += parseLoreValue(lore);
                             }
                         } else if (lore.startsWith("Luck: ")) {
                             if (damagerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
-                                luk += (Math.round(1.1*parseLoreValue(lore)));
+                                luk += (Math.round(1.2*parseLoreValue(lore)));
                             }
                             else {
                                 luk += parseLoreValue(lore);
@@ -969,13 +969,14 @@ public class DamageListener implements Listener {
                 }
 
                 if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 2")) {
-                    statDmg += (dex*.6);
-                    elementalDamage += (intel*.4);
+                    statDmg += (dex*.5);
+                    elementalDamage += (intel*.5);
                 }
 
                 if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 1")) {
-                    elementalDamage += 4;
+                    elementalDamage += 2;
                     elementalDamage += (intel*.6);
+                    statDmg += (dex*.4);
                 } else {
                     elementalDamage += 2 + (intel*.1);
                 }
@@ -998,7 +999,7 @@ public class DamageListener implements Listener {
             if (damagerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
                 if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 1")) {
                     elementalDamage += 6;
-                    elementalDamage += (intel*2);
+                    elementalDamage += (intel*.08);
 
                 } else {
                     elementalDamage += 4 + (intel*.4);

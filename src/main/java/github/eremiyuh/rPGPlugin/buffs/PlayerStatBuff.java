@@ -2,12 +2,17 @@ package github.eremiyuh.rPGPlugin.buffs;
 
 import github.eremiyuh.rPGPlugin.manager.PlayerProfileManager;
 import github.eremiyuh.rPGPlugin.profile.UserProfile;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.TextColor;
+import org.bukkit.ChatColor;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.awt.*;
 import java.util.Objects;
 
 public class PlayerStatBuff {
@@ -70,7 +75,7 @@ public class PlayerStatBuff {
             default -> profile.getDefaultClassInfo().getVit();
         };
         if (profile.getChosenClass().equalsIgnoreCase("alchemist")) {
-            equipVitality*=1.1;
+            equipVitality*=1.2;
         }
 
         return baseHealth + (healthPerVitality * (classVitality + equipVitality));
@@ -80,9 +85,9 @@ public class PlayerStatBuff {
      * Calculates movement speed based on the player's Agility attribute.
      */
     private double calculateSpeed(UserProfile profile, Player player) {
-        double baseSpeed = 0.2; // Default Minecraft player speed
-        double maxAgilityBonus = 0.3; // Cap agility contribution at 0.3, total max speed = 0.5
-        double speedPerAgility = 0.0002;
+        double baseSpeed = 0.2;
+        double maxAgilityBonus = 1;
+        double speedPerAgility = 0.0001;
 
         double[] equipStats = getEquipStats(player);
         double equipAgility = equipStats[1];
@@ -96,12 +101,12 @@ public class PlayerStatBuff {
         };
 
         if (profile.getChosenClass().equalsIgnoreCase("alchemist")) {
-            equipAgility*=1.1;
+            equipAgility*=1.2;
         }
 
         double agilityBonus = speedPerAgility * (classAgility + equipAgility);
         agilityBonus = Math.min(agilityBonus, maxAgilityBonus);
-        return Math.min(baseSpeed + agilityBonus, 0.5);
+        return Math.min(baseSpeed + agilityBonus, 1);
     }
 
     /**
@@ -123,10 +128,12 @@ public class PlayerStatBuff {
 
             // Set walk speed based on agility
             double newSpeed = calculateSpeed(profile, player);
-            if (newSpeed > 0.4) {
-                player.sendMessage("You have reached max ms from agi. Increasing it over 1k points is not recommended");
+            if (newSpeed >= 1) {
+                TextComponent speedWarning = Component.text("You have reached max ms from agi. Agi max: 8000").color(TextColor.color(255,0,0));
+                player.sendMessage(speedWarning);
             }
-            player.setWalkSpeed((float) Math.min(newSpeed, 1.0f)); // Cap speed at 1.0 for safety
+
+            player.setWalkSpeed((float) Math.min(newSpeed, 1.0f));
         }  catch (Exception e) {
             // Handle exceptions gracefully, log the error, etc.
             e.printStackTrace();

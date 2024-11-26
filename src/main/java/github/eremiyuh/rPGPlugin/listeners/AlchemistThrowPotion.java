@@ -20,7 +20,7 @@ public class AlchemistThrowPotion implements Listener {
     private final PlayerProfileManager profileManager;
     private final JavaPlugin plugin;
 
-    private static final int INTENSITY_CAP = 3;
+    private static final int INTENSITY_CAP = 10;
 
     private static final Set<PotionEffectType> POSITIVE_EFFECTS = new HashSet<>() {{
         add(PotionEffectType.SPEED);
@@ -189,7 +189,7 @@ public class AlchemistThrowPotion implements Listener {
 
                     boolean isPositiveEffect = HEAL_EFFECTS.contains(effect.getType());
 
-                    int intensity = Math.max(0, (int) (intel * 0.005));
+                    int intensity = Math.max(0, (int) (intel * 0.0005));
                     int duration = Math.max(0, Math.min(INTENSITY_CAP, (int) (intel * 0.002)));
 
                     for (LivingEntity target : event.getAffectedEntities()) {
