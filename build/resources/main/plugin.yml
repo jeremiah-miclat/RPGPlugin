@@ -325,3 +325,6 @@ commands:
   shopsavetploc:
     description: saves current location to let players tp to your shop
     usage: shopsavetploc
+  tpshop:
+    description: Teleports to a saved shop location of a player.
+    usage: /<command> <playerName>

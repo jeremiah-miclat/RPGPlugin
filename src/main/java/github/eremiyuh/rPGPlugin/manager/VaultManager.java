@@ -10,10 +10,8 @@ import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 public class VaultManager {
@@ -28,12 +26,15 @@ public class VaultManager {
         this.pluginDataFolder = pluginDataFolder;
     }
 
-    // Set max vaults to allow future expansion
     public void setMaxVaults(int maxVaults) {
         this.maxVaults = maxVaults;
     }
 
-    // Open a vault for a player, initializing if necessary
+    public int getMaxVaults() {
+        return maxVaults;
+    }
+
+    // Open a vault for a player
     public void openVault(Player player, int vaultNumber) {
         if (vaultNumber < 1 || vaultNumber > maxVaults) {
             player.sendMessage("Vault number must be between 1 and " + maxVaults);
@@ -42,77 +43,43 @@ public class VaultManager {
 
         String playerName = player.getName();
         Map<Integer, Inventory> vaults = playerVaults.computeIfAbsent(playerName, k -> new HashMap<>());
-        Inventory vault = vaults.computeIfAbsent(vaultNumber, v -> loadVault(playerName, vaultNumber));
 
-        player.openInventory(vault);
-    }
-
-    // Load vault contents from the file or create a new one if not present
-    private Inventory loadVault(String playerName, int vaultNumber) {
-        Inventory vault = Bukkit.createInventory(null, 27, "Vault " + vaultNumber); // 27 slots
-        File playerVaultFile = new File(pluginDataFolder, playerName + "_vaults.yml");
-        FileConfiguration vaultData = YamlConfiguration.loadConfiguration(playerVaultFile);
-        String path = "vault" + vaultNumber;
-
-        // Check if the path exists in the configuration
-        if (vaultData.contains(path)) {
-            Object itemsObj = vaultData.get(path);
-
-            // Check if the itemsObj is a list and contains ItemStack elements
-            if (itemsObj instanceof List<?> itemsList) {
-                // Validate that every item is an ItemStack
-                List<ItemStack> validItems = itemsList.stream()
-                        .filter(item -> item instanceof ItemStack)
-                        .map(item -> (ItemStack) item)
-                        .toList(); // Only collect valid ItemStacks
-
-                if (!validItems.isEmpty()) {
-                    vault.setContents(validItems.toArray(new ItemStack[0])); // Set valid items
-                } else {
-                    Bukkit.getLogger().warning("Vault data for " + playerName + " vault " + vaultNumber + " is invalid. Resetting vault.");
-                    vault.clear();  // Clear the vault if invalid data
-                }
-            } else {
-                Bukkit.getLogger().warning("Expected list of ItemStacks for " + path + " but found: " + itemsObj);
-                vault.clear();  // Reset the vault if data is not as expected
-            }
+        // Check if the vault is already loaded
+        if (!vaults.containsKey(vaultNumber)) {
+            // Asynchronously load the vault to avoid blocking the server
+            loadVaultAsync(playerName, vaultNumber).thenAccept(vault -> {
+                Bukkit.getScheduler().runTask(plugin, () -> {
+                    vaults.put(vaultNumber, vault);
+                    player.openInventory(vault);
+                });
+            });
+        } else {
+            player.openInventory(vaults.get(vaultNumber));
         }
-
-        return vault;
     }
 
-    // Save a player's vault contents to the file
-    public void saveVault(Player player, int vaultNumber) {
-        String playerName = player.getName();
-        Map<Integer, Inventory> vaults = playerVaults.get(playerName);
-        if (vaults != null && vaults.containsKey(vaultNumber)) {
-            Inventory vault = vaults.get(vaultNumber);
+    // Asynchronous vault loading
+    private CompletableFuture<Inventory> loadVaultAsync(String playerName, int vaultNumber) {
+        return CompletableFuture.supplyAsync(() -> {
+            Inventory vault = Bukkit.createInventory(null, 27, "Vault " + vaultNumber); // Default 27 slots
             File playerVaultFile = new File(pluginDataFolder, playerName + "_vaults.yml");
-            FileConfiguration vaultData = YamlConfiguration.loadConfiguration(playerVaultFile);
-            vaultData.set("vault" + vaultNumber, serializeVaultItems(vault));
-
-            // Save the file after each vault save
-            saveFile(playerVaultFile, vaultData);
-        }
-    }
-
-    // Save all vaults on server shutdown
-    public void saveAllVaults() {
-        for (String playerName : playerVaults.keySet()) {
-            Map<Integer, Inventory> vaults = playerVaults.get(playerName);
-            if (vaults != null) {
-                File playerVaultFile = new File(pluginDataFolder, playerName + "_vaults.yml");
+            if (playerVaultFile.exists()) {
                 FileConfiguration vaultData = YamlConfiguration.loadConfiguration(playerVaultFile);
-                for (int vaultNumber : vaults.keySet()) {
-                    vaultData.set("vault" + vaultNumber, serializeVaultItems(vaults.get(vaultNumber)));
+                String path = "vault" + vaultNumber;
+
+                if (vaultData.contains(path)) {
+                    List<ItemStack> items = vaultData.getList(path, Collections.emptyList()).stream()
+                            .filter(item -> item instanceof ItemStack)
+                            .map(item -> (ItemStack) item)
+                            .collect(Collectors.toList());
+                    vault.setContents(items.toArray(new ItemStack[0]));
                 }
-                // Save after all vaults are saved
-                saveFile(playerVaultFile, vaultData);
             }
-        }
+            return vault;
+        });
     }
 
-    // Save all vaults of a specific player
+    // Save vault when player disconnects
     public void saveAllVaultsForPlayer(Player player) {
         String playerName = player.getName();
         Map<Integer, Inventory> vaults = playerVaults.get(playerName);
@@ -125,22 +92,26 @@ public class VaultManager {
                 vaultData.set("vault" + vaultNumber, serializeVaultItems(vaults.get(vaultNumber)));
             }
 
-            // Save after all vaults for the player are saved
             saveFile(playerVaultFile, vaultData);
+            playerVaults.remove(playerName); // Free up memory after saving
         }
     }
 
-    // Serialize the vault contents (convert ItemStacks to a list for saving)
-    private List<ItemStack> serializeVaultItems(Inventory vault) {
-        ItemStack[] contents = vault.getContents();
-
-        // Filter out null values before converting to a list
-        return Arrays.stream(contents)
-                .filter(item -> item != null)  // Remove any null items from the list
-                .collect(Collectors.toList()); // Collect valid items into a list
+    // Save all vaults on server shutdown
+    public void saveAllVaults() {
+        for (String playerName : playerVaults.keySet()) {
+            saveAllVaultsForPlayer(Bukkit.getPlayer(playerName));
+        }
     }
 
-    // Save vault data to disk
+    // Serialize vault contents
+    private List<ItemStack> serializeVaultItems(Inventory vault) {
+        return Arrays.stream(vault.getContents())
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+    }
+
+    // Save file to disk
     private void saveFile(File file, FileConfiguration vaultData) {
         try {
             vaultData.save(file);
@@ -149,30 +120,26 @@ public class VaultManager {
         }
     }
 
-    // Load all player vaults from their respective files on startup
-    public void loadVaults() {
-        File[] files = pluginDataFolder.listFiles((dir, name) -> name.endsWith("_vaults.yml"));
-        if (files != null) {
-            for (File file : files) {
-                String playerName = file.getName().replace("_vaults.yml", "");
-                FileConfiguration vaultData = YamlConfiguration.loadConfiguration(file);
-                Map<Integer, Inventory> vaults = new HashMap<>();
+    public void saveVault(Player player, int vaultNumber) {
+        String playerName = player.getName();
+        Map<Integer, Inventory> vaults = playerVaults.get(playerName);
 
-                for (int i = 1; i <= maxVaults; i++) {
-                    if (vaultData.contains("vault" + i)) {
-                        vaults.put(i, loadVault(playerName, i));
-                    }
-                }
-                playerVaults.put(playerName, vaults);
-            }
+        if (vaults == null || !vaults.containsKey(vaultNumber)) {
+            Bukkit.getLogger().warning("Vault " + vaultNumber + " for player " + playerName + " does not exist in memory.");
+            return;
         }
+
+        Inventory vault = vaults.get(vaultNumber);
+        File playerVaultFile = new File(pluginDataFolder, playerName + "_vaults.yml");
+        FileConfiguration vaultData = YamlConfiguration.loadConfiguration(playerVaultFile);
+
+        // Serialize and save the vault items
+        vaultData.set("vault" + vaultNumber, serializeVaultItems(vault));
+
+        // Save the file to disk
+        saveFile(playerVaultFile, vaultData);
+
+        Bukkit.getLogger().info("Vault " + vaultNumber + " for player " + playerName + " has been saved.");
     }
 
-    public int getMaxVaults() {
-        return maxVaults;
-    }
-
-    public Map<Integer, Inventory> getPlayerVaults(String playerName) {
-        return playerVaults.get(playerName);
-    }
 }

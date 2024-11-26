@@ -339,7 +339,7 @@ public class RPGPlugin extends JavaPlugin {
         Objects.requireNonNull(this.getCommand("addstat")).setExecutor(new AddAttributeCommand(profileManager));
         Objects.requireNonNull(this.getCommand("shopsavetploc")).setExecutor(new ShopTpSaveCommand(shopTpSaveManager));
         Objects.requireNonNull(this.getCommand("tpshop")).setExecutor(new ShopTpCommand(shopsManager, shopTpSaveManager,profileManager));
-        vaultManager.loadVaults();
+//        vaultManager.loadVaults();
         //auth
         getCommand("register").setExecutor(new RegisterCommand(this,profileManager));
         getCommand("login").setExecutor(new LoginCommand(this,profileManager));
