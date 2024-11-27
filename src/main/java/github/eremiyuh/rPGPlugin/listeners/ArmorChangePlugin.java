@@ -51,7 +51,7 @@ public class ArmorChangePlugin  implements Listener {
 
 
 
-        } if (worldName.equals("world")) {
+        } else {
 
                 playerStatBuff.updatePlayerStatsToNormal(player);
 

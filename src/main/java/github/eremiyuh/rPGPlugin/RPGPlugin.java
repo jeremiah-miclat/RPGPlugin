@@ -21,6 +21,11 @@ import org.bukkit.entity.Entity;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.UUID;
@@ -39,6 +44,9 @@ public class RPGPlugin extends JavaPlugin {
     private ShopsManager shopsManager;
     private ShopTpSaveManager shopTpSaveManager;
 
+
+    private final String WORLD_NAME = "world_resource";
+    private final String DATA_PACK_FOLDER = "datapacks";
 
     @Override
     public void onEnable() {
@@ -167,10 +175,12 @@ public class RPGPlugin extends JavaPlugin {
             assert world != null;
 
             // Set the biome for a region (example: 100x100 area at coordinates (0, 64, 0))
-            for (int x = 0; x < 100; x++) {
-                for (int z = 0; z < 100; z++) {
-                    // Assuming y is set at 64 (you might want to adjust this depending on your needs)
-                    world.setBiome(x, 64, z, biome);
+            if (biome != null) {
+                for (int x = 0; x < 100; x++) {
+                    for (int z = 0; z < 100; z++) {
+                        // Assuming y is set at 64 (you might want to adjust this depending on your needs)
+                        world.setBiome(x, 64, z, biome);
+                    }
                 }
             }
 
@@ -182,6 +192,7 @@ public class RPGPlugin extends JavaPlugin {
 
         } else {
             world.setGameRule(GameRule.SPAWN_RADIUS, 0);
+
             getLogger().info("World " + worldName + " is already loaded.");
         }
 
@@ -352,10 +363,12 @@ public class RPGPlugin extends JavaPlugin {
 
 
         worldConfig();
-        loadWorld("world_rpg",-15,72,-35, 270,0,-1,-1,-1,18000,GameRule.DO_DAYLIGHT_CYCLE,false, World.Environment.NORMAL, Biome.PLAINS);
+        loadWorld("world_rpg",-15,72,-35, 270,0,-1,-1,-1,18000,GameRule.DO_DAYLIGHT_CYCLE,false, World.Environment.NORMAL, null);
         loadWorld("world_labyrinth",-23,312,-35, 270,0,0,0,100,18000,null,false, World.Environment.NORMAL,Biome.NETHER_WASTES);
         loadWorld("world_labyrinth2",-19,251,-36,270,0,0,0,100,18000,null,false, World.Environment.NETHER,Biome.NETHER_WASTES);
         new TabListCustomizer(this, profileManager);
+
+
 
     }
     public void clearHostileMobs(World world) {
@@ -371,6 +384,9 @@ public class RPGPlugin extends JavaPlugin {
             }
         }.runTaskLater(this, 20L); // Delay of 20 ticks (1 second)
     }
+
+
+
 
 
 

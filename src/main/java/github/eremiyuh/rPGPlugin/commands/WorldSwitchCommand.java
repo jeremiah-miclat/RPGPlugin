@@ -46,11 +46,17 @@ public class WorldSwitchCommand implements CommandExecutor {
 //            case "l":
 //                targetWorldName = "world_labyrinth";
 //                break;
-//            case "e":
-//                targetWorldName = "world_the_end";
-//                break;
+            case "e":
+                targetWorldName = "world_the_end";
+                break;
+            case "n":
+                targetWorldName = "world_nether";
+                break;
             case "ad":
                 targetWorldName = "world_labyrinth2";
+                break;
+            case "r":
+                targetWorldName = "world_resource";
                 break;
             default:
                 player.sendMessage("/warp a or ad or o | a for abyss | ad for abyss dungeon | o for Overworld");

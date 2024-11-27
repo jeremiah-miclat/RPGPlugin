@@ -38,6 +38,12 @@ public class PlayerJoinListener implements Listener {
         Player player = event.getPlayer();
         String playerName = player.getName();
 
+        if (player.getWorld().getName().contains("resource")) {
+            World world = Bukkit.getWorld("world");
+            assert world != null;
+            Location spawnLocation = world.getSpawnLocation();
+            player.teleport(spawnLocation);
+        }
 
         UserProfile profile = profileManager.getProfile(playerName);
 
