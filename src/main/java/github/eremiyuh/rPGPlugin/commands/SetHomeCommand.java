@@ -22,9 +22,17 @@ public class SetHomeCommand implements CommandExecutor {
             return true;
         }
 
+
+
         Player player = (Player) sender;
         UserProfile profile = profileManager.getProfile(player.getName());
 
+        if (player.getWorld().getName().contains("resource")
+
+        ) {
+            player.sendMessage("Cannot set home here.");
+            return true;
+        }
 
         if (args.length == 0) {
             player.sendMessage("Please specify a name for your home.");
@@ -35,7 +43,7 @@ public class SetHomeCommand implements CommandExecutor {
 
         // Check if the home already exists
         if (profile.homeExists(homeName)) {
-            player.sendMessage("A home with that name already exists.");
+            player.sendMessage("A home with that name already exists. Enter /homedelete " + homeName + ", then try again.");
             return true;
         }
 

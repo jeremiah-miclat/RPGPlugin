@@ -115,6 +115,7 @@ public class PlayerProfileManager {
         config.set("stamina", profile.getStamina());
         config.set("durability", profile.getDurability());
         config.set("abysspoints",profile.getAbysspoints());
+        config.set("junkpoints",profile.getJunkPoints());
 
         //claimPoints
         config.set("claimPoints",profile.getClaimPoints());
@@ -212,7 +213,7 @@ public class PlayerProfileManager {
         profile.setCurrency("gold", config.getDouble("gold", 0));
         profile.setCurrency("copper", config.getDouble("copper", 0));
         profile.setCurrency("netherite", config.getDouble("netherite", 0));
-
+        profile.setJunkPoints(config.getInt("junkpoints",0));
 
         profile.setCurrency("enderpearl", config.getInt("enderpearl", 10));
         profile.setStamina(config.getInt("stamina", 100));

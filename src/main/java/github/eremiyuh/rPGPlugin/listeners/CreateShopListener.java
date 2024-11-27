@@ -57,10 +57,18 @@ public class CreateShopListener implements Listener {
 
     @EventHandler
     public void onSignChange(SignChangeEvent event) {
+        if (event.getPlayer().getWorld().getName().contains("resource")
+            || event.getPlayer().getWorld().getName().contains("rpg")
+                || event.getPlayer().getWorld().getName().contains("labyrinth")
+        ) {
+            return;
+        }
         Player player = event.getPlayer();
         Block signBlock = event.getBlock();
         String[] lines = event.getLines();
         Block chestBlock = getAttachedBlock(signBlock);
+
+
 
         // Allow regular sign placement if the format doesn't match shop creation
         if (!isShopFormat(lines)) {

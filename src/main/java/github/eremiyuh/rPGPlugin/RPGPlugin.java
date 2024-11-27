@@ -1,14 +1,11 @@
 package github.eremiyuh.rPGPlugin;
 
 import github.eremiyuh.rPGPlugin.buffs.PlayerStatBuff;
-import github.eremiyuh.rPGPlugin.commandswithgui.AbyssStoreCommand;
+import github.eremiyuh.rPGPlugin.commandswithgui.*;
 import github.eremiyuh.rPGPlugin.manager.*;
 import github.eremiyuh.rPGPlugin.utils.HologramUtil;
 import github.eremiyuh.rPGPlugin.utils.TradeOffer;
 import github.eremiyuh.rPGPlugin.commands.*;
-import github.eremiyuh.rPGPlugin.commandswithgui.CheckClassCommand;
-import github.eremiyuh.rPGPlugin.commandswithgui.SelectClassCommand;
-import github.eremiyuh.rPGPlugin.commandswithgui.SkillsGui;
 import github.eremiyuh.rPGPlugin.listeners.*;
 import github.eremiyuh.rPGPlugin.methods.ChunkBorderBlueVisualizer;
 import github.eremiyuh.rPGPlugin.methods.ChunkBorderRedVisualizer;
@@ -160,10 +157,6 @@ public class RPGPlugin extends JavaPlugin {
         }
 
 
-        deleteWorld("resource_normal");
-        deleteWorld("resource_nether");
-        deleteWorld("resource_end");
-
         // Log to console that the plugin has been disabled successfully
         getLogger().info("RPGPlugin has been successfully disabled.");
     }
@@ -248,6 +241,9 @@ public class RPGPlugin extends JavaPlugin {
     private void loadResources() {
         // Load your data, initialize managers, etc.
         // Initialize the profile manager
+//        deleteWorld("resource_normal");
+//        deleteWorld("resource_nether");
+//        deleteWorld("resource_end");
         profileManager = new PlayerProfileManager(this);
         shopsManager = new ShopsManager(this);
         shopsManager.loadAllShops();
@@ -320,6 +316,7 @@ public class RPGPlugin extends JavaPlugin {
         Objects.requireNonNull(getCommand("convertmaterial")).setExecutor(new ConvertToEDiamond(profileManager));
         Objects.requireNonNull(getCommand("convertcurrency")).setExecutor(new CurrencyConverter(profileManager));
         Objects.requireNonNull(getCommand("warp")).setExecutor(new WorldSwitchCommand(this,playerStatBuff, profileManager));
+        getServer().getPluginManager().registerEvents(new WorldSwitchCommand(this,playerStatBuff, profileManager),this);
         Objects.requireNonNull(getCommand("giveap")).setExecutor(new AttributePointsCommand(profileManager));
         Objects.requireNonNull(getCommand("giveabysspoints")).setExecutor(new GiveAbyssPoints(profileManager));
         Objects.requireNonNull(getCommand("fly")).setExecutor(new FlyCommand(profileManager, this));
@@ -374,9 +371,17 @@ public class RPGPlugin extends JavaPlugin {
         loadWorld("world_labyrinth2",-19,251,-36,270,0,0,0,100,18000,null,false, World.Environment.NETHER,Biome.NETHER_WASTES);
         new TabListCustomizer(this, profileManager);
 
-//        createResourceWorld("resource_normal", World.Environment.NORMAL);
-//        createResourceWorld("resource_nether", World.Environment.NETHER);
-//        createResourceWorld("resource_end", World.Environment.THE_END);
+        Objects.requireNonNull(getCommand("junk")).setExecutor(new JunkCommand(profileManager));
+        getServer().getPluginManager().registerEvents(new JunkCommand(profileManager), this);
+
+
+        Objects.requireNonNull(getCommand("junkshop")).setExecutor(new JunkShopCommand(profileManager));
+        getServer().getPluginManager().registerEvents(new JunkShopCommand(profileManager), this);
+
+
+        createResourceWorld("resource_normal", World.Environment.NORMAL);
+        createResourceWorld("resource_nether", World.Environment.NETHER);
+        createResourceWorld("resource_end", World.Environment.THE_END);
 
     }
 
@@ -391,6 +396,7 @@ public class RPGPlugin extends JavaPlugin {
 
             // Set the world border
             world.getWorldBorder().setSize(20000);
+            world.setGameRule(GameRule.SPAWN_RADIUS, 16);
             world.setGameRule(GameRule.DISABLE_RAIDS, true);
 
             getLogger().info("Created resource world: " + name);

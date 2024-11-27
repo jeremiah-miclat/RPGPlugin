@@ -26,7 +26,17 @@ public class ShopTpSaveCommand implements CommandExecutor {
             return true;
         }
 
+
+
         Player player = (Player) sender;
+
+        if (player.getWorld().getName().contains("resource")
+                || player.getWorld().getName().contains("rpg")
+                || player.getWorld().getName().contains("labyrinth")
+        ) {
+            sender.sendMessage(ChatColor.RED + "Not allowed.");
+            return true;
+        }
         UUID playerUUID = player.getUniqueId();
 
         // Check for cooldown

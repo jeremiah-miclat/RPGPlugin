@@ -39,6 +39,12 @@ public class PlayerJoinListener implements Listener {
         String playerName = player.getName();
 
         if (player.getWorld().getName().contains("resource")) {
+            if (player.getLocation().getBlock().getType() != Material.LAVA
+                    && player.getLocation().clone().add(0, 1, 0).getBlock().getType() == Material.AIR
+                    && player.getLocation().clone().add(0, 2, 0).getBlock().getType() == Material.AIR
+            ) {return;}
+
+
             World world = Bukkit.getWorld("world");
             assert world != null;
             Location spawnLocation = world.getSpawnLocation();

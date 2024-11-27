@@ -337,3 +337,7 @@ commands:
   discordlink:
     description: Provides the link to the Discord server.
     usage: /discordlink
+  junk:
+    description: Opens a junk inventory for disposing of items.
+  junkshop:
+    description: Opens junk shop.

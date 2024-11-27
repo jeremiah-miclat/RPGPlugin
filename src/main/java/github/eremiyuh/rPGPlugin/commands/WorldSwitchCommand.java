@@ -4,16 +4,22 @@ import github.eremiyuh.rPGPlugin.RPGPlugin;
 import github.eremiyuh.rPGPlugin.buffs.PlayerStatBuff;
 import github.eremiyuh.rPGPlugin.manager.PlayerProfileManager;
 import github.eremiyuh.rPGPlugin.profile.UserProfile;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
-public class WorldSwitchCommand implements CommandExecutor {
+import java.util.ArrayList;
+import java.util.List;
+
+public class WorldSwitchCommand implements CommandExecutor, Listener {
 
     private final RPGPlugin plugin;
     private final PlayerStatBuff playerStatBuff;
@@ -37,8 +43,10 @@ public class WorldSwitchCommand implements CommandExecutor {
 
         int playerEP = userProfile.getEnderPearl();
 
-        if (playerEP <= 0) {
-            player.sendMessage("Ender Pearl required. Get ender pearl and do /convermaterial enderpearl");
+
+        if (args.length < 1) {
+            openWorldSwitchGUI(player);
+            return true;
         }
 
         if (args.length < 1) {
@@ -51,31 +59,28 @@ public class WorldSwitchCommand implements CommandExecutor {
 
         switch (worldType) {
             case "a":
-                targetWorldName = "world_rpg";
+                targetWorldName = "world_rpg"; // abyss overworld
                 break;
             case "o":
-                targetWorldName = "world";
+                targetWorldName = "world"; // overworld
                 break;
-            case "e":
-                targetWorldName = "world_the_end";
-                break;
-            case "n":
-                targetWorldName = "world_nether";
-                break;
+//            case "e":
+//                targetWorldName = "world_the_end";
+//                break;
+//            case "n":
+//                targetWorldName = "world_nether";
+//                break;
             case "ad":
-                targetWorldName = "world_labyrinth2";
-                break;
-            case "r":
-                targetWorldName = "world_resource";
+                targetWorldName = "world_labyrinth2"; // abyss dungeon
                 break;
             case "ro":
-                targetWorldName = "resource_normal";
+                targetWorldName = "resource_normal"; // resource overworld
                 break;
             case "rn":
-                targetWorldName = "resource_nether";
+                targetWorldName = "resource_nether"; // resource nether
                 break;
             case "re":
-                targetWorldName = "resource_end";
+                targetWorldName = "resource_end"; // resource end
                 break;
             default:
                 player.sendMessage("/warp a or ad or o | a for abyss | ad for abyss dungeon | o for Overworld");
@@ -93,26 +98,52 @@ public class WorldSwitchCommand implements CommandExecutor {
             player.sendMessage("Failed to load the world ");
             return true;
 
-//            world = plugin.getServer().createWorld(new WorldCreator(targetWorldName));
 
+        }
+
+        if (playerEP < 1) {
+            player.sendMessage("Ender Pearl currency required. Get ender pearl and enter /convertmaterial enderpearl");
+            return true;
         }
 
         Location spawnLocation = world.getSpawnLocation();
 
-        if (targetWorldName.contains("resource") && (spawnLocation.getBlock().isSolid()
-                && spawnLocation.getBlock().getType() != Material.BEDROCK
-                && spawnLocation.clone().add(0, 1, 0).getBlock().getType() == Material.AIR
-                && spawnLocation.clone().add(0, 2, 0).getBlock().getType() == Material.AIR) ) {
+        if (targetWorldName.contains("resource")
 
-            Location safeLocation = findSafeLocation(world, spawnLocation);
 
-            if (safeLocation == null) {
-                player.sendMessage(ChatColor.RED + "No safe teleport location found near the spawn.");
-                return true;
+
+        ) {
+
+            if ( !(spawnLocation.getBlock().isSolid()
+                    && spawnLocation.getBlock().getType() != Material.BEDROCK
+                    && spawnLocation.clone().add(0, 1, 0).getBlock().getType() == Material.AIR
+                    && spawnLocation.clone().add(0, 2, 0).getBlock().getType() == Material.AIR))
+            {
+                spawnLocation = spawnLocation.add(10,0,10);
+                // Loop through a 3x3x3 cube around the spawn location
+                for (int x = -1; x <= 1; x++) {
+                    for (int y = -1; y <= 1; y++) {
+                        for (int z = -1; z <= 1; z++) {
+                            assert spawnLocation != null;
+                            Location blockLocation = spawnLocation.clone().add(x, y, z);
+
+                            // Set to obsidian if it's not above the spawn
+                            if (y <= 0) {
+                                if (world.getEnvironment() == World.Environment.NETHER) blockLocation.getBlock().setType(Material.NETHERRACK);
+                                if (world.getEnvironment() == World.Environment.NORMAL) blockLocation.getBlock().setType(Material.GRASS_BLOCK);
+                                if (world.getEnvironment() == World.Environment.THE_END) blockLocation.getBlock().setType(Material.END_STONE);
+                            }
+                        }
+                    }
+                }
+
+                // Clear the two blocks above the spawn location
+                spawnLocation.clone().add(0, 1, 0).getBlock().setType(Material.AIR);
+                spawnLocation.clone().add(0, 2, 0).getBlock().setType(Material.AIR);
+                spawnLocation = spawnLocation.add(0,1,0);
             }
-
-            spawnLocation = safeLocation; // Update the spawn location to the safe location
         }
+
 
 
         if (player.teleport(spawnLocation)) {
@@ -132,27 +163,146 @@ public class WorldSwitchCommand implements CommandExecutor {
         return true;
     }
 
-    private Location findSafeLocation(World world, Location spawnLocation) {
-        int radius = 10;
+    private void openWorldSwitchGUI(Player player) {
+        // Create an inventory with 9 slots (adjust size as needed)
+        Inventory gui = Bukkit.createInventory(null, 9, "Select World to Teleport");
 
-        for (int x = -radius; x <= radius; x++) {
-            for (int z = -radius; z <= radius; z++) {
-                Location checkLocation = spawnLocation.clone().add(x, 0, z);
-                for (int y = world.getMinHeight(); y < world.getMaxHeight(); y++) {
-                    checkLocation.setY(y);
+        // Create Ender Pearl items for each world
+        ItemStack abyssItem = createWorldSwitchItem("Abyss", "a");
+        ItemStack abyssDungeonItem = createWorldSwitchItem("Abyss Dungeon", "ad");
+        ItemStack overworldItem = createWorldSwitchItem("Overworld", "o");
+        ItemStack resourceOverworldItem = createWorldSwitchItem("Resource Overworld", "ro");
+        ItemStack resourceNetherItem = createWorldSwitchItem("Resource Nether", "rn");
+        ItemStack resourceEndItem = createWorldSwitchItem("Resource End", "re");
 
-                    // Check if the current block is solid and has 2 air blocks above it
-                    if (checkLocation.getBlock().isSolid()
-                            && checkLocation.getBlock().getType() != Material.BEDROCK
-                            && checkLocation.clone().add(0, 1, 0).getBlock().getType() == Material.AIR
-                            && checkLocation.clone().add(0, 2, 0).getBlock().getType() == Material.AIR) {
-                        return checkLocation.clone().add(0, 1, 0); // Return the safe location
-                    }
-                }
-            }
+        // Set the items in the inventory
+        gui.setItem(0, abyssItem);
+        gui.setItem(1, abyssDungeonItem);
+        gui.setItem(2, overworldItem);
+        gui.setItem(6, resourceOverworldItem);
+        gui.setItem(7, resourceNetherItem);
+        gui.setItem(8, resourceEndItem);
+
+        // Open the GUI for the player
+        player.openInventory(gui);
+    }
+
+
+
+    private ItemStack createWorldSwitchItem(String displayName, String worldType) {
+        ItemStack item = new ItemStack(Material.ENDER_PEARL);
+        ItemMeta meta = item.getItemMeta();
+
+        if (meta != null) {
+            meta.setDisplayName(ChatColor.GREEN + displayName);
+            List<String> lore = new ArrayList<>();
+            lore.add(ChatColor.GRAY + "Click to teleport to the " + displayName);
+            lore.add(ChatColor.YELLOW + "/warp " + worldType);
+            lore.add(ChatColor.YELLOW + "Cost: enderpearl (currency)");
+
+            meta.setLore(lore);
+            item.setItemMeta(meta);
         }
 
-        return null; // No safe location found
+        return item;
     }
+
+    @EventHandler
+    public void onInventoryClick(InventoryClickEvent event) {
+        if (!(event.getWhoClicked() instanceof Player player)) return;
+        if (!event.getView().getTitle().equals("Select World to Teleport")) return;
+
+        event.setCancelled(true); // Prevent the player from moving items in the inventory
+
+        int slot = event.getSlot();
+
+        // Handle teleportation based on the clicked slot
+        switch (slot) {
+            case 0:
+                teleportPlayerToWorld(player, "world_rpg", "Abyss Overworld"); // Abyss
+                break;
+            case 1:
+                teleportPlayerToWorld(player, "world_labyrinth2", "Abyss Dungeon"); // Abyss Dungeon
+                break;
+            case 2:
+                teleportPlayerToWorld(player, "world", "Overworld"); // Overworld
+                break;
+            case 6:
+                teleportPlayerToWorld(player, "resource_normal", "Resource Overworld"); // Resource Overworld
+                break;
+            case 7:
+                teleportPlayerToWorld(player, "resource_nether", "Resource Nether"); // Resource Nether
+                break;
+            case 8:
+                teleportPlayerToWorld(player, "resource_end", "Resource End"); // Resource End
+                break;
+            default:
+                player.sendMessage(ChatColor.RED + "Invalid selection.");
+                break;
+        }
+    }
+
+    private void teleportPlayerToWorld(Player player, String worldName, String displayName) {
+        UserProfile profile = profileManager.getProfile(player.getName());
+
+        if (profile.getEnderPearl() < 1) {
+            player.sendMessage(ChatColor.RED + "Failed to teleport. Tip: /convertmaterial enderpearl or /checkstatus");
+            return;
+        }
+
+        World world = plugin.getServer().getWorld(worldName);
+
+
+
+        if (world != null) {
+            Location spawnLocation = world.getSpawnLocation();
+
+            if (worldName.contains("resource")
+                    &&
+                    !(spawnLocation.getBlock().isSolid()
+                            && spawnLocation.getBlock().getType() != Material.BEDROCK
+                            && spawnLocation.clone().add(0, 1, 0).getBlock().getType() == Material.AIR
+                            && spawnLocation.clone().add(0, 2, 0).getBlock().getType() == Material.AIR)
+            ) {
+                spawnLocation = spawnLocation.add(10,0,10);
+                // Loop through a 3x3x3 cube around the spawn location
+                for (int x = -1; x <= 1; x++) {
+                    for (int y = -1; y <= 1; y++) {
+                        for (int z = -1; z <= 1; z++) {
+                            assert spawnLocation != null;
+                            Location blockLocation = spawnLocation.clone().add(x, y, z);
+
+                            // Set to obsidian if it's not above the spawn
+                            if (y <= 0) {
+                                if (world.getEnvironment() == World.Environment.NETHER) blockLocation.getBlock().setType(Material.NETHERRACK);
+                                if (world.getEnvironment() == World.Environment.NORMAL) blockLocation.getBlock().setType(Material.GRASS_BLOCK);
+                                if (world.getEnvironment() == World.Environment.THE_END) blockLocation.getBlock().setType(Material.END_STONE);
+                            }
+                        }
+                    }
+                }
+
+                // Clear the two blocks above the spawn location
+                spawnLocation.clone().add(0, 1, 0).getBlock().setType(Material.AIR);
+                spawnLocation.clone().add(0, 2, 0).getBlock().setType(Material.AIR);
+                spawnLocation = spawnLocation.add(0,1,0);
+            }
+
+
+
+            if (player.teleport(spawnLocation)) {
+                profile.setEnderPearl(profile.getEnderPearl()-1);
+                player.sendMessage(ChatColor.GREEN + "Teleported to " + displayName);
+            } else {
+                player.sendMessage(ChatColor.RED + "Failed to teleport.");
+            }
+        } else {
+            player.sendMessage(ChatColor.RED + "World not found.");
+        }
+    }
+
+
+
+
 
 }

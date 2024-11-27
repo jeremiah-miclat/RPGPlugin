@@ -73,6 +73,8 @@ public class UserProfile {
     // boss health indicator
     private boolean bossIndicator;
 
+    private int junkPoints;
+
     //constructor
     public UserProfile(String playerName) {
         this.playerID = UUID.randomUUID(); // Generate a unique ID for the player
@@ -124,6 +126,8 @@ public class UserProfile {
 
         this.bossIndicator = true;
         this.isAscending=false;
+
+        this.junkPoints = 0;
 
     }
 
@@ -744,5 +748,13 @@ public class UserProfile {
             return true;
         }
         return false;
+    }
+
+    public int getJunkPoints() {
+        return junkPoints;
+    }
+
+    public void setJunkPoints(int junkPoints) {
+        this.junkPoints = junkPoints;
     }
 }
