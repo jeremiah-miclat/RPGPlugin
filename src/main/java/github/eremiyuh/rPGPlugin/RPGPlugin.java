@@ -160,7 +160,9 @@ public class RPGPlugin extends JavaPlugin {
         }
 
 
-
+        deleteWorld("resource_normal");
+        deleteWorld("resource_nether");
+        deleteWorld("resource_end");
 
         // Log to console that the plugin has been disabled successfully
         getLogger().info("RPGPlugin has been successfully disabled.");
@@ -269,7 +271,7 @@ public class RPGPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(damageListenerListener,this);
         getServer().getPluginManager().registerEvents(new PotionGiveListener(this,profileManager),this);
         new OverworldBlastProtectionListener(this);
-        new ArrowHitListener((this));
+        new ArrowHitListener((this),profileManager);
 
         chunkBorderBlueVisualizer = new ChunkBorderBlueVisualizer(this);
         chunkBorderRedVisualizer = new ChunkBorderRedVisualizer(this);
@@ -317,7 +319,7 @@ public class RPGPlugin extends JavaPlugin {
         Objects.requireNonNull(getCommand("buyclaim")).setExecutor(new BuyClaim(profileManager));
         Objects.requireNonNull(getCommand("convertmaterial")).setExecutor(new ConvertToEDiamond(profileManager));
         Objects.requireNonNull(getCommand("convertcurrency")).setExecutor(new CurrencyConverter(profileManager));
-        Objects.requireNonNull(getCommand("warp")).setExecutor(new WorldSwitchCommand(this,playerStatBuff));
+        Objects.requireNonNull(getCommand("warp")).setExecutor(new WorldSwitchCommand(this,playerStatBuff, profileManager));
         Objects.requireNonNull(getCommand("giveap")).setExecutor(new AttributePointsCommand(profileManager));
         Objects.requireNonNull(getCommand("giveabysspoints")).setExecutor(new GiveAbyssPoints(profileManager));
         Objects.requireNonNull(getCommand("fly")).setExecutor(new FlyCommand(profileManager, this));
@@ -355,8 +357,9 @@ public class RPGPlugin extends JavaPlugin {
         getCommand("register").setExecutor(new RegisterCommand(this,profileManager));
         getCommand("login").setExecutor(new LoginCommand(this,profileManager));
         this.getCommand("pay").setExecutor(new PayCommand(profileManager));
-
+        this.getCommand("rwseed").setExecutor(new RWSeedCommand());
         getServer().getPluginManager().registerEvents(new PlayerMovementListener(this,profileManager), this);
+        this.getCommand("discordlink").setExecutor(new DiscordLinkCommand(this));
 
 
 
@@ -371,26 +374,61 @@ public class RPGPlugin extends JavaPlugin {
         loadWorld("world_labyrinth2",-19,251,-36,270,0,0,0,100,18000,null,false, World.Environment.NETHER,Biome.NETHER_WASTES);
         new TabListCustomizer(this, profileManager);
 
-
+//        createResourceWorld("resource_normal", World.Environment.NORMAL);
+//        createResourceWorld("resource_nether", World.Environment.NETHER);
+//        createResourceWorld("resource_end", World.Environment.THE_END);
 
     }
-    public void clearHostileMobs(World world) {
-        world.setDifficulty(Difficulty.PEACEFUL);
-        getLogger().info("Difficulty set to PEACEFUL to despawn hostile mobs.");
 
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                world.setDifficulty(Difficulty.HARD);
-                world.save();
-                getLogger().info("Difficulty set back to HARD and world saved.");
+    private void createResourceWorld(String name, World.Environment environment) {
+        WorldCreator creator = new WorldCreator(name);
+        creator.environment(environment);
+        World world = creator.createWorld();
+
+        if (world != null) {
+            // Force saving the world to initialize necessary files
+            world.save();
+
+            // Set the world border
+            world.getWorldBorder().setSize(20000);
+            world.setGameRule(GameRule.DISABLE_RAIDS, true);
+
+            getLogger().info("Created resource world: " + name);
+        } else {
+            getLogger().warning("Failed to create resource world: " + name);
+        }
+    }
+
+
+    private void deleteWorld(String name) {
+        File worldFolder = new File(getServer().getWorldContainer(), name);
+
+        if (worldFolder.exists()) {
+            getLogger().info("Deleting world: " + name);
+            // Unload the world first
+            World world = getServer().getWorld(name);
+            if (world != null) {
+                getServer().unloadWorld(world, false);
             }
-        }.runTaskLater(this, 20L); // Delay of 20 ticks (1 second)
+
+            // Recursively delete the world folder
+            deleteFolder(worldFolder);
+        }
     }
 
-
-
-
+    private void deleteFolder(File folder) {
+        File[] files = folder.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    deleteFolder(file);
+                } else {
+                    file.delete();
+                }
+            }
+        }
+        folder.delete();
+    }
 
 
 

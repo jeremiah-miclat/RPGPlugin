@@ -22,6 +22,10 @@ public class DamageAbilities {
         double heightOffset = 6.0;
         Location targetLocation = target.getLocation();
 
+        int archerInt = profile.getArcherClassInfo().getIntel();
+        double modifier = .02;
+
+
         // Calculate the starting point for the 5x5 area
         double startX = targetLocation.getX() - 2.0;
         double startZ = targetLocation.getZ() - 2.0;
@@ -35,9 +39,8 @@ public class DamageAbilities {
                 // Apply downward velocity
                 arrow.setVelocity(new Vector(0, -.01, 0));
 
-                arrow.setFireTicks(100);
+                arrow.setFireTicks((int) (100+(archerInt*modifier)));
                 arrow.setDamage(arrowDamage);
-                arrow.setTicksLived(120);
                 // Tag arrow with metadata for recognition in handleLongRangeDamage
                 arrow.setMetadata("FireArrowBarrage", new FixedMetadataValue(plugin, true));
                 arrow.setPickupStatus(AbstractArrow.PickupStatus.DISALLOWED);
@@ -61,7 +64,6 @@ public class DamageAbilities {
                 Arrow arrow = location.getWorld().spawn(spawnLocation, Arrow.class);
                 arrow.setShooter(Bukkit.getPlayer(profile.getPlayerName()));
                 // Apply downward velocity
-                arrow.setTicksLived(120);
                 arrow.setVelocity(new Vector(0, -.01, 0)); // Straight down
                 arrow.setDamage(arrowDamage);
 
@@ -91,7 +93,6 @@ public class DamageAbilities {
                 // Apply downward velocity
                 arrow.setVelocity(new Vector(0, -.01, 0)); // Straight down
                 arrow.setDamage(arrowDamage);
-                arrow.setTicksLived(120);
                 arrow.setShooter(Bukkit.getPlayer(profile.getPlayerName()));
                 // Tag arrow with metadata for recognition in handleLongRangeDamage
                 arrow.setMetadata("WeaknessArrowBarrage", new FixedMetadataValue(plugin, true));

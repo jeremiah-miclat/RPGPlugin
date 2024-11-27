@@ -30,7 +30,6 @@ public class CurrencyConverter implements CommandExecutor {
         currencyMaterials.put("netherite", Material.NETHERITE_INGOT);
     }
 
-
     public CurrencyConverter(PlayerProfileManager profileManager) {
         this.profileManager = profileManager;
     }
@@ -67,8 +66,6 @@ public class CurrencyConverter implements CommandExecutor {
             return true;
         }
 
-
-
         UserProfile profile = profileManager.getProfile(player.getName());
         double currentBalance = profile.getCurrency(currencyName);
 
@@ -81,15 +78,15 @@ public class CurrencyConverter implements CommandExecutor {
         // Create an ItemStack for the specified currency type
         ItemStack itemStack = new ItemStack(currencyMaterial, amount);
 
-        // Check for empty slots and add the items to the player's inventory or drop them
-        if (player.getInventory().firstEmpty() != -1) {
-            player.getInventory().addItem(itemStack);
-            player.sendMessage("You have converted " + amount + " " + currencyName + "(s) to items!");
-        } else {
-            // Drop the items on the ground
-            player.getWorld().dropItem(player.getLocation(), itemStack);
-            player.sendMessage("Your inventory is full! The " + amount + " " + currencyName + "(s) have been dropped on the ground.");
+        // Check if the player has enough empty slots
+        if (player.getInventory().firstEmpty() == -1) {
+            player.sendMessage("You do not have enough space in your inventory to convert these items. Please free up some space.");
+            return true;
         }
+
+        // Add the items to the player's inventory
+        player.getInventory().addItem(itemStack);
+        player.sendMessage("You have converted " + amount + " " + currencyName + "(s) to items!");
 
         // Deduct the amount from the UserProfile's balance
         profile.setCurrency(currencyName, currentBalance - amount);

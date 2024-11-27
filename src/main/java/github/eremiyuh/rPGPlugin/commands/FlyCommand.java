@@ -3,6 +3,8 @@ package github.eremiyuh.rPGPlugin.commands;
 import github.eremiyuh.rPGPlugin.manager.PlayerProfileManager;
 import github.eremiyuh.rPGPlugin.profile.UserProfile;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -63,16 +65,16 @@ public class FlyCommand implements CommandExecutor {
                             profile.setDiamond(profile.getDiamond() - 10);
                             player.sendMessage("You have been charged 10 diamonds for flying. Diamonds remaining: " + profile.getDiamond());
                         } else {
-                            if (!player.getAllowFlight()) { cancel(); return;}
+                            if (!player.getAllowFlight()) {
+                                cancel();
+                                return;
+                            }
                             player.setAllowFlight(false); // Disable flight
                             player.setFlying(false);
 
 
-                            player.sendMessage("You have run out of diamonds for flying. You have been teleported to the ground.");
+                            player.sendMessage("You have run out of diamonds for flying.");
 
-                            // Teleport player to the ground
-                            Location groundLocation = player.getWorld().getHighestBlockAt(player.getLocation()).getLocation();
-                            player.teleport(groundLocation);
                             cancel(); // Stop the task
                         }
                     }
@@ -99,4 +101,15 @@ public class FlyCommand implements CommandExecutor {
             player.setAllowFlight(false);
         }
     }
+
+    private Location getGroundLocation(Location location, Player player) {
+
+        if (player.getLocation().getBlockY() < player.getWorld().getHighestBlockAt(player.getLocation()).getLocation().getBlockY()) {
+            return player.getLocation();
+        } else {
+            return player.getWorld().getHighestBlockAt(player.getLocation()).getLocation();
+        }
+
+    }
+
 }

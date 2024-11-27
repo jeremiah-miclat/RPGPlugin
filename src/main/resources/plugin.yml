@@ -331,3 +331,9 @@ commands:
   pay:
     description: Pay another player a specified amount of currency.
     usage: /pay <playername> <currencyname> <amount>
+  rwseed:
+    description: Shows the seed of resource worlds.
+    usage: /rwseed
+  discordlink:
+    description: Provides the link to the Discord server.
+    usage: /discordlink

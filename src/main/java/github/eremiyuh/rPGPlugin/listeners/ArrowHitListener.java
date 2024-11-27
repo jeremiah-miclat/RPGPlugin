@@ -1,8 +1,11 @@
 package github.eremiyuh.rPGPlugin.listeners;
 
 import github.eremiyuh.rPGPlugin.RPGPlugin;
+import github.eremiyuh.rPGPlugin.manager.PlayerProfileManager;
+import github.eremiyuh.rPGPlugin.profile.UserProfile;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.entity.AbstractArrow;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -15,8 +18,11 @@ import org.bukkit.Particle;
 
 public class ArrowHitListener implements Listener {
 
+    private final PlayerProfileManager profileManager;
 
-    public ArrowHitListener(RPGPlugin plugin) {
+
+    public ArrowHitListener(RPGPlugin plugin, PlayerProfileManager profileManager) {
+        this.profileManager = profileManager;
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 
@@ -25,18 +31,28 @@ public class ArrowHitListener implements Listener {
         if (event.getEntity().getShooter() instanceof Player player && player.getAllowFlight()) {
             player.sendMessage("you can't attack while flying");
             event.setCancelled(true);
+
+            if ( event.getEntity() instanceof  Arrow arrow) {
+
+                arrow.setPickupStatus(AbstractArrow.PickupStatus.DISALLOWED);
+            }
+
             return;
         }
 
-        if (event.getEntity() instanceof Arrow arrow) {
+        if (event.getEntity() instanceof Arrow arrow && arrow.getShooter() instanceof Player player) {
 
+            UserProfile userProfile = profileManager.getProfile(player.getName());
+            int archerInt = userProfile.getArcherClassInfo().getIntel();
+            double modifier = .02;
+            double intensitymodifier = Math.min(archerInt / 2500, 4);
 
             if (arrow.hasMetadata("FreezeArrowBarrage")) {
 
                 // Check if the arrow hit a living entity
                 if (event.getHitEntity() instanceof LivingEntity target) {
                     // Apply a freeze effect (slowness) to the target
-                    target.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 100, 5)); // 100 ticks of slowness
+                    target.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, (int) (100+(archerInt*modifier)), (int) intensitymodifier)); // 100 ticks of slowness
                     spawnSnowParticles(target.getLocation());
                 }
             }
@@ -46,7 +62,7 @@ public class ArrowHitListener implements Listener {
                 // Check if the arrow hit a living entity
                 if (event.getHitEntity() instanceof LivingEntity target) {
                     // Apply a freeze effect (slowness) to the target
-                    target.addPotionEffect(new PotionEffect(PotionEffectType.NAUSEA, 100, 5)); // 100 ticks of slowness
+                    target.addPotionEffect(new PotionEffect(PotionEffectType.NAUSEA, (int) (300+(archerInt*modifier)), (int) intensitymodifier)); // 100 ticks of slowness
                     spawnWaterParticles(target.getLocation());
                 }
             }
