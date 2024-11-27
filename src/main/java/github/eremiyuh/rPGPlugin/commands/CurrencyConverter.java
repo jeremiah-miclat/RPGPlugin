@@ -58,10 +58,16 @@ public class CurrencyConverter implements CommandExecutor {
         int amount;
         try {
             amount = Integer.parseInt(args[1]);
+            if (amount <= 0) {
+                player.sendMessage("The amount must be a positive number greater than zero.");
+                return true;
+            }
         } catch (NumberFormatException e) {
             player.sendMessage("The amount must be a valid number.");
             return true;
         }
+
+
 
         UserProfile profile = profileManager.getProfile(player.getName());
         double currentBalance = profile.getCurrency(currencyName);

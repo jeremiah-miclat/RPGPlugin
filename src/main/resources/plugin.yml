@@ -328,3 +328,6 @@ commands:
   tpshop:
     description: Teleports to a saved shop location of a player.
     usage: /<command> <playerName>
+  pay:
+    description: Pay another player a specified amount of currency.
+    usage: /pay <playername> <currencyname> <amount>

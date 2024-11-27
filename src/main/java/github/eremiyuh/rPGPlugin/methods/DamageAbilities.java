@@ -37,7 +37,7 @@ public class DamageAbilities {
 
                 arrow.setFireTicks(100);
                 arrow.setDamage(arrowDamage);
-
+                arrow.setTicksLived(120);
                 // Tag arrow with metadata for recognition in handleLongRangeDamage
                 arrow.setMetadata("FireArrowBarrage", new FixedMetadataValue(plugin, true));
                 arrow.setPickupStatus(AbstractArrow.PickupStatus.DISALLOWED);
@@ -61,6 +61,7 @@ public class DamageAbilities {
                 Arrow arrow = location.getWorld().spawn(spawnLocation, Arrow.class);
                 arrow.setShooter(Bukkit.getPlayer(profile.getPlayerName()));
                 // Apply downward velocity
+                arrow.setTicksLived(120);
                 arrow.setVelocity(new Vector(0, -.01, 0)); // Straight down
                 arrow.setDamage(arrowDamage);
 
@@ -90,6 +91,7 @@ public class DamageAbilities {
                 // Apply downward velocity
                 arrow.setVelocity(new Vector(0, -.01, 0)); // Straight down
                 arrow.setDamage(arrowDamage);
+                arrow.setTicksLived(120);
                 arrow.setShooter(Bukkit.getPlayer(profile.getPlayerName()));
                 // Tag arrow with metadata for recognition in handleLongRangeDamage
                 arrow.setMetadata("WeaknessArrowBarrage", new FixedMetadataValue(plugin, true));

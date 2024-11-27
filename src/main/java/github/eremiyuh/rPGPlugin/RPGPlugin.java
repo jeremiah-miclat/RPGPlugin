@@ -354,7 +354,10 @@ public class RPGPlugin extends JavaPlugin {
         //auth
         getCommand("register").setExecutor(new RegisterCommand(this,profileManager));
         getCommand("login").setExecutor(new LoginCommand(this,profileManager));
+        this.getCommand("pay").setExecutor(new PayCommand(profileManager));
+
         getServer().getPluginManager().registerEvents(new PlayerMovementListener(this,profileManager), this);
+
 
 
 

@@ -5,7 +5,10 @@ import github.eremiyuh.rPGPlugin.manager.PlayerProfileManager;
 import github.eremiyuh.rPGPlugin.profile.UserProfile;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -57,8 +60,11 @@ public class TabListCustomizer {
                 Component.newline().append(Component.newline())
                         .append(Component.text(String.format("Memory Usage: %d MB / %d MB", usedMemory, maxMemory))
                                 .color(memoryColor)).append(Component.newline()).append(Component.newline())
-                        .append(Component.text("                                §oENJOY YOUR STAY                           ")
-                                .color(TextColor.fromCSSHexString("#53ff1a"))).append(Component.newline());
+                        .append(Component.text("                                §oDiscord: discord.gg/tNJrWP4E5W                           ")
+                                .color(TextColor.fromCSSHexString("#53ff1a"))).decorate(TextDecoration.ITALIC)
+                        .clickEvent(ClickEvent.openUrl("https://discord.gg/tNJrWP4E5W"))
+                        .hoverEvent(HoverEvent.showText(Component.text("Click to join our Discord!")))
+        .append(Component.newline());
 
         // Set the header and footer for all players once
         for (Player player : onlinePlayers) {
