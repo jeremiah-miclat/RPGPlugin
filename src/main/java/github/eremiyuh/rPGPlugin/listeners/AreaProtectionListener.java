@@ -12,6 +12,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
@@ -345,6 +346,21 @@ public class AreaProtectionListener implements Listener {
 
 
 
+    }
+
+    @EventHandler
+    public void onEntityExplode(EntityExplodeEvent event) {
+        if (isInProtectedArea(event.getEntity().getLocation().getBlockX(), event.getEntity().getLocation().getBlockZ())) {
+            event.blockList().clear();
+        }
+    }
+
+
+    @EventHandler
+    public void onEntityExplode(BlockExplodeEvent event) {
+        if (isInProtectedArea(event.getBlock().getLocation().getBlockX(), event.getBlock().getLocation().getBlockZ())) {
+            event.blockList().clear();
+        }
     }
 
     @EventHandler

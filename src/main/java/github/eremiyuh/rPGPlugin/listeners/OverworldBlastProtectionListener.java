@@ -26,7 +26,7 @@ public class OverworldBlastProtectionListener implements Listener {
         }
 
 
-        if (Objects.requireNonNull(event.getLocation().getWorld()).getEnvironment() == World.Environment.NORMAL) {
+        if (Objects.requireNonNull(event.getLocation().getWorld()).getEnvironment() == World.Environment.NORMAL && !event.getLocation().getWorld().getName().contains("resource")) {
             event.blockList().removeIf(block -> block.getY() > SEA_LEVEL);
         }
     }
@@ -38,7 +38,7 @@ public class OverworldBlastProtectionListener implements Listener {
             event.blockList().removeIf(block -> block.getY() > -65);
         }
 
-        if (event.getBlock().getWorld().getEnvironment() == World.Environment.NORMAL) {
+        if (event.getBlock().getWorld().getEnvironment() == World.Environment.NORMAL && !event.getBlock().getWorld().getName().contains("resource"))  {
             event.blockList().removeIf(block -> block.getY() > SEA_LEVEL);
         }
     }

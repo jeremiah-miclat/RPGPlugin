@@ -114,7 +114,7 @@ public class ItemAscensionListener implements Listener {
         boolean successfulAscension = false;
 
         for (int i = 0; i < attributeValue; i++) {
-            if (random.nextDouble() <= 0.50) {  // 60% chance
+            if (random.nextDouble() <= 0.50) {  // 50% chance
                 successfulAscension = true;
                 incrementAttribute(targetLores, attribute);
             }

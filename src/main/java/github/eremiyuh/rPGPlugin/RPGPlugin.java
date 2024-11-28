@@ -328,7 +328,7 @@ public class RPGPlugin extends JavaPlugin {
         Objects.requireNonNull(this.getCommand("sethome")).setExecutor(new SetHomeCommand(profileManager));
         Objects.requireNonNull(this.getCommand("home")).setExecutor(new HomeCommand(profileManager));
         Objects.requireNonNull(this.getCommand("homedelete")).setExecutor(new DeleteHomeCommand(profileManager));
-        Objects.requireNonNull(this.getCommand("convertfood")).setExecutor(new ConvertFoodCommand(profileManager));
+        Objects.requireNonNull(this.getCommand("addstamina")).setExecutor(new ConvertFoodCommand(profileManager));
         Objects.requireNonNull(this.getCommand("adddurability")).setExecutor(new PayBlackSmithCommand(profileManager));
         Objects.requireNonNull(getCommand("healthscale")).setExecutor(new HealthScale(this));
         Objects.requireNonNull(this.getCommand("sv")).setExecutor(new SummonVillagerCommand(this));

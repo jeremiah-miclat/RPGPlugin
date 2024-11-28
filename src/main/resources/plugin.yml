@@ -190,9 +190,9 @@ commands:
   homedelete:
     description: Delete a saved home.
     usage: /homedelete <homeName>
-  convertfood:
+  addstamina:
     description: Convert all food in your inventory to stamina.
-    usage: /convertfood
+    usage: /addstamina
     notes: "
     Please inform players about the cost:
             foodHungerMap.put(Material.CARROT, 10);
