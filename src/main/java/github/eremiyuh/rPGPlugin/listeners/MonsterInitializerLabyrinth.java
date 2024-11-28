@@ -66,7 +66,7 @@ public class MonsterInitializerLabyrinth implements Listener {
         int currentMobCount = countMobsInWorld(event.getLocation().getWorld());
 
         // Check mob spawn limit based on online players
-        int mobLimit = Math.min(onlinePlayerCount * 6, 60);
+        int mobLimit = Math.min(onlinePlayerCount * 10, 60);
         if (currentMobCount >= mobLimit) {
             event.getEntity().setAI(false);
             event.setCancelled(true);
@@ -145,7 +145,6 @@ public class MonsterInitializerLabyrinth implements Listener {
 
         // Set the updated custom name with the new health indicator
         entity.setCustomName(customName + healthIndicator);
-        entity.setCustomNameVisible(true);
     }
 
 

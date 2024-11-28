@@ -166,7 +166,7 @@ public class DeadMobListener implements Listener {
 
     private void applyRewards(Player player, UserProfile profile, double healthForExp, double chanceForEquipLoreAndDias, int rewardCount) {
         // Give experience to the player based on healthForExp
-        player.giveExp((int) (healthForExp * 2));
+        player.giveExp((int) (healthForExp * .2));
 
         // Update Abyss points
         int randomAbyssPoints = (int) (healthForExp/4  + (int) (Math.random() * healthForExp));
