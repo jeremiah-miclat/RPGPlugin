@@ -458,6 +458,7 @@ public class DamageListener implements Listener {
                 // Check for custom damage metadata
                 if (projectile.getShooter() instanceof Monster mob && mob.hasMetadata("extraHealth")) {
                     double customDamage = mob.getMetadata("extraHealth").get(0).asDouble();
+                    customDamage/=10;
                     if (damaged instanceof Player player) {
                         UserProfile playerProfile = profileManager.getProfile(player.getName());
                         playerProfile.setDurability(Math.max(0,playerProfile.getDurability()-1));
@@ -465,7 +466,6 @@ public class DamageListener implements Listener {
                             player.sendMessage("Durability depleted. You will receive more damage. /sdw to turn off this warnings");
                         }
                         customDamage *= playerProfile.getDurability() == 0 ? 2 : 1;
-                        customDamage/=10;
 
 
                             if (playerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
@@ -490,6 +490,7 @@ public class DamageListener implements Listener {
                 // Check for custom damage metadata
                 if (projectile.getShooter() instanceof Monster mob && mob.hasMetadata("extraHealth")) {
                     double customDamage = mob.getMetadata("extraHealth").get(0).asDouble();
+                    customDamage/=10;
                     if (damaged instanceof Player player) {
                         UserProfile playerProfile = profileManager.getProfile(player.getName());
                         playerProfile.setDurability(Math.max(0,playerProfile.getDurability()-1));
@@ -497,8 +498,6 @@ public class DamageListener implements Listener {
                             player.sendMessage("Durability depleted. You will receive more damage. /sdw to turn off this warnings");
                         }
                         customDamage *= playerProfile.getDurability() == 0 ? 2 : 1;
-                        customDamage/=10;
-
 
                             if (playerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
                                 customDamage *= 1.2;
