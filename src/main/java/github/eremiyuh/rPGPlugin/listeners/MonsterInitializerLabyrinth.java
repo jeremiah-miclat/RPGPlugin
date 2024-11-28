@@ -167,7 +167,7 @@ public class MonsterInitializerLabyrinth implements Listener {
         double extraHealth = baseHealth + ((1 + (double) (maxY - yCoord) / 6) * healthIncrement);
         entity.setMetadata("extraHealth", new FixedMetadataValue(plugin, extraHealth));
         double customDamage = Math.min(extraHealth/10, customMaxHealth);
-
+        entity.setMetadata("customDamage", new FixedMetadataValue(plugin, customDamage));
         // Determine the level based on the y-coordinate (1 level every 6 blocks)
         int lvl = 1 + (maxY - yCoord) / 6;
 
@@ -186,7 +186,7 @@ public class MonsterInitializerLabyrinth implements Listener {
 
             entity.setHealth(Math.min(extraHealth, customMaxHealth));
             entity.setMetadata("extraHealth", new FixedMetadataValue(plugin, extraHealth));
-            Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(customDamage*3);
+            Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(customDamage*2);
             return;
         }
 
@@ -199,7 +199,7 @@ public class MonsterInitializerLabyrinth implements Listener {
 
             entity.setHealth(Math.min(extraHealth, customMaxHealth));
             entity.setMetadata("extraHealth", new FixedMetadataValue(plugin, extraHealth));
-            Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(customDamage*6);
+            Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(customDamage*3);
             return;
         }
         entity.setHealth(Math.min(extraHealth, customMaxHealth));

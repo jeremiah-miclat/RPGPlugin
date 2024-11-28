@@ -148,7 +148,6 @@ public class MonsterInitializer implements Listener {
         double customDamage = Math.min(extraHealth/10, customMaxHealth);
 
 
-
         if (Math.random() < .0001) { //.005
             extraHealth = (extraHealth * 10); // Add 1000% health
             setBossAttributes(entity, maxCoord, "Boss", ChatColor.RED);
@@ -157,7 +156,8 @@ public class MonsterInitializer implements Listener {
 
 
             entity.setHealth(Math.min(extraHealth, customMaxHealth));
-            Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(customDamage*3);
+            Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(customDamage*2);
+            entity.setMetadata("customDamage", new FixedMetadataValue(plugin, customDamage*2));
             return;
         }
 
@@ -168,11 +168,13 @@ public class MonsterInitializer implements Listener {
             entity.setMetadata("lvl", new FixedMetadataValue(plugin, lvl));
 
             entity.setHealth(Math.min(extraHealth, customMaxHealth));
-            Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(customDamage*10);
+            Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(customDamage*3);
+            entity.setMetadata("customDamage", new FixedMetadataValue(plugin, customDamage*3));
             return;
         }
 
         entity.setHealth(Math.min(extraHealth, customMaxHealth));
+        entity.setMetadata("customDamage", new FixedMetadataValue(plugin, customDamage));
         Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(customDamage);
 
     }

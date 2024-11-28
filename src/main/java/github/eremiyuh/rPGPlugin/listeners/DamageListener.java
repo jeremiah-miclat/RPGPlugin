@@ -464,9 +464,8 @@ public class DamageListener implements Listener {
 
             if (event.getDamager() instanceof Projectile projectile) {
                 // Check for custom damage metadata
-                if (projectile.getShooter() instanceof Monster mob && mob.hasMetadata("extraHealth")) {
-                    double customDamage = mob.getMetadata("extraHealth").get(0).asDouble();
-                    customDamage/=10;
+                if (projectile.getShooter() instanceof Monster mob && mob.hasMetadata("customDamage")) {
+                    double customDamage = mob.getMetadata("customDamage").get(0).asDouble();
                     if (damaged instanceof Player player) {
                         UserProfile playerProfile = profileManager.getProfile(player.getName());
                         playerProfile.setDurability(Math.max(0,playerProfile.getDurability()-1));
@@ -496,8 +495,8 @@ public class DamageListener implements Listener {
 
             if (event.getDamager() instanceof ThrownPotion projectile) {
                 // Check for custom damage metadata
-                if (projectile.getShooter() instanceof Monster mob && mob.hasMetadata("extraHealth")) {
-                    double customDamage = mob.getMetadata("extraHealth").get(0).asDouble();
+                if (projectile.getShooter() instanceof Monster mob && mob.hasMetadata("customDamage")) {
+                    double customDamage = mob.getMetadata("customDamage").get(0).asDouble();
                     customDamage/=10;
                     if (damaged instanceof Player player) {
                         UserProfile playerProfile = profileManager.getProfile(player.getName());
