@@ -68,7 +68,7 @@ public class JunkShopCommand implements CommandExecutor, Listener {
             // Check if the clicked item is the "Sell All Junk" item (diamond)
             if (event.getCurrentItem() != null && event.getCurrentItem().getType() == Material.DIAMOND) {
                 // Ensure the player has junk points to sell
-                if (userJunk > 0) {
+                if (userJunk >= 1000) {
                     // Calculate the number of diamonds based on junk points
                     int diamondsToGive = userJunk / 1000; // For example, 1000 junk points = 1 diamond
 
@@ -86,13 +86,14 @@ public class JunkShopCommand implements CommandExecutor, Listener {
                     } else {
                         player.sendMessage(Component.text("You sold all your junk points for " + diamondsToGive + " diamonds!").color(TextColor.color(0, 255, 0)));
                     }
+                } else if (userJunk > 0) {
+                    player.sendMessage(Component.text("You need at least 1000 junk points to sell.").color(TextColor.color(255, 255, 0)));
                 } else {
                     player.sendMessage(Component.text("You do not have enough junk points to sell.").color(TextColor.color(255, 0, 0)));
                 }
             }
         }
     }
-
 
     private ItemStack getSellAllJunkItem(Player player) {
         ItemStack diamondFromJunk = new ItemStack(Material.DIAMOND);

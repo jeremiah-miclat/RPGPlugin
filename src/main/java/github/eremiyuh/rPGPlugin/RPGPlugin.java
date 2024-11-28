@@ -284,7 +284,7 @@ public class RPGPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new PlayerDeathListener(profileManager), this);
         getServer().getPluginManager().registerEvents(new ArmorChangePlugin(profileManager,this), this);
         Bukkit.getPluginManager().registerEvents(new CheckClassCommand(profileManager), this);
-        getServer().getPluginManager().registerEvents(new LoginListener(this), this);
+        getServer().getPluginManager().registerEvents(new LoginListener(this, profileManager), this);
         getServer().getPluginManager().registerEvents(new ItemAscensionListener(profileManager), this);
         getServer().getPluginManager().registerEvents(new ResetItemListener(profileManager), this);
         getServer().getPluginManager().registerEvents(new SummonVillagerListener(), this);

@@ -14,6 +14,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
 import java.util.Objects;
@@ -33,10 +34,14 @@ public class PlayerJoinListener implements Listener {
         return material.isSolid() && material != Material.LAVA && material != Material.BEDROCK;
     }
 
+
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         String playerName = player.getName();
+        UserProfile profile = profileManager.getProfile(playerName);
+
+
 
         if (player.getWorld().getName().contains("resource")) {
             if (player.getLocation().getBlock().getType() != Material.LAVA
@@ -51,7 +56,7 @@ public class PlayerJoinListener implements Listener {
             player.teleport(spawnLocation);
         }
 
-        UserProfile profile = profileManager.getProfile(playerName);
+
 
         Location playerLocation = player.getLocation();
         Material blockType = playerLocation.clone().subtract(0, 1, 0).getBlock().getType(); // Check the block below the player

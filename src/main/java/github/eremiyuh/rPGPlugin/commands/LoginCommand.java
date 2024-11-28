@@ -43,7 +43,7 @@ public class LoginCommand implements CommandExecutor {
 
         String password = args[0];
         if (profile.getPassword().equals(password)) {
-            profile.setLoggedIn(true);  // Assume UserProfile has setLoggedIn method
+            profile.setLoggedIn(true);
             player.sendMessage("Login successful!");
         } else {
             player.sendMessage("Incorrect password. Please try again.");
