@@ -33,7 +33,7 @@ public class PlayerMovementListener implements Listener {
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event) {
         Player player = event.getPlayer();
-        if (isNotLoggedIn(player) && !player.isOp()) {
+        if (isNotLoggedIn(player)) {
             event.setCancelled(true);
             player.sendMessage("You must log in first using /login <password>.");
         }
@@ -42,7 +42,7 @@ public class PlayerMovementListener implements Listener {
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
-        if (isNotLoggedIn(player) && !player.isOp()) {
+        if (isNotLoggedIn(player)) {
             event.setCancelled(true);
             player.sendMessage("You must log in first using /login <password>.");
         }
@@ -51,7 +51,7 @@ public class PlayerMovementListener implements Listener {
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
         Player player = (Player) event.getWhoClicked();
-        if (isNotLoggedIn(player) && !player.isOp()) {
+        if (isNotLoggedIn(player)) {
             event.setCancelled(true);
             player.sendMessage("You must log in first to interact with your inventory.");
         }
@@ -60,7 +60,7 @@ public class PlayerMovementListener implements Listener {
     @EventHandler
     public void onItemDrop(PlayerDropItemEvent event) {
         Player player = event.getPlayer();
-        if (isNotLoggedIn(player) && !player.isOp()) {
+        if (isNotLoggedIn(player)) {
             event.setCancelled(true);
             player.sendMessage("You must log in first to drop items.");
         }
@@ -69,7 +69,7 @@ public class PlayerMovementListener implements Listener {
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
         Player player = event.getPlayer();
-        if (isNotLoggedIn(player) && !player.isOp()) {
+        if (isNotLoggedIn(player)) {
             event.setCancelled(true);
             player.sendMessage("You must log in first to place blocks.");
         }
@@ -78,7 +78,7 @@ public class PlayerMovementListener implements Listener {
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
         Player player = event.getPlayer();
-        if (isNotLoggedIn(player) && !player.isOp()) {
+        if (isNotLoggedIn(player)) {
             event.setCancelled(true);
             player.sendMessage("You must log in first to break blocks.");
         }
@@ -87,7 +87,7 @@ public class PlayerMovementListener implements Listener {
     @EventHandler
     public void onPlayerChat(AsyncPlayerChatEvent event) {
         Player player = event.getPlayer();
-        if (isNotLoggedIn(player) && !player.isOp()) {
+        if (isNotLoggedIn(player)) {
             event.setCancelled(true);
             player.sendMessage("You must log in first to chat.");
         }
@@ -96,7 +96,7 @@ public class PlayerMovementListener implements Listener {
     @EventHandler
     public void onItemSwap(PlayerSwapHandItemsEvent event) {
         Player player = event.getPlayer();
-        if (isNotLoggedIn(player) && !player.isOp()) {
+        if (isNotLoggedIn(player)) {
             event.setCancelled(true);
             player.sendMessage("You must log in first to swap items.");
         }
@@ -109,7 +109,7 @@ public class PlayerMovementListener implements Listener {
         UserProfile profile = profileManager.getProfile(playerName);
 
         // Check if the player is not logged in
-        if ((profile == null || !profile.isLoggedIn()) && !player.isOp()) {
+        if ((profile == null || !profile.isLoggedIn())) {
             // Get the command entered by the player
             String command = event.getMessage().toLowerCase();
 

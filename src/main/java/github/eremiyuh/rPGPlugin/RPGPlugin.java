@@ -15,6 +15,7 @@ import org.bukkit.*;
 import org.bukkit.block.Biome;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.SpawnCategory;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -217,7 +218,7 @@ public class RPGPlugin extends JavaPlugin {
     private void worldConfig() {
         World world = Bukkit.getWorld("world");
         if (world != null) {
-            world.setSpawnLocation(-14,72,-36);
+            world.setSpawnLocation(-14,72,-46);
             world.setGameRule(GameRule.SPAWN_RADIUS, 0);
             world.setGameRule(GameRule.PLAYERS_SLEEPING_PERCENTAGE, 0);
         }
@@ -397,8 +398,15 @@ public class RPGPlugin extends JavaPlugin {
             // Set the world border
             world.getWorldBorder().setSize(20000);
             world.setGameRule(GameRule.SPAWN_RADIUS, 16);
+            world.setDifficulty(Difficulty.HARD);
             world.setGameRule(GameRule.DISABLE_RAIDS, true);
-
+            world.setSpawnLimit(SpawnCategory.ANIMAL,5);
+            world.setSpawnLimit(SpawnCategory.MONSTER,5);
+            world.setSpawnLimit(SpawnCategory.WATER_ANIMAL,5);
+            world.setSpawnLimit(SpawnCategory.WATER_UNDERGROUND_CREATURE,5);
+            world.setSpawnLimit(SpawnCategory.AXOLOTL,5);
+            world.setViewDistance(4);
+            world.setSimulationDistance(4);
             getLogger().info("Created resource world: " + name);
         } else {
             getLogger().warning("Failed to create resource world: " + name);
