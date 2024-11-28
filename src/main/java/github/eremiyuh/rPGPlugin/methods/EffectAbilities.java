@@ -5,6 +5,7 @@ import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.type.Switch;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -46,6 +47,14 @@ public class EffectAbilities {
         if (userClass.equalsIgnoreCase("archer")) userInt= profile.getArcherClassInfo().getIntel();
         if (userClass.equalsIgnoreCase("alchemist")) userInt= profile.getArcherClassInfo().getIntel();
         if (userClass.equalsIgnoreCase("swordsman")) userInt= profile.getSwordsmanClassInfo().getIntel();
+
+        // Check if the entity has the fire resistance potion effect
+        if (target.hasPotionEffect(PotionEffectType.FIRE_RESISTANCE)) {
+
+            target.removePotionEffect(PotionEffectType.FIRE_RESISTANCE);
+
+            if (target instanceof Player) target.sendMessage("Your fire resistance effect has been removed!");
+        }
 
 
         int fireDuration =  100 + (int)(userInt *.04); // Extend fire duration based on profile buff

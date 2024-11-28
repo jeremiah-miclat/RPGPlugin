@@ -6,7 +6,9 @@ import org.bukkit.*;
 import org.bukkit.entity.AbstractArrow;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 public class DamageAbilities {
@@ -25,6 +27,14 @@ public class DamageAbilities {
         int archerInt = profile.getArcherClassInfo().getIntel();
         double modifier = .02;
 
+        // Check if the entity has the fire resistance potion effect
+        if (target.hasPotionEffect(PotionEffectType.FIRE_RESISTANCE)) {
+
+            target.removePotionEffect(PotionEffectType.FIRE_RESISTANCE);
+
+            if (target instanceof Player) target.sendMessage("Your fire resistance effect has been removed!");
+
+        }
 
         // Calculate the starting point for the 5x5 area
         double startX = targetLocation.getX() - 2.0;

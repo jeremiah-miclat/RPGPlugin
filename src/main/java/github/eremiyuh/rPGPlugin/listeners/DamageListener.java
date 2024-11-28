@@ -412,6 +412,14 @@ public class DamageListener implements Listener {
 
 
             if (event.getDamager() instanceof Monster mob) {
+
+                // Check if the entity has the fire resistance potion effect
+                if (mob instanceof Blaze && damaged instanceof LivingEntity target && target.hasPotionEffect(PotionEffectType.FIRE_RESISTANCE)) {
+
+                    target.removePotionEffect(PotionEffectType.FIRE_RESISTANCE);
+
+                    if (target instanceof Player) target.sendMessage("Your fire resistance effect has been removed by Blaze.");
+                }
 //                // Check for custom damage metadata
 //                if (mob.hasMetadata("extraHealth")) {
 //                    double customDamage = mob.getMetadata("extraHealth").get(0).asDouble();
