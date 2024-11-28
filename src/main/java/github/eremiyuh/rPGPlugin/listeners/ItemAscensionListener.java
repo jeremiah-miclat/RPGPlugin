@@ -29,116 +29,87 @@ public class ItemAscensionListener implements Listener {
 
         if (!(event.getWhoClicked() instanceof Player player)) return;
         UserProfile userProfile = profileManager.getProfile(player.getName());
-        if (!userProfile.isAscending()) {
-            return;
-        }
-
+        if (!userProfile.isAscending()) return;
 
         ItemStack draggedItem = event.getCursor();
-        if (draggedItem == null || draggedItem.getType() == Material.AIR) {
-            return;
-        }
+        if (draggedItem == null || draggedItem.getType() == Material.AIR) return;
 
         ItemStack targetItem = event.getCurrentItem();
-        if (targetItem == null || targetItem.getType() == Material.AIR) {
-            return;
-        }
-
+        if (targetItem == null || targetItem.getType() == Material.AIR) return;
 
         if (!draggedItem.hasItemMeta() || !targetItem.hasItemMeta()) {
-            player.sendMessage("One or both items do not have valid attribute.");
+            player.sendMessage("§cBoth items must have valid attributes for ascension.");
             userProfile.setAscending(false);
-            player.sendMessage("Ascension failed, turn it on again to retry.");
+            player.sendMessage("§eAscension disabled. Please enable it again to retry.");
             return;
         }
 
-
         if (!areSameEquipmentType(draggedItem, targetItem)) {
-            player.sendMessage("Items are not of the same equipment type or material. Ascension not allowed.");
+            player.sendMessage("§cItems must be of the same type or material for ascension.");
             userProfile.setAscending(false);
-            player.sendMessage("Ascension failed, turn it on again to retry.");
+            player.sendMessage("§eAscension disabled. Please enable it again to retry.");
             return;
         }
 
         ItemMeta draggedMeta = draggedItem.getItemMeta();
         ItemMeta targetMeta = targetItem.getItemMeta();
 
-
         List<String> draggedLores = draggedMeta.getLore();
         List<String> targetLores = targetMeta.getLore();
 
-        if (draggedLores == null || targetLores == null) {
-            return;
-        }
-
-
-        player.sendMessage("Dragged Item attribute: " + draggedLores);
-        player.sendMessage("Target Item attribute: " + targetLores);
-
+        if (draggedLores == null || targetLores == null) return;
 
         String attribute = getMatchingAttribute(draggedLores, targetLores);
         if (attribute == null) {
-            player.sendMessage("No matching attribute found in the equipments.");
+            player.sendMessage("§cNo matching attributes found between the items.");
             userProfile.setAscending(false);
-            player.sendMessage("Ascension failed, turn it on again to retry.");
+            player.sendMessage("§eAscension disabled. Please enable it again to retry.");
             return;
         }
 
-
-        player.sendMessage("Matching attribute: " + attribute);
-
-        // Get the attribute value from the dragged item
         int attributeValue = getAttributeValue(draggedLores, attribute);
         if (attributeValue <= 0) {
-            player.sendMessage("Attribute value is 0 or less.");
+            player.sendMessage("§cThe selected attribute has no value to ascend.");
             userProfile.setAscending(false);
-            player.sendMessage("Ascension failed, turn it on again to retry.");
+            player.sendMessage("§eAscension disabled. Please enable it again to retry.");
             return;
         }
 
         int diamondsRequired = COST_PER_ATTEMPT * attributeValue;
         if (userProfile.getDiamond() < diamondsRequired) {
-            player.sendMessage("You need at least " + diamondsRequired + " diamonds to attempt item ascension.");
+            player.sendMessage("§cYou need " + diamondsRequired + " diamonds for this ascension.");
             userProfile.setAscending(false);
-            player.sendMessage("Ascension failed, turn it on again to retry.");
+            player.sendMessage("§eAscension disabled. Please enable it again to retry.");
             return;
         }
 
-        player.sendMessage("Diamond cost for ascension: " + diamondsRequired);
-
-        // Deduct diamonds for the ascension attempt
+        player.sendMessage("§aCost of ascension: " + diamondsRequired + " diamonds.");
         userProfile.setDiamond(userProfile.getDiamond() - diamondsRequired);
-        player.sendMessage(diamondsRequired + " diamonds have been deducted for the ascension attempts.");
+        player.sendMessage("§a" + diamondsRequired + " diamonds have been deducted.");
 
-        // Attempt the ascension with a 30% success chance per attribute value
         boolean successfulAscension = false;
-
         for (int i = 0; i < attributeValue; i++) {
-            if (random.nextDouble() <= 0.50) {  // 50% chance
+            if (random.nextDouble() <= 0.50) { // 50% success chance per attempt
                 successfulAscension = true;
                 incrementAttribute(targetLores, attribute);
             }
         }
 
-        // Final feedback to the player
         if (successfulAscension) {
             targetMeta.setLore(targetLores);
             targetItem.setItemMeta(targetMeta);
-            player.sendMessage("Ascension successful! " + attribute + " increased.");
-            userProfile.setAscending(false);
-            player.sendMessage("Ascension turned off.");
+            player.sendMessage("§aAscension successful! " + attribute + " has increased.");
         } else {
-            player.sendMessage("Ascension attempt failed.");
-            userProfile.setAscending(false);
-            player.sendMessage("Ascension turned off.");
+            player.sendMessage("§cAscension failed.");
         }
 
-        // Cancel the event (preventing item placement)
-        event.setCancelled(true);
+        userProfile.setAscending(false);
+        player.sendMessage("§eAscension disabled. Please enable it again to retry.");
 
-        // Remove the dragged item from the cursor
+        event.setCancelled(true);
         player.setItemOnCursor(null);
     }
+
 
     private boolean areSameEquipmentType(ItemStack item1, ItemStack item2) {
         // Ensure both items are valid and non-null
