@@ -67,7 +67,7 @@ public class MonsterInitializer implements Listener {
 
         // Loop through all entities in the world and count the mobs
         for (LivingEntity entity : world.getLivingEntities()) {
-            if (entity instanceof Monster && !entity.hasMetadata("boss") && !entity.hasMetadata("worldboss")) {
+            if (entity instanceof Monster && !entity.hasMetadata("boss") && !entity.hasMetadata("worldboss") && entity.hasMetadata("initialExtraHealth")) {
                 mobCount++;
             }
         }
@@ -148,7 +148,7 @@ public class MonsterInitializer implements Listener {
         double customDamage = Math.min(extraHealth/10, customMaxHealth);
 
 
-        if (Math.random() < .0001) { //.005
+        if (Math.random() < .00001) { //.005
             extraHealth = (extraHealth * 10); // Add 1000% health
             setBossAttributes(entity, maxCoord, "Boss", ChatColor.RED);
             entity.setMetadata("boss", new FixedMetadataValue(plugin, true));
@@ -161,7 +161,7 @@ public class MonsterInitializer implements Listener {
             return;
         }
 
-        if (Math.random() < .00001) { //.0005
+        if (Math.random() < .000001) { //.0005
             extraHealth = (extraHealth * 100); // Add 10000% health
             setBossAttributes(entity, maxCoord, "World Boss", ChatColor.DARK_PURPLE);
             entity.setMetadata("worldboss", new FixedMetadataValue(plugin, true));
@@ -184,7 +184,6 @@ public class MonsterInitializer implements Listener {
         entity.setCustomName(bossName);
         entity.setCustomNameVisible(true);
         entity.setRemoveWhenFarAway(false);
-        entity.setPersistent(true);
         entity.setMetadata("customName", new FixedMetadataValue(plugin, bossName));
 
         // Update health indicator

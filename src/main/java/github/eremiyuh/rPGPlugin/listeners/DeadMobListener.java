@@ -109,7 +109,7 @@ public class DeadMobListener implements Listener {
                         UserProfile playerProfile = profileManager.getProfile(player.getName());
 
 //                        if (player.getName().equals(killer.getName())) {
-                        applyRewards(player, playerProfile, health*1.5, (double) bosslvl /400, dropMultiplier);
+                        applyRewards(player, playerProfile, health*3, (double) bosslvl /400, dropMultiplier);
 //                        } else {
 //                            applyRewards(player, playerProfile, health*1.5, (double) bosslvl /400, dropMultiplier);
 //                        }
@@ -169,7 +169,7 @@ public class DeadMobListener implements Listener {
         player.giveExp((int) (healthForExp * .2));
 
         // Update Abyss points
-        int randomAbyssPoints = (int) (healthForExp/4  + (int) (Math.random() * healthForExp));
+        int randomAbyssPoints = (int) (healthForExp / 4 + Math.random() * (healthForExp / 2 - healthForExp / 4));
         double abyssPointsGained = randomAbyssPoints;
         profile.setAbysspoints(profile.getAbysspoints() + abyssPointsGained);
         player.sendMessage("You have gained " + abyssPointsGained + " Abyss Points!");

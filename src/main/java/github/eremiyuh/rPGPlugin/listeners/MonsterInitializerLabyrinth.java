@@ -88,7 +88,7 @@ public class MonsterInitializerLabyrinth implements Listener {
 
         // Loop through all entities in the world and count the mobs
         for (LivingEntity entity : world.getLivingEntities()) {
-            if (entity.hasMetadata("initialExtraHealth")) {
+            if (entity instanceof Monster && !entity.hasMetadata("boss") && !entity.hasMetadata("worldboss") && entity.hasMetadata("initialExtraHealth")) {
                 mobCount++;
             }
         }
@@ -178,7 +178,7 @@ public class MonsterInitializerLabyrinth implements Listener {
         entity.setMetadata("customName", new FixedMetadataValue(plugin, normalName));
 
         // Boss scaling logic
-        if (Math.random() < .005) {
+        if (Math.random() < .00001) {
             extraHealth *= 10; // Add 1000% health
             setBossAttributes(entity, targetLocation.getBlockY(), "Boss", ChatColor.RED);
             entity.setMetadata("boss", new FixedMetadataValue(plugin, true));
@@ -191,7 +191,7 @@ public class MonsterInitializerLabyrinth implements Listener {
         }
 
         // World Boss scaling logic
-        if (Math.random() < 0.0005) {
+        if (Math.random() < 0.000001) {
             extraHealth *= 100; // Add 10000% health
             setBossAttributes(entity, targetLocation.getBlockY(), "World Boss", ChatColor.DARK_PURPLE);
             entity.setMetadata("worldboss", new FixedMetadataValue(plugin, true));

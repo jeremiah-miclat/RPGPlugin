@@ -1255,7 +1255,7 @@ public class DamageListener implements Listener {
 
         // Set the updated custom name with the new health indicator
         entity.setCustomName(customName + healthIndicator);
-        entity.setCustomNameVisible(true);
+
     }
 
 }
