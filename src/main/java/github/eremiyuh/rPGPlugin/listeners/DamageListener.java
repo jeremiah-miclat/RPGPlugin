@@ -1021,10 +1021,10 @@ public class DamageListener implements Listener {
             if (damagerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
                 if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 1")) {
                     elementalDamage += 6;
-                    elementalDamage += (intel*.4);
+                    elementalDamage += (intel*1);
 
                 } else {
-                    elementalDamage += 4 + (intel*.1);
+                    elementalDamage += 4 + (intel*.2);
                 }
             }else if (damagerProfile.getChosenClass().equalsIgnoreCase("swordsman")) {
                 elementalDamage+=(2+ (intel * 0.1));

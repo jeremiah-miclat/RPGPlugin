@@ -116,7 +116,7 @@ public class AlchemistThrowPotion implements Listener {
                             }
 
                             if (effect.getType() == PotionEffectType.STRENGTH) {
-                                intensity = intensity/10;
+                                intensity = intensity*1;
                                 duration /= 100;
                                 int finalIntensity = (int) (baseIntensity + intensity);
                                 int finalDuration = baseDuration + duration;
@@ -196,11 +196,14 @@ public class AlchemistThrowPotion implements Listener {
                                     UserProfile targetProfile = profileManager.getProfile(targetPlayer.getName());
                                     if (!throwerProfile.getTeam().equals(targetProfile.getTeam())) {
                                         targetPlayer.removePotionEffect(effect.getType());
+                                        if (targetProfile.isPvpEnabled() && throwerProfile.isPvpEnabled()) target.addPotionEffect(new PotionEffect((PotionEffectType.NAUSEA),200,0,true,true));
+
                                     }
                                 }
 
                                 if (target instanceof Monster monster && isPositiveEffect ) {
                                     monster.removePotionEffect(effect.getType());
+                                    target.addPotionEffect(new PotionEffect((PotionEffectType.WITHER),60,0,true,true));
                                 }
 
 
