@@ -38,6 +38,9 @@ public class DamageListener implements Listener {
     private final RPGPlugin plugin;
 
 
+    private final int x1 = -150, z1 = 150;
+    private final int x2 = 90, z2 = -110;
+
     public DamageListener(PlayerProfileManager profileManager, EffectsAbilityManager effectsAbilityManager, DamageAbilityManager damageAbilityManager, RPGPlugin plugin) {
         this.profileManager = profileManager;
         this.effectsAbilityManager = effectsAbilityManager;
@@ -53,6 +56,10 @@ public class DamageListener implements Listener {
         event.setCancelled(true);
     }
 
+    private boolean isInNoSpawnArea(int x, int z) {
+        return x >= Math.min(x1, x2) && x <= Math.max(x1, x2) &&
+                z >= Math.min(z1, z2) && z <= Math.max(z1, z2);
+    }
 
     @EventHandler
     public void onEntityDamage(EntityDamageByEntityEvent event) {
@@ -247,6 +254,11 @@ public class DamageListener implements Listener {
 
                 }
 
+                if (damaged instanceof Monster mob && isInNoSpawnArea(attacker.getLocation().getBlockX(),attacker.getLocation().getBlockZ())) {
+                    attacker.sendMessage("Can't attack here.");
+                    event.setCancelled(true);
+                    return;
+                }
 
                 UserProfile attackerProfile = profileManager.getProfile(attacker.getName());
 
@@ -320,6 +332,13 @@ public class DamageListener implements Listener {
 
                     }
 
+
+                    if (damaged instanceof Monster mob && isInNoSpawnArea(attacker.getLocation().getBlockX(),attacker.getLocation().getBlockZ())) {
+                        attacker.sendMessage("Can't attack here.");
+                        event.setCancelled(true);
+                        return;
+                    }
+
                     UserProfile attackerProfile = profileManager.getProfile(attacker.getName());
 
 
@@ -378,6 +397,12 @@ public class DamageListener implements Listener {
                             return;
                         }
 
+                    }
+
+                    if (damaged instanceof Monster mob && isInNoSpawnArea(attacker.getLocation().getBlockX(),attacker.getLocation().getBlockZ())) {
+                        attacker.sendMessage("Can't attack here.");
+                        event.setCancelled(true);
+                        return;
                     }
 
                     UserProfile attackerProfile = profileManager.getProfile(attacker.getName());

@@ -291,6 +291,12 @@ public class WorldSwitchCommand implements CommandExecutor, Listener {
 
 
             if (player.teleport(spawnLocation)) {
+                if (!worldName.contains("rpg") && !worldName.contains("labyrinth")) {
+                    playerStatBuff.updatePlayerStatsToNormal(player);
+                }
+                if (worldName.contains("rpg") || worldName.contains("labyrinth")) {
+                    playerStatBuff.updatePlayerStatsToRPG(player);
+                }
                 profile.setEnderPearl(profile.getEnderPearl()-1);
                 player.sendMessage(ChatColor.GREEN + "Teleported to " + displayName);
             } else {

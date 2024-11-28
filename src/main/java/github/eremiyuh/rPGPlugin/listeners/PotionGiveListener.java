@@ -90,7 +90,7 @@ public class PotionGiveListener implements Listener {
                     potionEffect = new PotionEffect(selectedEffect, 100, 1);
                     player.sendMessage(ChatColor.BLUE + "Crafted Potion: " + formatPotionEffectName(selectedEffect));
                 } else if (playerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
-                    potionEffect = new PotionEffect(PotionEffectType.INSTANT_HEALTH, 1, 1);
+                    potionEffect = new PotionEffect(PotionEffectType.INSTANT_HEALTH, 1, 0);
                 }
 
                 // Add the custom effect to the potion
