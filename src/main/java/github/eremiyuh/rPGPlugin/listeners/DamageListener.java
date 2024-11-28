@@ -738,7 +738,7 @@ public class DamageListener implements Listener {
                 finalDamage= finalDamage*.8;
             }
             if (victimProfile.getChosenClass().equalsIgnoreCase("swordsman") && victimProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
-                finalDamage= finalDamage*.3;
+                finalDamage= finalDamage*.5;
             }
             if (victimProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
                 finalDamage=finalDamage*1.2;
@@ -958,13 +958,16 @@ public class DamageListener implements Listener {
 
                 if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 2") && player.getInventory().getItemInMainHand().getType().toString().endsWith("_SWORD")) {
                     statDmg += str*.6;
-                } else {
-                    statDmg += str*.1;
+                }
+
+                if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 3") && player.getInventory().getItemInMainHand().getType().toString().endsWith("_SWORD")) {
+                    statDmg += str*.3;
                 }
 
 
                 if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 1") && player.getInventory().getItemInMainHand().getType().toString().endsWith("_SWORD")) {
                     elementalDamage += (4 + (intel * 1));
+                    statDmg += str*.6;
                 } else {
                     elementalDamage += (1 + (intel * 0.1));
                 }
