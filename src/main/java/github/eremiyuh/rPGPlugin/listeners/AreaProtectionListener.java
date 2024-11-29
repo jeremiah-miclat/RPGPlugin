@@ -41,7 +41,7 @@ public class AreaProtectionListener implements Listener {
     private final int xx2 = -338, zz2 = 330;
 
     private final int x1 = -150, z1 = 150;
-    private final int x2 = 90, z2 = -110;
+    private final int x2 = 150, z2 = -150;
 
     private static final Set<Material> ANNOYING_BLOCKS;
 

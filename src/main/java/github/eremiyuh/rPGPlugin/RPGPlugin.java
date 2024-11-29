@@ -48,7 +48,7 @@ public class RPGPlugin extends JavaPlugin {
         loadResources();
 
         // Add a delay (e.g., 5 seconds) before allowing logins
-        getServer().getScheduler().runTaskLater(this, () -> serverLoaded = true, 60); // 100 ticks = 5 seconds
+        getServer().getScheduler().runTaskLater(this, () -> serverLoaded = true, 1200); // 100 ticks = 5 seconds
 
     }
 
@@ -237,9 +237,9 @@ public class RPGPlugin extends JavaPlugin {
     private void loadResources() {
         // Load your data, initialize managers, etc.
         // Initialize the profile manager
-//        deleteWorld("resource_normal");
-//        deleteWorld("resource_nether");
-//        deleteWorld("resource_end");
+        deleteWorld("resource_normal");
+        deleteWorld("resource_nether");
+        deleteWorld("resource_end");
         profileManager = new PlayerProfileManager(this);
         shopsManager = new ShopsManager(this);
         shopsManager.loadAllShops();
@@ -258,7 +258,6 @@ public class RPGPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new PlayerQuitListener(profileManager,vaultManager), this);
         Objects.requireNonNull(getCommand("selectclass")).setExecutor(new SelectClassCommand(this, profileManager));
         Objects.requireNonNull(getCommand("abyssstore")).setExecutor(new AbyssStoreCommand(this, profileManager));
-        getServer().getPluginManager().registerEvents(new OptimizedVampireSunlightListener(profileManager, this),this);
         DamageListener damageListenerListener = new DamageListener(profileManager, effectsAbilityManager, damageAbilityManager,this);
         getServer().getPluginManager().registerEvents(damageListenerListener,this);
         getServer().getPluginManager().registerEvents(new PotionGiveListener(this,profileManager),this);
@@ -296,7 +295,6 @@ public class RPGPlugin extends JavaPlugin {
         Objects.requireNonNull(this.getCommand("checkstatus")).setExecutor(new CheckClassCommand(profileManager));
         Objects.requireNonNull(getCommand("convertabysspoints")).setExecutor(new ConvertLevelsCommand(profileManager));
         Objects.requireNonNull(getCommand("selectelement")).setExecutor(new SelectElement(profileManager));
-        Objects.requireNonNull(getCommand("selectrace")).setExecutor(new SelectRace(profileManager));
         Objects.requireNonNull(getCommand("selectskill")).setExecutor(new SkillsGui(this,profileManager));
         Objects.requireNonNull(getCommand("teamcreate")).setExecutor(new CreateTeamCommand(profileManager));
         Objects.requireNonNull(getCommand("teaminvite")).setExecutor(new TeamInviteCommand(profileManager));
@@ -376,9 +374,9 @@ public class RPGPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new JunkShopCommand(profileManager), this);
         despawnAbyssMobsTask();
 //
-//        createResourceWorld("resource_normal", World.Environment.NORMAL);
-//        createResourceWorld("resource_nether", World.Environment.NETHER);
-//        createResourceWorld("resource_end", World.Environment.THE_END);
+        createResourceWorld("resource_normal", World.Environment.NORMAL);
+        createResourceWorld("resource_nether", World.Environment.NETHER);
+        createResourceWorld("resource_end", World.Environment.THE_END);
 
     }
 
@@ -458,6 +456,7 @@ public class RPGPlugin extends JavaPlugin {
                             // Check if the entity has the "extraHealth" metadata
                             if (!livingEntity.hasMetadata("extraHealth")) {
                                 // If not, remove or despawn the entity
+                                livingEntity.setRemoveWhenFarAway(true);
                                 livingEntity.remove();
                             }
                         }
@@ -472,7 +471,7 @@ public class RPGPlugin extends JavaPlugin {
 
 
                             if (!livingEntity.hasMetadata("extraHealth")) {
-
+                                livingEntity.setRemoveWhenFarAway(true);
                                 livingEntity.remove();
                             }
                         }

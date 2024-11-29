@@ -87,7 +87,7 @@ public class PotionGiveListener implements Listener {
                     PotionEffectType selectedEffect = possibleEffects.get(random.nextInt(possibleEffects.size()));
 
                     // Create the potion effect with a duration of 20 ticks (1 second) and amplifier 1
-                    potionEffect = new PotionEffect(selectedEffect, 100, 1);
+                    potionEffect = new PotionEffect(selectedEffect, 0, 0);
                     player.sendMessage(ChatColor.BLUE + "Crafted Potion: " + formatPotionEffectName(selectedEffect));
                 } else if (playerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
                     potionEffect = new PotionEffect(PotionEffectType.INSTANT_HEALTH, 1, 0);

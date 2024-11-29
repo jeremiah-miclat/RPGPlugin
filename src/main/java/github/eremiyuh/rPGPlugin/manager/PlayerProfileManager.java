@@ -65,7 +65,7 @@ public class PlayerProfileManager {
         config.set("playerID", profile.getPlayerID().toString());
         config.set("playerName", profile.getPlayerName());
         config.set("chosenClass", profile.getChosenClass());
-        config.set("lastClassSelection", profile.getLastClassSelection());
+
         config.set("currentAttributePoints", profile.getCurrentAttributePoints());
         config.set("totalAllocatedPoints", profile.getTotalAllocatedPoints());
 
@@ -82,15 +82,10 @@ public class PlayerProfileManager {
 
         // Save elemental choice
         config.set("selectedElement", profile.getSelectedElement());
-        config.set("lastElementSelection", profile.getLastElementSelection());
 
-        // Save race choice
-        config.set("selectedRace", profile.getSelectedRace());
-        config.set("lastRaceSelection", profile.getLastRaceSelection());
 
         // Save skill choice
         config.set("selectedSkill",profile.getSelectedSkill());
-        config.set("lastSkillSelection", profile.getLastSkillSelection());
 
         // save team
         config.set("team", profile.getTeam());
@@ -175,12 +170,11 @@ public class PlayerProfileManager {
         String playerID = config.getString("playerID");
         String chosenClass = config.getString("chosenClass", "default");
         long lastClassSelection = config.getLong("lastClassSelection", 0);
-        int currentAttributePoints = config.getInt("currentAttributePoints", 0);
+        int currentAttributePoints = config.getInt("currentAttributePoints", 100);
 
         // Initialize the user profile
         UserProfile profile = new UserProfile(playerName);
         profile.setChosenClass(chosenClass);
-        profile.setLastClassSelection(lastClassSelection);
         profile.setCurrentAttributePoints(currentAttributePoints);
 
         // Load class-specific allocated points
@@ -191,15 +185,9 @@ public class PlayerProfileManager {
 
         // Load elemental choice
         profile.setSelectedElement(config.getString("selectedElement", "none"));
-        profile.setLastElementSelection(config.getLong("lastElementSelection", 0));
-
-        // Load race choice
-        profile.setSelectedRace(config.getString("selectedRace", "default"));
-        profile.setLastRaceSelection(config.getLong("lastRaceSelection", 0));
 
         // Load skill choice
         profile.setSelectedSkill(config.getString("selectedSkill", "default"));
-        profile.setLastSkillSelection(config.getLong("lastSkillSelection", 0));
 
         //pvp
         profile.setPvpEnabled(config.getBoolean("pvpEnabled",false));

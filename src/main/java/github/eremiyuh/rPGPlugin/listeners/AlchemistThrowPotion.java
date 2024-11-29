@@ -95,73 +95,77 @@ public class AlchemistThrowPotion implements Listener {
 
                                 duration = (int) (intel/10);
 
-                                int finalDuration = baseDuration + duration;
-                                target.addPotionEffect(new PotionEffect(effect.getType(), finalDuration, baseIntensity, true, true));
+                                int finalDuration = baseDuration + duration + 100;
+                                target.addPotionEffect(new PotionEffect(effect.getType(), finalDuration, 1, true, true));
                             }
 
                             if (effect.getType() == PotionEffectType.JUMP_BOOST) {
 
                                 duration = (int) (intel/10);
 
-                                int finalDuration = baseDuration + duration;
-                                target.addPotionEffect(new PotionEffect(effect.getType(), finalDuration, baseIntensity, true, true));
+                                int finalDuration = baseDuration + duration + 100;
+                                target.addPotionEffect(new PotionEffect(effect.getType(), finalDuration, 1, true, true));
                             }
 
                             if (effect.getType() == PotionEffectType.STRENGTH) {
                                 intensity = (intel/6);
                                 duration = (int) (intel/10);
 
-                                int finalDuration = baseDuration + duration;
+                                int finalDuration = baseDuration + duration + 100;
                                 target.addPotionEffect(new PotionEffect(effect.getType(), finalDuration, (int) intensity, true, true));
                             }
 
                             if (effect.getType() == PotionEffectType.POISON) {
 
-                                duration = (int) (intel/10);
+                                duration = (int) (intel*10);
 
-                                int finalDuration = baseDuration + duration;
-                                target.addPotionEffect(new PotionEffect(effect.getType(), finalDuration, baseIntensity, true, true));
+                                int finalDuration = baseDuration + duration + 200;
+                                target.addPotionEffect(new PotionEffect(effect.getType(), finalDuration, 1, true, true));
                             }
 
                             if (effect.getType() == PotionEffectType.WITHER) {
 
-                                duration = (int) (intel/10);
+                                duration = (int) (intel*10);
 
-                                int finalDuration = baseDuration + duration;
-                                target.addPotionEffect(new PotionEffect(effect.getType(), finalDuration, baseIntensity, true, true));
+                                int finalDuration = baseDuration + duration + 200;
+                                target.addPotionEffect(new PotionEffect(effect.getType(), finalDuration, 1, true, true));
                             }
 
                             if (effect.getType() == PotionEffectType.FIRE_RESISTANCE) {
                                 duration = (int) (intel/10);
-                                int finalDuration = baseDuration + duration;
+                                int finalDuration = baseDuration + duration + 100;
                                 target.addPotionEffect(new PotionEffect(effect.getType(), finalDuration, baseIntensity, true, true));
                             }
 
                             if (effect.getType() == PotionEffectType.NIGHT_VISION) {
 
                                 duration = (int) (intel/10);
-                                int finalDuration = baseDuration + duration;
+                                int finalDuration = baseDuration + duration + 100;
                                 target.addPotionEffect(new PotionEffect(effect.getType(), finalDuration, baseIntensity, true, true));
                             }
 
                             if (effect.getType() == PotionEffectType.SLOW_FALLING) {
 
                                 duration = (int) (intel/10);
-                                int finalDuration = baseDuration + duration;
+                                int finalDuration = baseDuration + duration + 100;
                                 target.addPotionEffect(new PotionEffect(effect.getType(), finalDuration, baseIntensity, true, true));
                             }
 
                             if (effect.getType() == PotionEffectType.WATER_BREATHING) {
                                 duration = (int) (intel/10);
-                                int finalDuration = baseDuration + duration;
+                                int finalDuration = baseDuration + duration + 100;
                                 target.addPotionEffect(new PotionEffect(effect.getType(), finalDuration, baseIntensity, true, true));
                             }
 
                             if (effect.getType() == PotionEffectType.INVISIBILITY) {
 
                                 duration = (int) (intel/10);
-                                int finalDuration = baseDuration + duration;
+                                int finalDuration = baseDuration + duration + 100;
                                 target.addPotionEffect(new PotionEffect(effect.getType(), finalDuration, baseIntensity, true, true));
+                            }
+
+                            if (effect.getType() == PotionEffectType.RESISTANCE) {
+                                target.addPotionEffect(new PotionEffect(effect.getType(), 100, 1, true, true));
                             }
 
 
@@ -179,28 +183,28 @@ public class AlchemistThrowPotion implements Listener {
 
                                 if (thrower.getName().equals(target.getName()) && isNegativeEffect) {
                                     target.removePotionEffect(effect.getType());
-                                    target.addPotionEffect(new PotionEffect((PotionEffectType.REGENERATION),60,0,true,true));
+                                    target.addPotionEffect(new PotionEffect((PotionEffectType.REGENERATION),100+(int)(intel*10),0,true,true));
                                 }
 
                                 if (target instanceof Player targetPlayer && isNegativeEffect) {
                                     UserProfile targetProfile = profileManager.getProfile(targetPlayer.getName());
                                     if (throwerProfile.getTeam().equals(targetProfile.getTeam()) && !throwerProfile.getTeam().equalsIgnoreCase("none")) {
                                         targetPlayer.removePotionEffect(effect.getType());
-                                        target.addPotionEffect(new PotionEffect((PotionEffectType.REGENERATION),60,0,true,true));
+                                        target.addPotionEffect(new PotionEffect((PotionEffectType.REGENERATION),100+(int)(intel*10),0,true,true));
                                     }
                                 }
                                 if (target instanceof Player targetPlayer && isPositiveEffect && !throwerProfile.getTeam().equals("none")) {
                                     UserProfile targetProfile = profileManager.getProfile(targetPlayer.getName());
                                     if (!throwerProfile.getTeam().equals(targetProfile.getTeam())) {
                                         targetPlayer.removePotionEffect(effect.getType());
-                                        if (targetProfile.isPvpEnabled() && throwerProfile.isPvpEnabled()) target.addPotionEffect(new PotionEffect((PotionEffectType.NAUSEA),200,0,true,true));
+                                        if (targetProfile.isPvpEnabled() && throwerProfile.isPvpEnabled()) target.addPotionEffect(new PotionEffect((PotionEffectType.NAUSEA),200+(int)(intel/10),0,true,true));
 
                                     }
                                 }
 
                                 if (target instanceof Monster monster && isPositiveEffect ) {
                                     monster.removePotionEffect(effect.getType());
-                                    target.addPotionEffect(new PotionEffect((PotionEffectType.WITHER),60,0,true,true));
+                                    target.addPotionEffect(new PotionEffect((PotionEffectType.WITHER),100+(int)(intel*10),1,true,true));
                                 }
 
 

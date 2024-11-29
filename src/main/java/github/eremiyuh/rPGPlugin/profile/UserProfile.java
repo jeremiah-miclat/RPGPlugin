@@ -8,7 +8,7 @@ public class UserProfile {
     private UUID playerID;
     private String playerName;
     private String chosenClass;
-    private long lastClassSelection;
+
     private int currentAttributePoints;
 
     private ClassAttributes defaultClassInfo;
@@ -18,15 +18,11 @@ public class UserProfile {
 
     // New fields for elemental choice
     private String selectedElement = "none";  // Default to no element
-    private long lastElementSelection = 0;    // Timestamp of the last element selection
 
-    // New fields for race choice
-    private String selectedRace = "default";  // Default to no race
-    private long lastRaceSelection = 0;    // Timestamp of the last element selection
 
     // New fields for skill choice
     private  String selectedSkill = "none";
-    private long lastSkillSelection = 0;    // Timestamp of the last skill selection
+
 
     // ascend
     private boolean isAscending;
@@ -80,8 +76,8 @@ public class UserProfile {
         this.playerID = UUID.randomUUID(); // Generate a unique ID for the player
         this.playerName = playerName;
         this.chosenClass = "default"; // Default class upon joining
-        this.lastClassSelection = 0; // Time of last class selection (could be used as timestamp)
-        this.currentAttributePoints = 0; // Starts with 0 points
+
+        this.currentAttributePoints = 100;
 
         // Initialize class-specific attributes
         this.defaultClassInfo = new ClassAttributes();
@@ -150,13 +146,7 @@ public class UserProfile {
         this.chosenClass = chosenClass;
     }
 
-    public long getLastClassSelection() {
-        return lastClassSelection;
-    }
 
-    public void setLastClassSelection(long lastClassSelection) {
-        this.lastClassSelection = lastClassSelection;
-    }
 
     public int getCurrentAttributePoints() {
         return currentAttributePoints;
@@ -213,47 +203,9 @@ public class UserProfile {
 
     public void setSelectedElement(String element) {
         this.selectedElement = element;
-        this.lastElementSelection = System.currentTimeMillis();  // Set timestamp
+
     }
 
-    // Method to check if 10-minute cooldown has passed
-    public boolean canSelectNewElement() {
-        long currentTime = System.currentTimeMillis();
-        return (currentTime - lastElementSelection) >= 600;  // 600,000 ms = 10 minutes
-    }
-
-    public long getLastElementSelection() {
-        return lastElementSelection;
-    }
-
-    public void setLastElementSelection(long lastElementSelection) {
-        this.lastElementSelection = lastElementSelection;
-    }
-
-    // Getter and setter for selectedRace
-    public String getSelectedRace() {
-        return selectedRace;
-    }
-
-    public void setSelectedRace(String race) {
-        this.selectedRace = race;
-        this.lastRaceSelection = System.currentTimeMillis();  // Set timestamp
-    }
-
-    // Method to check if 10-minute cooldown has passed
-    public boolean canSelectNewRace() {
-        long currentTime = System.currentTimeMillis();
-        return (currentTime - lastRaceSelection) >= 600;  // 600,000 ms = 10 minutes
-    }
-
-    public long getLastRaceSelection() {
-        return lastRaceSelection;
-    }
-
-
-    public void setLastRaceSelection(long lastRaceSelection) {
-        this.lastRaceSelection = lastRaceSelection;
-    }
 
     // Getter and setter for selectedSkill
     public String getSelectedSkill() {
@@ -262,21 +214,6 @@ public class UserProfile {
 
     public void setSelectedSkill(String skill) {
         this.selectedSkill = skill;
-        this.lastSkillSelection = System.currentTimeMillis();  // Set timestamp
-    }
-
-    // Method to check if 10-minute cooldown has passed
-    public boolean canSelectNewSkill() {
-        long currentTime = System.currentTimeMillis();
-        return (currentTime - lastSkillSelection) >= 600;  // 600,000 ms = 10 minutes
-    }
-
-    public long getLastSkillSelection() {
-        return lastSkillSelection;
-    }
-
-    public void setLastSkillSelection(long lastSkillSelection) {
-        this.lastSkillSelection = lastSkillSelection;
     }
 
     public String getTeam() {
@@ -608,7 +545,6 @@ public class UserProfile {
     public void switchClass(String newClass) {
         this.chosenClass = newClass;
         resetCurrentClassAttributes(); // Reset attribute points if class is switched
-        this.lastClassSelection = System.currentTimeMillis(); // Update the last selection timestamp
     }
 
     // Reset attribute points for the current class

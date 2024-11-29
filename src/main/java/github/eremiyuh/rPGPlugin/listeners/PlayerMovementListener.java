@@ -118,6 +118,25 @@ public class PlayerMovementListener implements Listener {
                 event.setCancelled(true);
             }
         }
+
+
+        String command = event.getMessage().toLowerCase(); // Command message, e.g., "/example"
+
+        // List of commands to block for non-OP players
+        String[] blockedCommands = { "/simpleautorestart", "/sar", "/autorestart", "//","worldedit" };
+
+        // Check if the command is in the blocked list
+        for (String blockedCommand : blockedCommands) {
+            if (command.startsWith(blockedCommand)) {
+                if (!player.isOp()) {
+                    // Cancel the command and send a message
+                    event.setCancelled(true);
+                    player.sendMessage("§cYou do not have permission to use this command!");
+                    return;
+                }
+            }
+        }
+
     }
 
 }

@@ -132,7 +132,6 @@ public class MonsterInitializer implements Listener {
 
         // Set the updated custom name with the new health indicator
         entity.setCustomName(customName + healthIndicator);
-        entity.setCustomNameVisible(true);
     }
 
     private void calculateExtraAttributes(Location targetLocation, LivingEntity entity) {
@@ -141,7 +140,6 @@ public class MonsterInitializer implements Listener {
         int lvl = (int) (Math.floor(maxCoord) / 100);
         String normalName = ChatColor.GREEN + "Lvl " + lvl + " " + entity.getType().name();
         entity.setCustomName(normalName);
-        entity.setCustomNameVisible(true);
         entity.setMetadata("extraHealth", new FixedMetadataValue(plugin, maxCoord));
         entity.setMetadata("customName", new FixedMetadataValue(plugin, normalName));
 
