@@ -2,13 +2,16 @@ package github.eremiyuh.rPGPlugin.commands;
 
 import github.eremiyuh.rPGPlugin.manager.PlayerProfileManager;
 import github.eremiyuh.rPGPlugin.profile.UserProfile;
-import github.eremiyuh.rPGPlugin.utils.ItemUtils;
 import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -17,20 +20,104 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class PayBlackSmithCommand implements CommandExecutor {
-    private static final Map<Material, Integer> oresMap = new HashMap<>();
+public class PayBlackSmithCommand implements CommandExecutor, Listener {
+    private static final Map<Material, Integer> durabilityMap = new HashMap<>();
     private final PlayerProfileManager profileManager;
 
     static {
 
-        oresMap.put(Material.BONE, 10);
-        oresMap.put(Material.IRON_INGOT, 100);
-        oresMap.put(Material.COPPER_INGOT, 100);
-        oresMap.put(Material.GOLD_INGOT, 200);
-        oresMap.put(Material.EMERALD, 200);
-        oresMap.put(Material.LAPIS_LAZULI, 100);
-        oresMap.put(Material.NETHERITE_INGOT, 5000);
-        oresMap.put(Material.DIAMOND, 1000);
+        // Ores and general materials
+        durabilityMap.put(Material.BONE, 10);
+        durabilityMap.put(Material.IRON_INGOT, 100);
+        durabilityMap.put(Material.COPPER_INGOT, 100);
+        durabilityMap.put(Material.GOLD_INGOT, 200);
+        durabilityMap.put(Material.EMERALD, 200);
+        durabilityMap.put(Material.LAPIS_LAZULI, 100);
+        durabilityMap.put(Material.NETHERITE_INGOT, 5000);
+        durabilityMap.put(Material.DIAMOND, 1000);
+        // Equipment: Chainmail and Iron (Armor: 300, Weapons: 500)
+        durabilityMap.put(Material.CHAINMAIL_HELMET, 300);
+        durabilityMap.put(Material.CHAINMAIL_CHESTPLATE, 500);
+        durabilityMap.put(Material.CHAINMAIL_LEGGINGS, 300);
+        durabilityMap.put(Material.CHAINMAIL_BOOTS, 300);
+        durabilityMap.put(Material.IRON_HELMET, 300);
+        durabilityMap.put(Material.IRON_CHESTPLATE, 500);
+        durabilityMap.put(Material.IRON_LEGGINGS, 300);
+        durabilityMap.put(Material.IRON_BOOTS, 300);
+        durabilityMap.put(Material.IRON_SWORD, 500);
+
+        // Gold (Armor: 600, Weapons: 1200)
+        durabilityMap.put(Material.GOLDEN_HELMET, 600);
+        durabilityMap.put(Material.GOLDEN_CHESTPLATE, 1200);
+        durabilityMap.put(Material.GOLDEN_LEGGINGS, 600);
+        durabilityMap.put(Material.GOLDEN_BOOTS, 600);
+        durabilityMap.put(Material.GOLDEN_SWORD, 1200);
+
+        // Diamond (Armor: 3000, Weapons: 5000)
+        durabilityMap.put(Material.DIAMOND_HELMET, 3000);
+        durabilityMap.put(Material.DIAMOND_CHESTPLATE, 5000);
+        durabilityMap.put(Material.DIAMOND_LEGGINGS, 3000);
+        durabilityMap.put(Material.DIAMOND_BOOTS, 3000);
+        durabilityMap.put(Material.DIAMOND_SWORD, 5000);
+
+        // Netherite (Armor: 15000, Weapons: 25000)
+        durabilityMap.put(Material.NETHERITE_HELMET, 15000);
+        durabilityMap.put(Material.NETHERITE_CHESTPLATE, 25000);
+        durabilityMap.put(Material.NETHERITE_LEGGINGS, 15000);
+        durabilityMap.put(Material.NETHERITE_BOOTS, 15000);
+        durabilityMap.put(Material.NETHERITE_SWORD, 25000);
+
+        // Bows and Crossbows
+        durabilityMap.put(Material.BOW, 10);
+        durabilityMap.put(Material.CROSSBOW, 10);
+
+        // Arrows
+        durabilityMap.put(Material.ARROW, 10);
+
+        durabilityMap.put(Material.LEATHER_HELMET, 50);
+        durabilityMap.put(Material.LEATHER_CHESTPLATE, 50);
+        durabilityMap.put(Material.LEATHER_LEGGINGS, 50);
+        durabilityMap.put(Material.LEATHER_BOOTS, 50);
+
+        durabilityMap.put(Material.STONE_SWORD, 100);
+        durabilityMap.put(Material.WOODEN_SWORD, 50);
+
+        durabilityMap.put(Material.SHIELD, 200);
+
+        durabilityMap.put(Material.IRON_PICKAXE, 300);
+        durabilityMap.put(Material.IRON_AXE, 300);
+        durabilityMap.put(Material.IRON_SHOVEL, 300);
+        durabilityMap.put(Material.IRON_HOE, 300);
+
+        durabilityMap.put(Material.GOLDEN_PICKAXE, 400);
+        durabilityMap.put(Material.GOLDEN_AXE, 400);
+        durabilityMap.put(Material.GOLDEN_SHOVEL, 400);
+        durabilityMap.put(Material.GOLDEN_HOE, 400);
+
+        durabilityMap.put(Material.DIAMOND_PICKAXE, 1200);
+        durabilityMap.put(Material.DIAMOND_AXE, 1200);
+        durabilityMap.put(Material.DIAMOND_SHOVEL, 1200);
+        durabilityMap.put(Material.DIAMOND_HOE, 1200);
+
+        durabilityMap.put(Material.NETHERITE_PICKAXE, 30000);
+        durabilityMap.put(Material.NETHERITE_AXE, 30000);
+        durabilityMap.put(Material.NETHERITE_SHOVEL, 30000);
+        durabilityMap.put(Material.NETHERITE_HOE, 30000);
+
+        durabilityMap.put(Material.FISHING_ROD, 150);
+
+        durabilityMap.put(Material.IRON_HORSE_ARMOR, 1000);
+        durabilityMap.put(Material.GOLDEN_HORSE_ARMOR, 1500);
+        durabilityMap.put(Material.DIAMOND_HORSE_ARMOR, 3000);
+
+        durabilityMap.put(Material.SADDLE, 500);
+
+        durabilityMap.put(Material.ELYTRA, 100000);
+        durabilityMap.put(Material.TURTLE_HELMET, 1000);
+
+        durabilityMap.put(Material.STONE, 1);
+        durabilityMap.put(Material.STICK, 1);
+        durabilityMap.put(Material.STRING, 1);
 
 
     }
@@ -44,9 +131,54 @@ public class PayBlackSmithCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (sender instanceof Player) {
             Player player = (Player) sender;
-            convertOreToDura(player);
+            openBlacksmithInventory(player);
         }
         return true;
+    }
+
+    @EventHandler
+    public void onInventoryClose(InventoryCloseEvent event) {
+        Player player = (Player) event.getPlayer();
+        Inventory inventory = event.getInventory();
+        // Ensure the event is from our custom Blacksmith inventory
+        if (!Component.text("Blacksmith will fix your equips.").content().equals(event.getView().getTitle())) return;
+
+
+            // Loop through all the items in the blacksmith inventory
+        int duraAdded = 0;
+            for (ItemStack item : inventory.getContents()) {
+                if (item != null && item.getType() != Material.AIR && !hasCustomLore(item)) {
+                    if (durabilityMap.containsKey(item.getType())) {
+                        // If the item is a valid ore, convert it to durability
+                        int durabilityValue = durabilityMap.get(item.getType()) * item.getAmount();
+                        duraAdded += durabilityValue;
+                        inventory.remove(item);
+                    }
+                }
+            }
+
+            // If any items were valid and converted, update the player's durability
+            if (duraAdded > 0) {
+                UserProfile userProfile = profileManager.getProfile(player.getName());
+                int newDurability = userProfile.getDurability() + duraAdded;
+                userProfile.setDurability(newDurability);
+
+                // Send feedback to the player
+                player.sendMessage("You gained " + duraAdded + " durability!");
+                player.sendMessage("Your total durability is now: " + newDurability);
+            }
+
+            // After processing, return invalid items to the player's inventory
+            for (ItemStack item : inventory.getContents()) {
+                if (item != null && item.getType() != Material.AIR ) {
+                    // Return invalid items back to the player's inventory
+                    player.getInventory().addItem(item);
+                }
+            }
+
+            // Clear the blacksmith inventory after processing
+            inventory.clear();
+
     }
 
 
@@ -60,8 +192,8 @@ public class PayBlackSmithCommand implements CommandExecutor {
             if (item != null && item.getType() != Material.AIR && !hasCustomLore(item)) {
                 Material material = item.getType();
                 // Check if the item is in the ores map
-                if (oresMap.containsKey(material)) {
-                    int duraRestored = oresMap.get(material);
+                if (durabilityMap.containsKey(material)) {
+                    int duraRestored = durabilityMap.get(material);
                     int stackSize = item.getAmount();
 
                     // Add durability based on quantity of the item stack
@@ -110,5 +242,10 @@ public class PayBlackSmithCommand implements CommandExecutor {
         return false;
     }
 
+    public void openBlacksmithInventory(Player player) {
+        Inventory blacksmithInventory = Bukkit.createInventory(null, 27, "Blacksmith will fix your equips.");
+        // Open the inventory for the player
+        player.openInventory(blacksmithInventory);
+    }
 
 }
