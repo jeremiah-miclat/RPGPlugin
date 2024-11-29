@@ -1,5 +1,7 @@
 package github.eremiyuh.rPGPlugin.listeners;
 
+import com.destroystokyo.paper.event.entity.EntityRemoveFromWorldEvent;
+import github.eremiyuh.rPGPlugin.RPGPlugin;
 import github.eremiyuh.rPGPlugin.manager.BossDropItem;
 import github.eremiyuh.rPGPlugin.manager.PlayerProfileManager;
 import github.eremiyuh.rPGPlugin.profile.UserProfile;
@@ -17,6 +19,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.*;
 
 public class DeadMobListener implements Listener {
+    private final RPGPlugin plugin;
     private final PlayerProfileManager profileManager;
     private final Random random = new Random();
 
@@ -52,7 +55,8 @@ public class DeadMobListener implements Listener {
 
 
 
-    public DeadMobListener(PlayerProfileManager profileManager) {
+    public DeadMobListener(RPGPlugin plugin, PlayerProfileManager profileManager) {
+        this.plugin = plugin;
         this.profileManager = profileManager;
     }
 
@@ -138,6 +142,7 @@ public class DeadMobListener implements Listener {
                 }
                     event.getDrops().clear();
                     event.setDroppedExp(0);
+
                     return;
                 }
 
@@ -169,7 +174,7 @@ public class DeadMobListener implements Listener {
         player.giveExp((int) (healthForExp * .2));
 
         // Update Abyss points
-        int randomAbyssPoints = (int) (healthForExp / 4 + Math.random() * (healthForExp / 2 - healthForExp / 4));
+        int randomAbyssPoints = (int) (healthForExp / 12 + Math.random() * (healthForExp / 10 - healthForExp / 12));
         double abyssPointsGained = randomAbyssPoints;
         profile.setAbysspoints(profile.getAbysspoints() + abyssPointsGained);
         player.sendMessage("You have gained " + abyssPointsGained + " Abyss Points!");
@@ -379,5 +384,7 @@ public class DeadMobListener implements Listener {
 
         return horizontalDistance <= horizontalRange && verticalDistance <= verticalRange;
     }
+
+
 
 }

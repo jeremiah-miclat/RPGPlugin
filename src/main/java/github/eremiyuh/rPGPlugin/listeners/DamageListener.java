@@ -254,11 +254,6 @@ public class DamageListener implements Listener {
 
                 }
 
-                if (damaged instanceof Monster mob && isInNoSpawnArea(attacker.getLocation().getBlockX(),attacker.getLocation().getBlockZ())) {
-                    attacker.sendMessage("Can't attack here.");
-                    event.setCancelled(true);
-                    return;
-                }
 
                 UserProfile attackerProfile = profileManager.getProfile(attacker.getName());
 
@@ -333,11 +328,7 @@ public class DamageListener implements Listener {
                     }
 
 
-                    if (damaged instanceof Monster mob && isInNoSpawnArea(attacker.getLocation().getBlockX(),attacker.getLocation().getBlockZ())) {
-                        attacker.sendMessage("Can't attack here.");
-                        event.setCancelled(true);
-                        return;
-                    }
+
 
                     UserProfile attackerProfile = profileManager.getProfile(attacker.getName());
 
@@ -399,11 +390,6 @@ public class DamageListener implements Listener {
 
                     }
 
-                    if (damaged instanceof Monster mob && isInNoSpawnArea(attacker.getLocation().getBlockX(),attacker.getLocation().getBlockZ())) {
-                        attacker.sendMessage("Can't attack here.");
-                        event.setCancelled(true);
-                        return;
-                    }
 
                     UserProfile attackerProfile = profileManager.getProfile(attacker.getName());
                     if (victim.hasMetadata("attackerList")) {

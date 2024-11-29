@@ -53,6 +53,7 @@ public class MonsterInitializer implements Listener {
         if ((event.getEntity() instanceof Animals || event.getEntity() instanceof Phantom)
                 && !(event.getEntity() instanceof Spider) && !(event.getEntity() instanceof CaveSpider)) {
             event.setCancelled(true);
+
             return;
         }
 
@@ -67,7 +68,7 @@ public class MonsterInitializer implements Listener {
 
         // Loop through all entities in the world and count the mobs
         for (LivingEntity entity : world.getLivingEntities()) {
-            if (entity instanceof Monster && !entity.hasMetadata("boss") && !entity.hasMetadata("worldboss") && entity.hasMetadata("extraHealth")) {
+            if (entity instanceof Monster && !entity.hasMetadata("boss") && !entity.hasMetadata("worldboss")) {
                 mobCount++;
             }
         }

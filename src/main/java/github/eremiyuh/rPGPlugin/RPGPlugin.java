@@ -242,9 +242,9 @@ public class RPGPlugin extends JavaPlugin {
     private void loadResources() {
         // Load your data, initialize managers, etc.
         // Initialize the profile manager
-//        deleteWorld("resource_normal");
-//        deleteWorld("resource_nether");
-//        deleteWorld("resource_end");
+        deleteWorld("resource_normal");
+        deleteWorld("resource_nether");
+        deleteWorld("resource_end");
         profileManager = new PlayerProfileManager(this);
         shopsManager = new ShopsManager(this);
         shopsManager.loadAllShops();
@@ -273,7 +273,7 @@ public class RPGPlugin extends JavaPlugin {
         chunkBorderBlueVisualizer = new ChunkBorderBlueVisualizer(this);
         chunkBorderRedVisualizer = new ChunkBorderRedVisualizer(this);
         getServer().getPluginManager().registerEvents(new AlchemistThrowPotion(profileManager, this),this);
-        getServer().getPluginManager().registerEvents(new DeadMobListener(profileManager),this);
+        getServer().getPluginManager().registerEvents(new DeadMobListener(this,profileManager),this);
         getServer().getPluginManager().registerEvents(new MonsterInitializer(this),this);
         getServer().getPluginManager().registerEvents(new MonsterInitializerLabyrinth(this),this);
         getServer().getPluginManager().registerEvents(new ChunkProtectionListener(chunkManager,chunkBorderBlueVisualizer,chunkBorderRedVisualizer,shopsManager),this);
@@ -294,7 +294,8 @@ public class RPGPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new CreateShopListener(this,chunkManager,profileManager,shopsManager), this);
         getServer().getPluginManager().registerEvents(new CustomItemRecipeListener(), this);
         getServer().getPluginManager().registerEvents(new VaultCloseListener(vaultManager), this);
-
+        getServer().getPluginManager().registerEvents(new PayBlackSmithCommand(profileManager), this);
+        getServer().getPluginManager().registerEvents(new ConvertFoodCommand(profileManager), this);
 
         // Register the command executor
         Objects.requireNonNull(this.getCommand("checkstatus")).setExecutor(new CheckClassCommand(profileManager));
@@ -378,6 +379,7 @@ public class RPGPlugin extends JavaPlugin {
 
         Objects.requireNonNull(getCommand("junkshop")).setExecutor(new JunkShopCommand(profileManager));
         getServer().getPluginManager().registerEvents(new JunkShopCommand(profileManager), this);
+
 
 
         createResourceWorld("resource_normal", World.Environment.NORMAL);

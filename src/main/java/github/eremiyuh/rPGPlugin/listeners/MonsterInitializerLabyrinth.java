@@ -88,7 +88,7 @@ public class MonsterInitializerLabyrinth implements Listener {
 
         // Loop through all entities in the world and count the mobs
         for (LivingEntity entity : world.getLivingEntities()) {
-            if (entity instanceof Monster && !entity.hasMetadata("boss") && !entity.hasMetadata("worldboss") && entity.hasMetadata("extraHealth")) {
+            if (entity instanceof Monster && !entity.hasMetadata("boss") && !entity.hasMetadata("worldboss")) {
                 mobCount++;
             }
         }

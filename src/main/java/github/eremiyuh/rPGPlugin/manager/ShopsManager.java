@@ -12,6 +12,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -161,15 +162,20 @@ public class ShopsManager {
             return;
         }
 
+        boolean modified = false; // Track if the file is modified
+
         // Iterate through each shop entry
         for (String shopKey : shopConfig.getConfigurationSection("shops").getKeys(false)) {
             String shopPath = "shops." + shopKey;
 
             // Get the location details
             String worldName = shopConfig.getString(shopPath + ".id.world");
+            assert worldName != null;
             World world = plugin.getServer().getWorld(worldName);
             if (world == null) {
                 plugin.getLogger().warning("World not found for shop: " + shopKey + " in file: " + shopFile.getName());
+                shopConfig.set(shopPath, null); // Remove invalid shop record
+                modified = true;
                 continue;
             }
 
@@ -186,6 +192,8 @@ public class ShopsManager {
             // Verify that the block is a valid shop container
             if (!(block.getState() instanceof Chest || block.getState() instanceof Barrel)) {
                 plugin.getLogger().warning("Invalid shop container at: " + location + " for shop: " + shopKey);
+                shopConfig.set(shopPath, null); // Remove invalid shop record
+                modified = true;
                 continue;
             }
 
@@ -206,7 +214,19 @@ public class ShopsManager {
 
             plugin.getLogger().info("Loaded shop " + shopKey + " for player: " + playerName);
         }
+
+        // Save changes if modifications were made
+        if (modified) {
+            try {
+                shopConfig.save(shopFile);
+                plugin.getLogger().info("Removed invalid shop records from file: " + shopFile.getName());
+            } catch (IOException e) {
+                plugin.getLogger().severe("Failed to save shop file: " + shopFile.getName());
+                e.printStackTrace();
+            }
+        }
     }
+
 
     public boolean removeShopRecord(String playerName, int shopID) {
         // Define the file path for the player's shops

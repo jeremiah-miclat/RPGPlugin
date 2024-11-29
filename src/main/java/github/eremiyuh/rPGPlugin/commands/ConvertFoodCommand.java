@@ -2,18 +2,23 @@ package github.eremiyuh.rPGPlugin.commands;
 
 import github.eremiyuh.rPGPlugin.manager.PlayerProfileManager;
 import github.eremiyuh.rPGPlugin.profile.UserProfile;
+import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class ConvertFoodCommand implements CommandExecutor {
+public class ConvertFoodCommand implements CommandExecutor, Listener {
     private static final Map<Material, Integer> foodHungerMap = new HashMap<>();
     private final PlayerProfileManager profileManager;
 
@@ -57,7 +62,12 @@ public class ConvertFoodCommand implements CommandExecutor {
         foodHungerMap.put(Material.WHEAT, 10);
         foodHungerMap.put(Material.ROTTEN_FLESH, 10);
         foodHungerMap.put(Material.SPIDER_EYE, 5);
-        // Add more food items with appropriate hunger values as needed
+        foodHungerMap.put(Material.GOLDEN_APPLE, 200);
+        foodHungerMap.put(Material.ENCHANTED_GOLDEN_APPLE, 100000);
+        foodHungerMap.put(Material.SUSPICIOUS_STEW, 40);
+        foodHungerMap.put(Material.MILK_BUCKET, 100);
+        foodHungerMap.put(Material.GLISTERING_MELON_SLICE, 150);
+        foodHungerMap.put(Material.GOLDEN_CARROT, 150);
     }
 
     public ConvertFoodCommand(PlayerProfileManager profileManager) {
@@ -67,9 +77,8 @@ public class ConvertFoodCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (sender instanceof Player) {
-            Player player = (Player) sender;
-            convertFoodToStamina(player);
+        if (sender instanceof Player player) {
+            openStaminaInventory(player);
         }
         return true;
     }
@@ -114,4 +123,69 @@ public class ConvertFoodCommand implements CommandExecutor {
         player.sendMessage("Your total stamina is now: " + newStamina);
     }
 
+
+    public void openStaminaInventory(Player player) {
+        Inventory staminaInventory = Bukkit.createInventory(null, 27, "Restore your stamina.");
+        // Open the inventory for the player
+        player.openInventory(staminaInventory);
+    }
+
+    @EventHandler
+    public void onInventoryClose(InventoryCloseEvent event) {
+        if (!Component.text("Restore your stamina.").content().equals(event.getView().getTitle())) return;
+        Player player = (Player) event.getPlayer();
+        Inventory inventory = event.getInventory();
+        // Ensure the event is from our custom Blacksmith inventory
+
+
+
+        int staminaAdded = 0;
+
+        // Loop through inventory to find food items
+        for (ItemStack item : inventory.getContents()) {
+            if (item != null && item.getType() != Material.AIR) {
+                Material material = item.getType();
+
+                // Check if the item is in the food hunger map
+                if (foodHungerMap.containsKey(material)) {
+                    int hungerRestored = foodHungerMap.get(material);
+
+                    // Add stamina based on quantity of the item stack
+                    int stackSize = item.getAmount();
+                    staminaAdded += hungerRestored * stackSize;
+
+                    // Remove the item from inventory after conversion
+                    inventory.remove(item);
+                }
+            }
+        }
+
+        if (staminaAdded >0) {
+            UserProfile userProfile = profileManager.getProfile(player.getName());
+
+            // Get the current stamina, add the new stamina, and update it
+            int currentStamina = userProfile.getStamina();
+            int newStamina = currentStamina + staminaAdded;
+
+            // Optionally, set a max stamina limit if necessary (e.g., 100 stamina)
+            // newStamina = Math.min(newStamina, MAX_STAMINA);
+
+            userProfile.setStamina(newStamina);
+
+            // Send feedback to player
+            player.sendMessage("You converted " + staminaAdded + " stamina from your food!");
+            player.sendMessage("Your total stamina is now: " + newStamina);
+        }
+
+
+        // After processing, return invalid items to the player's inventory
+        for (ItemStack item : inventory.getContents()) {
+            if (item != null && item.getType() != Material.AIR ) {
+                // Return invalid items back to the player's inventory
+                player.getInventory().addItem(item);
+            }
+        }
+
+        inventory.clear();
+    }
 }
