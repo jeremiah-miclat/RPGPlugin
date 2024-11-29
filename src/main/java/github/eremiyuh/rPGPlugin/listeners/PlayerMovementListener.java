@@ -35,7 +35,7 @@ public class PlayerMovementListener implements Listener {
         Player player = event.getPlayer();
         if (isNotLoggedIn(player)) {
             event.setCancelled(true);
-            player.sendMessage("You must log in first using /login <password>.");
+
         }
     }
 
@@ -44,7 +44,7 @@ public class PlayerMovementListener implements Listener {
         Player player = event.getPlayer();
         if (isNotLoggedIn(player)) {
             event.setCancelled(true);
-            player.sendMessage("You must log in first using /login <password>.");
+
         }
     }
 
@@ -53,7 +53,7 @@ public class PlayerMovementListener implements Listener {
         Player player = (Player) event.getWhoClicked();
         if (isNotLoggedIn(player)) {
             event.setCancelled(true);
-            player.sendMessage("You must log in first to interact with your inventory.");
+
         }
     }
 
@@ -62,7 +62,7 @@ public class PlayerMovementListener implements Listener {
         Player player = event.getPlayer();
         if (isNotLoggedIn(player)) {
             event.setCancelled(true);
-            player.sendMessage("You must log in first to drop items.");
+
         }
     }
 
@@ -71,7 +71,7 @@ public class PlayerMovementListener implements Listener {
         Player player = event.getPlayer();
         if (isNotLoggedIn(player)) {
             event.setCancelled(true);
-            player.sendMessage("You must log in first to place blocks.");
+
         }
     }
 
@@ -80,7 +80,7 @@ public class PlayerMovementListener implements Listener {
         Player player = event.getPlayer();
         if (isNotLoggedIn(player)) {
             event.setCancelled(true);
-            player.sendMessage("You must log in first to break blocks.");
+
         }
     }
 
@@ -89,7 +89,7 @@ public class PlayerMovementListener implements Listener {
         Player player = event.getPlayer();
         if (isNotLoggedIn(player)) {
             event.setCancelled(true);
-            player.sendMessage("You must log in first to chat.");
+
         }
     }
 
@@ -98,7 +98,7 @@ public class PlayerMovementListener implements Listener {
         Player player = event.getPlayer();
         if (isNotLoggedIn(player)) {
             event.setCancelled(true);
-            player.sendMessage("You must log in first to swap items.");
+
         }
     }
 
@@ -116,7 +116,6 @@ public class PlayerMovementListener implements Listener {
             // If the command is not /login or /register, cancel it
             if (!command.startsWith("/login") && !command.startsWith("/register")) {
                 event.setCancelled(true);
-                player.sendMessage("§cYou must log in first! Use /login <password> or /register <password> <password>.");
             }
         }
     }

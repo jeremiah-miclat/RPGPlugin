@@ -13,17 +13,11 @@ import github.eremiyuh.rPGPlugin.methods.DamageAbilityManager;
 import github.eremiyuh.rPGPlugin.methods.EffectsAbilityManager;
 import org.bukkit.*;
 import org.bukkit.block.Biome;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.SpawnCategory;
+import org.bukkit.entity.*;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.UUID;
@@ -41,6 +35,7 @@ public class RPGPlugin extends JavaPlugin {
     private VaultManager vaultManager;
     private ShopsManager shopsManager;
     private ShopTpSaveManager shopTpSaveManager;
+
 
 
     private final String WORLD_NAME = "world_resource";
@@ -242,9 +237,9 @@ public class RPGPlugin extends JavaPlugin {
     private void loadResources() {
         // Load your data, initialize managers, etc.
         // Initialize the profile manager
-        deleteWorld("resource_normal");
-        deleteWorld("resource_nether");
-        deleteWorld("resource_end");
+//        deleteWorld("resource_normal");
+//        deleteWorld("resource_nether");
+//        deleteWorld("resource_end");
         profileManager = new PlayerProfileManager(this);
         shopsManager = new ShopsManager(this);
         shopsManager.loadAllShops();
@@ -379,12 +374,11 @@ public class RPGPlugin extends JavaPlugin {
 
         Objects.requireNonNull(getCommand("junkshop")).setExecutor(new JunkShopCommand(profileManager));
         getServer().getPluginManager().registerEvents(new JunkShopCommand(profileManager), this);
-
-
-
-        createResourceWorld("resource_normal", World.Environment.NORMAL);
-        createResourceWorld("resource_nether", World.Environment.NETHER);
-        createResourceWorld("resource_end", World.Environment.THE_END);
+        despawnAbyssMobsTask();
+//
+//        createResourceWorld("resource_normal", World.Environment.NORMAL);
+//        createResourceWorld("resource_nether", World.Environment.NETHER);
+//        createResourceWorld("resource_end", World.Environment.THE_END);
 
     }
 
@@ -444,6 +438,48 @@ public class RPGPlugin extends JavaPlugin {
             }
         }
         folder.delete();
+    }
+
+    public void despawnAbyssMobsTask() {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                // Get worlds named "rpg" and "labyrinth"
+                World rpgWorld = getServer().getWorld("world_rpg");
+                World labyrinthWorld = getServer().getWorld("world_labyrinth");
+
+                // Check if the worlds are loaded
+                if (rpgWorld != null) {
+                    // Loop through all living entities in the "rpg" world
+                    for (Entity entity : rpgWorld.getLivingEntities()) {
+                        if (entity instanceof LivingEntity && !(entity instanceof Player)) {
+                            LivingEntity livingEntity = (LivingEntity) entity;
+
+                            // Check if the entity has the "extraHealth" metadata
+                            if (!livingEntity.hasMetadata("extraHealth")) {
+                                // If not, remove or despawn the entity
+                                livingEntity.remove();
+                            }
+                        }
+                    }
+                }
+
+                if (labyrinthWorld != null) {
+
+                    for (Entity entity : labyrinthWorld.getLivingEntities()) {
+                        if (entity instanceof LivingEntity) {
+                            LivingEntity livingEntity = (LivingEntity) entity;
+
+
+                            if (!livingEntity.hasMetadata("extraHealth")) {
+
+                                livingEntity.remove();
+                            }
+                        }
+                    }
+                }
+            }
+        }.runTaskLater(this, 1200L);
     }
 
 

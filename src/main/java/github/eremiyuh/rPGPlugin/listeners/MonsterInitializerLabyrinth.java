@@ -59,14 +59,18 @@ public class MonsterInitializerLabyrinth implements Listener {
             }
         }
 
-        // Get the number of online players
-        int onlinePlayerCount = Bukkit.getOnlinePlayers().size();
+        // Count the number of players in world_rpg
+        int playersInRPGWorld = (int) Bukkit.getOnlinePlayers().stream()
+                .filter(player -> player.getWorld().getName().equals("world_rpg"))
+                .count();
+
+        // Calculate the spawn limit based on players in world_rpg
+        int mobLimit = Math.min(playersInRPGWorld * 6, 60);
 
         // Count the number of mobs already in the world
         int currentMobCount = countMobsInWorld(event.getLocation().getWorld());
 
-        // Check mob spawn limit based on online players
-        int mobLimit = Math.min(onlinePlayerCount * 10, 60);
+        // Cancel the spawn if the cached mob count exceeds the limit
         if (currentMobCount >= mobLimit) {
             event.getEntity().setAI(false);
             event.setCancelled(true);

@@ -53,14 +53,14 @@ public class TabListCustomizer {
         onlinePlayers.sort((player1, player2) -> player1.getName().compareToIgnoreCase(player2.getName()));
 
         // Set header and footer dynamically (set once for all players)
-        TextComponent header = Component.newline().append(Component.text("                                   §lSEIZON SMP                           ")
+        TextComponent header = Component.newline().append(Component.text("                                §eSEIZON SMP                                ")
                         .color(TextColor.fromCSSHexString("#53ff1a")).append(Component.newline())).append(Component.newline()).append(Component.text("Online Players: " + onlinePlayersCount).color(TextColor.fromCSSHexString("#00ff55")))
                 .append(Component.newline());
         TextComponent footer =
                 Component.newline().append(Component.newline())
                         .append(Component.text(String.format("Memory Usage: %d MB / %d MB", usedMemory, maxMemory))
                                 .color(memoryColor)).append(Component.newline()).append(Component.newline())
-                        .append(Component.text("                                §oDiscord: discord.gg/tNJrWP4E5W                           ")
+                        .append(Component.text("                                §eDiscord: discord.gg/tNJrWP4E5W                           ")
                                 .color(TextColor.fromCSSHexString("#53ff1a"))).decorate(TextDecoration.ITALIC)
                         .clickEvent(ClickEvent.openUrl("https://discord.gg/tNJrWP4E5W"))
                         .hoverEvent(HoverEvent.showText(Component.text("Click to join our Discord!")))

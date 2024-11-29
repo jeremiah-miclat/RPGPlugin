@@ -6,10 +6,7 @@ import github.eremiyuh.rPGPlugin.manager.PlayerProfileManager;
 import github.eremiyuh.rPGPlugin.profile.UserProfile;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -39,29 +36,55 @@ public class PlayerJoinListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         String playerName = player.getName();
+
+
+        if (profileManager.getProfile(playerName).getPassword().isEmpty()) {
+            World world = Bukkit.getWorld("world");
+            assert world != null;
+            Location spawnLocation = world.getSpawnLocation();
+            player.teleport(world.getSpawnLocation());
+
+            // If the player is not logged in, trigger the blackout effect
+            if (!profileManager.getProfile(playerName).isLoggedIn()) {
+                // Make the player's screen black with a message
+                player.sendTitle("§0§l§k⚜§r§6§lWelcome Adventurer!", "§7Use /register <password> <password> to start your adventure", 10, 200, 20);
+
+                player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§c§lHeed the Call: Register to Enter!"));
+
+            }
+            player.sendMessage("§6[§eSeizonSMP§6] §7Welcome, adventurer! Your profile hath been forged.");
+            player.sendMessage("§6[§eSeizonSMP§6] §7Enter the command §e/register <password> <password>§7 to inscribe your credentials.");
+            player.sendMessage("§6[§eSeizonSMP§6] §7Then enter the realm by using §e/login <password>§7.");
+
+            event.setJoinMessage(ChatColor.GOLD + "⚜ Hail, " + ChatColor.AQUA + player.getName() + ChatColor.GOLD +
+                    "! Welcome to the realm for the very first time!");
+
+            return;
+        }
+
         UserProfile profile = profileManager.getProfile(playerName);
-
-
+        player.sendMessage("§6[§eSeizonSMP§6] §7Welcome back adventurer! Your profile has been loaded.");
 
         if (player.getWorld().getName().contains("resource")) {
             if (player.getLocation().getBlock().getType() != Material.LAVA
                     && player.getLocation().clone().add(0, 1, 0).getBlock().getType() == Material.AIR
                     && player.getLocation().clone().add(0, 2, 0).getBlock().getType() == Material.AIR
-            ) {return;}
-
+            ) {
+                return;
+            }
 
             World world = Bukkit.getWorld("world");
             assert world != null;
             Location spawnLocation = world.getSpawnLocation();
             player.teleport(spawnLocation);
+            playerStatBuff.updatePlayerStatsToNormal(player);
+            return;
         }
-
-
 
         Location playerLocation = player.getLocation();
         Material blockType = playerLocation.clone().subtract(0, 1, 0).getBlock().getType(); // Check the block below the player
 
-        // Check if the player is in the air or standing on a non-solid block
+// Check if the player is in the air or standing on a non-solid block
         if (blockType == Material.AIR || !isSolidBlock(blockType)) {
             Location groundLocation = getGroundLocation(playerLocation, player);
             player.teleport(groundLocation);
@@ -70,66 +93,19 @@ public class PlayerJoinListener implements Listener {
         playerStatBuff.updatePlayerStatsToNormal(player);
 
         if (Objects.requireNonNull(player.getLocation().getWorld()).getName().equals("world_rpg") ||
-                player.getLocation().getWorld().getName().contains("labyrinth") ) {
+                player.getLocation().getWorld().getName().contains("labyrinth")) {
             playerStatBuff.updatePlayerStatsToRPG(player);
         }
 
-        // If no profile was found, create a new one
-        if (profile == null) {
-            World world = Bukkit.getWorld("world");
-            assert world != null;
-            Location spawnLocation = world.getSpawnLocation();
-            player.teleport(world.getSpawnLocation());
-            profileManager.createProfile(playerName);
-            // If the player is not logged in, trigger the blackout effect
-            if (!profileManager.getProfile(playerName).isLoggedIn() && !player.isOp()) {
-                // Make the player's screen black with a message
-                player.sendTitle("§0§lYou must log in", "§7Please use /login <password> or register using /register <password> <password>", 10, 70, 20); // Title + Subtitle
-
-                player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§cYou must log in first"));
-                event.setJoinMessage(""); // Optional: Hide the join message for non-logged-in players
-            }
-            player.sendMessage("Welcome! Your profile has been created.");
-        } else {
-            // If profile exists, just load it (it should already be loaded)
-            player.sendMessage("Welcome back! Your profile has been loaded.");
-
-
-            if (Objects.requireNonNull(player.getLocation().getWorld()).getName().equals("world_rpg") || Objects.requireNonNull(player.getLocation().getWorld()).getName().equals("world_labyrinth")) {
-                playerStatBuff.updatePlayerStatsToRPG(player);
-
-            }
-
-            // Apply race-specific effects based on the player's race
-//            String race = profile.getSelectedRace();
-//            switch (race) {
-//                case "vampire":
-//                    VampireBuffs.applyVampireSpeedBoost(player, true); // Apply speed boost to vampires
-//                    player.sendMessage("You are a vampire! Speed boost has been applied.");
-//                    break;
-//                case "human":
-//                case "elf":
-//                case "orc":
-//                case "dwarf":
-//                case "angel":
-//                case "demon":
-//                case "darkelf":
-//                    VampireBuffs.applyVampireSpeedBoost(player, false); // Reset to normal speed
-//                    break;
-//                default:
-//                    player.sendMessage("No race effects applied.");
-//                    break;
-//            }
-
-            if (!profileManager.getProfile(playerName).isLoggedIn()&& !player.isOp()) {
-                // Make the player's screen black with a message
-                player.sendTitle("§7lYou must log in!", "§7Please use /login <password>", 10, 70, 20); // Title + Subtitle
-
-                // Apply an ActionBar message to prompt login as well
-                player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§7You must log in first!"));
-
-            }
+        if (!profileManager.getProfile(playerName).isLoggedIn()) {
+            player.sendMessage("§6[§eSeizonSMP§6] §cLog in to continue your quest.");
+            player.sendTitle("§0§l§k⚜§r§6§lWelcome Back!", "§7Use /login <password> to continue your journey.", 10, 100, 20);
+            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§7Use /login <password> to proceed."));
         }
+
+        event.setJoinMessage(ChatColor.DARK_GREEN + "⚔ Welcome back, " + ChatColor.AQUA + player.getName() +
+                ChatColor.DARK_GREEN + ", please raid the abyss!");
+
     }
 
     @EventHandler

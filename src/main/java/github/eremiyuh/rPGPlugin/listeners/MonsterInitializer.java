@@ -7,7 +7,6 @@ import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -18,9 +17,15 @@ public class MonsterInitializer implements Listener {
     private final RPGPlugin plugin;
     private final Random random = new Random();
 
+
+
+
     public MonsterInitializer(RPGPlugin plugin) {
         this.plugin = plugin;
     }
+
+
+
 
     @EventHandler
     public void onCreatureSpawn(CreatureSpawnEvent event) {
@@ -30,19 +35,20 @@ public class MonsterInitializer implements Listener {
             return;
         }
 
-        // Get the number of online players
-        int onlinePlayerCount = Bukkit.getOnlinePlayers().size();
+        // Count the number of players in world_rpg
+        int playersInRPGWorld = (int) Bukkit.getOnlinePlayers().stream()
+                .filter(player -> player.getWorld().getName().equals("world_rpg"))
+                .count();
 
-        // Calculate the spawn limit based on online players
-        int mobLimit = Math.min(onlinePlayerCount * 6, 60);
+        // Calculate the spawn limit based on players in world_rpg
+        int mobLimit = Math.min(playersInRPGWorld * 6, 60);
 
         // Count the number of mobs already in the world
         int currentMobCount = countMobsInWorld(event.getLocation().getWorld());
 
-        // If the number of mobs exceeds the limit, cancel the spawn
+        // Cancel the spawn if the mob limit is reached
         if (currentMobCount >= mobLimit) {
             event.setCancelled(true);
-            return;
         }
 
         if (!isPlayerOnSameYLevel(event.getLocation())) {
