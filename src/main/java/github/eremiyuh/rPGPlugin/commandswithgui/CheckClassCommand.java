@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
@@ -202,14 +203,60 @@ public class CheckClassCommand implements CommandExecutor, Listener {
 
             if (meta != null) {
                 meta.setDisplayName("§a" + attributeName);
-                meta.setLore(Arrays.asList(
-                        "§7Current value: §f" + value,
-                        "§7Click to add points.",
-                        "§7Remaining Points: §f" + profile.getCurrentAttributePoints()
-                ));
+
+                // Initialize lore
+                List<String> lore = new ArrayList<>();
+                lore.add("§7Current value: §f" + value);
+                lore.add("§7Click to add points.");
+                lore.add("§7Remaining Points: §f" + profile.getCurrentAttributePoints());
+
+                // Add specific lore for items
+                if (item.getType() == Material.IRON_SWORD) {
+                    lore.add("Increases damage for melee attacks.");
+                    lore.add("Recommended for Swordsman using skills 2 and 3.");
+                    lore.add("NOT recommended for swordsman using skill 1");
+                }
+
+                if (item.getType() == Material.FEATHER) {
+                    lore.add("Increases movespeed.");
+                    lore.add("To achieve max ms, your total Agility(class stat + equip stat) must reach 8,000.");
+                }
+
+
+                if (item.getType() == Material.BOW) {
+                    lore.add("Increases Bow/Crossbow damage.");
+                    lore.add("Main stat of archers to increase their damage.");
+                    lore.add("Bowmasters can choose this for crit.");
+                    lore.add("Slightly increases crit chance and damage of archers");
+                }
+
+                if (item.getType() == Material.BOOK) {
+                    lore.add("Alchemist main stat.");
+                    lore.add("Skill 1 users damage stat.");
+                    lore.add("Boost alchemist potion effects/heal/damage.");
+                }
+
+                if (item.getType() == Material.GOLDEN_APPLE) {
+                    lore.add("Increases HP.");
+                    lore.add("1 HP per point.");
+                    lore.add("Enter /healscale to rescale health to always show 10 hearts");
+                }
+
+                if (item.getType() == Material.NETHER_STAR) {
+                    lore.add("Main stat for increasing crit chance.");
+                    lore.add("4000 to 5000 to reach 100%.");
+                    lore.add("Check discord for allocation recommendation per class");
+                }
+
+                // Apply lore and other settings
+                meta.setLore(lore);
+                meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES); // Optional: hide default tooltip
                 item.setItemMeta(meta);
+
+                // Add item to GUI
                 gui.setItem(slots[i], item);
             }
+
         }
     }
 
@@ -272,7 +319,7 @@ public class CheckClassCommand implements CommandExecutor, Listener {
                         case "agility":
                             profile.addAttributePoints("agi", 1);
                             player.sendMessage("You added a point to Agility!");
-                            player.sendMessage("Your ms now is: " + player.getWalkSpeed());
+
                             break;
                         case "dexterity":
                             profile.addAttributePoints("dex", 1);
@@ -291,7 +338,6 @@ public class CheckClassCommand implements CommandExecutor, Listener {
                             player.sendMessage("You added a point to Luck!");
                             break;
                         default:
-                            player.sendMessage("Invalid attribute selected.");
                             break;
                     }
 

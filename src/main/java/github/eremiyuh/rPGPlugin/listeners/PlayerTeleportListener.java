@@ -3,8 +3,10 @@ package github.eremiyuh.rPGPlugin.listeners;
 import github.eremiyuh.rPGPlugin.RPGPlugin;
 import github.eremiyuh.rPGPlugin.buffs.PlayerStatBuff;
 import github.eremiyuh.rPGPlugin.commands.FlyCommand;
+import io.papermc.paper.event.entity.EntityPortalReadyEvent;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityPortalEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.entity.Player;
 
@@ -35,5 +37,23 @@ public class PlayerTeleportListener implements Listener {
 
 
 
+    }
+
+    @EventHandler
+    public void onPortalEvent(EntityPortalEvent event) {
+        if (!event.getEntity().getWorld().getName().contains("resource")) return;
+        event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onPlayerPortalEvent(EntityPortalEvent event) {
+        if (!event.getEntity().getWorld().getName().contains("resource")) return;
+        event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onPortalPlayerEvent(EntityPortalReadyEvent event) {
+        if (!event.getEntity().getWorld().getName().contains("resource")) return;
+        event.setCancelled(true);
     }
 }

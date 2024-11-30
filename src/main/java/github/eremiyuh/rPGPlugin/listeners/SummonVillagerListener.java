@@ -27,7 +27,7 @@ public class SummonVillagerListener implements Listener {
     public void onVillagerSpawn(CreatureSpawnEvent event) {
         if (event.getEntityType() == EntityType.VILLAGER) {
             Villager villager = (Villager) event.getEntity();
-
+            villager.setCustomNameVisible(true);
             // Check if the villager was spawned using a spawn egg with a custom name "Armorer"
             if (villager.customName() != null && Objects.equals(villager.customName(), Component.text("Armorer"))) {
                 setupArmorerVillager(villager);
@@ -185,14 +185,6 @@ public class SummonVillagerListener implements Listener {
         trades.add(createTrade(Material.PAPER, 16, Material.EMERALD, 1));
         trades.add(createTrade(Material.EMERALD, 5, Material.MAP, 1));
         trades.add(createTrade(Material.GLASS_PANE, 8, Material.EMERALD, 1));
-        trades.add(createTrade(Material.EMERALD, 1, Material.RABBIT_STEW, 2));
-        trades.add(createTrade(Material.COAL, 10, Material.EMERALD, 1));
-        trades.add(createTrade(Material.EMERALD, 1, Material.COOKED_CHICKEN, 10));
-        trades.add(createTrade(Material.EMERALD, 1, Material.COOKED_PORKCHOP, 8));
-        trades.add(createTrade(Material.BEEF, 7, Material.EMERALD, 1));
-        trades.add(createTrade(Material.MUTTON, 5, Material.EMERALD, 1));
-        trades.add(createTrade(Material.DRIED_KELP_BLOCK, 6, Material.EMERALD, 1));
-        trades.add(createTrade(Material.SWEET_BERRIES, 6, Material.EMERALD, 1));
         trades.add(createTrade(Material.COMPASS, 1, Material.EMERALD, 1));
         trades.add(createTrade(Material.EMERALD, 5, Material.ITEM_FRAME, 1));
         trades.add(createTrade(Material.EMERALD, 6, Material.GLOBE_BANNER_PATTERN, 1));
@@ -212,6 +204,7 @@ public class SummonVillagerListener implements Listener {
         trades.add(createTrade(Material.EMERALD, 2, Material.YELLOW_BANNER, 1));
 
         villager.setRecipes(trades);
+
         villager.setAI(true);
     }
 
@@ -680,61 +673,61 @@ public class SummonVillagerListener implements Listener {
 
         ItemStack abyssIngot = ItemUtils.getAbyssIngot();
 
-
-        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getAgilityHelmet()));
-        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getAgilityChestplate()));
-        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getAgilityLeggings()));
-        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getAgilityBoots()));
-        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getAgilityBook()));
-        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getAgilityBow()));
-        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getAgilityCrossbow()));
-        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getAgilitySword()));
-
-
-        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getVitalityHelmet()));
-        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getVitalityChestplate()));
-        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getVitalityLeggings()));
-        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getVitalityBoots()));
-        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getVitalityBook()));
-        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getVitalityBow()));
-        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getVitalityCrossbow()));
-        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getVitalitySword()));
-
-        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getStrengthHelmet()));
-        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getStrengthChestplate()));
-        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getStrengthLeggings()));
-        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getStrengthBoots()));
-        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getStrengthBook()));
-        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getStrengthBow()));
-        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getStrengthCrossbow()));
-        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getStrengthSword()));
-
-        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getDexterityHelmet()));
-        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getDexterityChestplate()));
-        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getDexterityLeggings()));
-        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getDexterityBoots()));
-        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getDexterityBook()));
-        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getDexterityBow()));
-        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getDexterityCrossbow()));
-        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getDexteritySword()));
-
-        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getLuckHelmet()));
-        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getLuckChestplate()));
-        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getLuckLeggings()));
-        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getLuckBoots()));
-        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getLuckBook()));
-        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getLuckBow()));
-        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getLuckCrossbow()));
-        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getLuckSword()));
-
-        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getIntelligenceHelmet()));
-        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getIntelligenceChestplate()));
-        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getIntelligenceLeggings()));
-        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getIntelligenceBoots()));
-        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getIntelligenceBook()));
-        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getIntelligenceBow()));
-        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getIntelligenceCrossbow()));
-        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getIntelligenceSword()));
+//
+//        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getAgilityHelmet()));
+//        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getAgilityChestplate()));
+//        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getAgilityLeggings()));
+//        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getAgilityBoots()));
+//        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getAgilityBook()));
+//        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getAgilityBow()));
+//        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getAgilityCrossbow()));
+//        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getAgilitySword()));
+//
+//
+//        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getVitalityHelmet()));
+//        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getVitalityChestplate()));
+//        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getVitalityLeggings()));
+//        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getVitalityBoots()));
+//        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getVitalityBook()));
+//        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getVitalityBow()));
+//        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getVitalityCrossbow()));
+//        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getVitalitySword()));
+//
+//        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getStrengthHelmet()));
+//        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getStrengthChestplate()));
+//        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getStrengthLeggings()));
+//        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getStrengthBoots()));
+//        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getStrengthBook()));
+//        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getStrengthBow()));
+//        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getStrengthCrossbow()));
+//        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getStrengthSword()));
+//
+//        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getDexterityHelmet()));
+//        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getDexterityChestplate()));
+//        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getDexterityLeggings()));
+//        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getDexterityBoots()));
+//        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getDexterityBook()));
+//        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getDexterityBow()));
+//        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getDexterityCrossbow()));
+//        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getDexteritySword()));
+//
+//        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getLuckHelmet()));
+//        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getLuckChestplate()));
+//        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getLuckLeggings()));
+//        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getLuckBoots()));
+//        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getLuckBook()));
+//        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getLuckBow()));
+//        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getLuckCrossbow()));
+//        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getLuckSword()));
+//
+//        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getIntelligenceHelmet()));
+//        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getIntelligenceChestplate()));
+//        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getIntelligenceLeggings()));
+//        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getIntelligenceBoots()));
+//        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getIntelligenceBook()));
+//        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getIntelligenceBow()));
+//        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getIntelligenceCrossbow()));
+//        trades.add(createCustomEquipTrade(abyssIngot, ItemUtils.getIntelligenceSword()));
 
         // NETHERITES
 
@@ -791,12 +784,6 @@ public class SummonVillagerListener implements Listener {
         trades.add(createCustomEquipTradeFor5(abyssIngot, ItemUtils.getAgilityBow5()));
         trades.add(createCustomEquipTradeFor5(abyssIngot, ItemUtils.getAgilityCrossbow5()));
         trades.add(createCustomEquipTradeFor5(abyssIngot, ItemUtils.getAgilitySword5()));
-
-
-
-
-
-
 
         return trades;
     }

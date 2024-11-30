@@ -48,7 +48,7 @@ public class RPGPlugin extends JavaPlugin {
         loadResources();
 
         // Add a delay (e.g., 5 seconds) before allowing logins
-        getServer().getScheduler().runTaskLater(this, () -> serverLoaded = true, 1200); // 100 ticks = 5 seconds
+        getServer().getScheduler().runTaskLater(this, () -> serverLoaded = true, 600); // 100 ticks = 5 seconds
 
     }
 

@@ -2,10 +2,7 @@ package github.eremiyuh.rPGPlugin.listeners;
 
 import github.eremiyuh.rPGPlugin.RPGPlugin;
 import io.papermc.paper.event.player.PlayerTradeEvent;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -22,6 +19,8 @@ import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerUnleashEntityEvent;
+import org.bukkit.event.raid.RaidEvent;
+import org.bukkit.event.raid.RaidTriggerEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Merchant;
 import org.bukkit.inventory.MerchantRecipe;
@@ -113,6 +112,15 @@ public class AreaProtectionListener implements Listener {
 
     }
 
+
+    @EventHandler
+    public void raidEvent(RaidTriggerEvent event) {
+        Player player = event.getPlayer();
+        if (isInProtectedArea(player.getLocation().getBlockX(), player.getLocation().getBlockZ())) {
+            player.sendMessage(ChatColor.RED +"...");
+            event.setCancelled(true);
+        }
+    }
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {

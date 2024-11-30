@@ -65,21 +65,6 @@ public class PlayerJoinListener implements Listener {
         UserProfile profile = profileManager.getProfile(playerName);
         player.sendMessage("§6[§eSeizonSMP§6] §7Welcome back adventurer! Your profile has been loaded.");
 
-        if (player.getWorld().getName().contains("resource")) {
-            if (player.getLocation().getBlock().getType() != Material.LAVA
-                    && player.getLocation().clone().add(0, 1, 0).getBlock().getType() == Material.AIR
-                    && player.getLocation().clone().add(0, 2, 0).getBlock().getType() == Material.AIR
-            ) {
-                return;
-            }
-
-            World world = Bukkit.getWorld("world");
-            assert world != null;
-            Location spawnLocation = world.getSpawnLocation();
-            player.teleport(spawnLocation);
-            playerStatBuff.updatePlayerStatsToNormal(player);
-            return;
-        }
 
         Location playerLocation = player.getLocation();
         Material blockType = playerLocation.clone().subtract(0, 1, 0).getBlock().getType(); // Check the block below the player
@@ -97,11 +82,12 @@ public class PlayerJoinListener implements Listener {
             playerStatBuff.updatePlayerStatsToRPG(player);
         }
 
-        if (!profileManager.getProfile(playerName).isLoggedIn()) {
-            player.sendMessage("§6[§eSeizonSMP§6] §cLog in to continue your quest.");
-            player.sendTitle("§0§l§k⚜§r§6§lWelcome Back!", "§7Use /login <password> to continue your journey.", 10, 100, 20);
-            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§7Use /login <password> to proceed."));
-        }
+        profile.setLoggedIn(false);
+
+        player.sendMessage("§6[§eSeizonSMP§6] §cLog in to continue your quest.");
+        player.sendTitle("§0§l§k⚜§r§6§lWelcome Back!", "§7Use /login <password> to continue your journey.", 10, 100, 20);
+        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§7Use /login <password> to proceed."));
+
 
         event.setJoinMessage(ChatColor.DARK_GREEN + "⚔ Welcome back, " + ChatColor.AQUA + player.getName() +
                 ChatColor.DARK_GREEN + ", please raid the abyss!");

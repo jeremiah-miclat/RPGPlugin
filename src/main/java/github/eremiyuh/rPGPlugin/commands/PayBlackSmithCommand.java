@@ -37,35 +37,35 @@ public class PayBlackSmithCommand implements CommandExecutor, Listener {
         durabilityMap.put(Material.DIAMOND, 1000);
         // Equipment: Chainmail and Iron (Armor: 300, Weapons: 500)
         durabilityMap.put(Material.CHAINMAIL_HELMET, 300);
-        durabilityMap.put(Material.CHAINMAIL_CHESTPLATE, 500);
+        durabilityMap.put(Material.CHAINMAIL_CHESTPLATE, 400);
         durabilityMap.put(Material.CHAINMAIL_LEGGINGS, 300);
         durabilityMap.put(Material.CHAINMAIL_BOOTS, 300);
         durabilityMap.put(Material.IRON_HELMET, 300);
-        durabilityMap.put(Material.IRON_CHESTPLATE, 500);
+        durabilityMap.put(Material.IRON_CHESTPLATE, 400);
         durabilityMap.put(Material.IRON_LEGGINGS, 300);
         durabilityMap.put(Material.IRON_BOOTS, 300);
-        durabilityMap.put(Material.IRON_SWORD, 500);
+        durabilityMap.put(Material.IRON_SWORD, 400);
 
         // Gold (Armor: 600, Weapons: 1200)
         durabilityMap.put(Material.GOLDEN_HELMET, 600);
-        durabilityMap.put(Material.GOLDEN_CHESTPLATE, 1200);
+        durabilityMap.put(Material.GOLDEN_CHESTPLATE, 1000);
         durabilityMap.put(Material.GOLDEN_LEGGINGS, 600);
         durabilityMap.put(Material.GOLDEN_BOOTS, 600);
-        durabilityMap.put(Material.GOLDEN_SWORD, 1200);
+        durabilityMap.put(Material.GOLDEN_SWORD, 1000);
 
         // Diamond (Armor: 3000, Weapons: 5000)
-        durabilityMap.put(Material.DIAMOND_HELMET, 3000);
-        durabilityMap.put(Material.DIAMOND_CHESTPLATE, 5000);
-        durabilityMap.put(Material.DIAMOND_LEGGINGS, 3000);
-        durabilityMap.put(Material.DIAMOND_BOOTS, 3000);
-        durabilityMap.put(Material.DIAMOND_SWORD, 5000);
+        durabilityMap.put(Material.DIAMOND_HELMET, 1500);
+        durabilityMap.put(Material.DIAMOND_CHESTPLATE, 1500);
+        durabilityMap.put(Material.DIAMOND_LEGGINGS, 1500);
+        durabilityMap.put(Material.DIAMOND_BOOTS, 1500);
+        durabilityMap.put(Material.DIAMOND_SWORD, 2000);
 
         // Netherite (Armor: 15000, Weapons: 25000)
-        durabilityMap.put(Material.NETHERITE_HELMET, 15000);
-        durabilityMap.put(Material.NETHERITE_CHESTPLATE, 25000);
-        durabilityMap.put(Material.NETHERITE_LEGGINGS, 15000);
-        durabilityMap.put(Material.NETHERITE_BOOTS, 15000);
-        durabilityMap.put(Material.NETHERITE_SWORD, 25000);
+        durabilityMap.put(Material.NETHERITE_HELMET, 6000);
+        durabilityMap.put(Material.NETHERITE_CHESTPLATE, 6000);
+        durabilityMap.put(Material.NETHERITE_LEGGINGS, 6000);
+        durabilityMap.put(Material.NETHERITE_BOOTS, 6000);
+        durabilityMap.put(Material.NETHERITE_SWORD, 7000);
 
         // Bows and Crossbows
         durabilityMap.put(Material.BOW, 10);
@@ -94,23 +94,23 @@ public class PayBlackSmithCommand implements CommandExecutor, Listener {
         durabilityMap.put(Material.GOLDEN_SHOVEL, 400);
         durabilityMap.put(Material.GOLDEN_HOE, 400);
 
-        durabilityMap.put(Material.DIAMOND_PICKAXE, 1200);
-        durabilityMap.put(Material.DIAMOND_AXE, 1200);
-        durabilityMap.put(Material.DIAMOND_SHOVEL, 1200);
-        durabilityMap.put(Material.DIAMOND_HOE, 1200);
+        durabilityMap.put(Material.DIAMOND_PICKAXE, 1000);
+        durabilityMap.put(Material.DIAMOND_AXE, 1000);
+        durabilityMap.put(Material.DIAMOND_SHOVEL, 1000);
+        durabilityMap.put(Material.DIAMOND_HOE, 1000);
 
-        durabilityMap.put(Material.NETHERITE_PICKAXE, 30000);
-        durabilityMap.put(Material.NETHERITE_AXE, 30000);
-        durabilityMap.put(Material.NETHERITE_SHOVEL, 30000);
-        durabilityMap.put(Material.NETHERITE_HOE, 30000);
+        durabilityMap.put(Material.NETHERITE_PICKAXE, 6000);
+        durabilityMap.put(Material.NETHERITE_AXE, 6000);
+        durabilityMap.put(Material.NETHERITE_SHOVEL, 6000);
+        durabilityMap.put(Material.NETHERITE_HOE, 6000);
 
         durabilityMap.put(Material.FISHING_ROD, 150);
 
-        durabilityMap.put(Material.IRON_HORSE_ARMOR, 1000);
-        durabilityMap.put(Material.GOLDEN_HORSE_ARMOR, 1500);
-        durabilityMap.put(Material.DIAMOND_HORSE_ARMOR, 3000);
+        durabilityMap.put(Material.IRON_HORSE_ARMOR, 5000);
+        durabilityMap.put(Material.GOLDEN_HORSE_ARMOR, 10000);
+        durabilityMap.put(Material.DIAMOND_HORSE_ARMOR, 20000);
 
-        durabilityMap.put(Material.SADDLE, 500);
+        durabilityMap.put(Material.SADDLE, 3000);
 
         durabilityMap.put(Material.ELYTRA, 100000);
         durabilityMap.put(Material.TURTLE_HELMET, 1000);
@@ -118,7 +118,20 @@ public class PayBlackSmithCommand implements CommandExecutor, Listener {
         durabilityMap.put(Material.STONE, 1);
         durabilityMap.put(Material.STICK, 1);
         durabilityMap.put(Material.STRING, 1);
-
+        durabilityMap.put(Material.FLINT, 10);
+        durabilityMap.put(Material.FLINT_AND_STEEL, 100);
+        durabilityMap.put(Material.COAL, 50);
+        durabilityMap.put(Material.CHARCOAL, 50);
+        durabilityMap.put(Material.BLAZE_ROD, 900);
+        durabilityMap.put(Material.BLAZE_POWDER, 300);
+        durabilityMap.put(Material.REDSTONE, 100);
+        durabilityMap.put(Material.REDSTONE_BLOCK, 900);
+        durabilityMap.put(Material.MINECART, 300);
+        durabilityMap.put(Material.HOPPER_MINECART, 500);
+        durabilityMap.put(Material.CHEST, 100);
+        durabilityMap.put(Material.HEART_OF_THE_SEA, 100000);
+        durabilityMap.put(Material.WITHER_SKELETON_SKULL, 100000);
+        durabilityMap.put(Material.NETHER_STAR, 1000000);
 
     }
 

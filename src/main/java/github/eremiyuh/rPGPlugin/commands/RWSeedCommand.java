@@ -35,7 +35,7 @@ public class RWSeedCommand implements TabExecutor {
         );
 
         // Message header
-        player.sendMessage(Component.text("=== Resource World Seeds ===")
+        player.sendMessage(Component.text("=== Resource World Seeds Today ===")
                 .color(NamedTextColor.GOLD)
                 .decorate(TextDecoration.BOLD));
 
