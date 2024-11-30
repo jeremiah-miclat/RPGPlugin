@@ -290,9 +290,9 @@ public class RPGPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new VaultCloseListener(vaultManager), this);
         getServer().getPluginManager().registerEvents(new PayBlackSmithCommand(profileManager), this);
         getServer().getPluginManager().registerEvents(new ConvertFoodCommand(profileManager), this);
-
+        getServer().getPluginManager().registerEvents(new SelectElement(profileManager), this);
         // Register the command executor
-        Objects.requireNonNull(this.getCommand("checkstatus")).setExecutor(new CheckClassCommand(profileManager));
+        Objects.requireNonNull(this.getCommand("status")).setExecutor(new CheckClassCommand(profileManager));
         Objects.requireNonNull(getCommand("convertabysspoints")).setExecutor(new ConvertLevelsCommand(profileManager));
         Objects.requireNonNull(getCommand("selectelement")).setExecutor(new SelectElement(profileManager));
         Objects.requireNonNull(getCommand("selectskill")).setExecutor(new SkillsGui(this,profileManager));

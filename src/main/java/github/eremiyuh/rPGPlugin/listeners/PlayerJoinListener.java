@@ -85,6 +85,7 @@ public class PlayerJoinListener implements Listener {
         profile.setLoggedIn(false);
 
         player.sendMessage("§6[§eSeizonSMP§6] §cLog in to continue your quest.");
+        player.sendMessage("§6[§eSeizonSMP§6] §cEnter /login <your password>");
         player.sendTitle("§0§l§k⚜§r§6§lWelcome Back!", "§7Use /login <password> to continue your journey.", 10, 100, 20);
         player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§7Use /login <password> to proceed."));
 

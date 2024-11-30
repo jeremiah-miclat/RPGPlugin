@@ -53,6 +53,12 @@ public class DamageListener implements Listener {
         if (!event.getPlayer().getWorld().getName().contains("rpg") && !event.getPlayer().getWorld().getName().contains("labyrinth")) {
             return;
         }
+
+        if (event.getItem().getType() == Material.SHIELD) {
+            UserProfile profile = profileManager.getProfile(event.getPlayer().getName());
+            profile.setDurability(Math.max(0,profile.getDurability()-1));
+        }
+
         event.setCancelled(true);
     }
 

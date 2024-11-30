@@ -50,18 +50,18 @@ public class PlayerDeathListener implements Listener {
                 || player.getLocation().getWorld().getName().contains("labyrinth")
         ) {
             int durability = profile.getDurability();
-            int newDurability = (int) Math.floor(durability * 0.90);
+            int newDurability = (int) Math.floor(durability * 0.99);
             profile.setDurability(newDurability < 1 ? 0 : newDurability);
 
             int stamina = profile.getStamina();
-            int newStamina = (int) Math.floor(stamina * 0.90);
+            int newStamina = (int) Math.floor(stamina * 0.99);
             profile.setStamina(newStamina < 1 ? 0 : newStamina);
 
 
             int abyssPoints = (int) profile.getAbysspoints();
             int newAbyssPoints = (int) Math.floor(abyssPoints * 0.90);
             profile.setAbysspoints(newAbyssPoints < 1 ? 0 : newAbyssPoints);
-            String msgToPlayer = "You lost 10% of your durability, stamina, and abyss points";
+            String msgToPlayer = "You lost 1% of your durability and stamina, and 10% of your abyss points.";
             player.sendMessage(Component.text(msgToPlayer).color(TextColor.color(255, 0, 0)));
 
             if (player.getKiller() != null) {

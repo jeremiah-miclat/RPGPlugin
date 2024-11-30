@@ -61,11 +61,11 @@ public class MonsterInitializerLabyrinth implements Listener {
 
         // Count the number of players in world_rpg
         int playersInRPGWorld = (int) Bukkit.getOnlinePlayers().stream()
-                .filter(player -> player.getWorld().getName().equals("world_rpg"))
+                .filter(player -> player.getWorld().getName().equals("world_labyrinth2"))
                 .count();
 
         // Calculate the spawn limit based on players in world_rpg
-        int mobLimit = Math.min(playersInRPGWorld * 6, 60);
+        int mobLimit = Math.min(playersInRPGWorld * 10, 100);
 
         // Count the number of mobs already in the world
         int currentMobCount = countMobsInWorld(event.getLocation().getWorld());
@@ -218,7 +218,8 @@ public class MonsterInitializerLabyrinth implements Listener {
         String bossName = color + "Lvl " + (int) (Math.floor(maxCoord) / 100) + " " + type + " " + entity.getType().name();
         entity.setMetadata("customName", new FixedMetadataValue(plugin, bossName));
         entity.setRemoveWhenFarAway(false);
-
+        entity.setCustomNameVisible(true);
+        entity.setPersistent(true);
         // Calculate speed multiplier based on the floor (Y-level)
         // At Y-level 3, multiplier = 5; at Y-level 251, multiplier = 1
         double speedMultiplier = 1 + 4 * (251 - maxCoord) / 248.0;  // Interpolates the speed multiplier between 5 and 1

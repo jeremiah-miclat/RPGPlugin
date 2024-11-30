@@ -59,13 +59,13 @@ public class SkillsGui implements CommandExecutor, Listener {
         // Set up skills based on the player's chosen class
         switch (profile.getChosenClass().toLowerCase()) {
             case "swordsman":
-                addSkillsToGui(gui, "Swordsman", "Sword Mage", "Blood blade", "Tank");
+                addSkillsToGui(gui, "Swordsman", "Int-based damage", "1% Lifesteal", "50% Damage Reduction");
                 break;
             case "archer":
-                addSkillsToGui(gui, "Archer", "Arrow Enchanter", "Bow Master", "Sniper");
+                addSkillsToGui(gui, "Archer", "Int-based damage", "Balanced Dex & Int", "Pure Dex-based damage");
                 break;
             case "alchemist":
-                addSkillsToGui(gui, "Alchemist", "Potion Enchanter", "Buffer", "Doctor");
+                addSkillsToGui(gui, "Alchemist", "Instant Damage Potion", "Random Buff/Debuff", "Healing Potion");
                 break;
             default:
                 player.sendMessage("Your class does not have any skills.");
@@ -86,7 +86,6 @@ public class SkillsGui implements CommandExecutor, Listener {
 
         // Skill 3
         gui.setItem(5, createSkillIcon(Material.EMERALD, "§a" + className + " Skill 3", skill3));
-
     }
 
     // Create an icon for each skill with a unique lore to identify it
@@ -132,8 +131,6 @@ public class SkillsGui implements CommandExecutor, Listener {
                             selectedSkill = "Skill 2";
                         } else if (displayName.contains("Skill 3")) {
                             selectedSkill = "Skill 3";
-                        } else if (displayName.contains("Skill 4")) {
-                            selectedSkill = "Skill 4";
                         } else {
                             player.sendMessage("Invalid skill selection.");
                             return;

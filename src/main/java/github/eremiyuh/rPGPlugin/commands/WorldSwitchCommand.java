@@ -246,7 +246,7 @@ public class WorldSwitchCommand implements CommandExecutor, Listener {
         UserProfile profile = profileManager.getProfile(player.getName());
 
         if (profile.getEnderPearl() < 1) {
-            player.sendMessage(ChatColor.RED + "Failed to teleport. Tip: /convertmaterial enderpearl or /checkstatus");
+            player.sendMessage(ChatColor.RED + "Failed to teleport. Tip: /convertmaterial enderpearl or /status");
             return;
         }
 
