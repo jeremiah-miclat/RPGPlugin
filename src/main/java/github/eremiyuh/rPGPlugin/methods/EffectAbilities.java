@@ -57,7 +57,7 @@ public class EffectAbilities {
         }
 
 
-        int fireDuration =  100 + (int)(userInt *.04); // Extend fire duration based on profile buff
+        int fireDuration =  100 + (userInt*5); // Extend fire duration based on profile buff
 
         target.setFireTicks(fireDuration);
 
@@ -93,7 +93,7 @@ public class EffectAbilities {
         if (userClass.equalsIgnoreCase("swordsman")) userInt= profile.getSwordsmanClassInfo().getIntel();
 
 
-        target.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, slownessDuration+ (int)(userInt *.04), 1));
+        target.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, slownessDuration+ (userInt *5), 0));
 
         target.getWorld().spawnParticle(Particle.SNOWFLAKE, target.getLocation(), 10, 0.5, .5, 0.5);
     }
@@ -106,11 +106,11 @@ public class EffectAbilities {
         if (userClass.equalsIgnoreCase("archer")) userInt= profile.getArcherClassInfo().getIntel();
         if (userClass.equalsIgnoreCase("alchemist")) userInt= profile.getArcherClassInfo().getIntel();
         if (userClass.equalsIgnoreCase("swordsman")) userInt= profile.getSwordsmanClassInfo().getIntel();
-        int weaknessDuration = 100+ (int)(userInt *.04); // Duration of the nausea effect in ticks (5 seconds)
+        int weaknessDuration = 100+ (userInt *5); // Duration of the nausea effect in ticks (5 seconds)
 
         Location targetLocation = target.getLocation();
         World world = target.getWorld();
-        target.addPotionEffect(new PotionEffect(PotionEffectType.NAUSEA, weaknessDuration, 1));
+        target.addPotionEffect(new PotionEffect(PotionEffectType.NAUSEA, weaknessDuration, 0));
 
         for (int i = 0; i < 50; i++) {
             double xOffset = (Math.random() - 0.5) * 1.5;
@@ -154,11 +154,11 @@ public class EffectAbilities {
         if (userClass.equalsIgnoreCase("archer")) userInt= profile.getArcherClassInfo().getIntel();
         if (userClass.equalsIgnoreCase("alchemist")) userInt= profile.getArcherClassInfo().getIntel();
         if (userClass.equalsIgnoreCase("swordsman")) userInt= profile.getSwordsmanClassInfo().getIntel();
-        int weaknessDuration = 100+ (int)(userInt *.04); // Duration of the nausea effect in ticks (5 seconds)
+        int weaknessDuration = 100+ (userInt *10); // Duration of the nausea effect in ticks (5 seconds)
 
         Location targetLocation = target.getLocation();
         World world = target.getWorld();
-        target.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, weaknessDuration, 1));
+        target.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, weaknessDuration, 0));
 
         for (int i = 0; i < 50; i++) {
             double xOffset = (Math.random() - 0.5) * 1.5;

@@ -47,12 +47,21 @@ public class ArrowHitListener implements Listener {
             double modifier = .02;
             double intensitymodifier = Math.min(archerInt / 2500, 4);
 
+            if (arrow.hasMetadata("FireArrowBarrage")) {
+
+                // Check if the arrow hit a living entity
+                if (event.getHitEntity() instanceof LivingEntity target) {
+                    target.setFireTicks((100+archerInt*10));
+                }
+            }
+
+
             if (arrow.hasMetadata("FreezeArrowBarrage")) {
 
                 // Check if the arrow hit a living entity
                 if (event.getHitEntity() instanceof LivingEntity target) {
                     // Apply a freeze effect (slowness) to the target
-                    target.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, (int) (100+(archerInt*modifier)), (int) intensitymodifier)); // 100 ticks of slowness
+                    target.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, (100+(archerInt*20)), 0)); // 100 ticks of slowness
                     spawnSnowParticles(target.getLocation());
                 }
             }
@@ -62,7 +71,7 @@ public class ArrowHitListener implements Listener {
                 // Check if the arrow hit a living entity
                 if (event.getHitEntity() instanceof LivingEntity target) {
                     // Apply a freeze effect (slowness) to the target
-                    target.addPotionEffect(new PotionEffect(PotionEffectType.NAUSEA, (int) (300+(archerInt*modifier)), (int) intensitymodifier)); // 100 ticks of slowness
+                    target.addPotionEffect(new PotionEffect(PotionEffectType.NAUSEA, 300+(archerInt*20), 0)); // 100 ticks of slowness
                     spawnWaterParticles(target.getLocation());
                 }
             }

@@ -791,8 +791,8 @@ public class DamageListener implements Listener {
             if (!arrow.hasMetadata("WeaknessArrowBarrage") && !arrow.hasMetadata("FireArrowBarrage") && !arrow.hasMetadata("FreezeArrowBarrage")) {
                 double archerDex = damagerProfile.getArcherClassInfo().getDex();
                 double baseChance = 0.10; // 10% base chance
-                double dexModifier = 0.002; // 0.004 per Dexterity
-                double totalChance = baseChance + (archerDex * dexModifier);
+                double dexModifier = .00004; // 0.004 per Dexterity
+                double totalChance = Math.min(.5,baseChance + (archerDex * dexModifier));
 
 // Generate a random value between 0.0 and 1.0
                 if (Math.random() < totalChance) {
@@ -1018,7 +1018,7 @@ public class DamageListener implements Listener {
 
                 if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 1")) {
                     elementalDamage += 2;
-                    elementalDamage += (intel*.6);
+                    elementalDamage += (intel*.7);
                     statDmg += (dex*.4);
                 } else {
                     elementalDamage += 2 + (intel*.1);
@@ -1042,11 +1042,11 @@ public class DamageListener implements Listener {
             if (damagerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
                 if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 1")) {
                     elementalDamage += 6;
-                    elementalDamage += (intel*1);
+                    elementalDamage += (intel*1.2);
 
                 } else {
-                    elementalDamage += 4 + (intel*.6);
-                    player.sendMessage("damaged with potion");
+                    elementalDamage += 4 + (intel*1);
+
                 }
             }else if (damagerProfile.getChosenClass().equalsIgnoreCase("swordsman")) {
                 elementalDamage+=(2+ (intel * 0.1));

@@ -20,12 +20,11 @@ public class DamageAbilities {
     }
 
     public void summonFireArrowBarrage(UserProfile profile, Location location, LivingEntity target, double arrowDamage) {
-        int numberOfArrows = 25;
+
         double heightOffset = 6.0;
         Location targetLocation = target.getLocation();
 
-        int archerInt = profile.getArcherClassInfo().getIntel();
-        double modifier = .02;
+
 
         // Check if the entity has the fire resistance potion effect
         if (target.hasPotionEffect(PotionEffectType.FIRE_RESISTANCE)) {
@@ -48,8 +47,6 @@ public class DamageAbilities {
                 arrow.setShooter(Bukkit.getPlayer(profile.getPlayerName()));
                 // Apply downward velocity
                 arrow.setVelocity(new Vector(0, -.01, 0));
-
-                arrow.setFireTicks((int) (100+(archerInt*modifier)));
                 arrow.setDamage(arrowDamage);
                 // Tag arrow with metadata for recognition in handleLongRangeDamage
                 arrow.setMetadata("FireArrowBarrage", new FixedMetadataValue(plugin, true));
@@ -59,7 +56,7 @@ public class DamageAbilities {
     }
 
     public void summonFreezeArrowBarrage(UserProfile profile, Location location, LivingEntity target, double arrowDamage) {
-        int numberOfArrows = 25;
+
         double heightOffset = 6.0;
         Location targetLocation = target.getLocation();
 
@@ -86,7 +83,7 @@ public class DamageAbilities {
     }
 
     public void summonNauseaArrowBarrage(UserProfile profile, Location location, LivingEntity target, double arrowDamage) {
-        int numberOfArrows = 25;
+
         double heightOffset = 6.0;
         Location targetLocation = target.getLocation();
 
