@@ -225,9 +225,10 @@ public class CheckClassCommand implements CommandExecutor, Listener {
 
                 if (item.getType() == Material.BOW) {
                     lore.add("Increases Bow/Crossbow damage.");
-                    lore.add("Main stat of archers to increase their damage.");
-                    lore.add("Bowmasters can choose this for crit.");
+                    lore.add("Main stat of archer with skill 3 to increase their damage.");
+                    lore.add("Bowmasters can choose this for damage and crit.");
                     lore.add("Slightly increases crit chance and damage of archers");
+                    lore.add("Stat for increasing crit damage");
                 }
 
                 if (item.getType() == Material.BOOK) {

@@ -11,7 +11,7 @@ commands:
     Archer have high attack output the farther the target is.
     Alchemist have high attack output but needs too much resources
     "
-  checkstatus:
+  status:
     description: Check information about your character
     usage: /<command>
     notes: "Can also let players allocate attribute points they converted from abyss points.
@@ -132,16 +132,16 @@ commands:
   convertmaterial:
     description: convert ores
     usage: /convert <orename>
-    notes: "Converts some ores/ingot to a currency which can be seen on checkstatus gui"
+    notes: "Converts some ores/ingot to a currency which can be seen on status gui"
   convertcurrency:
     description: convert currency
     usage: /convertcurrency <ore> <amount>
-    notes: "Converts some ores/ingot currency which can be seen on checkstatus gui to a real material"
+    notes: "Converts some ores/ingot currency which can be seen on status gui to a real material"
   warp:
     description: switch worlds
     usage: /warp a | ad | o
     notes: "For new players, it is recommended to have full netherite set with protection IV enchants before raiding the abyss.
-    Fighting in abyss will cost the stamina and durability which can be seen through /checkstatus
+    Fighting in abyss will cost the stamina and durability which can be seen through /status
     "
   giveap:
     description: "Gives attribute points to a player. Do not include on guide"
@@ -167,7 +167,7 @@ commands:
     usage: /<command>
     notes: "this command is for alchemist, potion let's them throw a splash potion depending on their chosen skill.
     They will need a book on their offhand and right click on their mainhand to quickly craft a potion and throw it as they desire until they run out of potion.
-    They can check that potion is a currency too in /checkstatus
+    They can check that potion is a currency too in /status
     "
   rtp:
     description: "Randomly teleport to a location within the world borders."

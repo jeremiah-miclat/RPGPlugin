@@ -2,18 +2,16 @@ package github.eremiyuh.rPGPlugin.listeners;
 
 import org.bukkit.Bukkit;
 import org.bukkit.attribute.Attribute;
-import org.bukkit.entity.Monster;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityPotionEffectEvent;
 import org.bukkit.event.entity.PotionSplashEvent;
 import github.eremiyuh.rPGPlugin.manager.PlayerProfileManager;
 import github.eremiyuh.rPGPlugin.profile.UserProfile;
-import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.entity.LivingEntity;
 
 import java.util.*;
 
@@ -270,7 +268,6 @@ public class AlchemistThrowPotion implements Listener {
 
                             Player player = (Player) target;
                             UserProfile playerProfile = profileManager.getProfile(player.getName());
-
                             boolean applyEffect = false;
 
                             // Apply effect if the player is the thrower or in the same team
@@ -300,6 +297,15 @@ public class AlchemistThrowPotion implements Listener {
             throw new RuntimeException(e);
         }
 
+    }
+
+    private boolean isUndead(Entity entity) {
+        return switch (entity.getType()) {
+            case ZOMBIE, ZOMBIE_VILLAGER, HUSK, DROWNED,
+                 SKELETON, STRAY, WITHER_SKELETON, WITHER,
+                 PHANTOM, ZOMBIFIED_PIGLIN, SKELETON_HORSE -> true;
+            default -> false;
+        };
     }
 
 }

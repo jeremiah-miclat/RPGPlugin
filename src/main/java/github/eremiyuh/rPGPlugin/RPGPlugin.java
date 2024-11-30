@@ -48,7 +48,7 @@ public class RPGPlugin extends JavaPlugin {
         loadResources();
 
         // Add a delay (e.g., 5 seconds) before allowing logins
-        getServer().getScheduler().runTaskLater(this, () -> serverLoaded = true, 600); // 100 ticks = 5 seconds
+        getServer().getScheduler().runTaskLater(this, () -> serverLoaded = true, 60); // 100 ticks = 5 seconds
 
     }
 
@@ -373,7 +373,7 @@ public class RPGPlugin extends JavaPlugin {
         Objects.requireNonNull(getCommand("junkshop")).setExecutor(new JunkShopCommand(profileManager));
         getServer().getPluginManager().registerEvents(new JunkShopCommand(profileManager), this);
         despawnAbyssMobsTask();
-//
+
         createResourceWorld("resource_normal", World.Environment.NORMAL);
         createResourceWorld("resource_nether", World.Environment.NETHER);
         createResourceWorld("resource_end", World.Environment.THE_END);

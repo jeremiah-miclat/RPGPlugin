@@ -1,6 +1,5 @@
 package github.eremiyuh.rPGPlugin.listeners;
 
-import com.destroystokyo.paper.event.entity.EntityRemoveFromWorldEvent;
 import github.eremiyuh.rPGPlugin.RPGPlugin;
 import github.eremiyuh.rPGPlugin.manager.BossDropItem;
 import github.eremiyuh.rPGPlugin.manager.PlayerProfileManager;
@@ -9,12 +8,14 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.damage.DamageSource;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.potion.PotionEffect;
 
 import java.util.*;
 
@@ -72,6 +73,8 @@ public class DeadMobListener implements Listener {
         ) {
             return;
         }
+
+
         World world = event.getEntity().getWorld();
         int xValidRange = 60;
         int yValidRange = 20;
@@ -150,17 +153,46 @@ public class DeadMobListener implements Listener {
             distributeDrops(killer, event, dropMultiplier);
 
             if (!killerTeam.equals("none")) {
-                for (Player player : nearbyPlayers) {
-                    // Skip the killer to avoid duplicate rewards
-                    if (player.equals(killer)) continue;
+                UserProfile teamOwnerProfile = profileManager.getProfile(killerProfile.getTeam());
+                List<String> killerTeamMatesNames = teamOwnerProfile.getTeamMembers();
+                List<Player> teamMembers = new ArrayList<>();
 
-                    UserProfile playerProfile = profileManager.getProfile(player.getName());
-                    if (playerProfile.getTeam().equals(killerTeam)) {
-                        applyRewards(player, playerProfile, health, 0, 0);
-                        distributeDrops(player, event, dropMultiplier);
+                // Get the online players from the killer team
+                for (String teamMemberName : killerTeamMatesNames) {
+                    Player teamMember = Bukkit.getPlayer(teamMemberName); // Get the player by name
+                    if (teamMember != null && teamMember.isOnline()) { // Check both null and online status
+                        teamMembers.add(teamMember);
+                    }
+                }
+
+                // Process the team members
+                for (Player teamMember : teamMembers) {
+                    // Skip the killer (you could compare the teamMember's name to killerProfile.getName())
+                    if (teamMember.getName().equals(killer.getName())) {
+                        continue; // Skip the killer to avoid duplicate rewards
+                    }
+
+                    // Check if the player is within the specified range of the mob
+                    if (isPlayerNearby(teamMember, mob.getLocation(), xValidRange, yValidRange)) {
+
+                        // Retrieve the player profile (assuming it’s a synchronous call)
+                        UserProfile playerProfile = profileManager.getProfile(teamMember.getName());
+
+                        // Make sure the profile is not null, and the team matches the killer's team
+                        if (playerProfile != null && playerProfile.getTeam().equals(killerTeam)) {
+                            // Apply rewards to the player
+                            applyRewards(teamMember, playerProfile, health, 0, 0);
+
+                            // Distribute drops (could potentially be made asynchronous)
+                            distributeDrops(teamMember, event, dropMultiplier);
+                        } else {
+                            // Optional: log or handle the case where the profile or team doesn't match
+                            System.out.println("Player " + teamMember.getName() + " has no valid profile or mismatched team.");
+                        }
                     }
                 }
             }
+
 
             // Clear the original drops and experience
                 event.getDrops().clear();

@@ -41,19 +41,24 @@ public class PlayerTeleportListener implements Listener {
 
     @EventHandler
     public void onPortalEvent(EntityPortalEvent event) {
-        if (!event.getEntity().getWorld().getName().contains("resource")) return;
+        if (!isRestrictedWorld(event.getEntity().getWorld().getName())) return;
         event.setCancelled(true);
     }
 
     @EventHandler
     public void onPlayerPortalEvent(EntityPortalEvent event) {
-        if (!event.getEntity().getWorld().getName().contains("resource")) return;
+        if (!isRestrictedWorld(event.getEntity().getWorld().getName())) return;
         event.setCancelled(true);
     }
 
     @EventHandler
     public void onPortalPlayerEvent(EntityPortalReadyEvent event) {
-        if (!event.getEntity().getWorld().getName().contains("resource")) return;
+        if (!isRestrictedWorld(event.getEntity().getWorld().getName())) return;
         event.setCancelled(true);
+    }
+
+    // Utility method to check if the world name is restricted
+    private boolean isRestrictedWorld(String worldName) {
+        return worldName.contains("resource") || worldName.contains("labyrinth") || worldName.contains("rpg");
     }
 }

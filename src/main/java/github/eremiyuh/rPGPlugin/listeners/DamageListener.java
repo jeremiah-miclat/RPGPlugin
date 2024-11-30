@@ -746,41 +746,7 @@ public class DamageListener implements Listener {
         // Apply extra health and set final damage
         double finalDamage = applyExtraHealthAndDamage(target, damageWithStats, attacker);
 
-        if (event.getEntity() instanceof Player victim) {
-            UserProfile victimProfile = profileManager.getProfile(victim.getName());
-            if (victimProfile==null) return;
 
-            if (victimProfile.getChosenClass().equalsIgnoreCase("swordsman") && !victimProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
-                finalDamage= finalDamage*.8;
-            }
-            if (victimProfile.getChosenClass().equalsIgnoreCase("swordsman") && victimProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
-                finalDamage= finalDamage*.5;
-            }
-            if (victimProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
-                finalDamage=finalDamage*1.2;
-            }
-            if (damagerProfile.getSelectedElement().equalsIgnoreCase("fire") && victimProfile.getSelectedElement().equalsIgnoreCase("ice")) {
-                finalDamage=finalDamage*1.2;
-            }
-            if (damagerProfile.getSelectedElement().equalsIgnoreCase("ice") && victimProfile.getSelectedElement().equalsIgnoreCase("water")) {
-                finalDamage=finalDamage*1.2;
-            }
-            if (damagerProfile.getSelectedElement().equalsIgnoreCase("water") && victimProfile.getSelectedElement().equalsIgnoreCase("fire")) {
-                finalDamage=finalDamage*1.2;
-            }
-            if (damagerProfile.getSelectedElement().equalsIgnoreCase("fire") && victimProfile.getSelectedElement().equalsIgnoreCase("water")) {
-                finalDamage=finalDamage*.8;
-            }
-            if (damagerProfile.getSelectedElement().equalsIgnoreCase("water") && victimProfile.getSelectedElement().equalsIgnoreCase("ice")) {
-                finalDamage=finalDamage*.8;
-            }
-            if (damagerProfile.getSelectedElement().equalsIgnoreCase("ice") && victimProfile.getSelectedElement().equalsIgnoreCase("fire")) {
-                finalDamage=finalDamage*.8;
-            }
-            if (victimProfile.getSelectedElement().equalsIgnoreCase("none")) {
-                finalDamage=finalDamage*1.3;
-            }
-        }
 
         if (event.getDamager() instanceof  Arrow arrow) {
             Location shooterLoc = attacker.getLocation();
@@ -876,6 +842,42 @@ public class DamageListener implements Listener {
             }
             if (playerProfile.getChosenClass().equalsIgnoreCase("swordsman") && !playerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
                 finalDamage *= .8;
+            }
+        }
+
+        if (event.getEntity() instanceof Player victim) {
+            UserProfile victimProfile = profileManager.getProfile(victim.getName());
+            if (victimProfile==null) return;
+            if (damagerProfile.getSelectedElement().equalsIgnoreCase("fire")) {finalDamage=finalDamage*1.1;}
+            if (victimProfile.getChosenClass().equalsIgnoreCase("swordsman") && !victimProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
+                finalDamage= finalDamage*.8;
+            }
+            if (victimProfile.getChosenClass().equalsIgnoreCase("swordsman") && victimProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
+                finalDamage= finalDamage*.5;
+            }
+            if (victimProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
+                finalDamage=finalDamage*1.2;
+            }
+            if (damagerProfile.getSelectedElement().equalsIgnoreCase("fire") && victimProfile.getSelectedElement().equalsIgnoreCase("ice")) {
+                finalDamage=finalDamage*1.2;
+            }
+            if (damagerProfile.getSelectedElement().equalsIgnoreCase("ice") && victimProfile.getSelectedElement().equalsIgnoreCase("water")) {
+                finalDamage=finalDamage*1.2;
+            }
+            if (damagerProfile.getSelectedElement().equalsIgnoreCase("water") && victimProfile.getSelectedElement().equalsIgnoreCase("fire")) {
+                finalDamage=finalDamage*1.2;
+            }
+            if (damagerProfile.getSelectedElement().equalsIgnoreCase("fire") && victimProfile.getSelectedElement().equalsIgnoreCase("water")) {
+                finalDamage=finalDamage*.8;
+            }
+            if (damagerProfile.getSelectedElement().equalsIgnoreCase("water") && victimProfile.getSelectedElement().equalsIgnoreCase("ice")) {
+                finalDamage=finalDamage*.8;
+            }
+            if (damagerProfile.getSelectedElement().equalsIgnoreCase("ice") && victimProfile.getSelectedElement().equalsIgnoreCase("fire")) {
+                finalDamage=finalDamage*.8;
+            }
+            if (victimProfile.getSelectedElement().equalsIgnoreCase("none")) {
+                finalDamage=finalDamage*1.3;
             }
         }
 //        double damageApplied = finalDamage *dmgReductionMultiplier;
@@ -1043,7 +1045,8 @@ public class DamageListener implements Listener {
                     elementalDamage += (intel*1);
 
                 } else {
-                    elementalDamage += 4 + (intel*.2);
+                    elementalDamage += 4 + (intel*.6);
+                    player.sendMessage("damaged with potion");
                 }
             }else if (damagerProfile.getChosenClass().equalsIgnoreCase("swordsman")) {
                 elementalDamage+=(2+ (intel * 0.1));
