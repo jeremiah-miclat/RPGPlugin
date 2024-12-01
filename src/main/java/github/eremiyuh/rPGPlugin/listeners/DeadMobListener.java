@@ -160,7 +160,7 @@ public class DeadMobListener implements Listener {
                 // Get the online players from the killer team
                 for (String teamMemberName : killerTeamMatesNames) {
                     Player teamMember = Bukkit.getPlayer(teamMemberName); // Get the player by name
-                    if (teamMember != null && teamMember.isOnline()) { // Check both null and online status
+                    if (teamMember != null && teamMember.isOnline() && teamMember.getWorld()== mob.getWorld()) { // Check both null and online status
                         teamMembers.add(teamMember);
                     }
                 }
@@ -410,6 +410,8 @@ public class DeadMobListener implements Listener {
 
     // Method to check if the player is nearby within specified range
     private boolean isPlayerNearby(Player player, Location mobLocation, double horizontalRange, double verticalRange) {
+        if (player.getWorld()!= mobLocation.getWorld()) return false;
+
         Location playerLocation = player.getLocation();
         double horizontalDistance = playerLocation.distance(mobLocation);
         double verticalDistance = Math.abs(playerLocation.getY() - mobLocation.getY());
