@@ -198,7 +198,7 @@ public class MonsterInitializer implements Listener {
         entity.setRemoveWhenFarAway(false);
         entity.setPersistent(true);
         entity.setMetadata("customName", new FixedMetadataValue(plugin, bossName));
-
+        entity.setGlowing(true);
         // Update health indicator
         setHealthIndicator(entity);
 

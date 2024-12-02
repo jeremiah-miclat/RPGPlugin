@@ -1,5 +1,6 @@
 package github.eremiyuh.rPGPlugin.listeners;
 
+import github.eremiyuh.rPGPlugin.RPGPlugin;
 import github.eremiyuh.rPGPlugin.buffs.PlayerStatBuff;
 import github.eremiyuh.rPGPlugin.buffs.VampireBuffs;
 import github.eremiyuh.rPGPlugin.manager.PlayerProfileManager;
@@ -13,13 +14,32 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.scoreboard.Criteria;
+import org.bukkit.scoreboard.DisplaySlot;
+import org.bukkit.scoreboard.Objective;
+import org.bukkit.scoreboard.Scoreboard;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 
 public class PlayerJoinListener implements Listener {
 
     private final PlayerProfileManager profileManager;
     private final PlayerStatBuff playerStatBuff;
+
+    private final List<String> suggestions = Arrays.asList(
+            "Ready for abyss?",
+            "Team up now.",
+            "Throw your junk into /junk and sell them for diamonds on /junkshop.",
+            "Visit a shop now using /tpshop.",
+            "Challenge mighty bosses for epic rewards!",
+            "Earn Abyss Points and shop at /abyssstore.",
+            "Boost your stats using /status to dominate battles.",
+            "Trade with other players using /tm for unique items.",
+            "Protect yourself from phantoms by sleeping at night!"
+    );
 
     public PlayerJoinListener(PlayerProfileManager profileManager) {
         this.profileManager = profileManager;
@@ -36,64 +56,73 @@ public class PlayerJoinListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         String playerName = player.getName();
+        UserProfile profile = profileManager.getProfile(playerName);
 
+        World world = Bukkit.getWorld("world");
+        assert world != null;
+        Location spawnLocation = world.getSpawnLocation();
 
-        if (profileManager.getProfile(playerName).getPassword().isEmpty()) {
-            World world = Bukkit.getWorld("world");
-            assert world != null;
-            Location spawnLocation = world.getSpawnLocation();
-            player.teleport(world.getSpawnLocation());
-
-            // If the player is not logged in, trigger the blackout effect
-            if (!profileManager.getProfile(playerName).isLoggedIn()) {
-                // Make the player's screen black with a message
-                player.sendTitle("§0§l§k⚜§r§6§lWelcome Adventurer!", "§7Use /register <password> <password> to start your adventure", 10, 200, 20);
-
-                player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§c§lHeed the Call: Register to Enter!"));
-
+        if (profile == null || profile.getPassword() == null || profile.getPassword().isEmpty()) {
+            // Handle new players
+            if (profile == null) {
+                profileManager.createProfile(playerName); // Create a new profile
             }
+
+            player.teleport(spawnLocation);
+            player.sendTitle("§0§l§k⚜§r§6§lWelcome Adventurer!",
+                    "§7Use /register <password> <password> to start your adventure",
+                    10, 200, 20);
+            player.spigot().sendMessage(ChatMessageType.ACTION_BAR,
+                    new TextComponent("§c§lHeed the Call: Register to Enter!"));
             player.sendMessage("§6[§eSeizonSMP§6] §7Welcome, adventurer! Your profile hath been forged.");
             player.sendMessage("§6[§eSeizonSMP§6] §7Enter the command §e/register <password> <password>§7 to inscribe your credentials.");
             player.sendMessage("§6[§eSeizonSMP§6] §7Then enter the realm by using §e/login <password>§7.");
 
-            event.setJoinMessage(ChatColor.GOLD + "⚜ Hail, " + ChatColor.AQUA + player.getName() + ChatColor.GOLD +
+            event.setJoinMessage(ChatColor.GOLD + "⚜ Hail, " + ChatColor.AQUA + playerName + ChatColor.GOLD +
                     "! Welcome to the realm for the very first time!");
-
-            return;
+        } else {
+            // Handle returning players
+            String suggestion = suggestRandomThing();
+            player.sendMessage("§6[§eSeizonSMP§6] §7Welcome back adventurer! Your profile has been loaded.");
+            profile.setLoggedIn(false);
+            player.sendMessage("§6[§eSeizonSMP§6] §cLog in to continue your quest.");
+            player.sendMessage("§6[§eSeizonSMP§6] §cEnter /login <your password>");
+            player.sendTitle("§0§l§k⚜§r§6§lWelcome Back!",
+                    "§7Use /login <password> to continue your journey.",
+                    10, 100, 20);
+            player.spigot().sendMessage(ChatMessageType.ACTION_BAR,
+                    new TextComponent("§7Use /login <password> to proceed."));
+            event.setJoinMessage(ChatColor.DARK_GREEN + "⚔ Welcome back, " + ChatColor.AQUA + playerName +". " +
+                    ChatColor.DARK_GREEN + suggestion);
         }
 
-        UserProfile profile = profileManager.getProfile(playerName);
-        player.sendMessage("§6[§eSeizonSMP§6] §7Welcome back adventurer! Your profile has been loaded.");
-
-
+        // Ensure the player is teleported to solid ground if necessary
         Location playerLocation = player.getLocation();
-        Material blockType = playerLocation.clone().subtract(0, 1, 0).getBlock().getType(); // Check the block below the player
-
-// Check if the player is in the air or standing on a non-solid block
+        Material blockType = playerLocation.clone().subtract(0, 1, 0).getBlock().getType();
         if (blockType == Material.AIR || !isSolidBlock(blockType)) {
             Location groundLocation = getGroundLocation(playerLocation, player);
             player.teleport(groundLocation);
         }
 
-        playerStatBuff.updatePlayerStatsToNormal(player);
 
-        if (Objects.requireNonNull(player.getLocation().getWorld()).getName().equals("world_rpg") ||
-                player.getLocation().getWorld().getName().contains("labyrinth")) {
+
+
+        Scoreboard board = Bukkit.getScoreboardManager().getNewScoreboard();
+        Objective objective = board.registerNewObjective(
+                "HEALTH", Criteria.HEALTH, ChatColor.RED + "❤ "
+        );
+        objective.setDisplaySlot(DisplaySlot.BELOW_NAME);
+        player.setScoreboard(board);
+
+
+        // Apply appropriate buffs
+        playerStatBuff.updatePlayerStatsToNormal(player);
+        String worldName = Objects.requireNonNull(player.getLocation().getWorld()).getName();
+        if (worldName.equals("world_rpg") || worldName.contains("labyrinth")) {
             playerStatBuff.updatePlayerStatsToRPG(player);
         }
-
-        profile.setLoggedIn(false);
-
-        player.sendMessage("§6[§eSeizonSMP§6] §cLog in to continue your quest.");
-        player.sendMessage("§6[§eSeizonSMP§6] §cEnter /login <your password>");
-        player.sendTitle("§0§l§k⚜§r§6§lWelcome Back!", "§7Use /login <password> to continue your journey.", 10, 100, 20);
-        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§7Use /login <password> to proceed."));
-
-
-        event.setJoinMessage(ChatColor.DARK_GREEN + "⚔ Welcome back, " + ChatColor.AQUA + player.getName() +
-                ChatColor.DARK_GREEN + ", please raid the abyss!");
-
     }
+
 
     @EventHandler
     public void onPlayerRespawn(PlayerRespawnEvent event) {
@@ -167,7 +196,10 @@ public class PlayerJoinListener implements Listener {
 
 
 
-
+    private String suggestRandomThing() {
+        Random random = new Random();
+        return suggestions.get(random.nextInt(suggestions.size()));
+    }
 
 
 
