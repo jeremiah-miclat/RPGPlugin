@@ -9,6 +9,7 @@ import org.bukkit.event.entity.PotionSplashEvent;
 import github.eremiyuh.rPGPlugin.manager.PlayerProfileManager;
 import github.eremiyuh.rPGPlugin.profile.UserProfile;
 import org.bukkit.event.Listener;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -88,6 +89,16 @@ public class AlchemistThrowPotion implements Listener {
 
 
                         for (LivingEntity target : event.getAffectedEntities()) {
+                            if (target.hasMetadata("attackerList")) {
+                                List<String> attackerList = (List<String>) target.getMetadata("attackerList").get(0).value();
+
+                                String attackerName = thrower.getName();
+                                assert attackerList != null;
+                                if (!attackerList.contains(attackerName)) {
+                                    attackerList.add(attackerName);
+                                    target.setMetadata("attackerList", new FixedMetadataValue(plugin, attackerList)); // Update metadata
+                                }
+                            }
 
                             if (effect.getType() == PotionEffectType.SPEED) {
 

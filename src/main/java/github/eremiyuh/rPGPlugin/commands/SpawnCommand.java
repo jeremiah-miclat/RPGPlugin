@@ -1,5 +1,6 @@
 package github.eremiyuh.rPGPlugin.commands;
 
+import github.eremiyuh.rPGPlugin.buffs.PlayerStatBuff;
 import github.eremiyuh.rPGPlugin.manager.PlayerProfileManager;
 import github.eremiyuh.rPGPlugin.profile.UserProfile;
 import org.bukkit.Bukkit;
@@ -13,9 +14,11 @@ import org.bukkit.entity.Player;
 public class SpawnCommand implements CommandExecutor {
 
     private final PlayerProfileManager profileManager;
+    private final PlayerStatBuff playerStatBuff;
 
-    public SpawnCommand(PlayerProfileManager profileManager) {
+    public SpawnCommand(PlayerProfileManager profileManager, PlayerStatBuff playerStatBuff) {
         this.profileManager = profileManager;
+        this.playerStatBuff = playerStatBuff;
     }
 
     @Override
@@ -45,11 +48,18 @@ public class SpawnCommand implements CommandExecutor {
         Location spawnLocation = world.getSpawnLocation(); // Get the spawn location of the "world"
 
         // Teleport the player to the spawn location of "world"
-        userProfile.setEnderPearl(userProfile.getEnderPearl()-1);
-        player.teleport(spawnLocation);
-        player.sendMessage("You teleported to overworld spawn area.");
+        if (player.teleport(spawnLocation))
+        {
+            userProfile.setEnderPearl(userProfile.getEnderPearl() - 1);
 
-        return true;
+            playerStatBuff.updatePlayerStatsToNormal(player);
+            player.sendMessage("You teleported to overworld spawn area.");
+            return true;
+        }
+        else {
+            player.sendMessage("Teleport failed. Report to admin");
+            return true;
+        }
     }
 }
 

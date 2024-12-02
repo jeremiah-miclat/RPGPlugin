@@ -162,7 +162,7 @@ commands:
     usage: /<command>
     permission: RPGPlugin.givesword
     permission-default: op
-  buypotion:
+  craftpotion:
     description: "use magic to convert your lapiz to potion"
     usage: /<command>
     notes: "this command is for alchemist, potion let's them throw a splash potion depending on their chosen skill.

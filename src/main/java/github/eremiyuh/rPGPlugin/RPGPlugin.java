@@ -315,10 +315,10 @@ public class RPGPlugin extends JavaPlugin {
         Objects.requireNonNull(getCommand("giveap")).setExecutor(new AttributePointsCommand(profileManager));
         Objects.requireNonNull(getCommand("giveabysspoints")).setExecutor(new GiveAbyssPoints(profileManager));
         Objects.requireNonNull(getCommand("fly")).setExecutor(new FlyCommand(profileManager, this));
-        Objects.requireNonNull(getCommand("buypotion")).setExecutor(new LapisToPotion(profileManager));
+        Objects.requireNonNull(getCommand("craftpotion")).setExecutor(new LapisToPotion(profileManager));
         Objects.requireNonNull(this.getCommand("givesword")).setExecutor(new SwordCommand(this));
         Objects.requireNonNull(this.getCommand("rtp")).setExecutor(new RTPCommand(this));
-        Objects.requireNonNull(this.getCommand("spawn")).setExecutor(new SpawnCommand(profileManager));
+        Objects.requireNonNull(this.getCommand("spawn")).setExecutor(new SpawnCommand(profileManager,playerStatBuff));
         Objects.requireNonNull(this.getCommand("sethome")).setExecutor(new SetHomeCommand(profileManager));
         Objects.requireNonNull(this.getCommand("home")).setExecutor(new HomeCommand(profileManager));
         Objects.requireNonNull(this.getCommand("homedelete")).setExecutor(new DeleteHomeCommand(profileManager));

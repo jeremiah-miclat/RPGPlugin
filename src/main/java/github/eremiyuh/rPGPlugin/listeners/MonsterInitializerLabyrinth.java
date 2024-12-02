@@ -182,12 +182,11 @@ public class MonsterInitializerLabyrinth implements Listener {
         entity.setMetadata("customName", new FixedMetadataValue(plugin, normalName));
 
         // Boss scaling logic
-        if (Math.random() < .00001) {
+        if (Math.random() < .01) {
             extraHealth *= 10; // Add 1000% health
             setBossAttributes(entity, targetLocation.getBlockY(), "Boss", ChatColor.RED);
             entity.setMetadata("boss", new FixedMetadataValue(plugin, true));
             entity.setMetadata("lvl", new FixedMetadataValue(plugin, lvl));
-
             entity.setHealth(Math.min(extraHealth, customMaxHealth));
             entity.setMetadata("extraHealth", new FixedMetadataValue(plugin, extraHealth));
             Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(customDamage*2);
@@ -195,7 +194,7 @@ public class MonsterInitializerLabyrinth implements Listener {
         }
 
         // World Boss scaling logic
-        if (Math.random() < 0.000001) {
+        if (Math.random() < 0.001) {
             extraHealth *= 100; // Add 10000% health
             setBossAttributes(entity, targetLocation.getBlockY(), "World Boss", ChatColor.DARK_PURPLE);
             entity.setMetadata("worldboss", new FixedMetadataValue(plugin, true));

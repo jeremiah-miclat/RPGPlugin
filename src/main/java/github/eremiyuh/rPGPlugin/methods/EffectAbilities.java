@@ -110,7 +110,7 @@ public class EffectAbilities {
 
         Location targetLocation = target.getLocation();
         World world = target.getWorld();
-        target.addPotionEffect(new PotionEffect(PotionEffectType.NAUSEA, weaknessDuration, 0));
+        target.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, weaknessDuration, 0));
 
         for (int i = 0; i < 50; i++) {
             double xOffset = (Math.random() - 0.5) * 1.5;

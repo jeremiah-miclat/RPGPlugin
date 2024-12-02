@@ -114,7 +114,7 @@ public class LoginCommand implements CommandExecutor {
         }
         player.sendMessage(Component.text("Hover over the names to see descriptions. ")
                 .color(NamedTextColor.GRAY)
-                .append(Component.text("Click the name to teleport, or the seed to copy."))
+                .append(Component.text("Click the name to teleport, or the seed to copy. Cost: 1 enderpearl"))
                 .color(NamedTextColor.YELLOW)
                 .decorate(TextDecoration.ITALIC));
         return true;

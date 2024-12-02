@@ -9,7 +9,7 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.entity.EnderDragon;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.material.MaterialData;
+
 
 public class DragonEggListener implements Listener {
 

@@ -622,7 +622,9 @@ public class DamageListener implements Listener {
         // Swordsman-specific ability if holding a sword
         if (damagerProfile.getChosenClass().equalsIgnoreCase("swordsman") && weapon.getType().toString().endsWith("_SWORD")) {
             effectsAbilityManager.applyAbility(damagerProfile, target, damagerLocation, damagedLocation);
-
+            if (target instanceof Monster mob && damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
+                mob.setTarget(attacker);
+            }
         }
 
         // Apply extra health and set final damage
@@ -704,10 +706,11 @@ public class DamageListener implements Listener {
 
 
         try {
-            if (PlayerBuffPerms.canLifeSteal(damagerProfile)) {
+            if (PlayerBuffPerms.canLifeSteal(damagerProfile) && attacker.getInventory().getItemInMainHand().getType().toString().endsWith("_SWORD")) {
+
                 double lifestealAmount = (finalDamage
 //                    *dmgReductionMultiplier
-                ) * 0.01; // 1% lifesteal
+                ) * 0.1; // 1% lifesteal
                 double maxHealth = Objects.requireNonNull(attacker.getAttribute(Attribute.GENERIC_MAX_HEALTH)).getValue(); // Get max health using attribute
                 double newHealth = Math.min(attacker.getHealth() + lifestealAmount, maxHealth); // Avoid exceeding max health
                 attacker.setHealth(newHealth);
@@ -971,91 +974,56 @@ public class DamageListener implements Listener {
 
         // melee
         if (event.getDamager() instanceof Player) {
+            statDmg+=str*.4;
             if (damagerProfile.getChosenClass().equalsIgnoreCase("swordsman")) {
 
 
                 if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 2") && player.getInventory().getItemInMainHand().getType().toString().endsWith("_SWORD")) {
-                    statDmg += str*.6;
+                    statDmg += str*.3;
                 }
 
                 if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 3") && player.getInventory().getItemInMainHand().getType().toString().endsWith("_SWORD")) {
-                    statDmg += str*.3;
+                    statDmg += str*.1;
                 }
 
 
                 if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 1") && player.getInventory().getItemInMainHand().getType().toString().endsWith("_SWORD")) {
-                    elementalDamage += (4 + (intel * 1));
-                    statDmg += str*.6;
-                } else {
-                    elementalDamage += (1 + (intel * 0.1));
+                    elementalDamage += (intel * .8);
                 }
-            } else if (damagerProfile.getChosenClass().equalsIgnoreCase("archer")) {
-                statDmg +=(str*.1) ;
-                elementalDamage+=(1+ (intel * 0.1));
-            }
-            else if (damagerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
-                statDmg += (str*.1);
-                elementalDamage+=(1+ (intel * 0.1));
             }
         }
 
 
         // bow
         if (event.getDamager() instanceof Arrow) {
-
+            statDmg+=dex*.4;
             //archers
             if (damagerProfile.getChosenClass().equalsIgnoreCase("archer")) {
 
 
                 if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
-                    statDmg += (dex*1);
+                    statDmg += (dex*.6);
                 }
 
                 if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 2")) {
-                    statDmg += (dex*.5);
-                    elementalDamage += (intel*.5);
+                    statDmg += (dex*.6);
+                    elementalDamage += (intel*1);
                 }
 
                 if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 1")) {
-                    elementalDamage += 2;
-                    elementalDamage += (intel*.7);
-                    statDmg += (dex*.4);
-                } else {
-                    elementalDamage += 2 + (intel*.1);
+                    statDmg += (dex*.6);
+                    elementalDamage += (intel*1);
                 }
-            }else if (damagerProfile.getChosenClass().equalsIgnoreCase("swordsman")) {
-                statDmg +=(dex*.1) ;
-                elementalDamage+=(2+ (intel * 0.1));
             }
-            else if (damagerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
-                statDmg += (dex*.1);
-                elementalDamage+=(4+ (intel * 0.1));
-            }
-
-
         }
 
         // thrown potions
         if (event.getDamager() instanceof ThrownPotion) {
-
+            elementalDamage += intel * 0.4;
             //alchemists
             if (damagerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
-                if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 1")) {
-                    elementalDamage += 6;
-                    elementalDamage += (intel*1.2);
-
-                } else {
-                    elementalDamage += 4 + (intel*1);
-
-                }
-            }else if (damagerProfile.getChosenClass().equalsIgnoreCase("swordsman")) {
-                elementalDamage+=(2+ (intel * 0.1));
+                elementalDamage += (intel*.8);
             }
-            else if (damagerProfile.getChosenClass().equalsIgnoreCase("archer")) {
-                elementalDamage+=(2+ (intel * 0.1));
-            }
-
-
         }
 
         double calculatedDamage = baseDamage + statDmg + elementalDamage;
@@ -1071,10 +1039,28 @@ public class DamageListener implements Listener {
         if (damagerProfile.getChosenClass().equalsIgnoreCase("archer")){
             critChance += (dex * 0.0001);
         }
-        double critDmgMultiplier = 1.5 + (dex * 0.001);
+        double critDmgMultiplier = 1.5 + (luk * 0.001);
         if (damagerProfile.getChosenClass().equalsIgnoreCase("archer") && damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")){
             critChance += 0.25;
             critDmgMultiplier += dex*0.00005;
+        }
+
+        if (event.getEntity() instanceof Player player1) {
+            UserProfile player1Profile = profileManager.getProfile(player1.getName());
+            int p1Luk=0;
+
+            if (player1Profile.getChosenClass().equalsIgnoreCase("swordsman")) {
+                p1Luk = player1Profile.getSwordsmanClassInfo().getLuk();
+            }
+            if (player1Profile.getChosenClass().equalsIgnoreCase("archer")) {
+                p1Luk = player1Profile.getArcherClassInfo().getLuk();
+            }
+            if (player1Profile.getChosenClass().equalsIgnoreCase("alchemist")) {
+                p1Luk = player1Profile.getAlchemistClassInfo().getLuk();
+            }
+
+            critChance -= Math.max(0,p1Luk*0.0002);
+
         }
 
         boolean isCrit = Math.random() < critChance;

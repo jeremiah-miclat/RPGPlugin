@@ -206,48 +206,46 @@ public class CheckClassCommand implements CommandExecutor, Listener {
 
                 // Initialize lore
                 List<String> lore = new ArrayList<>();
-                lore.add("§7Current value: §f" + value);
+                lore.add("§7Current Value: §f" + value);
                 lore.add("§7Click to add points.");
                 lore.add("§7Remaining Points: §f" + profile.getCurrentAttributePoints());
 
                 // Add specific lore for items
                 if (item.getType() == Material.IRON_SWORD) {
                     lore.add("Increases damage for melee attacks.");
-                    lore.add("Recommended for Swordsman using skills 2 and 3.");
-                    lore.add("NOT recommended for swordsman using skill 1");
+                    lore.add("Provides extra melee damage for Swordsmen using Skills 2 and 3.");
                 }
 
                 if (item.getType() == Material.FEATHER) {
-                    lore.add("Increases movespeed.");
-                    lore.add("To achieve max ms, your total Agility(class stat + equip stat) must reach 8,000.");
+                    lore.add("Increases movement speed.");
+                    lore.add("To reach maximum movement speed, your total Agility (class stat + equipment stat) must be 8,000.");
                 }
 
-
                 if (item.getType() == Material.BOW) {
-                    lore.add("Increases Bow/Crossbow damage.");
-                    lore.add("Main stat of archer with skill 3 to increase their damage.");
-                    lore.add("Bowmasters can choose this for damage and crit.");
-                    lore.add("Slightly increases crit chance and damage of archers");
-                    lore.add("Stat for increasing crit damage");
+                    lore.add("Increases arrow damage.");
+                    lore.add("Provides bonus arrow damage for Archers using Skills 2 and 3.");
+                    lore.add("Slightly increases critical chance and critical damage for Archers.");
                 }
 
                 if (item.getType() == Material.BOOK) {
-                    lore.add("Alchemist main stat.");
-                    lore.add("Skill 1 users damage stat.");
-                    lore.add("Boost alchemist potion effects/heal/damage.");
+                    lore.add("Increases damage from thrown potions.");
+                    lore.add("Enhances damage stats for Skill 1 users.");
+                    lore.add("Boosts potion effects, healing, and damage for Alchemists.");
                 }
 
                 if (item.getType() == Material.GOLDEN_APPLE) {
                     lore.add("Increases HP.");
                     lore.add("1 HP per point.");
-                    lore.add("Enter /healscale to rescale health to always show 10 hearts");
+                    lore.add("Use /healscale to rescale health to always display as 10 hearts.");
                 }
 
                 if (item.getType() == Material.NETHER_STAR) {
-                    lore.add("Main stat for increasing crit chance.");
-                    lore.add("4000 to 5000 to reach 100%.");
-                    lore.add("Check discord for allocation recommendation per class");
+                    lore.add("Main stat for increasing critical chance and critical damage.");
+                    lore.add("Main stat for decreasing critical chance of players during PVP.");
+                    lore.add("Requires 4,000 to 5,000 points to reach 100% critical chance vs. Mobs.");
+                    lore.add("Check the Discord server for class-specific allocation recommendations.");
                 }
+
 
                 // Apply lore and other settings
                 meta.setLore(lore);

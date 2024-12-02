@@ -1,6 +1,7 @@
 package github.eremiyuh.rPGPlugin.listeners;
 
 import github.eremiyuh.rPGPlugin.RPGPlugin;
+import net.kyori.adventure.text.TextComponent;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.*;
@@ -10,7 +11,9 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 
+
 import java.util.*;
+import java.util.List;
 
 public class MonsterInitializer implements Listener {
 
@@ -153,28 +156,32 @@ public class MonsterInitializer implements Listener {
         double customDamage = Math.min(extraHealth/10, customMaxHealth);
 
 
-        if (Math.random() < .00001) { //.005
+        if (Math.random() < .01) { //.005
             extraHealth = (extraHealth * 10); // Add 1000% health
             setBossAttributes(entity, maxCoord, "Boss", ChatColor.RED);
             entity.setMetadata("boss", new FixedMetadataValue(plugin, true));
             entity.setMetadata("lvl", new FixedMetadataValue(plugin, lvl));
-
+            entity.setMetadata("extraHealth", new FixedMetadataValue(plugin, extraHealth));
 
             entity.setHealth(Math.min(extraHealth, customMaxHealth));
             Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(customDamage*2);
             entity.setMetadata("customDamage", new FixedMetadataValue(plugin, customDamage*2));
+
+
             return;
         }
 
-        if (Math.random() < .000001) { //.0005
+        if (Math.random() < .001) { //.0005
             extraHealth = (extraHealth * 100); // Add 10000% health
             setBossAttributes(entity, maxCoord, "World Boss", ChatColor.DARK_PURPLE);
             entity.setMetadata("worldboss", new FixedMetadataValue(plugin, true));
             entity.setMetadata("lvl", new FixedMetadataValue(plugin, lvl));
+            entity.setMetadata("extraHealth", new FixedMetadataValue(plugin, extraHealth));
 
             entity.setHealth(Math.min(extraHealth, customMaxHealth));
             Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(customDamage*3);
             entity.setMetadata("customDamage", new FixedMetadataValue(plugin, customDamage*3));
+
             return;
         }
 
@@ -263,5 +270,10 @@ public class MonsterInitializer implements Listener {
                 offsetY += 0.1;
             }
         }.runTaskTimer(plugin, 0L, 1L); // Runs every tick (1/20th of a second)
+    }
+
+    private void broadcastFromSeizonSMP(String message) {
+        Bukkit.getServer().getOnlinePlayers().forEach(player ->
+                player.sendMessage(ChatColor.GOLD + "[Seizon SMP] " + ChatColor.RESET + message));
     }
 }

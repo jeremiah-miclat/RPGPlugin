@@ -71,7 +71,7 @@ public class ArrowHitListener implements Listener {
                 // Check if the arrow hit a living entity
                 if (event.getHitEntity() instanceof LivingEntity target) {
                     // Apply a freeze effect (slowness) to the target
-                    target.addPotionEffect(new PotionEffect(PotionEffectType.NAUSEA, 300+(archerInt*20), 0)); // 100 ticks of slowness
+                    target.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 100+(archerInt*20), 0)); // 100 ticks of slowness
                     spawnWaterParticles(target.getLocation());
                 }
             }

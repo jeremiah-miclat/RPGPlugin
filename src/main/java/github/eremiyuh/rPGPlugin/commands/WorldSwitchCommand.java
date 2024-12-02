@@ -164,24 +164,25 @@ public class WorldSwitchCommand implements CommandExecutor, Listener {
     }
 
     private void openWorldSwitchGUI(Player player) {
-        // Create an inventory with 9 slots (adjust size as needed)
-        Inventory gui = Bukkit.createInventory(null, 9, "Select World to Teleport");
+        // Create an inventory with 27 slots (3 rows of 9)
+        Inventory gui = Bukkit.createInventory(null, 27, "Select World to Teleport");
 
         // Create Ender Pearl items for each world
-        ItemStack abyssItem = createWorldSwitchItem("Abyss", "a");
-        ItemStack abyssDungeonItem = createWorldSwitchItem("Abyss Dungeon", "ad");
-        ItemStack overworldItem = createWorldSwitchItem("Overworld", "o");
-        ItemStack resourceOverworldItem = createWorldSwitchItem("Resource Overworld", "ro");
-        ItemStack resourceNetherItem = createWorldSwitchItem("Resource Nether", "rn");
-        ItemStack resourceEndItem = createWorldSwitchItem("Resource End", "re");
+        ItemStack abyssItem = createWorldSwitchItem("Abyss", "a", true);
+        ItemStack abyssDungeonItem = createWorldSwitchItem("Abyss Dungeon", "ad", true);
+        ItemStack overworldItem = createWorldSwitchItem("Overworld", "o", false);
+        ItemStack resourceOverworldItem = createWorldSwitchItem("Resource Overworld", "ro", false);
+        ItemStack resourceNetherItem = createWorldSwitchItem("Resource Nether", "rn", false);
+        ItemStack resourceEndItem = createWorldSwitchItem("Resource End", "re", false);
 
         // Set the items in the inventory
-        gui.setItem(0, abyssItem);
-        gui.setItem(1, abyssDungeonItem);
-        gui.setItem(2, overworldItem);
-        gui.setItem(6, resourceOverworldItem);
-        gui.setItem(7, resourceNetherItem);
-        gui.setItem(8, resourceEndItem);
+        gui.setItem(0, overworldItem);
+        gui.setItem(1, resourceOverworldItem);
+        gui.setItem(2, resourceNetherItem);
+        gui.setItem(3, resourceEndItem);
+        // Abyss and Abyss Dungeon should be at the bottom row (6th, 7th, and 8th slots)
+        gui.setItem(18, abyssItem);
+        gui.setItem(19, abyssDungeonItem);
 
         // Open the GUI for the player
         player.openInventory(gui);
@@ -189,7 +190,7 @@ public class WorldSwitchCommand implements CommandExecutor, Listener {
 
 
 
-    private ItemStack createWorldSwitchItem(String displayName, String worldType) {
+    private ItemStack createWorldSwitchItem(String displayName, String worldType, boolean isDifficult) {
         ItemStack item = new ItemStack(Material.ENDER_PEARL);
         ItemMeta meta = item.getItemMeta();
 
@@ -198,7 +199,13 @@ public class WorldSwitchCommand implements CommandExecutor, Listener {
             List<String> lore = new ArrayList<>();
             lore.add(ChatColor.GRAY + "Click to teleport to the " + displayName);
             lore.add(ChatColor.YELLOW + "/warp " + worldType);
-            lore.add(ChatColor.YELLOW + "Cost: enderpearl (currency)");
+            lore.add(ChatColor.YELLOW + "Cost: Ender Pearl (currency)");
+
+            // Add difficulty information if the world is difficult
+            if (isDifficult) {
+                lore.add(ChatColor.RED + "WARNING: This world is difficult!");
+                lore.add(ChatColor.RED + "Ensure your gear is fully enchanted before entering.");
+            }
 
             meta.setLore(lore);
             item.setItemMeta(meta);
@@ -219,28 +226,29 @@ public class WorldSwitchCommand implements CommandExecutor, Listener {
         // Handle teleportation based on the clicked slot
         switch (slot) {
             case 0:
-                teleportPlayerToWorld(player, "world_rpg", "Abyss Overworld"); // Abyss
-                break;
-            case 1:
-                teleportPlayerToWorld(player, "world_labyrinth2", "Abyss Dungeon"); // Abyss Dungeon
-                break;
-            case 2:
                 teleportPlayerToWorld(player, "world", "Overworld"); // Overworld
                 break;
-            case 6:
+            case 1:
                 teleportPlayerToWorld(player, "resource_normal", "Resource Overworld"); // Resource Overworld
                 break;
-            case 7:
+            case 2:
                 teleportPlayerToWorld(player, "resource_nether", "Resource Nether"); // Resource Nether
                 break;
-            case 8:
+            case 3:
                 teleportPlayerToWorld(player, "resource_end", "Resource End"); // Resource End
+                break;
+            case 18:
+                teleportPlayerToWorld(player, "world_rpg", "Abyss Overworld"); // Abyss
+                break;
+            case 19:
+                teleportPlayerToWorld(player, "world_labyrinth2", "Abyss Dungeon"); // Abyss Dungeon
                 break;
             default:
                 player.sendMessage(ChatColor.RED + "Invalid selection.");
                 break;
         }
     }
+
 
     private void teleportPlayerToWorld(Player player, String worldName, String displayName) {
         UserProfile profile = profileManager.getProfile(player.getName());

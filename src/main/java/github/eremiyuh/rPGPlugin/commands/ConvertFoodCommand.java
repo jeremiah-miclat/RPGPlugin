@@ -63,7 +63,7 @@ public class ConvertFoodCommand implements CommandExecutor, Listener {
         foodHungerMap.put(Material.ROTTEN_FLESH, 10);
         foodHungerMap.put(Material.SPIDER_EYE, 5);
         foodHungerMap.put(Material.GOLDEN_APPLE, 200);
-        foodHungerMap.put(Material.ENCHANTED_GOLDEN_APPLE, 100000);
+        foodHungerMap.put(Material.ENCHANTED_GOLDEN_APPLE, 10000);
         foodHungerMap.put(Material.SUSPICIOUS_STEW, 40);
         foodHungerMap.put(Material.MILK_BUCKET, 100);
         foodHungerMap.put(Material.GLISTERING_MELON_SLICE, 150);

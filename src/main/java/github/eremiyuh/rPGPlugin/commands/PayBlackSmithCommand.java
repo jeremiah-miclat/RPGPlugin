@@ -110,10 +110,10 @@ public class PayBlackSmithCommand implements CommandExecutor, Listener {
         durabilityMap.put(Material.GOLDEN_HORSE_ARMOR, 10000);
         durabilityMap.put(Material.DIAMOND_HORSE_ARMOR, 20000);
 
-        durabilityMap.put(Material.SADDLE, 3000);
+        durabilityMap.put(Material.SADDLE, 300);
 
-        durabilityMap.put(Material.ELYTRA, 100000);
-        durabilityMap.put(Material.TURTLE_HELMET, 1000);
+        durabilityMap.put(Material.ELYTRA, 10000);
+        durabilityMap.put(Material.TURTLE_HELMET, 100);
 
         durabilityMap.put(Material.STONE, 1);
         durabilityMap.put(Material.STICK, 1);
@@ -122,16 +122,16 @@ public class PayBlackSmithCommand implements CommandExecutor, Listener {
         durabilityMap.put(Material.FLINT_AND_STEEL, 100);
         durabilityMap.put(Material.COAL, 50);
         durabilityMap.put(Material.CHARCOAL, 50);
-        durabilityMap.put(Material.BLAZE_ROD, 900);
-        durabilityMap.put(Material.BLAZE_POWDER, 300);
-        durabilityMap.put(Material.REDSTONE, 100);
-        durabilityMap.put(Material.REDSTONE_BLOCK, 900);
+        durabilityMap.put(Material.BLAZE_ROD, 90);
+        durabilityMap.put(Material.BLAZE_POWDER, 30);
+        durabilityMap.put(Material.REDSTONE, 10);
+        durabilityMap.put(Material.REDSTONE_BLOCK, 90);
         durabilityMap.put(Material.MINECART, 300);
         durabilityMap.put(Material.HOPPER_MINECART, 500);
         durabilityMap.put(Material.CHEST, 100);
-        durabilityMap.put(Material.HEART_OF_THE_SEA, 100000);
-        durabilityMap.put(Material.WITHER_SKELETON_SKULL, 100000);
-        durabilityMap.put(Material.NETHER_STAR, 1000000);
+        durabilityMap.put(Material.HEART_OF_THE_SEA, 10000);
+        durabilityMap.put(Material.WITHER_SKELETON_SKULL, 10000);
+        durabilityMap.put(Material.NETHER_STAR, 100000);
         durabilityMap.put(Material.BUCKET, 200);
 
     }
