@@ -444,7 +444,7 @@ public class RPGPlugin extends JavaPlugin {
             public void run() {
                 // Get worlds named "rpg" and "labyrinth"
                 World rpgWorld = getServer().getWorld("world_rpg");
-                World labyrinthWorld = getServer().getWorld("world_labyrinth");
+                World labyrinthWorld = getServer().getWorld("world_labyrinth2");
 
                 // Check if the worlds are loaded
                 if (rpgWorld != null) {
@@ -454,9 +454,7 @@ public class RPGPlugin extends JavaPlugin {
                             LivingEntity livingEntity = (LivingEntity) entity;
 
                             // Check if the entity has the "extraHealth" metadata
-                            if (!livingEntity.hasMetadata("extraHealth")) {
-                                // If not, remove or despawn the entity
-                                livingEntity.setRemoveWhenFarAway(true);
+                            if (!livingEntity.hasMetadata("extraHealth") || (livingEntity instanceof Monster mob && !mob.hasMetadata("extraHealth"))) {
                                 livingEntity.remove();
                             }
                         }

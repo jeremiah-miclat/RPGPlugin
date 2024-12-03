@@ -116,6 +116,9 @@ public class DeadMobListener implements Listener {
 
                 if ((isBoss || isWorldBoss) && bosslvl >= 1) {
                     BossKillMessages.broadcastBossKill(killer.getName(), customName);
+
+
+
                     for (Player player : nearbyPlayers) {
                         UserProfile playerProfile = profileManager.getProfile(player.getName());
 
