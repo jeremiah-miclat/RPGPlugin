@@ -252,7 +252,7 @@ public class RPGPlugin extends JavaPlugin {
         this.chunkManager = new ChunkManager(getDataFolder());
         EffectsAbilityManager effectsAbilityManager = new EffectsAbilityManager(this);
         DamageAbilityManager damageAbilityManager = new DamageAbilityManager(this);
-        MonsterStrengthScalingListener monsterStrScaler = new MonsterStrengthScalingListener();
+//        MonsterStrengthScalingListener monsterStrScaler = new MonsterStrengthScalingListener();
         // Register events
         getServer().getPluginManager().registerEvents(new PlayerJoinListener(profileManager), this);
         getServer().getPluginManager().registerEvents(new PlayerQuitListener(profileManager,vaultManager), this);

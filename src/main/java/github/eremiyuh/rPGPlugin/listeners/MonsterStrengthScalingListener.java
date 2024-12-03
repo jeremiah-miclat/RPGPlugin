@@ -1,5 +1,6 @@
 package github.eremiyuh.rPGPlugin.listeners;
 
+import com.destroystokyo.paper.event.entity.EntityRemoveFromWorldEvent;
 import github.eremiyuh.rPGPlugin.RPGPlugin;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
@@ -94,7 +95,7 @@ public class MonsterStrengthScalingListener implements Listener {
     }
 
     @EventHandler
-    public void onEntityRemoveFromWorld(EntityRemoveEvent event) {
+    public void onEntityRemoveFromWorld(EntityRemoveFromWorldEvent event) {
 
         extraHealthMap.remove(event.getEntity());
     }

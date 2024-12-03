@@ -3,7 +3,10 @@ package github.eremiyuh.rPGPlugin.listeners;
 import github.eremiyuh.rPGPlugin.RPGPlugin;
 import github.eremiyuh.rPGPlugin.manager.BossDropItem;
 import github.eremiyuh.rPGPlugin.manager.PlayerProfileManager;
+import github.eremiyuh.rPGPlugin.methods.BossKillMessages;
 import github.eremiyuh.rPGPlugin.profile.UserProfile;
+import github.scarsz.discordsrv.DiscordSRV;
+import net.dv8tion.jda.api.entities.TextChannel;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -112,6 +115,7 @@ public class DeadMobListener implements Listener {
                 }
 
                 if ((isBoss || isWorldBoss) && bosslvl >= 1) {
+                    BossKillMessages.broadcastBossKill(killer.getName(), customName);
                     for (Player player : nearbyPlayers) {
                         UserProfile playerProfile = profileManager.getProfile(player.getName());
 
@@ -141,6 +145,7 @@ public class DeadMobListener implements Listener {
                                 player.sendMessage("Your inventory was full, so the item has been dropped on the ground.");
                             }
                         }
+
 
                 }
                     event.getDrops().clear();
@@ -418,7 +423,4 @@ public class DeadMobListener implements Listener {
 
         return horizontalDistance <= horizontalRange && verticalDistance <= verticalRange;
     }
-
-
-
 }

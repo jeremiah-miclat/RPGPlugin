@@ -39,14 +39,14 @@ public class TradeCommand implements CommandExecutor {
         // Check for correct number of arguments
         if (args.length != 5) {
             senderPlayer.sendMessage("Usage: /tm <playerName> <materialNameToTrade> <amountToTrade> <materialNameToReceive> <amountToReceive>");
-            return false;
+            return true;
         }
 
         // Retrieve and validate the recipient player
         Player recipient = Bukkit.getPlayer(args[0]);
         if (recipient == null || !recipient.isOnline()) {
             senderPlayer.sendMessage("The specified player is not online.");
-            return false;
+            return true;
         }
 
         if (recipient.getName().equals(senderPlayer.getName())) {
@@ -56,7 +56,7 @@ public class TradeCommand implements CommandExecutor {
         // Check if sender already has an active trade
         if (activeTrades.containsKey(senderPlayer.getUniqueId())) {
             senderPlayer.sendMessage("You already have an active trade.");
-            return false;
+            return true;
         }
 
         // Parse and validate the materials to trade
@@ -64,7 +64,7 @@ public class TradeCommand implements CommandExecutor {
         Material materialToReceive = Material.matchMaterial(args[3].toUpperCase());
         if (materialToTrade == null || materialToReceive == null) {
             senderPlayer.sendMessage("Invalid material specified. Use correct material names. Enter /iteminfo while holding your item to check.");
-            return false;
+            return true;
         }
 
         // Parse and validate the trade amounts
@@ -75,17 +75,17 @@ public class TradeCommand implements CommandExecutor {
             amountToReceive = Integer.parseInt(args[4]);
             if (amountToTrade <= 0 || amountToReceive <= 0) {
                 senderPlayer.sendMessage("Amount must be greater than zero.");
-                return false;
+                return true;
             }
         } catch (NumberFormatException e) {
             senderPlayer.sendMessage("Amount to trade and amount to receive must be valid numbers.");
-            return false;
+            return true;
         }
 
         // Check if sender has enough items to trade
         if (!hasEnoughItems(senderPlayer, materialToTrade, amountToTrade)) {
             senderPlayer.sendMessage("You do not have enough " + materialToTrade.name() + " to complete this trade.");
-            return false;
+            return true;
         }
 
         // Create the trade offer and add it to active trades

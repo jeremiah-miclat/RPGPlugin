@@ -7,10 +7,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockExplodeEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.block.*;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
@@ -262,6 +259,30 @@ public class AreaProtectionListener implements Listener {
         }
 
     }
+    @EventHandler
+    public void onBlockBurn(BlockBurnEvent event) {
+        if (!event.getBlock().getWorld().getName().equals(world.getName()) && !event.getBlock().getWorld().getName().equals("world_rpg")) {
+            return;
+        }
+        Block block = event.getBlock();
+        if (isInProtectedArea(block.getLocation().getBlockX(), block.getLocation().getBlockZ())) {
+            event.setCancelled(true);
+        }
+
+    }
+
+    @EventHandler
+    public void onBlockBurn(BlockIgniteEvent event) {
+        if (!event.getBlock().getWorld().getName().equals(world.getName()) && !event.getBlock().getWorld().getName().equals("world_rpg")) {
+            return;
+        }
+        Block block = event.getBlock();
+        if (isInProtectedArea(block.getLocation().getBlockX(), block.getLocation().getBlockZ())) {
+            event.setCancelled(true);
+        }
+
+    }
+
 
     @EventHandler
     public void onPlayerInteractWithArmorStand(PlayerInteractAtEntityEvent event) {
@@ -407,6 +428,19 @@ public class AreaProtectionListener implements Listener {
     }
 
 
+
+    @EventHandler
+    public void signChange(SignChangeEvent event) {
+        if (!event.getPlayer().getWorld().getName().equals(world.getName()) && !event.getPlayer().getWorld().getName().equals("world_rpg")) {
+            return;
+        }
+
+        if (!event.getPlayer().isOp() && isInProtectedArea(event.getPlayer().getLocation().getBlockX(), event.getPlayer().getLocation().getBlockZ())) {
+
+            event.setCancelled(true);
+
+        }
+    }
 
     // Helper method to check if the material is a trapdoor or fence
     private boolean isTrapdoorOrFence(Material material) {

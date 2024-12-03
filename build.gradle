@@ -15,10 +15,13 @@ repositories {
         name = "sonatype"
         url = "https://oss.sonatype.org/content/groups/public/"
     }
+    maven { url 'https://nexus.scarsz.me/content/groups/public/' }
 }
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.1-R0.1-SNAPSHOT")
+    compileOnly 'com.discordsrv:discordsrv:1.28.0'
+    compileOnly 'net.dv8tion:JDA:5.0.0-alpha.14'  // Ensure this matches the version compatible with DiscordSRV
 }
 
 def targetJavaVersion = 21
