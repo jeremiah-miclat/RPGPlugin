@@ -62,7 +62,7 @@ public class SkillsGui implements CommandExecutor, Listener {
                 addSkillsToGui(gui, "Swordsman", "Int-based damage", "10% Lifesteal", "50% Damage Reduction");
                 break;
             case "archer":
-                addSkillsToGui(gui, "Archer", "Int-based damage", "Balanced Dex & Int", "Pure Dex-based damage");
+                addSkillsToGui(gui, "Archer", "Int-based damage", "Balanced Dex & Int Build", "Bonus Crit Chance");
                 break;
             case "alchemist":
                 addSkillsToGui(gui, "Alchemist", "Instant Damage Potion", "Random Buff/Debuff", "Healing Potion");
