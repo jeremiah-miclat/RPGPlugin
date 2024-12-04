@@ -155,7 +155,7 @@ public class PayBlackSmithCommand implements CommandExecutor, Listener {
         Player player = (Player) event.getPlayer();
         Inventory inventory = event.getInventory();
         // Ensure the event is from our custom Blacksmith inventory
-        if (!Component.text("Blacksmith will fix your equips.").content().equals(event.getView().getTitle())) return;
+        if (!Component.text("Items will be lost for durability.").content().equals(event.getView().getTitle())) return;
 
 
             // Loop through all the items in the blacksmith inventory
@@ -257,7 +257,7 @@ public class PayBlackSmithCommand implements CommandExecutor, Listener {
     }
 
     public void openBlacksmithInventory(Player player) {
-        Inventory blacksmithInventory = Bukkit.createInventory(null, 27, "Blacksmith will fix your equips.");
+        Inventory blacksmithInventory = Bukkit.createInventory(null, 27, "Items will be lost for durability.");
         // Open the inventory for the player
         player.openInventory(blacksmithInventory);
     }

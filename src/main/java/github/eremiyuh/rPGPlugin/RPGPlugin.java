@@ -46,7 +46,6 @@ public class RPGPlugin extends JavaPlugin {
 
 
         loadResources();
-
         // Add a delay (e.g., 5 seconds) before allowing logins
         getServer().getScheduler().runTaskLater(this, () -> serverLoaded = true, 60); // 100 ticks = 5 seconds
 
@@ -59,6 +58,9 @@ public class RPGPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
+
+
+
         int x1 = -150, z1 = 150;
         int x2 = 90, z2 = -110;
 
@@ -237,9 +239,9 @@ public class RPGPlugin extends JavaPlugin {
     private void loadResources() {
         // Load your data, initialize managers, etc.
         // Initialize the profile manager
-        deleteWorld("resource_normal");
-        deleteWorld("resource_nether");
-        deleteWorld("resource_end");
+//        deleteWorld("resource_normal");
+//        deleteWorld("resource_nether");
+//        deleteWorld("resource_end");
         profileManager = new PlayerProfileManager(this);
         shopsManager = new ShopsManager(this);
         shopsManager.loadAllShops();
@@ -320,7 +322,7 @@ public class RPGPlugin extends JavaPlugin {
         Objects.requireNonNull(this.getCommand("rtp")).setExecutor(new RTPCommand(this));
         Objects.requireNonNull(this.getCommand("spawn")).setExecutor(new SpawnCommand(profileManager,playerStatBuff));
         Objects.requireNonNull(this.getCommand("sethome")).setExecutor(new SetHomeCommand(profileManager));
-        Objects.requireNonNull(this.getCommand("home")).setExecutor(new HomeCommand(profileManager));
+        Objects.requireNonNull(this.getCommand("home")).setExecutor(new HomeCommand(profileManager, playerStatBuff));
         Objects.requireNonNull(this.getCommand("homedelete")).setExecutor(new DeleteHomeCommand(profileManager));
         Objects.requireNonNull(this.getCommand("addstamina")).setExecutor(new ConvertFoodCommand(profileManager));
         Objects.requireNonNull(this.getCommand("adddurability")).setExecutor(new PayBlackSmithCommand(profileManager));
@@ -348,6 +350,7 @@ public class RPGPlugin extends JavaPlugin {
         //auth
         getCommand("register").setExecutor(new RegisterCommand(this,profileManager));
         getCommand("login").setExecutor(new LoginCommand(this,profileManager));
+        getCommand("tradinghall").setExecutor(new TradeHall(profileManager));
         this.getCommand("pay").setExecutor(new PayCommand(profileManager));
         this.getCommand("rwseed").setExecutor(new RWSeedCommand());
         getServer().getPluginManager().registerEvents(new PlayerMovementListener(this,profileManager), this);
@@ -372,11 +375,9 @@ public class RPGPlugin extends JavaPlugin {
 
         Objects.requireNonNull(getCommand("junkshop")).setExecutor(new JunkShopCommand(profileManager));
         getServer().getPluginManager().registerEvents(new JunkShopCommand(profileManager), this);
-        despawnAbyssMobsTask();
-
-        createResourceWorld("resource_normal", World.Environment.NORMAL);
-        createResourceWorld("resource_nether", World.Environment.NETHER);
-        createResourceWorld("resource_end", World.Environment.THE_END);
+//        createResourceWorld("resource_normal", World.Environment.NORMAL);
+//        createResourceWorld("resource_nether", World.Environment.NETHER);
+//        createResourceWorld("resource_end", World.Environment.THE_END);
 
     }
 
@@ -438,46 +439,6 @@ public class RPGPlugin extends JavaPlugin {
         folder.delete();
     }
 
-    public void despawnAbyssMobsTask() {
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                // Get worlds named "rpg" and "labyrinth"
-                World rpgWorld = getServer().getWorld("world_rpg");
-                World labyrinthWorld = getServer().getWorld("world_labyrinth2");
-
-                // Check if the worlds are loaded
-                if (rpgWorld != null) {
-                    // Loop through all living entities in the "rpg" world
-                    for (Entity entity : rpgWorld.getLivingEntities()) {
-                        if (entity instanceof LivingEntity && !(entity instanceof Player)) {
-                            LivingEntity livingEntity = (LivingEntity) entity;
-
-                            // Check if the entity has the "extraHealth" metadata
-                            if (!livingEntity.hasMetadata("extraHealth") || (livingEntity instanceof Monster mob && !mob.hasMetadata("extraHealth"))) {
-                                livingEntity.remove();
-                            }
-                        }
-                    }
-                }
-
-                if (labyrinthWorld != null) {
-
-                    for (Entity entity : labyrinthWorld.getLivingEntities()) {
-                        if (entity instanceof LivingEntity && !(entity instanceof Player)) {
-                            LivingEntity livingEntity = (LivingEntity) entity;
-
-
-                            if (!livingEntity.hasMetadata("extraHealth")) {
-                                livingEntity.setRemoveWhenFarAway(true);
-                                livingEntity.remove();
-                            }
-                        }
-                    }
-                }
-            }
-        }.runTaskLater(this, 1200L);
-    }
 
 
 

@@ -201,8 +201,15 @@ public class AlchemistThrowPotion implements Listener {
                                         targetPlayer.removePotionEffect(effect.getType());
                                         target.addPotionEffect(new PotionEffect((PotionEffectType.REGENERATION),100+(int)(intel*10),0,true,true));
                                     }
+                                    if ((!targetProfile.isPvpEnabled() || !throwerProfile.isPvpEnabled()) && (!throwerProfile.getTeam().equals(targetProfile.getTeam()) ||
+                                                    throwerProfile.getTeam().equalsIgnoreCase("none")
+                                            )) {
+                                        targetPlayer.removePotionEffect(effect.getType());
+                                        target.addPotionEffect(new PotionEffect((PotionEffectType.REGENERATION),100,0,true,true));
+                                    }
                                 }
-                                if (target instanceof Player targetPlayer && isPositiveEffect && !throwerProfile.getTeam().equals("none")) {
+                                if (target instanceof Player targetPlayer && isPositiveEffect && !throwerProfile.getTeam().equals("none")
+                                ) {
                                     UserProfile targetProfile = profileManager.getProfile(targetPlayer.getName());
                                     if (!throwerProfile.getTeam().equals(targetProfile.getTeam())) {
                                         targetPlayer.removePotionEffect(effect.getType());

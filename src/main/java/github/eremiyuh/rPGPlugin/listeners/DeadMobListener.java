@@ -115,7 +115,9 @@ public class DeadMobListener implements Listener {
                 }
 
                 if ((isBoss || isWorldBoss) && bosslvl >= 1) {
-                    BossKillMessages.broadcastBossKill(killer.getName(), customName);
+                    if (isWorldBoss) {
+                        BossKillMessages.broadcastBossKill(killer.getName(), customName);
+                    }
 
 
 

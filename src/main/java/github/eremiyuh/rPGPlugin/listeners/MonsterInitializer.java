@@ -171,7 +171,7 @@ public class MonsterInitializer implements Listener {
             return;
         }
 
-        if (Math.random() < .005) { //.0005
+        if (Math.random() < .001) { //.0005
             extraHealth = (extraHealth * 100); // Add 10000% health
             setBossAttributes(entity, maxCoord, "World Boss", ChatColor.DARK_PURPLE);
             entity.setMetadata("worldboss", new FixedMetadataValue(plugin, true));

@@ -1,5 +1,6 @@
 package github.eremiyuh.rPGPlugin.commands;
 
+import github.eremiyuh.rPGPlugin.buffs.PlayerStatBuff;
 import github.eremiyuh.rPGPlugin.manager.PlayerProfileManager;
 import github.eremiyuh.rPGPlugin.profile.UserProfile;
 import org.bukkit.Location;
@@ -13,9 +14,11 @@ import java.util.Map;
 public class HomeCommand implements CommandExecutor {
 
     private final PlayerProfileManager profileManager;
+    private  final PlayerStatBuff playerStatBuff;
 
-    public HomeCommand(PlayerProfileManager profileManager) {
+    public HomeCommand(PlayerProfileManager profileManager, PlayerStatBuff playerStatBuff) {
         this.profileManager = profileManager;
+        this.playerStatBuff = playerStatBuff;
     }
 
     @Override
@@ -60,9 +63,21 @@ public class HomeCommand implements CommandExecutor {
             player.sendMessage("Use /home <homeName> to teleport to a specific home.");
             return true;
         }
-        profile.setEnderPearl(profile.getEnderPearl()-1);
-        player.teleport(homeLocation);
-        player.sendMessage("Teleported to home '" + homeName + "'.");
+
+        if (player.teleport(homeLocation)) {
+            player.sendMessage("Teleported to home '" + homeName + "'.");
+            profile.setEnderPearl(profile.getEnderPearl()-1);
+            playerStatBuff.updatePlayerStatsToNormal(player);
+
+            if (homeLocation.getWorld().getName().contains("labyrinth") || homeLocation.getWorld().getName().contains("_rpg")) {
+                playerStatBuff.updatePlayerStatsToRPG(player);
+            }
+
+        }
+        else {
+            player.sendMessage("Error: failed to teleport error");
+        }
+
         return true;
     }
 }

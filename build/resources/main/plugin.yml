@@ -338,5 +338,8 @@ commands:
     description: Opens a junk inventory for disposing of items.
   junkshop:
     description: Opens junk shop.
+  tradinghall:
+    description: Teleports the player to the trading hall.
+    usage: /tradinghall
 softdepend:
   - DiscordSRV
