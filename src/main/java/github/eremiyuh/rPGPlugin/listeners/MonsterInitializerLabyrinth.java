@@ -65,7 +65,7 @@ public class MonsterInitializerLabyrinth implements Listener {
                 .count();
 
         // Calculate the spawn limit based on players in world_rpg
-        int mobLimit = Math.min(playersInRPGWorld * 10, 100);
+        int mobLimit = Math.min(playersInRPGWorld * 20, 100);
 
         // Count the number of mobs already in the world
         int currentMobCount = countMobsInWorld(event.getLocation().getWorld());
@@ -92,7 +92,7 @@ public class MonsterInitializerLabyrinth implements Listener {
 
         // Loop through all entities in the world and count the mobs
         for (LivingEntity entity : world.getLivingEntities()) {
-            if (entity instanceof Monster && !entity.hasMetadata("boss") && !entity.hasMetadata("worldboss")) {
+            if (entity instanceof Monster) {
                 mobCount++;
             }
         }
@@ -154,7 +154,7 @@ public class MonsterInitializerLabyrinth implements Listener {
 
     // Method to calculate extra attributes (used for both extra health and damage)
     private void calculateExtraAttributes(Location targetLocation, LivingEntity entity) {
-        int maxY = 251; // Starting height
+        int maxY = 250; // Starting height
         int minY = 3; // Minimum height
         double baseHealth = entity.getHealth(); // Base health at max height
         double healthIncrement = 480; // Increment per layer
@@ -173,7 +173,7 @@ public class MonsterInitializerLabyrinth implements Listener {
         double customDamage = Math.min(extraHealth/10, customMaxHealth);
         entity.setMetadata("customDamage", new FixedMetadataValue(plugin, customDamage));
         // Determine the level based on the y-coordinate (1 level every 6 blocks)
-        int lvl = 1 + (maxY - yCoord) / 6;
+        int lvl = (1 + (maxY - yCoord) / 6)*5;
 
         // Set default name for normal monsters
         String normalName = ChatColor.GREEN + "Lvl " + lvl + " " + entity.getType().name();
@@ -182,9 +182,9 @@ public class MonsterInitializerLabyrinth implements Listener {
         entity.setMetadata("customName", new FixedMetadataValue(plugin, normalName));
 
         // Boss scaling logic
-        if (Math.random() < .01) {
+        if (Math.random() < .001) {
             extraHealth *= 10; // Add 1000% health
-            setBossAttributes(entity, targetLocation.getBlockY(), "Boss", ChatColor.RED);
+            setBossAttributes(entity, targetLocation.getBlockY(), "Boss", ChatColor.RED, lvl);
             entity.setMetadata("boss", new FixedMetadataValue(plugin, true));
             entity.setMetadata("lvl", new FixedMetadataValue(plugin, lvl));
             entity.setHealth(Math.min(extraHealth, customMaxHealth));
@@ -194,9 +194,9 @@ public class MonsterInitializerLabyrinth implements Listener {
         }
 
         // World Boss scaling logic
-        if (Math.random() < 0.001) {
+        if (Math.random() < 0.0001) {
             extraHealth *= 100; // Add 10000% health
-            setBossAttributes(entity, targetLocation.getBlockY(), "World Boss", ChatColor.DARK_PURPLE);
+            setBossAttributes(entity, targetLocation.getBlockY(), "World Boss", ChatColor.DARK_PURPLE, lvl);
             entity.setMetadata("worldboss", new FixedMetadataValue(plugin, true));
             entity.setMetadata("lvl", new FixedMetadataValue(plugin, lvl));
 
@@ -212,9 +212,9 @@ public class MonsterInitializerLabyrinth implements Listener {
     }
 
 
-    private void setBossAttributes(LivingEntity entity, double maxCoord, String type, ChatColor color) {
+    private void setBossAttributes(LivingEntity entity, double maxCoord, String type, ChatColor color, int level) {
         // Set the boss name based on the Y-level (maxCoord) and other parameters
-        String bossName = color + "Lvl " + (int) (Math.floor(maxCoord) / 100) + " " + type + " " + entity.getType().name();
+        String bossName = color + "Lvl " + level + " " + type + " " + entity.getType().name();
         entity.setMetadata("customName", new FixedMetadataValue(plugin, bossName));
         entity.setRemoveWhenFarAway(false);
         entity.setCustomNameVisible(true);

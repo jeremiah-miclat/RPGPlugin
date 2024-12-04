@@ -129,7 +129,9 @@ public class DeadMobListener implements Listener {
 //                        }
                         distributeDrops(player, event, dropMultiplier);
 
-                        if (bosslvl < 10) return;
+                        if (bosslvl > 9) {
+
+
 
                         BossDropItem dropItem = isBoss ? BossDropItem.getRandomBossDropItem(regularBossDrops) : BossDropItem.getRandomBossDropItem(worldBossDrops);
 
@@ -148,7 +150,7 @@ public class DeadMobListener implements Listener {
                                 player.sendMessage("Your inventory was full, so the item has been dropped on the ground.");
                             }
                         }
-
+                        }
 
                 }
                     event.getDrops().clear();
@@ -159,7 +161,6 @@ public class DeadMobListener implements Listener {
 
             applyRewards(killer, killerProfile, health, 0, 0);
             distributeDrops(killer, event, dropMultiplier);
-
             if (!killerTeam.equals("none")) {
                 UserProfile teamOwnerProfile = profileManager.getProfile(killerProfile.getTeam());
                 List<String> killerTeamMatesNames = teamOwnerProfile.getTeamMembers();

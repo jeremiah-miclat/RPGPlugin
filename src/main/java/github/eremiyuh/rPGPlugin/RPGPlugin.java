@@ -464,7 +464,7 @@ public class RPGPlugin extends JavaPlugin {
                 if (labyrinthWorld != null) {
 
                     for (Entity entity : labyrinthWorld.getLivingEntities()) {
-                        if (entity instanceof LivingEntity) {
+                        if (entity instanceof LivingEntity && !(entity instanceof Player)) {
                             LivingEntity livingEntity = (LivingEntity) entity;
 
 

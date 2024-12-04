@@ -349,11 +349,6 @@ public class DamageListener implements Listener {
                             attackerList.add(attackerName);
                             victim.setMetadata("attackerList", new FixedMetadataValue(plugin, attackerList)); // Update metadata
                         }
-                    } else {
-
-                        List<String> newAttackerList = new ArrayList<>();
-                        newAttackerList.add(attacker.getName());
-                        victim.setMetadata("attackerList", new FixedMetadataValue(plugin, newAttackerList)); // Set new metadata
                     }
                     if (attackerProfile != null) {
                       try {
@@ -406,11 +401,6 @@ public class DamageListener implements Listener {
                             attackerList.add(attackerName);
                             victim.setMetadata("attackerList", new FixedMetadataValue(plugin, attackerList)); // Update metadata
                         }
-                    } else {
-                        // Initialize the attacker list if it doesn't exist
-                        List<String> newAttackerList = new ArrayList<>();
-                        newAttackerList.add(attacker.getName());
-                        victim.setMetadata("attackerList", new FixedMetadataValue(plugin, newAttackerList)); // Set new metadata
                     }
                     if (attackerProfile != null) {
                         if (attackerProfile.getChosenClass().equalsIgnoreCase("alchemist") && attacker.getName().equals(victim.getName())) {event.setCancelled(true); return;}
