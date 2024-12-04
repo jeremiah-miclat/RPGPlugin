@@ -76,7 +76,7 @@ public class AreaProtectionListener implements Listener {
         if (isInNoSpawnArea(entity.getLocation().getBlockX(), entity.getLocation().getBlockZ())
                 && (entity.getWorld().getName().equals(world.getName()) || entity.getWorld().getName().equals("world_rpg"))) {
 
-            if (entity instanceof Monster) {
+            if (entity instanceof Monster || entity instanceof Phantom) {
                 event.setCancelled(true);
             }
         }

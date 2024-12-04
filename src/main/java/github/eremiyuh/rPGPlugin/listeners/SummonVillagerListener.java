@@ -14,6 +14,8 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.MerchantRecipe;
+import org.bukkit.inventory.meta.EnchantmentStorageMeta;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 
 import org.bukkit.potion.PotionEffect;
@@ -525,15 +527,28 @@ public class SummonVillagerListener implements Listener {
     }
 
     private MerchantRecipe createEnchantedTradeWithBook(Material ingredient, int ingredientCount, Material result, int resultCount, Enchantment enchantment, int enchantmentLevel) {
+        // Create the enchanted book item stack
+        ItemStack enchantedBook = new ItemStack(Material.ENCHANTED_BOOK);
+
+        // Get the item meta of the enchanted book to modify it
+        EnchantmentStorageMeta meta = (EnchantmentStorageMeta) enchantedBook.getItemMeta();
+        if (meta != null) {
+            // Add the enchantment to the item meta
+            meta.addStoredEnchant(enchantment, enchantmentLevel, true);
+            enchantedBook.setItemMeta(meta); // Apply the changes to the book
+        }
+
+
+
         ItemStack ingredientItem = new ItemStack(ingredient, ingredientCount);
         ItemStack bookItem = new ItemStack(Material.BOOK, 1);
-        ItemStack resultItem = new ItemStack(result, resultCount);
+//        ItemStack resultItem = new ItemStack(enchantedBook.getType(), resultCount);
 
         // Apply the specified enchantment to the result item
-        resultItem.addUnsafeEnchantment(enchantment, enchantmentLevel);
+//        resultItem.addUnsafeEnchantment(enchantment, enchantmentLevel);
 
         // Create the trade with two ingredients (main ingredient and a book)
-        MerchantRecipe recipe = new MerchantRecipe(resultItem, Integer.MAX_VALUE);
+        MerchantRecipe recipe = new MerchantRecipe(enchantedBook, Integer.MAX_VALUE);
         recipe.setIngredients(Arrays.asList(ingredientItem, bookItem));
         return recipe;
     }
