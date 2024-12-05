@@ -122,8 +122,8 @@ public class PayBlackSmithCommand implements CommandExecutor, Listener {
         durabilityMap.put(Material.FLINT_AND_STEEL, 100);
         durabilityMap.put(Material.COAL, 50);
         durabilityMap.put(Material.CHARCOAL, 50);
-        durabilityMap.put(Material.BLAZE_ROD, 90);
-        durabilityMap.put(Material.BLAZE_POWDER, 30);
+        durabilityMap.put(Material.BLAZE_ROD, 15);
+        durabilityMap.put(Material.BLAZE_POWDER, 5);
         durabilityMap.put(Material.REDSTONE, 10);
         durabilityMap.put(Material.REDSTONE_BLOCK, 90);
         durabilityMap.put(Material.MINECART, 300);

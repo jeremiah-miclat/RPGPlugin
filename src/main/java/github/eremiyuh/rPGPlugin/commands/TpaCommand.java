@@ -1,5 +1,6 @@
 package github.eremiyuh.rPGPlugin.commands;
 
+import github.eremiyuh.rPGPlugin.buffs.PlayerStatBuff;
 import github.eremiyuh.rPGPlugin.manager.PlayerProfileManager;
 import github.eremiyuh.rPGPlugin.profile.UserProfile;
 import org.bukkit.Bukkit;
@@ -19,11 +20,14 @@ public class TpaCommand implements CommandExecutor {
     private final JavaPlugin plugin;
     private final HashMap<String, String> teleportRequests;
     private final PlayerProfileManager profileManager;
+    private final PlayerStatBuff playerStatBuff;
 
-    public TpaCommand(JavaPlugin plugin, HashMap<String, String> teleportRequests, PlayerProfileManager profileManager) {
+
+    public TpaCommand(JavaPlugin plugin, HashMap<String, String> teleportRequests, PlayerProfileManager profileManager, PlayerStatBuff playerStatBuff) {
         this.plugin = plugin;
         this.teleportRequests = teleportRequests;
         this.profileManager = profileManager;
+        this.playerStatBuff = playerStatBuff;
     }
 
     @Override
@@ -68,6 +72,13 @@ public class TpaCommand implements CommandExecutor {
 
             // Teleport the requester to the accepter's location
             if (requester.teleport(accepter.getLocation())) {
+                if (!accepter.getWorld().getName().contains("_rpg") && !accepter.getWorld().getName().contains("labyrinth")) {
+                    playerStatBuff.updatePlayerStatsToNormal(requester);
+                }
+
+                if (accepter.getWorld().getName().contains("_rpg") || accepter.getWorld().getName().contains("labyrinth")) {
+                    playerStatBuff.updatePlayerStatsToRPG(requester);
+                }
                 requesterProfile.setEnderPearl(requesterProfile.getEnderPearl() - 1);
                 accepter.sendMessage(ChatColor.GREEN + "You have successfully teleported " + requester.getName() + " to your location.");
                 requester.sendMessage(ChatColor.GREEN + "You have been teleported to " + accepter.getName() + "'s location.");
