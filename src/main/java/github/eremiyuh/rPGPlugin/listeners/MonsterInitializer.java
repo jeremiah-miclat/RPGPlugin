@@ -44,7 +44,7 @@ public class MonsterInitializer implements Listener {
                 .count();
 
         // Calculate the spawn limit based on players in world_rpg
-        int mobLimit = Math.min(playersInRPGWorld * 10, 150);
+        int mobLimit = Math.min(playersInRPGWorld * 20, 150);
 
         // Count the number of mobs already in the world
         int currentMobCount = countMobsInWorld(event.getLocation().getWorld());
@@ -217,7 +217,7 @@ public class MonsterInitializer implements Listener {
         if (entity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED) != null) {
             double baseSpeed = Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)).getBaseValue();
             double newSpeed = baseSpeed * speedMultiplier; // Apply the calculated multiplier
-            Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)).setBaseValue(newSpeed+.05);
+            Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)).setBaseValue(newSpeed);
         }
 
         // Set extra jump strength if applicable

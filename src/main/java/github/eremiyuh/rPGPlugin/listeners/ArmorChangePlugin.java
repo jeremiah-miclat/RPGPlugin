@@ -44,9 +44,9 @@ public class ArmorChangePlugin  implements Listener {
 
 
         String worldName = Objects.requireNonNull(player.getLocation().getWorld()).getName();
+
         if (worldName.equals("world_rpg") || worldName.contains("world_labyrinth")) {
-
-
+            if (player.getHealth() <= 0) return;
             try {
                 playerStatBuff.updatePlayerStatsToRPG(player);
 
@@ -54,22 +54,23 @@ public class ArmorChangePlugin  implements Listener {
                 e.printStackTrace();
             }
 
-
-
-
         } else {
-
-
             try {
+                if (player.getHealth() <= 0) return;
                 playerStatBuff.updatePlayerStatsToNormal(player);
 
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
-
-
         }
+
+//        new BukkitRunnable() {
+//            @Override
+//            public void run() {
+//
+//            }
+//        }.runTaskLater(plugin, 1);
     }
 
     @EventHandler
@@ -82,6 +83,7 @@ public class ArmorChangePlugin  implements Listener {
             public void run() {
                 if (worldName.equals("world_rpg") || worldName.contains("world_labyrinth")) {
                     try {
+                        if (player.getHealth() <= 0) return;
                         playerStatBuff.updatePlayerStatsToRPG(player);
 
                     } catch (Exception e) {
@@ -90,6 +92,7 @@ public class ArmorChangePlugin  implements Listener {
 
                 } else {
                     try {
+                        if (player.getHealth() <= 0) return;
                         playerStatBuff.updatePlayerStatsToNormal(player);
 
                     } catch (Exception e) {

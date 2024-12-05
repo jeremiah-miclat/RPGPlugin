@@ -613,7 +613,7 @@ public class DamageListener implements Listener {
         // Swordsman-specific ability if holding a sword
         if (damagerProfile.getChosenClass().equalsIgnoreCase("swordsman") && weapon.getType().toString().endsWith("_SWORD")) {
             effectsAbilityManager.applyAbility(damagerProfile, target, damagerLocation, damagedLocation);
-            if (target instanceof Monster mob && damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
+            if (target instanceof Monster mob && (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 2") || damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 3"))) {
                 mob.setTarget(attacker);
             }
         }

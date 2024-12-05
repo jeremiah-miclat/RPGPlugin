@@ -104,7 +104,7 @@ public class DeadMobListener implements Listener {
                 List<String> attackerNames = (List<String>) mob.getMetadata("attackerList").get(0).value();
                 List<Player> nearbyPlayers = new ArrayList<>();
 
-                if (world.getName().contains("labyrinth")) {xValidRange = 10; yValidRange = 3;}
+                if (world.getName().contains("labyrinth")) {xValidRange = 60; yValidRange = 5;}
 
                 // Iterate over the list of attacker names and check if they are players nearby
                 for (String attackerName : attackerNames) {

@@ -57,6 +57,7 @@ public class SetHomeCommand implements CommandExecutor {
         Location location = player.getLocation();
         if (profile.addHome(homeName, location)) {
             player.sendMessage("Home '" + homeName + "' set!");
+            profileManager.saveProfile(player.getName());
         } else {
             player.sendMessage("Could not set home.");
         }

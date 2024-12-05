@@ -238,7 +238,7 @@ public class MonsterInitializerLabyrinth implements Listener {
         if (entity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED) != null) {
             double baseSpeed = Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)).getBaseValue();
             double newSpeed = baseSpeed * speedMultiplier; // Apply the calculated speed multiplier
-            Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)).setBaseValue(newSpeed+.05);
+            Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)).setBaseValue(newSpeed);
         }
 
         // Set extra jump strength if applicable

@@ -21,7 +21,9 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import static github.eremiyuh.rPGPlugin.utils.ItemUtils.getAbyssOre;
 import static github.eremiyuh.rPGPlugin.utils.ItemUtils.getAbyssPotion;
@@ -54,26 +56,35 @@ public class AbyssStoreCommand implements CommandExecutor, Listener {
 
         // Create the Abyss Mana Stone item
         ItemStack abyssIngot = getAbyssIngot();
-
-
-
         abyssStore.setItem(3, abyssIngot); // Place the Abyss Mana Stone in the center of the inventory
 
-        // Open the Abyss Store GUI for the player
-        player.openInventory(abyssStore);
-
-
+        // Create the Abyss Potion item
         ItemStack abyssPotion = getAbyssPotion();
         abyssStore.setItem(5, abyssPotion);
 
-
+        // Create the Abyss Ore item
         ItemStack abyssOre = getAbyssOre();
         abyssStore.setItem(1, abyssOre);
 
-
+        // Create the Ender Pearl item
         ItemStack enderPearl = new ItemStack(Material.ENDER_PEARL);
-        abyssStore.setItem(7, enderPearl);
+        ItemMeta enderPearlMeta = enderPearl.getItemMeta(); // Get the ItemMeta of the Ender Pearl
+
+        if (enderPearlMeta != null) {
+            // Add lore to show the cost
+            List<Component> lore = new ArrayList<>();
+            lore.add(Component.text("Cost: 10,000 Abyss Points").color(TextColor.color(255, 215, 0))); // Gold color for cost
+            enderPearlMeta.lore(lore); // Set the lore to the ItemMeta
+
+            enderPearl.setItemMeta(enderPearlMeta); // Apply the modified ItemMeta to the Ender Pearl
+        }
+
+        abyssStore.setItem(7, enderPearl); // Place the Ender Pearl with the lore at the 7th slot
+
+        // Open the Abyss Store GUI for the player
+        player.openInventory(abyssStore);
     }
+
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
