@@ -69,6 +69,10 @@ public class AbyssStoreCommand implements CommandExecutor, Listener {
 
         ItemStack abyssOre = getAbyssOre();
         abyssStore.setItem(1, abyssOre);
+
+
+        ItemStack enderPearl = new ItemStack(Material.ENDER_PEARL);
+        abyssStore.setItem(7, enderPearl);
     }
 
     @EventHandler
@@ -107,6 +111,16 @@ public class AbyssStoreCommand implements CommandExecutor, Listener {
                 if (userProfile.getAbysspoints() >= 1000) {
                     userProfile.setAbysspoints(userProfile.getAbysspoints() - 1000); // Deduct Abyss Points
                     dropOrNotify(player, ItemUtils.getAbyssPotion(), "Successfully purchased Abyss Potion!");
+                } else {
+                    player.sendMessage(Component.text("You do not have enough Abyss Points!").color(TextColor.color(255, 0, 0)));
+                }
+            }
+
+            // Ender Pearl (10,000 Abyss Points)
+            if (event.getSlot() == 7 && event.getCurrentItem() != null && event.getCurrentItem().getType() == Material.ENDER_PEARL) {
+                if (userProfile.getAbysspoints() >= 10000) {
+                    userProfile.setAbysspoints(userProfile.getAbysspoints() - 10000); // Deduct Abyss Points
+                    dropOrNotify(player, new ItemStack(Material.ENDER_PEARL), "Successfully purchased Ender Pearl!");
                 } else {
                     player.sendMessage(Component.text("You do not have enough Abyss Points!").color(TextColor.color(255, 0, 0)));
                 }
