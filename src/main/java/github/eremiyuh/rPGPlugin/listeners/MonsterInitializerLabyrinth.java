@@ -92,7 +92,13 @@ public class MonsterInitializerLabyrinth implements Listener {
 
         // Loop through all entities in the world and count the mobs
         for (LivingEntity entity : world.getLivingEntities()) {
-            if (entity instanceof Monster) {
+            if (!entity.hasMetadata("extraHealth") && !(entity instanceof Player)) {
+                entity.remove();
+            }
+
+            if (!(entity instanceof Player) && !entity.hasMetadata("worldboss")
+                    && entity.hasMetadata("extraHealth")
+            ) {
                 mobCount++;
             }
         }
@@ -182,7 +188,7 @@ public class MonsterInitializerLabyrinth implements Listener {
         entity.setMetadata("customName", new FixedMetadataValue(plugin, normalName));
 
         // Boss scaling logic
-        if (Math.random() < .05) {
+        if (Math.random() < .09) {
             extraHealth *= 10; // Add 1000% health
             setBossAttributes(entity, targetLocation.getBlockY(), "Boss", ChatColor.RED, lvl);
             entity.setMetadata("boss", new FixedMetadataValue(plugin, true));
@@ -199,12 +205,16 @@ public class MonsterInitializerLabyrinth implements Listener {
             setBossAttributes(entity, targetLocation.getBlockY(), "World Boss", ChatColor.DARK_PURPLE, lvl);
             entity.setMetadata("worldboss", new FixedMetadataValue(plugin, true));
             entity.setMetadata("lvl", new FixedMetadataValue(plugin, lvl));
-
             entity.setHealth(Math.min(extraHealth, customMaxHealth));
             entity.setMetadata("extraHealth", new FixedMetadataValue(plugin, extraHealth));
             Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(customDamage*3);
+            entity.setCustomNameVisible(true);
+            entity.setGlowing(true);
+            entity.setRemoveWhenFarAway(false);
+            entity.setPersistent(true);
             return;
         }
+
         entity.setHealth(Math.min(extraHealth, customMaxHealth));
         Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(customDamage);
 
@@ -216,9 +226,7 @@ public class MonsterInitializerLabyrinth implements Listener {
         // Set the boss name based on the Y-level (maxCoord) and other parameters
         String bossName = color + "Lvl " + level + " " + type + " " + entity.getType().name();
         entity.setMetadata("customName", new FixedMetadataValue(plugin, bossName));
-        entity.setRemoveWhenFarAway(false);
-        entity.setCustomNameVisible(true);
-        entity.setPersistent(true);
+
         // Calculate speed multiplier based on the floor (Y-level)
         // At Y-level 3, multiplier = 5; at Y-level 251, multiplier = 1
         double speedMultiplier = 1 + 4 * (251 - maxCoord) / 248.0;  // Interpolates the speed multiplier between 5 and 1
@@ -230,7 +238,7 @@ public class MonsterInitializerLabyrinth implements Listener {
         if (entity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED) != null) {
             double baseSpeed = Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)).getBaseValue();
             double newSpeed = baseSpeed * speedMultiplier; // Apply the calculated speed multiplier
-            Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)).setBaseValue(newSpeed);
+            Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)).setBaseValue(newSpeed+.05);
         }
 
         // Set extra jump strength if applicable

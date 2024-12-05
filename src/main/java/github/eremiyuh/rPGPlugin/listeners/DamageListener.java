@@ -9,6 +9,7 @@ import github.eremiyuh.rPGPlugin.profile.UserProfile;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.damage.DamageSource;
 import org.bukkit.damage.DamageType;
 import org.bukkit.enchantments.Enchantment;
@@ -696,17 +697,38 @@ public class DamageListener implements Listener {
 
 
         try {
-            if (PlayerBuffPerms.canLifeSteal(damagerProfile) && attacker.getInventory().getItemInMainHand().getType().toString().endsWith("_SWORD")) {
+            if (attacker == null || damagerProfile == null) {
+                System.err.println("Attacker or damagerProfile is null.");
+                return;
+            }
 
-                double lifestealAmount = (finalDamage
-//                    *dmgReductionMultiplier
-                ) * 0.1; // 1% lifesteal
-                double maxHealth = Objects.requireNonNull(attacker.getAttribute(Attribute.GENERIC_MAX_HEALTH)).getValue(); // Get max health using attribute
-                double newHealth = Math.min(attacker.getHealth() + lifestealAmount, maxHealth); // Avoid exceeding max health
+            if (PlayerBuffPerms.canLifeSteal(damagerProfile)
+                    && attacker.getInventory().getItemInMainHand().getType().toString().endsWith("_SWORD")) {
+
+                AttributeInstance maxHealthAttribute = attacker.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+                if (maxHealthAttribute == null) {
+                    System.err.println("Attacker does not have the GENERIC_MAX_HEALTH attribute.");
+                    return;
+                }
+
+                double maxHealth = maxHealthAttribute.getValue();
+                double currentHealth = attacker.getHealth();
+                if (currentHealth <= 0) {
+                    System.err.println("Attacker is dead or has invalid health.");
+                    return;
+                }
+
+                if (finalDamage <= 0) {
+                    System.err.println("Final damage is non-positive, no lifesteal will be applied.");
+                    return;
+                }
+
+                double lifestealAmount = finalDamage * 0.1; // 10% lifesteal
+                double newHealth = Math.min(currentHealth + lifestealAmount, maxHealth);
                 attacker.setHealth(newHealth);
             }
-        }  catch (Exception e) {
-            // Handle exceptions gracefully, log the error, etc.
+        } catch (Exception e) {
+            System.err.println("An error occurred in the lifesteal logic.");
             e.printStackTrace();
         }
 
@@ -1088,6 +1110,15 @@ public class DamageListener implements Listener {
             calculatedDamage /= 2;
         } else {
             damagerProfile.setStamina(damagerProfile.getStamina() - 1);
+        }
+
+        if (damagerProfile.getDurability() <= 0) {
+            damagerProfile.setDurability(0);
+            if (damagerProfile.isBossIndicator()) {
+                player.sendMessage("Durability depleted. You will take more damage. /sdw to turn off this warning");
+            }
+        } else {
+            damagerProfile.setDurability(damagerProfile.getDurability() - 1);
         }
 
 

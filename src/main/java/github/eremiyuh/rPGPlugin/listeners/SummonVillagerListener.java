@@ -29,7 +29,7 @@ public class SummonVillagerListener implements Listener {
     public void onVillagerSpawn(CreatureSpawnEvent event) {
         if (event.getEntityType() == EntityType.VILLAGER) {
             Villager villager = (Villager) event.getEntity();
-            villager.setCustomNameVisible(true);
+//            villager.setCustomNameVisible(true);
             // Check if the villager was spawned using a spawn egg with a custom name "Armorer"
             if (villager.customName() != null && Objects.equals(villager.customName(), Component.text("Armorer"))) {
                 setupArmorerVillager(villager);

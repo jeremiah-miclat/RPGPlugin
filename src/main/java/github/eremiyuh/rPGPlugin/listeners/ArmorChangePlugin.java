@@ -47,13 +47,27 @@ public class ArmorChangePlugin  implements Listener {
         if (worldName.equals("world_rpg") || worldName.contains("world_labyrinth")) {
 
 
+            try {
                 playerStatBuff.updatePlayerStatsToRPG(player);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
 
 
 
         } else {
 
+
+            try {
                 playerStatBuff.updatePlayerStatsToNormal(player);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+
 
         }
     }
@@ -67,9 +81,21 @@ public class ArmorChangePlugin  implements Listener {
             @Override
             public void run() {
                 if (worldName.equals("world_rpg") || worldName.contains("world_labyrinth")) {
-                    playerStatBuff.updatePlayerStatsToRPG(player);
+                    try {
+                        playerStatBuff.updatePlayerStatsToRPG(player);
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
                 } else {
-                    playerStatBuff.updatePlayerStatsToNormal(player);
+                    try {
+                        playerStatBuff.updatePlayerStatsToNormal(player);
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
                 }
             }
         }.runTaskLater(plugin, 1);

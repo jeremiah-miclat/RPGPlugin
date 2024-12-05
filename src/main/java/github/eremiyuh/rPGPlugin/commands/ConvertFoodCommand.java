@@ -185,7 +185,7 @@ public class ConvertFoodCommand implements CommandExecutor, Listener {
                 player.getInventory().addItem(item);
             }
         }
-
+        profileManager.saveProfile(player.getName());
         inventory.clear();
     }
 }

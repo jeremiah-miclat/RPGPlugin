@@ -131,7 +131,7 @@ public class DeadMobListener implements Listener {
 //                        }
                         distributeDrops(player, event, dropMultiplier);
 
-                        if (bosslvl > 9) {
+                        if (bosslvl > 9 && isWorldBoss) {
 
 
 

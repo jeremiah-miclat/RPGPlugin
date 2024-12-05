@@ -189,7 +189,7 @@ public class PayBlackSmithCommand implements CommandExecutor, Listener {
                     player.getInventory().addItem(item);
                 }
             }
-
+            profileManager.saveProfile(player.getName());
             // Clear the blacksmith inventory after processing
             inventory.clear();
 

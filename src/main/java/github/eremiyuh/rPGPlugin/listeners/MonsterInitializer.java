@@ -44,10 +44,11 @@ public class MonsterInitializer implements Listener {
                 .count();
 
         // Calculate the spawn limit based on players in world_rpg
-        int mobLimit = Math.min(playersInRPGWorld * 6, 60);
+        int mobLimit = Math.min(playersInRPGWorld * 10, 150);
 
         // Count the number of mobs already in the world
         int currentMobCount = countMobsInWorld(event.getLocation().getWorld());
+
 
         // Cancel the spawn if the mob limit is reached
         if (currentMobCount >= mobLimit) {
@@ -77,13 +78,20 @@ public class MonsterInitializer implements Listener {
 
         // Loop through all entities in the world and count the mobs
         for (LivingEntity entity : world.getLivingEntities()) {
-            if (entity instanceof Monster && !entity.hasMetadata("boss") && !entity.hasMetadata("worldboss")) {
+            if (entity instanceof Monster && !entity.hasMetadata("extraHealth")) {
+                entity.remove();
+            }
+
+            if (entity instanceof Monster && !entity.hasMetadata("worldboss")
+                && entity.hasMetadata("extraHealth")
+            ) {
                 mobCount++;
             }
         }
 
         return mobCount;
     }
+
 
 
 
@@ -156,18 +164,16 @@ public class MonsterInitializer implements Listener {
         double customDamage = Math.min(extraHealth/10, customMaxHealth);
 
 
-        if (Math.random() < .05) { //.005
+        if (Math.random() < .09) { //.005
             extraHealth = (extraHealth * 10); // Add 1000% health
             setBossAttributes(entity, maxCoord, "Boss", ChatColor.RED);
             entity.setMetadata("boss", new FixedMetadataValue(plugin, true));
             entity.setMetadata("lvl", new FixedMetadataValue(plugin, lvl));
             entity.setMetadata("extraHealth", new FixedMetadataValue(plugin, extraHealth));
-
+//            entity.setGlowing(true);
             entity.setHealth(Math.min(extraHealth, customMaxHealth));
             Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(customDamage*2);
             entity.setMetadata("customDamage", new FixedMetadataValue(plugin, customDamage*2));
-
-
             return;
         }
 
@@ -177,11 +183,13 @@ public class MonsterInitializer implements Listener {
             entity.setMetadata("worldboss", new FixedMetadataValue(plugin, true));
             entity.setMetadata("lvl", new FixedMetadataValue(plugin, lvl));
             entity.setMetadata("extraHealth", new FixedMetadataValue(plugin, extraHealth));
-
+            entity.setGlowing(true);
             entity.setHealth(Math.min(extraHealth, customMaxHealth));
             Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(customDamage*3);
             entity.setMetadata("customDamage", new FixedMetadataValue(plugin, customDamage*3));
-
+            entity.setRemoveWhenFarAway(false);
+            entity.setPersistent(true);
+            entity.setCustomNameVisible(true);
             return;
         }
 
@@ -194,11 +202,10 @@ public class MonsterInitializer implements Listener {
     private void setBossAttributes(LivingEntity entity, double maxCoord, String type, ChatColor color) {
         String bossName = color + "Lvl " + (int) (Math.floor(maxCoord) / 100) + " " + type + " " + entity.getType().name();
         entity.setCustomName(bossName);
-        entity.setCustomNameVisible(true);
-        entity.setRemoveWhenFarAway(false);
-        entity.setPersistent(true);
+
+
         entity.setMetadata("customName", new FixedMetadataValue(plugin, bossName));
-        entity.setGlowing(true);
+
         // Update health indicator
         setHealthIndicator(entity);
 
@@ -210,7 +217,7 @@ public class MonsterInitializer implements Listener {
         if (entity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED) != null) {
             double baseSpeed = Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)).getBaseValue();
             double newSpeed = baseSpeed * speedMultiplier; // Apply the calculated multiplier
-            Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)).setBaseValue(newSpeed);
+            Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)).setBaseValue(newSpeed+.05);
         }
 
         // Set extra jump strength if applicable
