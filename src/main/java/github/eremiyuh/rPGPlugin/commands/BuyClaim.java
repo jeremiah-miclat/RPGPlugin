@@ -48,7 +48,7 @@ public class BuyClaim implements CommandExecutor {
         double playerClaimPoints = profile.getClaimPoints();
 
         // Calculate the total cost for the requested claim points
-        double totalCost = numberOfClaims * 100; // 10 diamond per claim point
+        double totalCost = numberOfClaims * 10; // 10 diamond per claim point
 
         // Check if the player has enough diamonds
         if (playerEmeralds >= totalCost) {

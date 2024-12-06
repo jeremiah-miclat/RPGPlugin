@@ -648,8 +648,8 @@ public class UserProfile {
     }
 
     public boolean addHome(String name, Location location) {
-        if (homes.size() < maxHomes) {
-            homes.put(name, location);
+        if (this.homes.size() < maxHomes) {
+            this.homes.put(name, location);
             return true;
         }
         return false;
@@ -679,11 +679,13 @@ public class UserProfile {
     }
 
     public boolean removeHome(String homeName) {
-        if (homes.containsKey(homeName)) {
-            homes.remove(homeName);
+        if (this.homes.containsKey(homeName)) {
+            this.homes.remove(homeName);
             return true;
         }
-        return false;
+        else {
+            return false;
+        }
     }
 
     public int getJunkPoints() {

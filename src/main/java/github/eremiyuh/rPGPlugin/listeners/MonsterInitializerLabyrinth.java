@@ -65,7 +65,7 @@ public class MonsterInitializerLabyrinth implements Listener {
                 .count();
 
         // Calculate the spawn limit based on players in world_rpg
-        int mobLimit = Math.min(playersInRPGWorld * 20, 100);
+        int mobLimit = Math.min(playersInRPGWorld * 30, 200);
 
         // Count the number of mobs already in the world
         int currentMobCount = countMobsInWorld(event.getLocation().getWorld());

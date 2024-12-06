@@ -9,10 +9,8 @@ import org.bukkit.Chunk;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
-import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
-import org.bukkit.entity.ThrowableProjectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
@@ -20,8 +18,6 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 public class ChunkProtectionListener implements Listener {
@@ -30,41 +26,11 @@ public class ChunkProtectionListener implements Listener {
     private final ChunkBorderRedVisualizer chunkBorderRedVisualizer;
     private final ShopsManager shopsManager;
 
-    // Caching chunk ownership data for quicker access
-    private final Map<Chunk, OwnedChunk> cachedOwnedChunks = new HashMap<>();
-    private final Map<Chunk, String> cachedOwners = new HashMap<>();
-
     public ChunkProtectionListener(ChunkManager chunkManager, ChunkBorderBlueVisualizer chunkBorderBlueVisualizer, ChunkBorderRedVisualizer chunkBorderRedVisualizer, ShopsManager shopsManager) {
         this.chunkManager = chunkManager;
         this.chunkBorderBlueVisualizer = chunkBorderBlueVisualizer;
         this.chunkBorderRedVisualizer = chunkBorderRedVisualizer;
         this.shopsManager = shopsManager;
-    }
-
-    // Helper method to get cached owned chunk
-    private OwnedChunk getCachedOwnedChunk(Chunk chunk) {
-        // Check cache first
-        OwnedChunk ownedChunk = cachedOwnedChunks.get(chunk);
-        if (ownedChunk == null) {
-            ownedChunk = chunkManager.getOwnedChunk(chunk);
-            if (ownedChunk != null) {
-                cachedOwnedChunks.put(chunk, ownedChunk);
-            }
-        }
-        return ownedChunk;
-    }
-
-    // Helper method to get cached chunk owner
-    private String getCachedOwner(Chunk chunk) {
-        // Check cache first
-        String owner = cachedOwners.get(chunk);
-        if (owner == null) {
-            owner = chunkManager.getOwner(chunk);
-            if (owner != null) {
-                cachedOwners.put(chunk, owner);
-            }
-        }
-        return owner;
     }
 
     // Handle entity damage events (player vs entity or player vs projectile)
@@ -92,7 +58,6 @@ public class ChunkProtectionListener implements Listener {
     public void onPlayerInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
 
-
         if (event.hasBlock()) { // Check if the interaction involves a block
             Block block = event.getClickedBlock();
             assert block != null;
@@ -110,7 +75,6 @@ public class ChunkProtectionListener implements Listener {
                 }
 
                 chunkHasOwnedChunkNearbyVisualizer(chunk, player);
-
             }
         }
     }
@@ -122,7 +86,7 @@ public class ChunkProtectionListener implements Listener {
         Chunk chunk = block.getChunk();
 
         // Check if the block being placed is a piston or sticky piston
-        if (block.getType() == Material.PISTON || block.getType() == Material.STICKY_PISTON) {
+        if (block.getType() == Material.PISTON || block.getType() == Material.STICKY_PISTON || block.getType() == Material.TNT) {
 
             // Iterate through neighboring chunks in a 1-radius around the chunk where the piston is being placed
             for (int xOffset = -1; xOffset <= 1; xOffset++) {
@@ -139,7 +103,7 @@ public class ChunkProtectionListener implements Listener {
                         if (!chunkManager.isTrusted(player.getName(), nearbyChunk)) {
                             event.setCancelled(true);
                             chunkHasOwnedChunkNearbyVisualizer(chunk, player);
-                            player.sendMessage("You cannot place pistons near protected chunks owned by others.");
+                            player.sendMessage("You cannot place this near protected chunks owned by others.");
                             return; // Exit the method once the event is canceled
                         }
                     }
@@ -153,9 +117,6 @@ public class ChunkProtectionListener implements Listener {
             chunkHasOwnedChunkNearbyVisualizer(chunk, player);
         }
     }
-
-
-
 
     @EventHandler
     public void onBucketEmpty(PlayerBucketEmptyEvent event) {
@@ -192,10 +153,9 @@ public class ChunkProtectionListener implements Listener {
 
     // Helper method to check if a chunk is protected (owned by someone else or the player is not trusted)
     private boolean isInProtectedChunk(Chunk chunk, Player player) {
-        OwnedChunk ownedChunk = getCachedOwnedChunk(chunk);
+        OwnedChunk ownedChunk = chunkManager.getOwnedChunk(chunk);
         return ownedChunk != null && !chunkManager.isOwner(player.getName(), chunk) && !chunkManager.isTrusted(player.getName(), chunk);
     }
-
 
     public void chunkHasOwnedChunkNearbyVisualizer(Chunk chunk, Player player) {
         String playerName = player.getName();
@@ -238,6 +198,4 @@ public class ChunkProtectionListener implements Listener {
         }
         return null;
     }
-
-
 }

@@ -14,65 +14,9 @@ commands:
   status:
     description: Check information about your character
     usage: /<command>
-    notes: "Can also let players allocate attribute points they converted from abyss points.
-    Attributes are strength,Agility,Dexterity,Lucky,Vitality and intelligence.
-    Strength increases melee physical damage
-    Agility increases movespeed
-    Dexterity increase critical damage for all classes and archers crit chance and long range damage, crit damage has initial value of 150% increase damage when crit, and add 100% per 1000 dex
-    Lucky Increases crit chance, around 5000 points to have 100% crit chance
-    Vit increases health, .2 health per vitality
-    Intelligence increases elemental damage of classes skill 1 and their element effects
-    "
   convertabysspoints:
     description: "Convert abyss points into 1 attribute point."
     usage: "/convertabysspoints"
-    notes: "Abyss points can only be obtained on abyss worlds
-    Please inform them about this conversion:
-     private int getLevelsRequiredForConversion(double totalAttrib) {
-        // Adjust the conversion rate of abyss points based on total allocated attribute points
-        if (totalAttrib < 100) {
-            return 200;
-        } else if (totalAttrib < 200) {
-            return 400;
-        } else if (totalAttrib < 300) {
-            return 600;
-        } else if (totalAttrib < 400) {
-            return 800;
-        } else if (totalAttrib < 500) {
-            return 1000;
-        } else if (totalAttrib < 600) {
-            return 1200;
-        } else if (totalAttrib < 700) {
-            return 1400;
-        } else if (totalAttrib < 800) {
-            return 1600;
-        } else if (totalAttrib < 900) {
-            return 1800;
-        } else if (totalAttrib < 1000) {
-            return 4000;
-        } else if (totalAttrib < 2000) {
-            return 8000;
-        } else if (totalAttrib < 3000) {
-            return 20000;
-        } else if (totalAttrib < 4000) {
-            return 40000;
-        } else if (totalAttrib < 5000) {
-            return 80000;
-        } else if (totalAttrib < 6000) {
-            return 160000;
-        } else if (totalAttrib < 7000) {
-            return 320000;
-        } else if (totalAttrib < 8000) {
-            return 640000;
-        } else if (totalAttrib < 9000) {
-            return 1280000;
-        } else if (totalAttrib < 10000) {
-            return 3000000;
-        } else {
-            return 3000000;
-        }
-    }
-    "
   selectelement:
     description: "Select an elemental affinity."
     usage: "/<command> <fire|water|ice>"
@@ -190,50 +134,6 @@ commands:
   addstamina:
     description: Convert all food in your inventory to stamina.
     usage: /addstamina
-    notes: "
-    Please inform players about the cost:
-            foodHungerMap.put(Material.CARROT, 10);
-        foodHungerMap.put(Material.BREAD, 10);
-        foodHungerMap.put(Material.BEEF, 30);
-        foodHungerMap.put(Material.CHICKEN, 30);
-        foodHungerMap.put(Material.COOKED_BEEF, 50);
-        foodHungerMap.put(Material.COOKED_CHICKEN, 50);
-        foodHungerMap.put(Material.MUTTON ,30);
-        foodHungerMap.put(Material.COOKED_MUTTON, 50);
-        foodHungerMap.put(Material.PORKCHOP ,30);
-        foodHungerMap.put(Material.COOKED_PORKCHOP, 50);
-        foodHungerMap.put(Material.RABBIT ,30);
-        foodHungerMap.put(Material.RABBIT_STEW ,60);
-        foodHungerMap.put(Material.COOKED_RABBIT, 50);
-        foodHungerMap.put(Material.COD ,30);
-        foodHungerMap.put(Material.COOKED_COD, 50);
-        foodHungerMap.put(Material.SALMON ,30);
-        foodHungerMap.put(Material.COOKED_SALMON, 50);
-        foodHungerMap.put(Material.APPLE, 10);
-        foodHungerMap.put(Material.BROWN_MUSHROOM, 5);
-        foodHungerMap.put(Material.MUSHROOM_STEW, 20);
-        foodHungerMap.put(Material.CHORUS_FRUIT, 10);
-        foodHungerMap.put(Material.DRIED_KELP, 10);
-        foodHungerMap.put(Material.MELON_SLICE, 10);
-        foodHungerMap.put(Material.PUMPKIN_PIE, 10);
-        foodHungerMap.put(Material.CAKE, 50);
-        foodHungerMap.put(Material.COOKIE, 50);
-        foodHungerMap.put(Material.SWEET_BERRIES, 5);
-        foodHungerMap.put(Material.GLOW_BERRIES, 10);
-        foodHungerMap.put(Material.HONEY_BOTTLE, 10);
-        foodHungerMap.put(Material.PUFFERFISH, 10);
-        foodHungerMap.put(Material.TROPICAL_FISH, 30);
-        foodHungerMap.put(Material.BEETROOT, 10);
-        foodHungerMap.put(Material.BEETROOT_SOUP, 20);
-        foodHungerMap.put(Material.POTATO, 10);
-        foodHungerMap.put(Material.BAKED_POTATO, 20);
-        foodHungerMap.put(Material.WHEAT, 10);
-        foodHungerMap.put(Material.ROTTEN_FLESH, 10);
-        foodHungerMap.put(Material.SPIDER_EYE, 5);
-        
-        And they cant convert back stamina to food
-    
-    "
   healthscale:
     description: Scales health to always show 10 hearts.
     usage: /healthscale

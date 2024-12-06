@@ -131,6 +131,9 @@ public class PlayerProfileManager {
         //home
         config.set("maxHomes", profile.getMaxHomes());
 
+        // Clear existing homes
+        config.set("homes", null);
+
         Map<String, Location> homes = profile.getHomes();
         for (Map.Entry<String, Location> homeEntry : homes.entrySet()) {
             String homeName = homeEntry.getKey();
