@@ -7,10 +7,7 @@ import github.eremiyuh.rPGPlugin.methods.BossKillMessages;
 import github.eremiyuh.rPGPlugin.profile.UserProfile;
 import github.scarsz.discordsrv.DiscordSRV;
 import net.dv8tion.jda.api.entities.TextChannel;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.damage.DamageSource;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -109,7 +106,7 @@ public class DeadMobListener implements Listener {
                 // Iterate over the list of attacker names and check if they are players nearby
                 for (String attackerName : attackerNames) {
                     Player player = Bukkit.getPlayer(attackerName); // Get the player by name
-                    if (player != null && isPlayerNearby(player, mob.getLocation(), xValidRange, yValidRange)) {
+                    if (player != null && mob.getWorld().getName().equals(player.getWorld().getName())) {
                         nearbyPlayers.add(player); // Add player to nearby players list
                     }
                 }
@@ -118,17 +115,9 @@ public class DeadMobListener implements Listener {
                     if (isWorldBoss) {
                         BossKillMessages.broadcastBossKill(killer.getName(), customName);
                     }
-
-
-
                     for (Player player : nearbyPlayers) {
                         UserProfile playerProfile = profileManager.getProfile(player.getName());
-
-//                        if (player.getName().equals(killer.getName())) {
                         applyRewards(player, playerProfile, health*3, (double) bosslvl /400, dropMultiplier);
-//                        } else {
-//                            applyRewards(player, playerProfile, health*1.5, (double) bosslvl /400, dropMultiplier);
-//                        }
                         distributeDrops(player, event, dropMultiplier);
 
                         if (bosslvl > 9 && isWorldBoss) {
@@ -279,24 +268,25 @@ public class DeadMobListener implements Listener {
 
 
     private void distributeDrops(Player player, EntityDeathEvent event, int dropMultiplier) {
-        for (ItemStack drop : event.getDrops()) {
+        Random random = new Random(); // Create a random number generator
 
+        for (ItemStack drop : event.getDrops()) {
             int originalAmount = drop.getAmount();
             int multipliedAmount = originalAmount * dropMultiplier;
             ItemStack newDrop = new ItemStack(drop.getType(), multipliedAmount);
-            // Give the items directly to the player
-
 
             if (player.getInventory().firstEmpty() != -1) {
                 // If there is space in the inventory, add the item
                 player.getInventory().addItem(newDrop);
             } else {
-                // If the inventory is full, drop the item in the world
-                player.getWorld().dropItem(player.getLocation(), newDrop);
-
+                // Inventory is full, 1 in 10 chance to send a message
+                if (random.nextInt(10) == 0) { // Generates a number between 0 and 9
+                    player.sendMessage(ChatColor.RED + "You don't have enough inventory space to receive drops.");
+                }
             }
         }
     }
+
 
     private void applyRandomLoreToEquippedItem(Player player) {
         // Define possible item slots

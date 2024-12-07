@@ -44,7 +44,7 @@ public class MonsterInitializer implements Listener {
                 .count();
 
         // Calculate the spawn limit based on players in world_rpg
-        int mobLimit = Math.min(playersInRPGWorld * 15, 150);
+        int mobLimit = Math.min(playersInRPGWorld * 30, 150);
 
         // Count the number of mobs already in the world
         int currentMobCount = countMobsInWorld(event.getLocation().getWorld());
@@ -154,49 +154,63 @@ public class MonsterInitializer implements Listener {
         entity.setMetadata("extraHealth", new FixedMetadataValue(plugin, maxCoord));
         entity.setMetadata("customName", new FixedMetadataValue(plugin, normalName));
 
-
-        double customMaxHealth = maxCoord*101;
+        double customMaxHealth = maxCoord * 1001;
 
         Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_MAX_HEALTH)).setBaseValue(customMaxHealth);
         double extraHealth = Math.max(Math.abs(entity.getLocation().getX()), Math.abs(entity.getLocation().getZ()));
 
+        double customDamage = Math.min(extraHealth / 10, customMaxHealth);
 
-        double customDamage = Math.min(extraHealth/10, customMaxHealth);
-
-
-        if (Math.random() < .09) { //.005
-            extraHealth = (extraHealth * 10); // Add 1000% health
-            setBossAttributes(entity, maxCoord, "Boss", ChatColor.RED);
-            entity.setMetadata("boss", new FixedMetadataValue(plugin, true));
-            entity.setMetadata("lvl", new FixedMetadataValue(plugin, lvl));
-            entity.setMetadata("extraHealth", new FixedMetadataValue(plugin, extraHealth));
-//            entity.setGlowing(true);
-            entity.setHealth(Math.min(extraHealth, customMaxHealth));
-            Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(customDamage*2);
-            entity.setMetadata("customDamage", new FixedMetadataValue(plugin, customDamage*2));
-            return;
-        }
-
-        if (Math.random() < .001) { //.0005
-            extraHealth = (extraHealth * 100); // Add 10000% health
+        // First, check for the purple world boss (0.1% chance)
+        if (Math.random() < .0003) { //0.0003
+            extraHealth = (extraHealth * 1000); // Add 10000% health
             setBossAttributes(entity, maxCoord, "World Boss", ChatColor.DARK_PURPLE);
             entity.setMetadata("worldboss", new FixedMetadataValue(plugin, true));
             entity.setMetadata("lvl", new FixedMetadataValue(plugin, lvl));
             entity.setMetadata("extraHealth", new FixedMetadataValue(plugin, extraHealth));
             entity.setGlowing(true);
             entity.setHealth(Math.min(extraHealth, customMaxHealth));
-            Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(customDamage*3);
-            entity.setMetadata("customDamage", new FixedMetadataValue(plugin, customDamage*3));
+            Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(customDamage * 3);
+            entity.setMetadata("customDamage", new FixedMetadataValue(plugin, customDamage * 3));
             entity.setRemoveWhenFarAway(false);
             entity.setPersistent(true);
             entity.setCustomNameVisible(true);
             return;
         }
 
+        // Only check for red boss (1% chance) if not already a purple boss
+        if (Math.random() < .003) { //0.003
+            extraHealth = (extraHealth * 100); // Add 1000% health
+            setBossAttributes(entity, maxCoord, "Boss", ChatColor.RED);
+            entity.setMetadata("boss", new FixedMetadataValue(plugin, true));
+            entity.setMetadata("lvl", new FixedMetadataValue(plugin, lvl));
+            entity.setMetadata("extraHealth", new FixedMetadataValue(plugin, extraHealth));
+            entity.setHealth(Math.min(extraHealth, customMaxHealth));
+            Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(customDamage * 2);
+            entity.setMetadata("customDamage", new FixedMetadataValue(plugin, customDamage * 2));
+            entity.setRemoveWhenFarAway(false);
+            entity.setCustomNameVisible(true);
+            return;
+        }
+
+
+        if (Math.random() < 0.03) {
+            extraHealth = (extraHealth * 10); // Add 1000% health
+            setBossAttributes(entity, maxCoord, "Leader", ChatColor.YELLOW);
+            entity.setMetadata("boss", new FixedMetadataValue(plugin, true));
+            entity.setMetadata("lvl", new FixedMetadataValue(plugin, lvl));
+            entity.setMetadata("extraHealth", new FixedMetadataValue(plugin, extraHealth));
+            entity.setHealth(Math.min(extraHealth, customMaxHealth));
+            Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(customDamage * 2);
+            entity.setMetadata("customDamage", new FixedMetadataValue(plugin, customDamage * 2));
+            entity.setCustomNameVisible(true);
+            return;
+        }
+
+        // If neither of the boss conditions are met, set standard attributes
         entity.setHealth(Math.min(extraHealth, customMaxHealth));
         entity.setMetadata("customDamage", new FixedMetadataValue(plugin, customDamage));
         Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(customDamage);
-
     }
 
     private void setBossAttributes(LivingEntity entity, double maxCoord, String type, ChatColor color) {
@@ -217,7 +231,7 @@ public class MonsterInitializer implements Listener {
         if (entity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED) != null) {
             double baseSpeed = Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)).getBaseValue();
             double newSpeed = baseSpeed * speedMultiplier; // Apply the calculated multiplier
-            Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)).setBaseValue(newSpeed);
+            Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)).setBaseValue(newSpeed+.02);
         }
 
         // Set extra jump strength if applicable

@@ -169,7 +169,7 @@ public class MonsterInitializerLabyrinth implements Listener {
         int yCoord = Math.min(maxY, Math.max(minY, targetLocation.getBlockY()));
 
 
-        double customMaxHealth = ((1 + (double) (maxY - yCoord) / 6) * healthIncrement)*101;
+        double customMaxHealth = ((1 + (double) (maxY - yCoord) / 6) * healthIncrement)*1001;
         Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_MAX_HEALTH)).setBaseValue(customMaxHealth);
 
 
@@ -187,21 +187,9 @@ public class MonsterInitializerLabyrinth implements Listener {
 
         entity.setMetadata("customName", new FixedMetadataValue(plugin, normalName));
 
-        // Boss scaling logic
-        if (Math.random() < .09) {
-            extraHealth *= 10; // Add 1000% health
-            setBossAttributes(entity, targetLocation.getBlockY(), "Boss", ChatColor.RED, lvl);
-            entity.setMetadata("boss", new FixedMetadataValue(plugin, true));
-            entity.setMetadata("lvl", new FixedMetadataValue(plugin, lvl));
-            entity.setHealth(Math.min(extraHealth, customMaxHealth));
-            entity.setMetadata("extraHealth", new FixedMetadataValue(plugin, extraHealth));
-            Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(customDamage*2);
-            return;
-        }
-
         // World Boss scaling logic
-        if (Math.random() < 0.001) {
-            extraHealth *= 100; // Add 10000% health
+        if (Math.random() < 0.0005) {
+            extraHealth *= 1000; // Add 10000% health
             setBossAttributes(entity, targetLocation.getBlockY(), "World Boss", ChatColor.DARK_PURPLE, lvl);
             entity.setMetadata("worldboss", new FixedMetadataValue(plugin, true));
             entity.setMetadata("lvl", new FixedMetadataValue(plugin, lvl));
@@ -214,6 +202,35 @@ public class MonsterInitializerLabyrinth implements Listener {
             entity.setPersistent(true);
             return;
         }
+
+
+        // Boss scaling logic
+        if (Math.random() < .005) {
+            extraHealth *= 100; // Add 1000% health
+            setBossAttributes(entity, targetLocation.getBlockY(), "Boss", ChatColor.RED, lvl);
+            entity.setMetadata("boss", new FixedMetadataValue(plugin, true));
+            entity.setMetadata("lvl", new FixedMetadataValue(plugin, lvl));
+            entity.setHealth(Math.min(extraHealth, customMaxHealth));
+            entity.setMetadata("extraHealth", new FixedMetadataValue(plugin, extraHealth));
+            Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(customDamage*2);
+            entity.setRemoveWhenFarAway(false);
+            entity.setCustomNameVisible(true);
+            return;
+        }
+
+        // Boss scaling logic
+        if (Math.random() < .05) {
+            extraHealth *= 10; // Add 1000% health
+            setBossAttributes(entity, targetLocation.getBlockY(), "Boss", ChatColor.YELLOW, lvl);
+            entity.setMetadata("boss", new FixedMetadataValue(plugin, true));
+            entity.setMetadata("lvl", new FixedMetadataValue(plugin, lvl));
+            entity.setHealth(Math.min(extraHealth, customMaxHealth));
+            entity.setMetadata("extraHealth", new FixedMetadataValue(plugin, extraHealth));
+            Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(customDamage*2);
+            entity.setCustomNameVisible(true);
+            return;
+        }
+
 
         entity.setHealth(Math.min(extraHealth, customMaxHealth));
         Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(customDamage);

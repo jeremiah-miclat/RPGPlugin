@@ -282,6 +282,18 @@ public class AlchemistThrowPotion implements Listener {
 
 
                         for (LivingEntity target : event.getAffectedEntities()) {
+
+                            if (target.hasMetadata("attackerList")) {
+                                List<String> attackerList = (List<String>) target.getMetadata("attackerList").get(0).value();
+
+                                String attackerName = thrower.getName();
+                                assert attackerList != null;
+                                if (!attackerList.contains(attackerName)) {
+                                    attackerList.add(attackerName);
+                                    target.setMetadata("attackerList", new FixedMetadataValue(plugin, attackerList)); // Update metadata
+                                }
+                            }
+
                             if (!(target instanceof Player)) continue;
 
                             Player player = (Player) target;
