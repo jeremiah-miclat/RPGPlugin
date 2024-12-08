@@ -177,6 +177,7 @@ public class MonsterInitializerLabyrinth implements Listener {
         double extraHealth = baseHealth + ((1 + (double) (maxY - yCoord) / 6) * healthIncrement);
         entity.setMetadata("extraHealth", new FixedMetadataValue(plugin, extraHealth));
         double customDamage = Math.min(extraHealth/10, customMaxHealth);
+        extraHealth += entity.getHealth();
         entity.setMetadata("customDamage", new FixedMetadataValue(plugin, customDamage));
         // Determine the level based on the y-coordinate (1 level every 6 blocks)
         int lvl = (1 + (maxY - yCoord) / 6)*5;
@@ -188,7 +189,7 @@ public class MonsterInitializerLabyrinth implements Listener {
         entity.setMetadata("customName", new FixedMetadataValue(plugin, normalName));
 
         // World Boss scaling logic
-        if (Math.random() < 0.0005) {
+        if (Math.random() < 0.001) {
             extraHealth *= 1000; // Add 10000% health
             setBossAttributes(entity, targetLocation.getBlockY(), "World Boss", ChatColor.DARK_PURPLE, lvl);
             entity.setMetadata("worldboss", new FixedMetadataValue(plugin, true));
@@ -205,7 +206,7 @@ public class MonsterInitializerLabyrinth implements Listener {
 
 
         // Boss scaling logic
-        if (Math.random() < .005) {
+        if (Math.random() < .01) {
             extraHealth *= 100; // Add 1000% health
             setBossAttributes(entity, targetLocation.getBlockY(), "Boss", ChatColor.RED, lvl);
             entity.setMetadata("boss", new FixedMetadataValue(plugin, true));
@@ -214,7 +215,6 @@ public class MonsterInitializerLabyrinth implements Listener {
             entity.setMetadata("extraHealth", new FixedMetadataValue(plugin, extraHealth));
             Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(customDamage*2);
             entity.setRemoveWhenFarAway(false);
-            entity.setCustomNameVisible(true);
             return;
         }
 
@@ -227,7 +227,6 @@ public class MonsterInitializerLabyrinth implements Listener {
             entity.setHealth(Math.min(extraHealth, customMaxHealth));
             entity.setMetadata("extraHealth", new FixedMetadataValue(plugin, extraHealth));
             Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(customDamage*2);
-            entity.setCustomNameVisible(true);
             return;
         }
 

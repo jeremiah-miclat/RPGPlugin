@@ -160,9 +160,9 @@ public class MonsterInitializer implements Listener {
         double extraHealth = Math.max(Math.abs(entity.getLocation().getX()), Math.abs(entity.getLocation().getZ()));
 
         double customDamage = Math.min(extraHealth / 10, customMaxHealth);
-
+        extraHealth += entity.getHealth();
         // First, check for the purple world boss (0.1% chance)
-        if (Math.random() < .0003) { //0.0003
+        if (Math.random() < .001) { //0.0003
             extraHealth = (extraHealth * 1000); // Add 10000% health
             setBossAttributes(entity, maxCoord, "World Boss", ChatColor.DARK_PURPLE);
             entity.setMetadata("worldboss", new FixedMetadataValue(plugin, true));
@@ -179,7 +179,7 @@ public class MonsterInitializer implements Listener {
         }
 
         // Only check for red boss (1% chance) if not already a purple boss
-        if (Math.random() < .003) { //0.003
+        if (Math.random() < .01) { //0.003
             extraHealth = (extraHealth * 100); // Add 1000% health
             setBossAttributes(entity, maxCoord, "Boss", ChatColor.RED);
             entity.setMetadata("boss", new FixedMetadataValue(plugin, true));
@@ -194,7 +194,7 @@ public class MonsterInitializer implements Listener {
         }
 
 
-        if (Math.random() < 0.03) {
+        if (Math.random() < 0.05) {
             extraHealth = (extraHealth * 10); // Add 1000% health
             setBossAttributes(entity, maxCoord, "Leader", ChatColor.YELLOW);
             entity.setMetadata("boss", new FixedMetadataValue(plugin, true));

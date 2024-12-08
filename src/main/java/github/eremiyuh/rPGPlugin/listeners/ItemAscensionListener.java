@@ -75,17 +75,17 @@ public class ItemAscensionListener implements Listener {
             return;
         }
 
-        int diamondsRequired = COST_PER_ATTEMPT * attributeValue;
-        if (userProfile.getDiamond() < diamondsRequired) {
-            player.sendMessage("§cYou need " + diamondsRequired + " diamonds for this ascension.");
+        int emeraldsRequired = COST_PER_ATTEMPT * attributeValue;
+        if (userProfile.getEmerald() < emeraldsRequired) {
+            player.sendMessage("§cYou need " + emeraldsRequired + " emeralds for this ascension.");
             userProfile.setAscending(false);
             player.sendMessage("§eAscension disabled. Please enable it again to retry.");
             return;
         }
 
-        player.sendMessage("§aCost of ascension: " + diamondsRequired + " diamonds.");
-        userProfile.setDiamond(userProfile.getDiamond() - diamondsRequired);
-        player.sendMessage("§a" + diamondsRequired + " diamonds have been deducted.");
+        player.sendMessage("§aCost of ascension: " + emeraldsRequired + " emeralds.");
+        userProfile.setEmerald(userProfile.getEmerald() - emeraldsRequired);
+        player.sendMessage("§a" + emeraldsRequired + " emeralds have been deducted.");
 
         boolean successfulAscension = false;
         for (int i = 0; i < attributeValue; i++) {

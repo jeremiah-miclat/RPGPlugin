@@ -99,6 +99,10 @@ public class AreaProtectionListener implements Listener {
     @EventHandler
     public void entitySpawn(EntityPlaceEvent event) {
         Entity entity = event.getEntity();
+        if (entity instanceof Minecart || entity instanceof Boat) {
+            return;
+        }
+
         if (!entity.getWorld().getName().equals(world.getName()) && !entity.getWorld().getName().equals("world_rpg")) {
             return;
         }
@@ -123,7 +127,7 @@ public class AreaProtectionListener implements Listener {
     public void onBlockBreak(BlockBreakEvent event) {
         Player player = event.getPlayer();
         Block block = event.getBlock();
-        if (!block.getWorld().getName().equals(world.getName()) && !block.getWorld().getName().equals("world_rpg")) {
+        if (!block.getWorld().getName().equals(world.getName()) && !block.getWorld().getName().equals("world_rpg") && !block.getWorld().getName().equals("world_nether")) {
             return;
         }
 
@@ -146,7 +150,9 @@ public class AreaProtectionListener implements Listener {
     public void onBlockPlace(BlockPlaceEvent event) {
         Player player = event.getPlayer();
         Block block = event.getBlock();
-        if (!block.getWorld().getName().equals(world.getName()) && !block.getWorld().getName().equals("world_rpg")) {
+
+
+        if (!block.getWorld().getName().equals(world.getName()) && !block.getWorld().getName().equals("world_rpg") && !block.getWorld().getName().equals("world_nether")) {
             return;
         }
 
@@ -164,6 +170,10 @@ public class AreaProtectionListener implements Listener {
 
     @EventHandler
     public void onRide(EntityMountEvent event) {
+        if (event.getMount() instanceof Minecart || event.getMount() instanceof Boat) {
+            return;
+        }
+
         if (!event.getEntity().getWorld().getName().equals(world.getName()) && !event.getEntity().getWorld().getName().equals("world_rpg")) {
             return;
         }
@@ -178,7 +188,7 @@ public class AreaProtectionListener implements Listener {
 
     @EventHandler
     public void onHangingBreakByEntity(HangingBreakByEntityEvent event) {
-        if (!event.getEntity().getWorld().getName().equals(world.getName()) && !event.getEntity().getWorld().getName().equals("world_rpg")) {
+        if (!event.getEntity().getWorld().getName().equals(world.getName()) && !event.getEntity().getWorld().getName().equals("world_rpg")  && !event.getEntity().getWorld().getName().equals("world_nether")) {
             return;
         }
 
@@ -313,7 +323,7 @@ public class AreaProtectionListener implements Listener {
 
     @EventHandler
     public void onBucketEmpty(PlayerBucketEmptyEvent event) {
-        if (!event.getPlayer().getWorld().getName().equals(world.getName()) && !event.getPlayer().getWorld().getName().equals("world_rpg")) {
+        if (!event.getPlayer().getWorld().getName().equals(world.getName()) && !event.getPlayer().getWorld().getName().equals("world_rpg") && !event.getPlayer().getWorld().getName().equals("world_nether")) {
             return;
         }
 
@@ -379,6 +389,9 @@ public class AreaProtectionListener implements Listener {
 
     @EventHandler
     public void onEntityExplode(EntityExplodeEvent event) {
+        if (!event.getEntity().getWorld().getName().equals(world.getName()) && !event.getEntity().getWorld().getName().equals("world_rpg") && !event.getEntity().getWorld().getName().equals("world_nether")) {
+            return;
+        }
         if (isInProtectedArea(event.getEntity().getLocation().getBlockX(), event.getEntity().getLocation().getBlockZ())) {
             event.blockList().clear();
         }
@@ -387,6 +400,9 @@ public class AreaProtectionListener implements Listener {
 
     @EventHandler
     public void onEntityExplode(BlockExplodeEvent event) {
+        if (!event.getBlock().getWorld().getName().equals(world.getName()) && !event.getBlock().getWorld().getName().equals("world_rpg") && !event.getBlock().getWorld().getName().equals("world_nether")) {
+            return;
+        }
         if (isInProtectedArea(event.getBlock().getLocation().getBlockX(), event.getBlock().getLocation().getBlockZ())) {
             event.blockList().clear();
         }

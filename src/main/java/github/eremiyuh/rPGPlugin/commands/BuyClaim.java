@@ -53,7 +53,7 @@ public class BuyClaim implements CommandExecutor {
         // Check if the player has enough diamonds
         if (playerEmeralds >= totalCost) {
             // Deduct the diamond cost and increase claim points
-            profile.setDiamond(playerEmeralds - totalCost);
+            profile.setEmerald(playerEmeralds - totalCost);
             profile.setClaimPoints(playerClaimPoints + numberOfClaims);
             player.sendMessage("You have successfully purchased " + numberOfClaims + " claim point(s)!");
             player.sendMessage("You now have " + (playerClaimPoints + numberOfClaims) + " claim point(s).");
