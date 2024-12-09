@@ -4,6 +4,7 @@ import github.eremiyuh.rPGPlugin.buffs.PlayerStatBuff;
 import github.eremiyuh.rPGPlugin.manager.PlayerProfileManager;
 import github.eremiyuh.rPGPlugin.profile.UserProfile;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -37,16 +38,39 @@ public class CheckClassCommand implements CommandExecutor, Listener {
         }
 
         Player player = (Player) sender;
-        UserProfile profile = profileManager.getProfile(player.getName());
+        String targetPlayerName = args.length == 0 ? player.getName() : args[0]; // Get the player name from args or use sender's own name
+        if (!profileManager.profileExist(targetPlayerName)) {
+            player.sendMessage("Player " + targetPlayerName + " does not have a profile.");
+            return true;}
+        UserProfile profile = profileManager.getProfile(targetPlayerName);
 
         if (profile == null) {
-            player.sendMessage("You do not have a profile.");
+            player.sendMessage("Player " + targetPlayerName + " does not have a profile.");
             return true;
         }
 
-        openClassInfoGUI(player, profile);
+        if (targetPlayerName.equals(sender.getName())) {
+            openClassInfoGUI(player, profile);
+            return true;
+        }
+
+        Player viewedPlayer = Bukkit.getPlayer(targetPlayerName);
+
+        if (!targetPlayerName.equals(sender.getName())) {
+            if (!profile.getIsPublic()) {
+                sender.sendMessage(  ChatColor.RED + targetPlayerName + "'s profile is hidden");
+                return true;}
+            openOthersInfoGUI(player, profile, viewedPlayer);
+        }
+
+
+//        if (viewedPlayer != null && !viewedPlayer.isOnline()) {
+//            profileManager.removeProfileOnMemory(targetPlayerName);
+//        }
+
         return true;
     }
+
 
     private void openClassInfoGUI(Player player, UserProfile profile) {
         Inventory gui = Bukkit.createInventory(null, 27, "Your Class Info");
@@ -111,6 +135,69 @@ public class CheckClassCommand implements CommandExecutor, Listener {
         player.openInventory(gui);
     }
 
+    private void openOthersInfoGUI(Player player, UserProfile profile, Player viewedPlayer) {
+        Inventory gui = Bukkit.createInventory(null, 27, "Player Class Info");
+
+        // Create player's head item to represent their class
+        ItemStack playerHead = createPlayerHead(viewedPlayer, profile);
+        gui.setItem(4, playerHead);
+
+        // Create a single currency icon to show all player's currencies
+        ItemStack currencyIcon = new ItemStack(Material.DIAMOND);
+        ItemMeta currencyMeta = currencyIcon.getItemMeta();
+
+        if (currencyMeta != null) {
+            currencyMeta.setDisplayName("§eCurrencies");
+
+            // Set lore to show each currency balance with color coding
+            List<String> currencyLore = new ArrayList<>();
+            currencyLore.add("§bDiamonds: §7" + (int) profile.getCurrency("diamond"));
+            currencyLore.add("§aEmeralds: §7" + (int) profile.getCurrency("emerald"));
+            currencyLore.add("§fIron: §7" + (int) profile.getCurrency("iron"));
+            currencyLore.add("§cCopper: §7" + (int) profile.getCurrency("copper"));
+            currencyLore.add("§9Lapis: §7" + (int) profile.getCurrency("lapis"));
+            currencyLore.add("§6Gold: §7" + (int) profile.getCurrency("gold"));
+            currencyLore.add("§dNetherite: §7" +  (int)profile.getCurrency("netherite"));
+
+            currencyMeta.setLore(currencyLore);
+
+            currencyIcon.setItemMeta(currencyMeta);
+        }
+
+        // Place the single currency item in the GUI
+        gui.setItem(6, currencyIcon);
+
+        // Add attribute point items to the GUI
+//        createAttributePointItems(gui, player, profile);
+
+        // Create a single combat icon to show all player's currencies
+        ItemStack combatIcon = new ItemStack(Material.BOOK);
+        ItemMeta combatMeta = combatIcon.getItemMeta();
+
+        if (combatMeta != null) {
+            combatMeta.setDisplayName("§eSTATUS: ");
+
+            // Set lore to show each currency balance with color coding
+            List<String> combatLore = new ArrayList<>();
+            combatLore.add("§eStamina: §7" + profile.getStamina());
+            combatLore.add("§eDurability: §7" + profile.getDurability());
+            combatLore.add("§eEnder Pearl: §7" + profile.getEnderPearl());
+            combatLore.add("§eAbyss Point: " + (int) (profile.getAbysspoints()));
+            combatLore.add("§ePotion: §7" + profile.getPotion());
+
+
+
+            combatMeta.setLore(combatLore);
+
+            combatIcon.setItemMeta(combatMeta);
+        }
+
+        gui.setItem(2, combatIcon);
+
+        // Open the GUI for the player
+        player.openInventory(gui);
+    }
+
 
     private ItemStack createPlayerHead(Player player, UserProfile profile) {
         ItemStack playerHead = new ItemStack(Material.PLAYER_HEAD);
@@ -118,7 +205,7 @@ public class CheckClassCommand implements CommandExecutor, Listener {
 
         if (skullMeta != null) {
             skullMeta.setOwningPlayer(player);
-            skullMeta.setDisplayName("§aYour Class: " + profile.getChosenClass());
+            skullMeta.setDisplayName("§aPlayer Name: " + profile.getPlayerName());
 
             // Set lore to show class and attributes
             setPlayerHeadLore(skullMeta, profile);
@@ -135,6 +222,7 @@ public class CheckClassCommand implements CommandExecutor, Listener {
 
 
         // Add class name and attribute values
+        lore.add("§ePlayer Class: " + profile.getChosenClass());
         lore.add("§7Attributes:");
         lore.add("§7Strength: " + getAttributeValue(profile, "strength"));
         lore.add("§7Agility: " + getAttributeValue(profile, "agility"));
@@ -347,6 +435,13 @@ public class CheckClassCommand implements CommandExecutor, Listener {
                     player.sendMessage("You have no remaining points to allocate.");
                 }
             }
+        }
+    }
+
+    @org.bukkit.event.EventHandler
+    public void onOthersInventoryClick(InventoryClickEvent event) {
+        if (event.getView().getTitle().equals("Player Class Info")) {
+            event.setCancelled(true);
         }
     }
 }

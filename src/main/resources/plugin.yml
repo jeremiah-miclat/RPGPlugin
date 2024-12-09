@@ -241,5 +241,9 @@ commands:
   tradinghall:
     description: Teleports the player to the trading hall.
     usage: /tradinghall
+  showprofile:
+    description: Toggle profile visibility to other players.
+    usage: /showprofile
+
 softdepend:
   - DiscordSRV

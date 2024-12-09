@@ -355,6 +355,7 @@ public class RPGPlugin extends JavaPlugin {
         this.getCommand("rwseed").setExecutor(new RWSeedCommand());
         getServer().getPluginManager().registerEvents(new PlayerMovementListener(this,profileManager), this);
         this.getCommand("discordlink").setExecutor(new DiscordLinkCommand(this));
+        Objects.requireNonNull(this.getCommand("showprofile")).setExecutor(new PublicSetCommand(profileManager));
 
 
 

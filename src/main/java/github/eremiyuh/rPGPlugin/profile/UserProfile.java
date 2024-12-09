@@ -74,6 +74,8 @@ public class UserProfile {
 
     private int junkPoints;
 
+    private boolean isPublic;
+
     //constructor
     public UserProfile(String playerName) {
         this.playerID = UUID.randomUUID(); // Generate a unique ID for the player
@@ -127,6 +129,8 @@ public class UserProfile {
         this.isAscending=false;
 
         this.junkPoints = 0;
+
+        this.isPublic = false;
 
     }
 
@@ -349,7 +353,8 @@ public class UserProfile {
         this.enderpearl = enderpearl;
         if (enderpearl < 10) {
             Player player = Bukkit.getPlayer(this.getPlayerName());
-            player.sendMessage(ChatColor.YELLOW +"You only have " + enderpearl + " enderpearl/s left for teleportation. You can buy some on /tradinghall using emeralds.");
+            player.sendMessage(ChatColor.YELLOW +"You only have " + enderpearl + " enderpearl/s left for teleportation. You can buy some on /tradinghall using "
+                    + ChatColor.GREEN + "emeralds");
         }
     }
 
@@ -702,4 +707,13 @@ public class UserProfile {
     public void setJunkPoints(int junkPoints) {
         this.junkPoints = junkPoints;
     }
+
+    public boolean getIsPublic() {
+        return this.isPublic;
+    }
+
+    public void setIsPublic(boolean isPublic) {
+        this.isPublic = isPublic;
+    }
+
 }

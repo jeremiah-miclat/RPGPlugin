@@ -8,14 +8,12 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class PVPStatusCommand implements CommandExecutor {
-
+public class PublicSetCommand implements CommandExecutor {
     private final PlayerProfileManager profileManager;
 
-    public PVPStatusCommand( PlayerProfileManager profileManager) {
+    public PublicSetCommand(PlayerProfileManager profileManager) {
         this.profileManager = profileManager;
     }
-
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player player)) {
@@ -26,28 +24,28 @@ public class PVPStatusCommand implements CommandExecutor {
         UserProfile profile = profileManager.getProfile(player.getName());
 
         if (args.length == 0) {
-            player.sendMessage(ChatColor.RED + "Usage: /pvpstatus < on or off >");
+            player.sendMessage(ChatColor.RED + "Usage: /showprofile < on or off >");
             return false;
         }
 
         String option = args[0].toLowerCase();
         switch (option) {
             case "on":
-                setPvPStatus(player, profile, true);
+                setPublicStatus(player, profile, true);
                 break;
             case "off":
-                setPvPStatus(player, profile, false);
+                setPublicStatus(player, profile, false);
                 break;
             default:
-                player.sendMessage(ChatColor.RED + "Invalid option. Use /pvpstatus < on  or off >");
+                player.sendMessage(ChatColor.RED + "Invalid option. Use /showprofile < on or off >");
         }
 
         return true;
     }
 
-    private void setPvPStatus(Player player, UserProfile profile, boolean status) {
-        profile.setPvpEnabled(status); // Set PvP status using the profile's method
+    private void setPublicStatus(Player player, UserProfile profile, boolean status) {
+        profile.setIsPublic(status);
         String statusMessage = status ? "enabled" : "disabled";
-        player.sendMessage(ChatColor.GREEN + "PvP has been " + statusMessage + "!");
+        player.sendMessage(ChatColor.GREEN + "Your profile's visibility has been " + statusMessage + "!");
     }
 }

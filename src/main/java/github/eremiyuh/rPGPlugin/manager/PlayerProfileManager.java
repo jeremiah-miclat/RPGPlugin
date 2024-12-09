@@ -134,6 +134,8 @@ public class PlayerProfileManager {
         // Clear existing homes
         config.set("homes", null);
 
+        config.set("isPublic",profile.getIsPublic());
+
         Map<String, Location> homes = profile.getHomes();
         for (Map.Entry<String, Location> homeEntry : homes.entrySet()) {
             String homeName = homeEntry.getKey();
@@ -162,6 +164,10 @@ public class PlayerProfileManager {
         config.set(path + ".luk", attributes.getLuk());
     }
 
+    public boolean profileExist(String playerName) {
+        File profileFile = new File(profilesFolder, playerName + ".yml");
+        return profileFile.exists();
+    }
     public void loadProfile(String playerName) {
         File profileFile = new File(profilesFolder, playerName + ".yml");
         if (!profileFile.exists()) {
@@ -251,6 +257,8 @@ public class PlayerProfileManager {
         profile.setPassword(config.getString("password",""));
         profile.setLoggedIn(config.getBoolean("loggedin",false));
 
+        profile.setIsPublic(config.getBoolean("isPublic",false));
+
         playerProfiles.put(playerName, profile);
     }
 
@@ -293,6 +301,10 @@ public class PlayerProfileManager {
         saveProfile(playerName);
 
         // Remove from memory (HashMap)
+        playerProfiles.remove(playerName);
+    }
+
+    public void removeProfileOnMemory(String playerName) {
         playerProfiles.remove(playerName);
     }
 
