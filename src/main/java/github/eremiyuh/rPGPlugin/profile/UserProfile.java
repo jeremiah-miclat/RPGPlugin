@@ -1,6 +1,9 @@
 package github.eremiyuh.rPGPlugin.profile;
 
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 
 import java.util.*;
 
@@ -344,6 +347,10 @@ public class UserProfile {
 
     public void setEnderPearl(int enderpearl) {
         this.enderpearl = enderpearl;
+        if (enderpearl < 10) {
+            Player player = Bukkit.getPlayer(this.getPlayerName());
+            player.sendMessage(ChatColor.YELLOW +"You only have " + enderpearl + " enderpearl/s left for teleportation. You can buy some on /tradinghall using emeralds.");
+        }
     }
 
     public int getStamina() {
