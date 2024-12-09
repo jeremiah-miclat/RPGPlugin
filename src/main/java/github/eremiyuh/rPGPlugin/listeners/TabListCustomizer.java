@@ -112,7 +112,8 @@ public class TabListCustomizer {
                 break;
         }
 
-        return profileClass + " " + profileClassPoints; // Example of player class and points
+        return " - " + profileClass + " ";
+//                + profileClassPoints;
     }
 
     /**
@@ -139,10 +140,9 @@ public class TabListCustomizer {
         // Construct the formatted player name component
         return Component.text()
                 .append(Component.text(player.getName()).color(color))
-                .append(Component.text(" ("))
                 .append(Component.text(rank.content()).color(color))
-                .append(Component.text(") "))
-                .append(health)
+
+//                .append(health)
                 .build();
     }
 }
