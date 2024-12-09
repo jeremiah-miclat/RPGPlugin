@@ -26,6 +26,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -453,7 +454,7 @@ public class DamageListener implements Listener {
 //                                mobDamage *= 1.2;
 //                            }
                             if (playerProfile.getChosenClass().equalsIgnoreCase("swordsman") && playerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
-                                mobDamage *= .5;
+                                mobDamage *= .3;
                             }
                             if (playerProfile.getChosenClass().equalsIgnoreCase("swordsman") && !playerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
                                 mobDamage *= .8;
@@ -487,7 +488,7 @@ public class DamageListener implements Listener {
 //                                customDamage *= 1.2;
 //                            }
                             if (playerProfile.getChosenClass().equalsIgnoreCase("swordsman") && playerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
-                                customDamage *= .5;
+                                customDamage *= .3;
                             }
                             if (playerProfile.getChosenClass().equalsIgnoreCase("swordsman") && !playerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
                                 customDamage *= .8;
@@ -513,13 +514,13 @@ public class DamageListener implements Listener {
                             player.sendMessage("Durability depleted. You will receive more damage. /sdw to turn off this warning");
                         }
                         customDamage *= playerProfile.getDurability() == 0 ? 2 : 1;
-                        customDamage*=.35;
+                        customDamage*=.3;
 
 //                            if (playerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
 //                                customDamage *= 1.2;
 //                            }
                             if (playerProfile.getChosenClass().equalsIgnoreCase("swordsman") && playerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
-                                customDamage *= .5;
+                                customDamage *= .3;
                             }
                             if (playerProfile.getChosenClass().equalsIgnoreCase("swordsman") && !playerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
                                 customDamage *= .8;
@@ -688,7 +689,7 @@ public class DamageListener implements Listener {
 //                finalDamage *= 1.2;
 //            }
             if (playerProfile.getChosenClass().equalsIgnoreCase("swordsman") && playerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
-                finalDamage *= .5;
+                finalDamage *= .3;
             }
             if (playerProfile.getChosenClass().equalsIgnoreCase("swordsman") && !playerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
                 finalDamage *= .8;
@@ -825,9 +826,18 @@ public class DamageListener implements Listener {
             effectsAbilityManager.applyAbility(damagerProfile, target, damagerLocation, damagedLocation);
 
             if (attacker.getWorld().getName().contains("labyrinth") && target instanceof Monster mob) {
-                if (Math.random() < .05) {
-                    mob.teleport(attacker.getLocation());
+                if (Math.random() < 0.05) {
+                    Location attackerLocation = attacker.getLocation();
+                    Vector direction = attackerLocation.getDirection().normalize(); // Get the attacker's direction
+                    double distance = 0.5; // Set the distance you want the mob to appear in front of the attacker
+                    Location teleportLocation = attackerLocation.add(direction.multiply(distance));
+
+                    // Adjust Y to avoid the mob spawning inside the ground
+                    teleportLocation.setY(attackerLocation.getY());
+
+                    mob.teleport(teleportLocation);
                 }
+
             }
 
             return;
@@ -861,7 +871,7 @@ public class DamageListener implements Listener {
 //                finalDamage *= 1.2;
 //            }
             if (playerProfile.getChosenClass().equalsIgnoreCase("swordsman") && playerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
-                finalDamage *= .5;
+                finalDamage *= .3;
             }
             if (playerProfile.getChosenClass().equalsIgnoreCase("swordsman") && !playerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
                 finalDamage *= .8;
@@ -876,7 +886,7 @@ public class DamageListener implements Listener {
                 finalDamage= finalDamage*.8;
             }
             if (victimProfile.getChosenClass().equalsIgnoreCase("swordsman") && victimProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
-                finalDamage= finalDamage*.5;
+                finalDamage= finalDamage*.3;
             }
 //            if (victimProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
 //                finalDamage=finalDamage*1.2;
