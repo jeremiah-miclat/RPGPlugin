@@ -449,9 +449,9 @@ public class DamageListener implements Listener {
 
                         if (event.getEntity() instanceof Player) {
 
-                            if (playerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
-                                mobDamage *= 1.2;
-                            }
+//                            if (playerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
+//                                mobDamage *= 1.2;
+//                            }
                             if (playerProfile.getChosenClass().equalsIgnoreCase("swordsman") && playerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
                                 mobDamage *= .5;
                             }
@@ -483,9 +483,9 @@ public class DamageListener implements Listener {
                         customDamage *= playerProfile.getDurability() == 0 ? 2 : 1;
 
 
-                            if (playerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
-                                customDamage *= 1.2;
-                            }
+//                            if (playerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
+//                                customDamage *= 1.2;
+//                            }
                             if (playerProfile.getChosenClass().equalsIgnoreCase("swordsman") && playerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
                                 customDamage *= .5;
                             }
@@ -513,10 +513,11 @@ public class DamageListener implements Listener {
                             player.sendMessage("Durability depleted. You will receive more damage. /sdw to turn off this warning");
                         }
                         customDamage *= playerProfile.getDurability() == 0 ? 2 : 1;
+                        customDamage*=.35;
 
-                            if (playerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
-                                customDamage *= 1.2;
-                            }
+//                            if (playerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
+//                                customDamage *= 1.2;
+//                            }
                             if (playerProfile.getChosenClass().equalsIgnoreCase("swordsman") && playerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
                                 customDamage *= .5;
                             }
@@ -683,9 +684,9 @@ public class DamageListener implements Listener {
             finalDamage *= playerProfile.getDurability() == 0 ? 2 : 1;
 
 
-            if (playerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
-                finalDamage *= 1.2;
-            }
+//            if (playerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
+//                finalDamage *= 1.2;
+//            }
             if (playerProfile.getChosenClass().equalsIgnoreCase("swordsman") && playerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
                 finalDamage *= .5;
             }
@@ -822,6 +823,13 @@ public class DamageListener implements Listener {
         if (damagerProfile.getChosenClass().equalsIgnoreCase("alchemist") && event.getDamager() instanceof ThrownPotion) {
             event.setDamage(finalDamage);
             effectsAbilityManager.applyAbility(damagerProfile, target, damagerLocation, damagedLocation);
+
+            if (attacker.getWorld().getName().contains("labyrinth") && target instanceof Monster mob) {
+                if (Math.random() < .05) {
+                    mob.teleport(attacker.getLocation());
+                }
+            }
+
             return;
         }
 
@@ -849,9 +857,9 @@ public class DamageListener implements Listener {
                 player.sendMessage("Durability depleted. You will receive more damage. /sdw to turn off this warning");
             }
             finalDamage *= playerProfile.getDurability() == 0 ? 2 : 1;
-            if (playerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
-                finalDamage *= 1.2;
-            }
+//            if (playerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
+//                finalDamage *= 1.2;
+//            }
             if (playerProfile.getChosenClass().equalsIgnoreCase("swordsman") && playerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
                 finalDamage *= .5;
             }
@@ -870,9 +878,9 @@ public class DamageListener implements Listener {
             if (victimProfile.getChosenClass().equalsIgnoreCase("swordsman") && victimProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
                 finalDamage= finalDamage*.5;
             }
-            if (victimProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
-                finalDamage=finalDamage*1.2;
-            }
+//            if (victimProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
+//                finalDamage=finalDamage*1.2;
+//            }
             if (damagerProfile.getSelectedElement().equalsIgnoreCase("fire") && victimProfile.getSelectedElement().equalsIgnoreCase("ice")) {
                 finalDamage=finalDamage*1.2;
             }
@@ -986,21 +994,10 @@ public class DamageListener implements Listener {
 
         // melee
         if (event.getDamager() instanceof Player) {
-            statDmg+=str*.4;
+            statDmg+=str*1;
             if (damagerProfile.getChosenClass().equalsIgnoreCase("swordsman")) {
-
-
-                if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 2") && player.getInventory().getItemInMainHand().getType().toString().endsWith("_SWORD")) {
-                    statDmg += str*.3;
-                }
-
-                if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 3") && player.getInventory().getItemInMainHand().getType().toString().endsWith("_SWORD")) {
-                    statDmg += str*.1;
-                }
-
-
                 if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 1") && player.getInventory().getItemInMainHand().getType().toString().endsWith("_SWORD")) {
-                    elementalDamage += (intel * .8);
+                    elementalDamage += (intel * 1.2);
                 }
             }
         }
@@ -1008,33 +1005,28 @@ public class DamageListener implements Listener {
 
         // bow
         if (event.getDamager() instanceof Arrow) {
-            statDmg+=dex*.4;
+            statDmg+=dex*1;
             //archers
             if (damagerProfile.getChosenClass().equalsIgnoreCase("archer")) {
 
-
-                if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
-                    statDmg += (dex*.6);
-                }
-
                 if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 2")) {
-                    statDmg += (dex*.6);
                     elementalDamage += (intel*1);
                 }
 
                 if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 1")) {
-                    statDmg += (dex*.6);
-                    elementalDamage += (intel*1);
+                    elementalDamage += (intel*1.2);
                 }
             }
         }
 
         // thrown potions
         if (event.getDamager() instanceof ThrownPotion) {
-            elementalDamage += intel * 0.4;
+            elementalDamage += intel * 1;
             //alchemists
             if (damagerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
-                elementalDamage += (intel*.8);
+                if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 1")) {
+                    elementalDamage += (intel*.2);
+                }
             }
         }
 
