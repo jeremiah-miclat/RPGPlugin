@@ -225,6 +225,25 @@ public class AreaProtectionListener implements Listener {
         }
     }
 
+
+    @EventHandler
+    public void onRename(PlayerInteractAtEntityEvent event) {
+        if (!event.getPlayer().getWorld().getName().equals(world.getName())) {
+            return;
+        }
+        Player player = event.getPlayer();
+        Entity entity = event.getRightClicked();
+
+        ItemStack itemInHand = player.getInventory().getItemInMainHand();
+        if (itemInHand == null || itemInHand.getType() != Material.NAME_TAG) {
+            return;
+        }
+
+        if (isInProtectedArea(entity.getLocation().getBlockX(), entity.getLocation().getBlockZ())) {
+            event.setCancelled(true);
+        }
+    }
+
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
         if (!event.getPlayer().getWorld().getName().equals(world.getName()) && !event.getPlayer().getWorld().getName().equals("world_rpg")) {

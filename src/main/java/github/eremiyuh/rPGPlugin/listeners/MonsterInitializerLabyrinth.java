@@ -34,7 +34,7 @@ public class MonsterInitializerLabyrinth implements Listener {
         }
 
         Location spawnLocation = event.getLocation();
-        if (!isPlayerOnSameYLevel(spawnLocation)) {
+        if (!isPlayerOnSameYLevel(spawnLocation) || !(event.getEntity() instanceof PiglinBrute)) {
             event.setCancelled(true);
             return;
         }

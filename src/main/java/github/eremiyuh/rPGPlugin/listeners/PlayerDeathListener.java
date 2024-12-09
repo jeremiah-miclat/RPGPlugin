@@ -61,7 +61,7 @@ public class PlayerDeathListener implements Listener {
             int abyssPoints = (int) profile.getAbysspoints();
             int newAbyssPoints = (int) Math.floor(abyssPoints * 0.90);
             profile.setAbysspoints(newAbyssPoints < 1 ? 0 : newAbyssPoints);
-            String msgToPlayer = "You lost 1% of your durability and stamina, and 10% of your abyss points.";
+            String msgToPlayer = "You lost 10% of your durability and stamina, and 10% of your abyss points.";
             player.sendMessage(Component.text(msgToPlayer).color(TextColor.color(255, 0, 0)));
 
             if (player.getKiller() != null) {
