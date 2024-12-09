@@ -188,8 +188,23 @@ public class MonsterInitializerLabyrinth implements Listener {
 
         entity.setMetadata("customName", new FixedMetadataValue(plugin, normalName));
 
+        if (entity instanceof PiglinBrute) {
+            extraHealth *= 1000; // Add 10000% health
+            setBossAttributes(entity, targetLocation.getBlockY(), "World Boss", ChatColor.LIGHT_PURPLE, lvl);
+            entity.setMetadata("worldboss", new FixedMetadataValue(plugin, true));
+            entity.setMetadata("lvl", new FixedMetadataValue(plugin, lvl));
+            entity.setHealth(Math.min(extraHealth, customMaxHealth));
+            entity.setMetadata("extraHealth", new FixedMetadataValue(plugin, extraHealth));
+            Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(customDamage*3);
+            entity.setCustomNameVisible(true);
+            entity.setGlowing(true);
+            entity.setRemoveWhenFarAway(false);
+            entity.setPersistent(true);
+            return;
+        }
+
         // World Boss scaling logic
-        if (Math.random() < 0.0003) {
+        if (Math.random() < 0.003) {
             extraHealth *= 1000; // Add 10000% health
             setBossAttributes(entity, targetLocation.getBlockY(), "World Boss", ChatColor.DARK_PURPLE, lvl);
             entity.setMetadata("worldboss", new FixedMetadataValue(plugin, true));
@@ -206,7 +221,7 @@ public class MonsterInitializerLabyrinth implements Listener {
 
 
         // Boss scaling logic
-        if (Math.random() < .005) {
+        if (Math.random() < .01) {
             extraHealth *= 100; // Add 1000% health
             setBossAttributes(entity, targetLocation.getBlockY(), "Boss", ChatColor.RED, lvl);
             entity.setMetadata("boss", new FixedMetadataValue(plugin, true));

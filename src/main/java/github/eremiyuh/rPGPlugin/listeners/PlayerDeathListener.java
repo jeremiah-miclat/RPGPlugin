@@ -50,11 +50,11 @@ public class PlayerDeathListener implements Listener {
                 || player.getLocation().getWorld().getName().contains("labyrinth")
         ) {
             int durability = profile.getDurability();
-            int newDurability = (int) Math.floor(durability * 0.99);
+            int newDurability = (int) Math.floor(durability * 0.90);
             profile.setDurability(newDurability < 1 ? 0 : newDurability);
 
             int stamina = profile.getStamina();
-            int newStamina = (int) Math.floor(stamina * 0.99);
+            int newStamina = (int) Math.floor(stamina * 0.90);
             profile.setStamina(newStamina < 1 ? 0 : newStamina);
 
 

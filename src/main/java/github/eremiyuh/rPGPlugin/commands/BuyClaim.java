@@ -2,6 +2,7 @@ package github.eremiyuh.rPGPlugin.commands;
 
 import github.eremiyuh.rPGPlugin.manager.PlayerProfileManager;
 import github.eremiyuh.rPGPlugin.profile.UserProfile;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -18,13 +19,13 @@ public class BuyClaim implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage("This command can only be used by players.");
+            sender.sendMessage(ChatColor.RED + "This command can only be used by players.");
             return true;
         }
 
         // Check if the number of claims is provided
         if (args.length != 1) {
-            player.sendMessage("Usage: /buyclaim <number of claims>");
+            player.sendMessage(ChatColor.YELLOW + "Usage: /buyclaim <number of claims>");
             return true;
         }
 
@@ -33,12 +34,12 @@ public class BuyClaim implements CommandExecutor {
         try {
             numberOfClaims = Integer.parseInt(args[0]);
         } catch (NumberFormatException e) {
-            player.sendMessage("Invalid number of claims. Please enter a valid number.");
+            player.sendMessage(ChatColor.RED + "Invalid number of claims. Please enter a valid number.");
             return true;
         }
 
         if (numberOfClaims <= 0) {
-            player.sendMessage("You must buy at least 1 claim point.");
+            player.sendMessage(ChatColor.RED + "You must buy at least 1 claim point.");
             return true;
         }
 
@@ -48,20 +49,33 @@ public class BuyClaim implements CommandExecutor {
         double playerClaimPoints = profile.getClaimPoints();
 
         // Calculate the total cost for the requested claim points
-        double totalCost = numberOfClaims * 10; // 10 diamond per claim point
+        double totalCost = numberOfClaims * 10; // 10 emeralds per claim point
 
-        // Check if the player has enough diamonds
+        // Check if the player has enough emeralds
         if (playerEmeralds >= totalCost) {
-            // Deduct the diamond cost and increase claim points
+            // Deduct the emerald cost and increase claim points
             profile.setEmerald(playerEmeralds - totalCost);
             profile.setClaimPoints(playerClaimPoints + numberOfClaims);
-            player.sendMessage("You have successfully purchased " + numberOfClaims + " claim point(s)!");
-            player.sendMessage("You now have " + (playerClaimPoints + numberOfClaims) + " claim point(s).");
+            player.sendMessage(ChatColor.GREEN + "You have successfully purchased "
+                    + ChatColor.GOLD + numberOfClaims
+                    + ChatColor.GREEN + " claim point(s) for "
+                    + ChatColor.GOLD + totalCost
+                    + ChatColor.GREEN + " emerald(s)!");
+            player.sendMessage(ChatColor.GREEN + "You now have "
+                    + ChatColor.GOLD + (playerClaimPoints + numberOfClaims)
+                    + ChatColor.GREEN + " claim point(s).");
         } else {
-            player.sendMessage("You do not have enough emerald to buy " + numberOfClaims + " claim point(s).");
-            player.sendMessage("You currently have " + playerEmeralds + " emerald.");
+            player.sendMessage(ChatColor.RED + "You do not have enough emeralds to buy "
+                    + ChatColor.GOLD + numberOfClaims
+                    + ChatColor.RED + " claim point(s).");
+            player.sendMessage(ChatColor.YELLOW + "You need "
+                    + ChatColor.GOLD + totalCost
+                    + ChatColor.YELLOW + " emerald(s), but you only have "
+                    + ChatColor.GOLD + playerEmeralds
+                    + ChatColor.YELLOW + " emerald(s).");
         }
 
         return true; // Indicates the command was processed successfully
     }
+
 }
