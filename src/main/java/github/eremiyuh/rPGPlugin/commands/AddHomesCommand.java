@@ -8,11 +8,10 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class BuyClaim implements CommandExecutor {
-
+public class AddHomesCommand implements CommandExecutor {
     private final PlayerProfileManager profileManager;
 
-    public BuyClaim(PlayerProfileManager profileManager) {
+    public AddHomesCommand(PlayerProfileManager profileManager) {
         this.profileManager = profileManager;
     }
 
@@ -25,49 +24,46 @@ public class BuyClaim implements CommandExecutor {
 
         // Check if the number of claims is provided
         if (args.length != 1) {
-            player.sendMessage(ChatColor.YELLOW + "Usage: /buyclaim <number of claims>");
+            player.sendMessage(ChatColor.YELLOW + "Usage: /buyhomeslot <number of home slot>");
             return true;
         }
 
         // Parse the number of claims from the argument
-        int numberOfClaims;
+        int numberOfSlot;
         try {
-            numberOfClaims = Integer.parseInt(args[0]);
+            numberOfSlot = Integer.parseInt(args[0]);
         } catch (NumberFormatException e) {
-            player.sendMessage(ChatColor.RED + "Invalid number of claims. Please enter a valid number.");
+            player.sendMessage(ChatColor.RED + "Invalid number. Please enter a valid number.");
             return true;
         }
 
-        if (numberOfClaims <= 0) {
-            player.sendMessage(ChatColor.RED + "You must buy at least 1 claim point.");
+        if (numberOfSlot <= 0) {
+            player.sendMessage(ChatColor.RED + "You must buy at least 1 slot.");
             return true;
         }
 
         // Retrieve the player's profile
         UserProfile profile = profileManager.getProfile(player.getName());
         double playerEmeralds = profile.getEmerald();
-        double playerClaimPoints = profile.getClaimPoints();
+        int playerHomeSlots = profile.getMaxHomes();
 
-        // Calculate the total cost for the requested claim points
-        double totalCost = numberOfClaims * 10; // 10 emeralds per claim point
+
+        double totalCost = numberOfSlot * 1000;
 
         // Check if the player has enough emeralds
         if (playerEmeralds >= totalCost) {
             // Deduct the emerald cost and increase claim points
             profile.setEmerald(playerEmeralds - totalCost);
-            profile.setClaimPoints(playerClaimPoints + numberOfClaims);
+            profile.setMaxHomes(playerHomeSlots + numberOfSlot);
             player.sendMessage(ChatColor.GREEN + "You have successfully purchased "
-                    + ChatColor.GOLD + numberOfClaims
-                    + ChatColor.GREEN + " claim point(s) for "
+                    + ChatColor.GOLD + numberOfSlot
+                    + ChatColor.GREEN + " extra set homes for "
                     + ChatColor.GOLD + (int) totalCost
                     + ChatColor.GREEN + " emerald(s)!");
-            player.sendMessage(ChatColor.GREEN + "You now have "
-                    + ChatColor.GOLD + (playerClaimPoints + numberOfClaims)
-                    + ChatColor.GREEN + " claim point(s).");
         } else {
             player.sendMessage(ChatColor.RED + "You do not have enough emeralds to buy "
-                    + ChatColor.GOLD + numberOfClaims
-                    + ChatColor.RED + " claim point(s).");
+                    + ChatColor.GOLD + numberOfSlot
+                    + ChatColor.RED + " slot(s).");
             player.sendMessage(ChatColor.YELLOW + "You need "
                     + ChatColor.GOLD + totalCost
                     + ChatColor.YELLOW + " emerald(s), but you only have "

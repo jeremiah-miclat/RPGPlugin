@@ -72,7 +72,6 @@ commands:
   buyclaim:
     description: buy claim command
     usage: /buyclaim <claimpoint>
-    notes: "It will cost 10 diamons per chunk"
   convertmaterial:
     description: convert ores
     usage: /convert <orename>
@@ -244,6 +243,8 @@ commands:
   showprofile:
     description: Toggle profile visibility to other players.
     usage: /showprofile
-
+  buyhomeslot:
+    description: buy /sethome slots
+    usage: /buyhomeslot <number>
 softdepend:
   - DiscordSRV
