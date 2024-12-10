@@ -47,6 +47,10 @@ public class AddHomesCommand implements CommandExecutor {
         double playerEmeralds = profile.getEmerald();
         int playerHomeSlots = profile.getMaxHomes();
 
+        if (numberOfSlot+playerHomeSlots >= 11) {
+            player.sendMessage(ChatColor.RED + "Can only set 10 homes. " + "You currently have " + playerHomeSlots);
+            return true;
+        }
 
         double totalCost = numberOfSlot * 1000;
 
