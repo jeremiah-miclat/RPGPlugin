@@ -201,6 +201,23 @@ public class DamageListener implements Listener {
 
 
         if (Objects.requireNonNull(event.getDamager().getLocation().getWorld()).getName().equals("world_rpg") || Objects.requireNonNull(event.getEntity().getLocation().getWorld()).getName().contains("world_labyrinth")) {
+            Location loc = event.getEntity().getLocation();
+
+            // Check if the world name contains "Labyrinth" and coordinates match
+            if (loc.getWorld().getName().contains("labyrinth")) {
+                int x = loc.getBlockX();
+                int z = loc.getBlockZ();
+
+                // Check if the coordinates are within the specified range
+                if (x >= -23 && x <= -19 && z >= -38 && z <= -34) {
+                    // Cancel the damage
+                    event.setCancelled(true);
+                    if (event.getDamager() instanceof Player player) {
+                        player.sendMessage(ChatColor.RED +"Lure monster outside the safe zone.");
+                    }
+                    return;
+                }
+            }
 
 
             if (!(event.getEntity() instanceof LivingEntity) && !(event.getEntity() instanceof  Monster)) {
@@ -231,10 +248,14 @@ public class DamageListener implements Listener {
             if (damager instanceof Player attacker && damaged instanceof LivingEntity victim)
             {
 
+
+
+
                 if (damaged instanceof Player damagedPlayer) {
 
                     UserProfile attackerProfile = profileManager.getProfile(attacker.getName());
                     UserProfile damagedProfile = profileManager.getProfile(damagedPlayer.getName());
+
 
                     if (attackerProfile == null || damagedProfile == null) {
                         attacker.sendMessage("Your profile or target's profile can not be found. contact developer to fix files");
@@ -264,6 +285,19 @@ public class DamageListener implements Listener {
 
 
                 UserProfile attackerProfile = profileManager.getProfile(attacker.getName());
+
+
+                if (event.getCause() == EntityDamageEvent.DamageCause.THORNS && !attackerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
+
+                    event.setDamage(4);
+                    return;
+                }
+
+                if (event.getCause() == EntityDamageEvent.DamageCause.THORNS &&  attackerProfile.getChosenClass().equalsIgnoreCase("swordsman") && !attackerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
+
+                    event.setDamage(4);
+                    return;
+                }
 
                 if (attackerProfile != null) {
                     try {
@@ -429,14 +463,22 @@ public class DamageListener implements Listener {
 
                     if (target instanceof Player) target.sendMessage("Your fire resistance effect has been removed by Blaze.");
                 }
-//                // Check for custom damage metadata
-//                if (mob.hasMetadata("extraHealth")) {
-//                    double customDamage = mob.getMetadata("extraHealth").get(0).asDouble();
+
+                   ItemStack weapon =  mob.getEquipment().getItemInMainHand();
+
 
                     double mobDamage = Objects.requireNonNull(mob.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).getValue();
 
                     if (mob instanceof Creeper) {
                         mobDamage *=2;
+                    }
+
+                    mobDamage += event.getDamage();
+
+                    int sharplevel = weapon.getEnchantmentLevel(Enchantment.SHARPNESS);
+
+                    if (sharplevel > 0) {
+                        mobDamage*=1+(.1*sharplevel);
                     }
 
                     if (damaged instanceof Player player) {
@@ -467,14 +509,23 @@ public class DamageListener implements Listener {
                         return;
                     }
 
+
+
                     event.setDamage((mobDamage));
-//                }
+
             }
 
             if (event.getDamager() instanceof Projectile projectile) {
                 // Check for custom damage metadata
                 if (projectile.getShooter() instanceof Monster mob && mob.hasMetadata("customDamage")) {
                     double customDamage = mob.getMetadata("customDamage").get(0).asDouble();
+                    customDamage += event.getDamage();
+                    ItemStack weapon =  mob.getEquipment().getItemInMainHand();
+                    int sharplevel = weapon.getEnchantmentLevel(Enchantment.POWER);
+
+                    if (sharplevel > 0) {
+                        customDamage*=1+(.1*sharplevel);
+                    }
                     if (damaged instanceof Player player) {
                         UserProfile playerProfile = profileManager.getProfile(player.getName());
                         playerProfile.setDurability(Math.max(0,playerProfile.getDurability()-1));
@@ -506,7 +557,7 @@ public class DamageListener implements Listener {
                 // Check for custom damage metadata
                 if (projectile.getShooter() instanceof Monster mob && mob.hasMetadata("customDamage")) {
                     double customDamage = mob.getMetadata("customDamage").get(0).asDouble();
-                    customDamage/=10;
+                    customDamage+=event.getDamage();
                     if (damaged instanceof Player player) {
                         UserProfile playerProfile = profileManager.getProfile(player.getName());
                         playerProfile.setDurability(Math.max(0,playerProfile.getDurability()-1));
@@ -560,6 +611,25 @@ public class DamageListener implements Listener {
             return;
         }
 
+        Location loc = event.getEntity().getLocation();
+
+        // Check if the world name contains "Labyrinth" and coordinates match
+        if (loc.getWorld().getName().contains("labyrinth")) {
+            int x = loc.getBlockX();
+            int z = loc.getBlockZ();
+
+            // Check if the coordinates are within the specified range
+            if (x >= -23 && x <= -19 && z >= -38 && z <= -34) {
+                // Cancel the damage
+                event.setCancelled(true);
+
+                if (event.getEntity() instanceof Player player) {
+                    player.sendMessage(ChatColor.YELLOW + "You are on safe zone");
+                }
+
+                return;
+            }
+        }
 
         if (!(event.getEntity() instanceof LivingEntity) && !(event.getEntity() instanceof  Monster)) {
             return;
@@ -612,13 +682,7 @@ public class DamageListener implements Listener {
         // Apply stats based on class for non-default players
         double damageWithStats = applyStatsToDamage(baseDamage, damagerProfile, attacker, event);
 
-        // Swordsman-specific ability if holding a sword
-        if (damagerProfile.getChosenClass().equalsIgnoreCase("swordsman") && weapon.getType().toString().endsWith("_SWORD")) {
-            effectsAbilityManager.applyAbility(damagerProfile, target, damagerLocation, damagedLocation);
-            if (target instanceof Monster mob && (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 2") || damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 3"))) {
-                mob.setTarget(attacker);
-            }
-        }
+
 
         // Apply extra health and set final damage
         double finalDamage = applyExtraHealthAndDamage(target, damageWithStats, attacker);
@@ -651,11 +715,7 @@ public class DamageListener implements Listener {
             }
         }
 
-        // Attack cooldown mechanic (charge multiplier)
-        float attackCooldown = attacker.getAttackCooldown();  // 0 = no cooldown, 1 = max cooldown
 
-        // Apply cooldown scaling to the final damage
-        finalDamage *= attackCooldown;
 
 
 //        double rawDmg = event.getDamage();
@@ -696,7 +756,34 @@ public class DamageListener implements Listener {
             }
         }
 
+        if (event.getCause() == EntityDamageEvent.DamageCause.THORNS && damagerProfile.getChosenClass().equalsIgnoreCase("swordsman") && damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
 
+            event.setDamage(finalDamage*.1);
+            return;
+        }
+
+        int sharpnessLevel = weapon.getEnchantmentLevel(Enchantment.SHARPNESS);
+
+        if (sharpnessLevel > 0) {
+            finalDamage = finalDamage * (0.02*sharpnessLevel);
+        }
+
+        if (!weapon.getType().toString().endsWith("_SWORD")
+                && !weapon.getType().toString().endsWith("_AXE")
+                && !weapon.getType().toString().endsWith("_MACE")
+                && !weapon.getType().toString().endsWith("_TRIDENT")
+        ) {
+            finalDamage *= .2;
+        }
+
+        // Swordsman-specific ability if holding a sword
+        if (damagerProfile.getChosenClass().equalsIgnoreCase("swordsman") && weapon.getType().toString().endsWith("_SWORD")) {
+
+            effectsAbilityManager.applyAbility(damagerProfile, target, damagerLocation, damagedLocation);
+            if (target instanceof Monster mob && (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 2") || damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 3"))) {
+                mob.setTarget(attacker);
+            }
+        }
 
         try {
             if (attacker == null || damagerProfile == null) {
@@ -733,6 +820,12 @@ public class DamageListener implements Listener {
             System.err.println("An error occurred in the lifesteal logic.");
             e.printStackTrace();
         }
+
+        // Attack cooldown mechanic (charge multiplier)
+        float attackCooldown = attacker.getAttackCooldown();  // 0 = no cooldown, 1 = max cooldown
+
+        // Apply cooldown scaling to the final damage
+        finalDamage *= attackCooldown;
 
         event.setDamage(finalDamage
 //                *dmgReductionMultiplier
@@ -781,13 +874,13 @@ public class DamageListener implements Listener {
             } else if (distance <= 6) {
                 finalDamage *= 0.5;
             } else if (distance <= 7) {
-                finalDamage *= 0.6;
-            } else if (distance <= 8) {
                 finalDamage *= 0.7;
-            } else if (distance <= 9) {
+            } else if (distance <= 8) {
                 finalDamage *= 0.8;
-            } else if (distance <= 10) {
+            } else if (distance <= 9) {
                 finalDamage *= 0.9;
+            } else if (distance <= 10) {
+                finalDamage *= 1;
             }
             else if (distance <= 20 && damagerProfile.getChosenClass().equalsIgnoreCase("archer")) {
                 finalDamage = finalDamage * 1.5;
@@ -799,66 +892,11 @@ public class DamageListener implements Listener {
                 finalDamage = finalDamage * 3;
             }
 
-
         }
 
-        // Archer class - Check if using bow
-        if (damagerProfile.getChosenClass().equalsIgnoreCase("archer") && event.getDamager() instanceof Arrow arrow) {
-            effectsAbilityManager.applyAbility(damagerProfile, target, damagerLocation, damagedLocation);
-            if (!arrow.hasMetadata("WeaknessArrowBarrage") && !arrow.hasMetadata("FireArrowBarrage") && !arrow.hasMetadata("FreezeArrowBarrage")) {
-                double archerDex = damagerProfile.getArcherClassInfo().getDex();
-                double baseChance = 0.10; // 10% base chance
-                double dexModifier = .00004; // 0.004 per Dexterity
-                double totalChance = Math.min(.5,baseChance + (archerDex * dexModifier));
-
-// Generate a random value between 0.0 and 1.0
-                if (Math.random() < totalChance) {
-                    damageAbilityManager.applyDamageAbility(damagerProfile, target, damagerLocation, damagedLocation, finalDamage);
-                }
-            }
 
 
-        }
 
-        // Alchemist class - Check if using thrown potion
-        if (damagerProfile.getChosenClass().equalsIgnoreCase("alchemist") && event.getDamager() instanceof ThrownPotion) {
-            event.setDamage(finalDamage);
-            effectsAbilityManager.applyAbility(damagerProfile, target, damagerLocation, damagedLocation);
-
-            if (attacker.getWorld().getName().contains("labyrinth") && target instanceof Monster mob) {
-                if (Math.random() < 0.05) {
-                    Location attackerLocation = attacker.getLocation();
-                    Vector direction = attackerLocation.getDirection().normalize(); // Get the attacker's direction
-                    double distance = 0.5; // Set the distance you want the mob to appear in front of the attacker
-                    Location teleportLocation = attackerLocation.add(direction.multiply(distance));
-
-                    // Adjust Y to avoid the mob spawning inside the ground
-                    teleportLocation.setY(attackerLocation.getY());
-
-                    mob.teleport(teleportLocation);
-                }
-
-            }
-
-            return;
-        }
-
-//        double rawDmg = event.getDamage();
-//        double finalDmg = event.getFinalDamage();
-//
-//        double dmgReductionMultiplier = 0;
-//
-//        if (rawDmg > 0) {
-//            // Only calculate dmgReductionMultiplier if rawDmg is greater than 0
-//            if (finalDmg > 0) {
-//                dmgReductionMultiplier = finalDmg / rawDmg;
-//            }
-//        }
-
-
-//        if (Double.isNaN(dmgReductionMultiplier)) {
-//            dmgReductionMultiplier = 0;
-//        }
         if (event.getEntity() instanceof Player player) {
             UserProfile playerProfile = profileManager.getProfile(player.getName());
 
@@ -913,8 +951,55 @@ public class DamageListener implements Listener {
                 finalDamage=finalDamage*1.3;
             }
         }
-//        double damageApplied = finalDamage *dmgReductionMultiplier;
-//        event.setDamage(damageApplied);
+
+
+        // Alchemist class - Check if using thrown potion
+        if (damagerProfile.getChosenClass().equalsIgnoreCase("alchemist") && event.getDamager() instanceof ThrownPotion) {
+            event.setDamage(finalDamage*1.2);
+            effectsAbilityManager.applyAbility(damagerProfile, target, damagerLocation, damagedLocation);
+
+            if (attacker.getWorld().getName().contains("labyrinth") && target instanceof Monster mob) {
+                if (Math.random() < 0.05) {
+                    Location attackerLocation = attacker.getLocation();
+                    Vector direction = attackerLocation.getDirection().normalize(); // Get the attacker's direction
+                    double distance = 0.5; // Set the distance you want the mob to appear in front of the attacker
+                    Location teleportLocation = attackerLocation.add(direction.multiply(distance));
+
+                    // Adjust Y to avoid the mob spawning inside the ground
+                    teleportLocation.setY(attackerLocation.getY());
+
+                    mob.teleport(teleportLocation);
+                }
+
+            }
+
+            return;
+        }
+
+        // Archer class - Check if using bow
+        if (damagerProfile.getChosenClass().equalsIgnoreCase("archer") && event.getDamager() instanceof Arrow arrow) {
+            effectsAbilityManager.applyAbility(damagerProfile, target, damagerLocation, damagedLocation);
+
+            if (!arrow.hasMetadata("WeaknessArrowBarrage") && !arrow.hasMetadata("FireArrowBarrage") && !arrow.hasMetadata("FreezeArrowBarrage")) {
+                double archerDex = damagerProfile.getArcherClassInfo().getDex();
+                double baseChance = 0.10; // 10% base chance
+                double dexModifier = .00004; // 0.004 per Dexterity
+                double totalChance = Math.min(.5,baseChance + (archerDex * dexModifier));
+
+// Generate a random value between 0.0 and 1.0
+                if (Math.random() < totalChance) {
+                    damageAbilityManager.applyDamageAbility(damagerProfile, target, damagerLocation, damagedLocation, finalDamage);
+                }
+            }
+
+
+        }
+
+        int powerLevel = weapon.getEnchantmentLevel(Enchantment.POWER);
+
+        if (powerLevel > 0) {
+            finalDamage = finalDamage * (0.02*powerLevel);
+        }
         event.setDamage(finalDamage);
     }
 
@@ -1286,6 +1371,8 @@ public class DamageListener implements Listener {
         entity.setCustomName(customName + healthIndicator);
 
     }
+
+
 
 }
 

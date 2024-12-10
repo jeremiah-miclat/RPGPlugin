@@ -305,7 +305,7 @@ public class CheckClassCommand implements CommandExecutor, Listener {
                 // Add specific lore for items
                 if (item.getType() == Material.IRON_SWORD) {
                     lore.add("Increases damage for melee attacks.");
-                    lore.add("Provides extra melee damage for Swordsmen using Skills 2 and 3.");
+                    lore.add("Provides 10% bonus melee damage for Swordsmen.");
                 }
 
                 if (item.getType() == Material.FEATHER) {
@@ -315,13 +315,14 @@ public class CheckClassCommand implements CommandExecutor, Listener {
 
                 if (item.getType() == Material.BOW) {
                     lore.add("Increases arrow damage.");
-                    lore.add("Provides bonus arrow damage for Archers using Skills 2 and 3.");
+                    lore.add("Provides 10% bonus arrow damage for Archers.");
                     lore.add("Slightly increases critical chance and critical damage for Archers.");
                 }
 
                 if (item.getType() == Material.BOOK) {
                     lore.add("Increases damage from thrown potions.");
-                    lore.add("Enhances damage stats for Skill 1 users.");
+                    lore.add("Provides 10% bonus splash potion damage for Alchemists.");
+                    lore.add("Damage stats for Skill 1 users.");
                     lore.add("Boosts potion effects, healing, and damage for Alchemists.");
                 }
 
