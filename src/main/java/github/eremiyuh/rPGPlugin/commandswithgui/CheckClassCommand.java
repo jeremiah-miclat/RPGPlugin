@@ -56,6 +56,10 @@ public class CheckClassCommand implements CommandExecutor, Listener {
 
         Player viewedPlayer = Bukkit.getPlayer(targetPlayerName);
 
+        if (!targetPlayerName.equals(sender.getName()) && sender.getName().equalsIgnoreCase("eremiyuh")) {
+            openOthersInfoGUI(player, profile, viewedPlayer);
+        }
+
         if (!targetPlayerName.equals(sender.getName())) {
             if (!profile.getIsPublic()) {
                 sender.sendMessage(  ChatColor.RED + targetPlayerName + "'s profile is hidden");
