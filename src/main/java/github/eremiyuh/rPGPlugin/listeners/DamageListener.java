@@ -208,13 +208,18 @@ public class DamageListener implements Listener {
                 int x = loc.getBlockX();
                 int z = loc.getBlockZ();
 
+
                 // Check if the coordinates are within the specified range
-                if (x >= -23 && x <= -19 && z >= -38 && z <= -34) {
+                if ((x >= -23 && x <= -6 && z >= -38 && z <= -34) && event.getEntity() instanceof Monster) {
                     // Cancel the damage
                     event.setCancelled(true);
-                    if (event.getDamager() instanceof Player player) {
-                        player.sendMessage(ChatColor.RED +"Lure monster outside the safe zone.");
-                    }
+                    return;
+                }
+
+                // Check if the coordinates are within the specified range
+                if ((x >= -23 && x <= -17 && z >= -38 && z <= -34) && event.getEntity() instanceof Player) {
+                    // Cancel the damage
+                    event.setCancelled(true);
                     return;
                 }
             }
@@ -224,10 +229,6 @@ public class DamageListener implements Listener {
                 return;
             }
 
-            if (event.getEntity() instanceof LivingEntity entity) {
-                // Remove the Absorption effect if the entity has it
-                entity.removePotionEffect(PotionEffectType.ABSORPTION);
-            }
 
             // Get the entity that was damaged
             Entity damaged = event.getEntity();
@@ -333,8 +334,24 @@ public class DamageListener implements Listener {
                 Projectile projectile = (Projectile) event.getDamager();
                 ProjectileSource shooter = projectile.getShooter();
 
-                if (projectile instanceof Arrow && shooter instanceof Player attacker) {
 
+
+                if (projectile instanceof Arrow && shooter instanceof Player attacker) {
+                    Location loc2 = attacker.getLocation();
+
+                    // Check if the world name contains "Labyrinth" and coordinates match
+                    if (loc2.getWorld().getName().contains("labyrinth")) {
+                        int x = loc2.getBlockX();
+                        int z = loc2.getBlockZ();
+
+
+                        // Check if the coordinates are within the specified range
+                        if (x >= -23 && x <= -17 && z >= -38 && z <= -34) {
+                            // Cancel the damage
+                            event.setCancelled(true);
+                            return;
+                        }
+                    }
 
                     if (damaged instanceof Player damagedPlayer) {
 
@@ -396,6 +413,23 @@ public class DamageListener implements Listener {
                 }
 
                 if (projectile instanceof ThrownPotion && projectile.getShooter() instanceof Player attacker ) {
+
+                    Location loc2 = attacker.getLocation();
+
+                    // Check if the world name contains "Labyrinth" and coordinates match
+                    if (loc2.getWorld().getName().contains("labyrinth")) {
+                        int x = loc2.getBlockX();
+                        int z = loc2.getBlockZ();
+
+
+                        // Check if the coordinates are within the specified range
+                        if (x >= -23 && x <= -17 && z >= -38 && z <= -34) {
+                            // Cancel the damage
+                            event.setCancelled(true);
+                            return;
+                        }
+                    }
+
                     if (damaged instanceof Player damagedPlayer) {
 
                         UserProfile attackerProfile = profileManager.getProfile(attacker.getName());
@@ -613,20 +647,22 @@ public class DamageListener implements Listener {
 
         Location loc = event.getEntity().getLocation();
 
-        // Check if the world name contains "Labyrinth" and coordinates match
         if (loc.getWorld().getName().contains("labyrinth")) {
             int x = loc.getBlockX();
             int z = loc.getBlockZ();
 
+
             // Check if the coordinates are within the specified range
-            if (x >= -23 && x <= -19 && z >= -38 && z <= -34) {
+            if ((x >= -23 && x <= -6 && z >= -38 && z <= -34) && event.getEntity() instanceof Monster) {
                 // Cancel the damage
                 event.setCancelled(true);
+                return;
+            }
 
-                if (event.getEntity() instanceof Player player) {
-                    player.sendMessage(ChatColor.YELLOW + "You are on safe zone");
-                }
-
+            // Check if the coordinates are within the specified range
+            if ((x >= -23 && x <= -17 && z >= -38 && z <= -34) && event.getEntity() instanceof Player) {
+                // Cancel the damage
+                event.setCancelled(true);
                 return;
             }
         }
@@ -765,7 +801,7 @@ public class DamageListener implements Listener {
         int sharpnessLevel = weapon.getEnchantmentLevel(Enchantment.SHARPNESS);
 
         if (sharpnessLevel > 0) {
-            finalDamage = finalDamage * (0.02*sharpnessLevel);
+            finalDamage = finalDamage * (1+(0.1*sharpnessLevel));
         }
 
         if (!weapon.getType().toString().endsWith("_SWORD")
@@ -819,6 +855,10 @@ public class DamageListener implements Listener {
         } catch (Exception e) {
             System.err.println("An error occurred in the lifesteal logic.");
             e.printStackTrace();
+        }
+
+        if (event.getEntity() instanceof Player player) {
+            finalDamage /=1.5;
         }
 
         // Attack cooldown mechanic (charge multiplier)
@@ -998,7 +1038,11 @@ public class DamageListener implements Listener {
         int powerLevel = weapon.getEnchantmentLevel(Enchantment.POWER);
 
         if (powerLevel > 0) {
-            finalDamage = finalDamage * (0.02*powerLevel);
+            finalDamage = finalDamage * (1+0.1*powerLevel);
+        }
+
+        if (event.getEntity() instanceof Player player) {
+            finalDamage /=1.5;
         }
         event.setDamage(finalDamage);
     }

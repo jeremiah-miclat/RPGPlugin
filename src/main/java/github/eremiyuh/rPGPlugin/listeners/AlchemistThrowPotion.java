@@ -1,6 +1,8 @@
 package github.eremiyuh.rPGPlugin.listeners;
 
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -66,8 +68,13 @@ public class AlchemistThrowPotion implements Listener {
         if (!Objects.requireNonNull(event.getEntity().getLocation().getWorld()).getName().equals("world_rpg") && !Objects.requireNonNull(event.getEntity().getLocation().getWorld()).getName().contains("labyrinth")) {
             return;
         }
+
+
         try {
             if (event.getEntity().getShooter() instanceof Player thrower) {
+
+
+
                 UserProfile throwerProfile = profileManager.getProfile(thrower.getName());
 
 
