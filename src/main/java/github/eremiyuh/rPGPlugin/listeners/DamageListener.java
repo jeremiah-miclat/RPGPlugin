@@ -287,6 +287,11 @@ public class DamageListener implements Listener {
 
                 UserProfile attackerProfile = profileManager.getProfile(attacker.getName());
 
+                if (event.getCause() == EntityDamageEvent.DamageCause.THORNS && !attackerProfile.getChosenClass().equalsIgnoreCase("swordsman")) {
+
+                    event.setDamage(4);
+                    return;
+                }
 
                 if (event.getCause() == EntityDamageEvent.DamageCause.THORNS && !attackerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
 
@@ -294,11 +299,6 @@ public class DamageListener implements Listener {
                     return;
                 }
 
-                if (event.getCause() == EntityDamageEvent.DamageCause.THORNS &&  attackerProfile.getChosenClass().equalsIgnoreCase("swordsman") && !attackerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
-
-                    event.setDamage(4);
-                    return;
-                }
 
                 if (attackerProfile != null) {
                     try {
