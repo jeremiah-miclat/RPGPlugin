@@ -526,9 +526,7 @@ public class DamageListener implements Listener {
 
                         if (event.getEntity() instanceof Player) {
 
-//                            if (playerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
-//                                mobDamage *= 1.2;
-//                            }
+//
                             if (playerProfile.getChosenClass().equalsIgnoreCase("swordsman") && playerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
                                 mobDamage *= .3;
                             }
@@ -724,6 +722,64 @@ public class DamageListener implements Listener {
         double finalDamage = applyExtraHealthAndDamage(target, damageWithStats, attacker);
 
 
+        if (event.getCause() == EntityDamageEvent.DamageCause.THORNS && damagerProfile.getChosenClass().equalsIgnoreCase("swordsman") && damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
+
+            event.setDamage(finalDamage*.1);
+            return;
+        }
+
+
+
+        // Swordsman-specific ability if holding a sword
+        if (damagerProfile.getChosenClass().equalsIgnoreCase("swordsman") && weapon.getType().toString().endsWith("_SWORD")) {
+
+            effectsAbilityManager.applyAbility(damagerProfile, target, damagerLocation, damagedLocation);
+            if (target instanceof Monster mob && (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 2") || damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 3"))) {
+                mob.setTarget(attacker);
+            }
+        }
+
+        int sharpnessLevel = weapon.getEnchantmentLevel(Enchantment.SHARPNESS);
+
+        if (sharpnessLevel > 0) {
+            finalDamage = finalDamage * (1+(0.1*sharpnessLevel));
+        }
+
+        if (!weapon.getType().toString().endsWith("_SWORD")
+                && !weapon.getType().toString().endsWith("_AXE")
+                && !weapon.getType().toString().endsWith("_MACE")
+                && !weapon.getType().toString().endsWith("_TRIDENT")
+        ) {
+            finalDamage *= .2;
+        }
+
+
+
+        if (event.getEntity() instanceof Player player) {
+            UserProfile playerProfile = profileManager.getProfile(player.getName());
+
+
+            playerProfile.setDurability(Math.max(0,playerProfile.getDurability()-1));
+            if (playerProfile.isBossIndicator() && playerProfile.getDurability() <= 0) {
+                player.sendMessage("Durability depleted. You will receive more damage. /sdw to turn off this warning");
+            }
+            finalDamage *= playerProfile.getDurability() == 0 ? 2 : 1;
+
+            if (playerProfile.getChosenClass().equalsIgnoreCase("swordsman") && playerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
+                finalDamage *= .5;
+            }
+            if (playerProfile.getChosenClass().equalsIgnoreCase("swordsman") && !playerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
+                finalDamage *= .8;
+            }
+        }
+
+
+
+        if (event.getEntity() instanceof Player player) {
+            finalDamage /=1.5;
+        }
+
+
         if (event.getEntity() instanceof Player victim) {
             UserProfile victimProfile = profileManager.getProfile(victim.getName());
             if (victimProfile==null) return;
@@ -752,74 +808,11 @@ public class DamageListener implements Listener {
         }
 
 
+        // Attack cooldown mechanic (charge multiplier)
+        float attackCooldown = attacker.getAttackCooldown();
 
-
-//        double rawDmg = event.getDamage();
-//        double finalDmg = event.getFinalDamage();
-//
-//        double dmgReductionMultiplier = 0;
-//
-//        if (rawDmg > 0) {
-//            // Only calculate dmgReductionMultiplier if rawDmg is greater than 0
-//            if (finalDmg > 0) {
-//                dmgReductionMultiplier = finalDmg / rawDmg;
-//            }
-//        }
-//
-//
-//        if (Double.isNaN(dmgReductionMultiplier)) {
-//            dmgReductionMultiplier = 0;
-//        }
-        if (event.getEntity() instanceof Player player) {
-            UserProfile playerProfile = profileManager.getProfile(player.getName());
-
-
-            playerProfile.setDurability(Math.max(0,playerProfile.getDurability()-1));
-            if (playerProfile.isBossIndicator() && playerProfile.getDurability() <= 0) {
-                player.sendMessage("Durability depleted. You will receive more damage. /sdw to turn off this warning");
-            }
-            finalDamage *= playerProfile.getDurability() == 0 ? 2 : 1;
-
-
-//            if (playerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
-//                finalDamage *= 1.2;
-//            }
-            if (playerProfile.getChosenClass().equalsIgnoreCase("swordsman") && playerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
-                finalDamage *= .3;
-            }
-            if (playerProfile.getChosenClass().equalsIgnoreCase("swordsman") && !playerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
-                finalDamage *= .8;
-            }
-        }
-
-        if (event.getCause() == EntityDamageEvent.DamageCause.THORNS && damagerProfile.getChosenClass().equalsIgnoreCase("swordsman") && damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
-
-            event.setDamage(finalDamage*.1);
-            return;
-        }
-
-        int sharpnessLevel = weapon.getEnchantmentLevel(Enchantment.SHARPNESS);
-
-        if (sharpnessLevel > 0) {
-            finalDamage = finalDamage * (1+(0.1*sharpnessLevel));
-        }
-
-        if (!weapon.getType().toString().endsWith("_SWORD")
-                && !weapon.getType().toString().endsWith("_AXE")
-                && !weapon.getType().toString().endsWith("_MACE")
-                && !weapon.getType().toString().endsWith("_TRIDENT")
-        ) {
-            finalDamage *= .2;
-        }
-
-        // Swordsman-specific ability if holding a sword
-        if (damagerProfile.getChosenClass().equalsIgnoreCase("swordsman") && weapon.getType().toString().endsWith("_SWORD")) {
-
-            effectsAbilityManager.applyAbility(damagerProfile, target, damagerLocation, damagedLocation);
-            if (target instanceof Monster mob && (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 2") || damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 3"))) {
-                mob.setTarget(attacker);
-            }
-        }
+        // Apply cooldown scaling to the final damage
+        finalDamage *= attackCooldown;
 
         try {
             if (attacker == null || damagerProfile == null) {
@@ -857,15 +850,7 @@ public class DamageListener implements Listener {
             e.printStackTrace();
         }
 
-        if (event.getEntity() instanceof Player player) {
-            finalDamage /=1.5;
-        }
 
-        // Attack cooldown mechanic (charge multiplier)
-        float attackCooldown = attacker.getAttackCooldown();  // 0 = no cooldown, 1 = max cooldown
-
-        // Apply cooldown scaling to the final damage
-        finalDamage *= attackCooldown;
 
         event.setDamage(finalDamage
 //                *dmgReductionMultiplier
@@ -896,7 +881,107 @@ public class DamageListener implements Listener {
         // Apply extra health and set final damage
         double finalDamage = applyExtraHealthAndDamage(target, damageWithStats, attacker);
 
+        // Alchemist class - Check if using thrown potion
+        if (damagerProfile.getChosenClass().equalsIgnoreCase("alchemist") && event.getDamager() instanceof ThrownPotion) {
+            finalDamage = finalDamage*1.2;
+            if (event.getEntity() instanceof Player player) {
+                finalDamage = finalDamage *.5;
+            }
+            effectsAbilityManager.applyAbility(damagerProfile, target, damagerLocation, damagedLocation);
 
+            if (attacker.getWorld().getName().contains("labyrinth") && target instanceof Monster mob) {
+                if (Math.random() < 0.05) {
+                    Location attackerLocation = attacker.getLocation();
+                    Vector direction = attackerLocation.getDirection().normalize(); // Get the attacker's direction
+                    double distance = 0.5; // Set the distance you want the mob to appear in front of the attacker
+                    Location teleportLocation = attackerLocation.add(direction.multiply(distance));
+
+                    // Adjust Y to avoid the mob spawning inside the ground
+                    teleportLocation.setY(attackerLocation.getY()+1);
+
+                    mob.teleport(teleportLocation);
+                }
+
+            }
+        }
+
+        // Archer class - Check if using bow
+        if (damagerProfile.getChosenClass().equalsIgnoreCase("archer") && event.getDamager() instanceof Arrow arrow) {
+            effectsAbilityManager.applyAbility(damagerProfile, target, damagerLocation, damagedLocation);
+
+            if (!arrow.hasMetadata("WeaknessArrowBarrage") && !arrow.hasMetadata("FireArrowBarrage") && !arrow.hasMetadata("FreezeArrowBarrage")) {
+                double archerDex = damagerProfile.getArcherClassInfo().getDex();
+                double baseChance = 0.10; // 10% base chance
+                double dexModifier = .00004; // 0.004 per Dexterity
+                double totalChance = Math.min(.5,baseChance + (archerDex * dexModifier));
+
+// Generate a random value between 0.0 and 1.0
+                if (Math.random() < totalChance) {
+                    damageAbilityManager.applyDamageAbility(damagerProfile, target, damagerLocation, damagedLocation, finalDamage);
+                }
+            }
+
+
+        }
+
+        int powerLevel = weapon.getEnchantmentLevel(Enchantment.POWER);
+
+        if (powerLevel > 0) {
+            finalDamage = finalDamage * (1+0.1*powerLevel);
+        }
+
+        if (event.getEntity() instanceof Player player) {
+            UserProfile playerProfile = profileManager.getProfile(player.getName());
+
+            playerProfile.setDurability(Math.max(0,playerProfile.getDurability()-1));
+            if (playerProfile.isBossIndicator() && playerProfile.getDurability() <= 0) {
+                player.sendMessage("Durability depleted. You will receive more damage. /sdw to turn off this warning");
+            }
+            finalDamage *= playerProfile.getDurability() == 0 ? 2 : 1;
+            if (playerProfile.getChosenClass().equalsIgnoreCase("swordsman") && playerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
+                finalDamage *= .5;
+            }
+            if (playerProfile.getChosenClass().equalsIgnoreCase("swordsman") && !playerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
+                finalDamage *= .8;
+            }
+        }
+
+        if (event.getEntity() instanceof Player player) {
+            finalDamage /=1.5;
+        }
+
+        if (event.getEntity() instanceof Player victim) {
+            UserProfile victimProfile = profileManager.getProfile(victim.getName());
+            if (victimProfile==null) return;
+            if (damagerProfile.getSelectedElement().equalsIgnoreCase("fire")) {finalDamage=finalDamage*1.1;}
+            if (victimProfile.getChosenClass().equalsIgnoreCase("swordsman") && !victimProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
+                finalDamage= finalDamage*.8;
+            }
+            if (victimProfile.getChosenClass().equalsIgnoreCase("swordsman") && victimProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
+                finalDamage= finalDamage*.3;
+            }
+            if (damagerProfile.getSelectedElement().equalsIgnoreCase("fire") && victimProfile.getSelectedElement().equalsIgnoreCase("ice")) {
+                finalDamage=finalDamage*1.2;
+            }
+            if (damagerProfile.getSelectedElement().equalsIgnoreCase("ice") && victimProfile.getSelectedElement().equalsIgnoreCase("water")) {
+                finalDamage=finalDamage*1.2;
+            }
+            if (damagerProfile.getSelectedElement().equalsIgnoreCase("water") && victimProfile.getSelectedElement().equalsIgnoreCase("fire")) {
+                finalDamage=finalDamage*1.2;
+            }
+            if (damagerProfile.getSelectedElement().equalsIgnoreCase("fire") && victimProfile.getSelectedElement().equalsIgnoreCase("water")) {
+                finalDamage=finalDamage*.8;
+            }
+            if (damagerProfile.getSelectedElement().equalsIgnoreCase("water") && victimProfile.getSelectedElement().equalsIgnoreCase("ice")) {
+                finalDamage=finalDamage*.8;
+            }
+            if (damagerProfile.getSelectedElement().equalsIgnoreCase("ice") && victimProfile.getSelectedElement().equalsIgnoreCase("fire")) {
+                finalDamage=finalDamage*.8;
+            }
+            if (victimProfile.getSelectedElement().equalsIgnoreCase("none")) {
+                finalDamage=finalDamage*1.3;
+            }
+        }
 
         if (event.getDamager() instanceof  Arrow arrow) {
             Location shooterLoc = attacker.getLocation();
@@ -934,116 +1019,6 @@ public class DamageListener implements Listener {
 
         }
 
-
-
-
-        if (event.getEntity() instanceof Player player) {
-            UserProfile playerProfile = profileManager.getProfile(player.getName());
-
-            playerProfile.setDurability(Math.max(0,playerProfile.getDurability()-1));
-            if (playerProfile.isBossIndicator() && playerProfile.getDurability() <= 0) {
-                player.sendMessage("Durability depleted. You will receive more damage. /sdw to turn off this warning");
-            }
-            finalDamage *= playerProfile.getDurability() == 0 ? 2 : 1;
-//            if (playerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
-//                finalDamage *= 1.2;
-//            }
-            if (playerProfile.getChosenClass().equalsIgnoreCase("swordsman") && playerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
-                finalDamage *= .3;
-            }
-            if (playerProfile.getChosenClass().equalsIgnoreCase("swordsman") && !playerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
-                finalDamage *= .8;
-            }
-        }
-
-        if (event.getEntity() instanceof Player victim) {
-            UserProfile victimProfile = profileManager.getProfile(victim.getName());
-            if (victimProfile==null) return;
-            if (damagerProfile.getSelectedElement().equalsIgnoreCase("fire")) {finalDamage=finalDamage*1.1;}
-            if (victimProfile.getChosenClass().equalsIgnoreCase("swordsman") && !victimProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
-                finalDamage= finalDamage*.8;
-            }
-            if (victimProfile.getChosenClass().equalsIgnoreCase("swordsman") && victimProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
-                finalDamage= finalDamage*.3;
-            }
-//            if (victimProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
-//                finalDamage=finalDamage*1.2;
-//            }
-            if (damagerProfile.getSelectedElement().equalsIgnoreCase("fire") && victimProfile.getSelectedElement().equalsIgnoreCase("ice")) {
-                finalDamage=finalDamage*1.2;
-            }
-            if (damagerProfile.getSelectedElement().equalsIgnoreCase("ice") && victimProfile.getSelectedElement().equalsIgnoreCase("water")) {
-                finalDamage=finalDamage*1.2;
-            }
-            if (damagerProfile.getSelectedElement().equalsIgnoreCase("water") && victimProfile.getSelectedElement().equalsIgnoreCase("fire")) {
-                finalDamage=finalDamage*1.2;
-            }
-            if (damagerProfile.getSelectedElement().equalsIgnoreCase("fire") && victimProfile.getSelectedElement().equalsIgnoreCase("water")) {
-                finalDamage=finalDamage*.8;
-            }
-            if (damagerProfile.getSelectedElement().equalsIgnoreCase("water") && victimProfile.getSelectedElement().equalsIgnoreCase("ice")) {
-                finalDamage=finalDamage*.8;
-            }
-            if (damagerProfile.getSelectedElement().equalsIgnoreCase("ice") && victimProfile.getSelectedElement().equalsIgnoreCase("fire")) {
-                finalDamage=finalDamage*.8;
-            }
-            if (victimProfile.getSelectedElement().equalsIgnoreCase("none")) {
-                finalDamage=finalDamage*1.3;
-            }
-        }
-
-
-        // Alchemist class - Check if using thrown potion
-        if (damagerProfile.getChosenClass().equalsIgnoreCase("alchemist") && event.getDamager() instanceof ThrownPotion) {
-            event.setDamage(finalDamage*1.2);
-            effectsAbilityManager.applyAbility(damagerProfile, target, damagerLocation, damagedLocation);
-
-            if (attacker.getWorld().getName().contains("labyrinth") && target instanceof Monster mob) {
-                if (Math.random() < 0.05) {
-                    Location attackerLocation = attacker.getLocation();
-                    Vector direction = attackerLocation.getDirection().normalize(); // Get the attacker's direction
-                    double distance = 0.5; // Set the distance you want the mob to appear in front of the attacker
-                    Location teleportLocation = attackerLocation.add(direction.multiply(distance));
-
-                    // Adjust Y to avoid the mob spawning inside the ground
-                    teleportLocation.setY(attackerLocation.getY());
-
-                    mob.teleport(teleportLocation);
-                }
-
-            }
-
-            return;
-        }
-
-        // Archer class - Check if using bow
-        if (damagerProfile.getChosenClass().equalsIgnoreCase("archer") && event.getDamager() instanceof Arrow arrow) {
-            effectsAbilityManager.applyAbility(damagerProfile, target, damagerLocation, damagedLocation);
-
-            if (!arrow.hasMetadata("WeaknessArrowBarrage") && !arrow.hasMetadata("FireArrowBarrage") && !arrow.hasMetadata("FreezeArrowBarrage")) {
-                double archerDex = damagerProfile.getArcherClassInfo().getDex();
-                double baseChance = 0.10; // 10% base chance
-                double dexModifier = .00004; // 0.004 per Dexterity
-                double totalChance = Math.min(.5,baseChance + (archerDex * dexModifier));
-
-// Generate a random value between 0.0 and 1.0
-                if (Math.random() < totalChance) {
-                    damageAbilityManager.applyDamageAbility(damagerProfile, target, damagerLocation, damagedLocation, finalDamage);
-                }
-            }
-
-
-        }
-
-        int powerLevel = weapon.getEnchantmentLevel(Enchantment.POWER);
-
-        if (powerLevel > 0) {
-            finalDamage = finalDamage * (1+0.1*powerLevel);
-        }
-
-        if (event.getEntity() instanceof Player player) {
-            finalDamage /=1.5;
-        }
         event.setDamage(finalDamage);
     }
 

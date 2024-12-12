@@ -248,7 +248,7 @@ public class MonsterInitializerLabyrinth implements Listener {
 
 
         entity.setHealth(Math.min(extraHealth, customMaxHealth));
-        Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(customDamage);
+        Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(customDamage*.7);
 
 
     }

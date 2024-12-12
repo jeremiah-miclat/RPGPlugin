@@ -490,7 +490,7 @@ public class SummonVillagerListener implements Listener {
         List<MerchantRecipe> trades = new ArrayList<>();
 
         // Define trades
-        trades.add(createCustomItemTrade(Material.DIAMOND_BLOCK, 64, ItemUtils.getResetItem()));
+        trades.add(createCustomItemTrade(Material.DIAMOND_BLOCK, 12, ItemUtils.getResetItem()));
         trades.addAll(createAbyssTrades());
         villager.setRecipes(trades);
         villager.setAI(true);

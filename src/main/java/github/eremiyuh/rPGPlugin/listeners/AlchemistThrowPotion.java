@@ -136,7 +136,7 @@ public class AlchemistThrowPotion implements Listener {
                                 duration = (int) (intel*10);
 
                                 int finalDuration = baseDuration + duration + 200;
-                                target.addPotionEffect(new PotionEffect(effect.getType(), finalDuration, 1, true, true));
+                                target.addPotionEffect(new PotionEffect(effect.getType(), finalDuration/5, 4, true, true));
                             }
 
                             if (effect.getType() == PotionEffectType.WITHER) {
@@ -144,7 +144,7 @@ public class AlchemistThrowPotion implements Listener {
                                 duration = (int) (intel*10);
 
                                 int finalDuration = baseDuration + duration + 200;
-                                target.addPotionEffect(new PotionEffect(effect.getType(), finalDuration, 1, true, true));
+                                target.addPotionEffect(new PotionEffect(effect.getType(), finalDuration/5, 4, true, true));
                             }
 
                             if (effect.getType() == PotionEffectType.FIRE_RESISTANCE) {
@@ -199,7 +199,7 @@ public class AlchemistThrowPotion implements Listener {
 
                                 if (thrower.getName().equals(target.getName()) && isNegativeEffect) {
                                     target.removePotionEffect(effect.getType());
-                                    target.addPotionEffect(new PotionEffect((PotionEffectType.REGENERATION),100+(int)(intel*10),0,true,true));
+                                    target.addPotionEffect(new PotionEffect((PotionEffectType.REGENERATION),(100+(int)(intel*10))/2,1,true,true));
                                 }
 
                                 if (target instanceof Player targetPlayer && isNegativeEffect) {
@@ -212,7 +212,7 @@ public class AlchemistThrowPotion implements Listener {
                                                     throwerProfile.getTeam().equalsIgnoreCase("none")
                                             )) {
                                         targetPlayer.removePotionEffect(effect.getType());
-                                        target.addPotionEffect(new PotionEffect((PotionEffectType.REGENERATION),100,0,true,true));
+                                        target.addPotionEffect(new PotionEffect((PotionEffectType.REGENERATION),200,0,true,true));
                                     }
                                 }
                                 if (target instanceof Player targetPlayer && isPositiveEffect && !throwerProfile.getTeam().equals("none")
@@ -220,14 +220,14 @@ public class AlchemistThrowPotion implements Listener {
                                     UserProfile targetProfile = profileManager.getProfile(targetPlayer.getName());
                                     if (!throwerProfile.getTeam().equals(targetProfile.getTeam())) {
                                         targetPlayer.removePotionEffect(effect.getType());
-                                        if (targetProfile.isPvpEnabled() && throwerProfile.isPvpEnabled()) target.addPotionEffect(new PotionEffect((PotionEffectType.NAUSEA),200+(int)(intel/10),0,true,true));
+                                        if (targetProfile.isPvpEnabled() && throwerProfile.isPvpEnabled()) target.addPotionEffect(new PotionEffect((PotionEffectType.NAUSEA),200+(int)(intel/10),1,true,true));
 
                                     }
                                 }
 
                                 if (target instanceof Monster monster && isPositiveEffect ) {
                                     monster.removePotionEffect(effect.getType());
-                                    target.addPotionEffect(new PotionEffect((PotionEffectType.WITHER),100+(int)(intel*10),1,true,true));
+                                    target.addPotionEffect(new PotionEffect((PotionEffectType.WITHER),(100+(int)(intel*10))/5,4,true,true));
                                 }
 
 

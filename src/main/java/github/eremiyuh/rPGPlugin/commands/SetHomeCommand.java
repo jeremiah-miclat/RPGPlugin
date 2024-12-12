@@ -35,8 +35,8 @@ public class SetHomeCommand implements CommandExecutor {
         }
 
         if (args.length == 0) {
-            player.sendMessage("Please specify a name for your home.");
-            return false;
+            player.sendMessage("Please specify a name for your home. /sethome homename");
+            return true;
         }
 
         String homeName = args[0];

@@ -305,7 +305,6 @@ public class CheckClassCommand implements CommandExecutor, Listener {
                 // Add specific lore for items
                 if (item.getType() == Material.IRON_SWORD) {
                     lore.add("Increases damage for melee attacks.");
-                    lore.add("Provides 10% bonus melee damage for Swordsmen.");
                 }
 
                 if (item.getType() == Material.FEATHER) {
@@ -315,7 +314,6 @@ public class CheckClassCommand implements CommandExecutor, Listener {
 
                 if (item.getType() == Material.BOW) {
                     lore.add("Increases arrow damage.");
-                    lore.add("Provides 10% bonus arrow damage for Archers.");
                     lore.add("Slightly increases critical chance and critical damage for Archers.");
                 }
 
@@ -328,8 +326,8 @@ public class CheckClassCommand implements CommandExecutor, Listener {
 
                 if (item.getType() == Material.GOLDEN_APPLE) {
                     lore.add("Increases HP.");
-                    lore.add("1 HP per point.");
-                    lore.add("Use /healscale to rescale health to always display as 10 hearts.");
+                    lore.add("2 HP per point.");
+                    lore.add("Use /healthscale to rescale health to always display as 10 hearts.");
                 }
 
                 if (item.getType() == Material.NETHER_STAR) {
