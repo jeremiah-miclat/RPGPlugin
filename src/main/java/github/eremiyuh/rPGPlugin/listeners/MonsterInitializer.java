@@ -38,22 +38,22 @@ public class MonsterInitializer implements Listener {
             return;
         }
 
-        // Count the number of players in world_rpg
-        int playersInRPGWorld = (int) Bukkit.getOnlinePlayers().stream()
-                .filter(player -> player.getWorld().getName().equals("world_rpg"))
-                .count();
-
-        // Calculate the spawn limit based on players in world_rpg
-        int mobLimit = Math.min(playersInRPGWorld * 30, 150);
-
-        // Count the number of mobs already in the world
+//        // Count the number of players in world_rpg
+//        int playersInRPGWorld = (int) Bukkit.getOnlinePlayers().stream()
+//                .filter(player -> player.getWorld().getName().equals("world_rpg"))
+//                .count();
+//
+//        // Calculate the spawn limit based on players in world_rpg
+//        int mobLimit = Math.min(playersInRPGWorld * 30, 150);
+//
+//        // Count the number of mobs already in the world
         int currentMobCount = countMobsInWorld(event.getLocation().getWorld());
-
-
-        // Cancel the spawn if the mob limit is reached
-        if (currentMobCount >= mobLimit) {
-            event.setCancelled(true);
-        }
+//
+//
+//        // Cancel the spawn if the mob limit is reached
+//        if (currentMobCount >= mobLimit) {
+//            event.setCancelled(true);
+//        }
 
         if (!isPlayerOnSameYLevel(event.getLocation())) {
             event.setCancelled(true);
@@ -82,11 +82,11 @@ public class MonsterInitializer implements Listener {
                 entity.remove();
             }
 
-            if (entity instanceof Monster && !entity.hasMetadata("worldboss")
-                && entity.hasMetadata("extraHealth")
-            ) {
-                mobCount++;
-            }
+//            if (entity instanceof Monster && !entity.hasMetadata("worldboss")
+//                && entity.hasMetadata("extraHealth")
+//            ) {
+//                mobCount++;
+//            }
         }
 
         return mobCount;
@@ -162,7 +162,7 @@ public class MonsterInitializer implements Listener {
         double customDamage = Math.min(extraHealth / 10, customMaxHealth);
         extraHealth += entity.getHealth();
         // First, check for the purple world boss (0.1% chance)
-        if (Math.random() < .0003 || entity instanceof Warden || entity instanceof Wither) { //0.0003
+        if (Math.random() < .0003 || entity instanceof Warden || entity instanceof Wither || entity instanceof ElderGuardian || entity instanceof Ravager) { //0.0003
             extraHealth = (extraHealth * 1000); // Add 10000% health
             setBossAttributes(entity, maxCoord, "World Boss", ChatColor.DARK_PURPLE);
             entity.setMetadata("worldboss", new FixedMetadataValue(plugin, true));
@@ -170,8 +170,8 @@ public class MonsterInitializer implements Listener {
             entity.setMetadata("extraHealth", new FixedMetadataValue(plugin, extraHealth));
             entity.setGlowing(true);
             entity.setHealth(Math.min(extraHealth, customMaxHealth));
-            Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(customDamage * 3);
-            entity.setMetadata("customDamage", new FixedMetadataValue(plugin, customDamage * 3));
+            Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(customDamage * 2);
+            entity.setMetadata("customDamage", new FixedMetadataValue(plugin, customDamage * 2));
             entity.setRemoveWhenFarAway(false);
             entity.setPersistent(true);
             entity.setCustomNameVisible(true);
@@ -179,30 +179,30 @@ public class MonsterInitializer implements Listener {
         }
 
         // Only check for red boss (1% chance) if not already a purple boss
-        if (Math.random() < .003) { //0.003
+        if (Math.random() < .003 || entity instanceof Evoker) { //0.003
             extraHealth = (extraHealth * 100); // Add 1000% health
             setBossAttributes(entity, maxCoord, "Boss", ChatColor.RED);
             entity.setMetadata("boss", new FixedMetadataValue(plugin, true));
             entity.setMetadata("lvl", new FixedMetadataValue(plugin, lvl));
             entity.setMetadata("extraHealth", new FixedMetadataValue(plugin, extraHealth));
             entity.setHealth(Math.min(extraHealth, customMaxHealth));
-            Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(customDamage * 2);
-            entity.setMetadata("customDamage", new FixedMetadataValue(plugin, customDamage * 2));
+            Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(customDamage * 1.5);
+            entity.setMetadata("customDamage", new FixedMetadataValue(plugin, customDamage * 1.5));
             entity.setRemoveWhenFarAway(false);
             entity.setCustomNameVisible(true);
             return;
         }
 
 
-        if (Math.random() < 0.03) {
+        if (Math.random() < 0.03 || entity instanceof Vindicator) {
             extraHealth = (extraHealth * 10); // Add 1000% health
             setBossAttributes(entity, maxCoord, "Leader", ChatColor.YELLOW);
             entity.setMetadata("boss", new FixedMetadataValue(plugin, true));
             entity.setMetadata("lvl", new FixedMetadataValue(plugin, lvl));
             entity.setMetadata("extraHealth", new FixedMetadataValue(plugin, extraHealth));
             entity.setHealth(Math.min(extraHealth, customMaxHealth));
-            Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(customDamage * 2);
-            entity.setMetadata("customDamage", new FixedMetadataValue(plugin, customDamage * 2));
+            Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(customDamage * 1.2);
+            entity.setMetadata("customDamage", new FixedMetadataValue(plugin, customDamage * 1.2));
             entity.setCustomNameVisible(true);
             return;
         }

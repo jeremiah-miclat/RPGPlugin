@@ -297,7 +297,7 @@ public class CreateShopListener implements Listener {
                 ItemStack storedItem = (ItemStack) chestBlock.getMetadata("item").get(0).value();
 
                 assert storedItem != null;
-                storedItem.setAmount(1);
+//                storedItem.setAmount(1);
                 int itemAmount = chestBlock.getMetadata("itemAmount").get(0).asInt();
                 String currency = chestBlock.getMetadata("currency").get(0).asString();
                 int currencyAmount = chestBlock.getMetadata("currencyAmount").get(0).asInt();
@@ -320,25 +320,38 @@ public class CreateShopListener implements Listener {
     private void openTransactionGui(Player player, ItemStack item, int itemAmount, String currency, int currencyAmount, Chest chest, int stock) {
         Inventory gui = Bukkit.createInventory(new ShopInventoryHolder(chest), 9, ChatColor.DARK_GREEN + "Shop Transaction");
 
-        // Configure the item to display in the GUI
+        // Clone the item and get ItemMeta
         ItemStack itemDisplay = item.clone();
-        TextComponent itemDisplayName = (TextComponent) itemDisplay.getItemMeta().displayName();
-        itemDisplayName = itemDisplayName != null ? itemDisplayName : Component.text(itemDisplay.getType().name());
         ItemMeta meta = itemDisplay.getItemMeta();
+
+        if (meta == null) {
+            player.sendMessage(ChatColor.RED + "This was not set up properly by the owner.");
+            player.sendMessage(ChatColor.RED + "To prevent this kind of error, follow the instructions below.");
+            player.sendMessage(ChatColor.RED + "Destroy this shop and create a new one. Do not take the item after creating a shop.");
+            player.sendMessage(ChatColor.RED + "Notify the owner to recreate the shop.");
+            return;
+        }
+
+        // Get the display name (if any)
+        String itemDisplayName = meta.hasDisplayName() ? meta.getDisplayName() : itemDisplay.getType().name();
+
+        // Prepare the lore
         List<String> lore = new ArrayList<>();
-        assert itemDisplayName != null;
-        lore.add(ChatColor.YELLOW + "Price: " + currencyAmount + " " + currency
-                );
-        lore.add(ChatColor.YELLOW +"For: " +
-                itemAmount + " " +  itemDisplayName.content()
-        );
+        List<String> existingLore = meta.hasLore() ? meta.getLore() : new ArrayList<>();
+        lore.addAll(existingLore);
+        lore.add(""); // Empty line for separation
+        lore.add(ChatColor.YELLOW + "Price: " + currencyAmount + " " + currency);
+        lore.add(ChatColor.YELLOW + "For: " + itemAmount + " " + itemDisplayName);
         lore.add("Stock: " + stock);
+
         meta.setLore(lore);
         itemDisplay.setItemMeta(meta);
 
-        gui.setItem(4, itemDisplay); // Place the item at the center slot
+        // Place the item at the center slot of the GUI
+        gui.setItem(4, itemDisplay);
         player.openInventory(gui);
     }
+
 
     // Handle inventory clicks in the shop GUI
     @EventHandler
@@ -368,7 +381,7 @@ public class CreateShopListener implements Listener {
                     // Retrieve the item from metadata and other transaction details
                     ItemStack storedItem = (ItemStack) sellerChest.getMetadata("item").get(0).value(); // Item being sold
                     assert storedItem != null;
-                    storedItem.setAmount(1);
+//                    storedItem.setAmount(1);
                     int itemAmount = sellerChest.getMetadata("itemAmount").get(0).asInt(); // Amount given to player for purchase
                     String currency = sellerChest.getMetadata("currency").get(0).asString(); // Currency type
                     int currencyAmount = sellerChest.getMetadata("currencyAmount").get(0).asInt(); // Currency per item
@@ -378,7 +391,7 @@ public class CreateShopListener implements Listener {
                     double playerCurrency = playerProfile.getCurrency(currency);
 
                     // Calculate the total cost of the purchase (based on how many items the player wants)
-                    double totalCost = currencyAmount * itemAmount;
+                    double totalCost = currencyAmount;
 
                     // Check if the player has enough currency to buy the items
                     if (playerCurrency >= totalCost) {

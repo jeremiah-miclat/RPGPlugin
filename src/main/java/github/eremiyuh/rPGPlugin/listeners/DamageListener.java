@@ -646,6 +646,11 @@ public class DamageListener implements Listener {
             return;
         }
 
+        if (event.getEntity() instanceof  Villager) {
+            event.setCancelled(true);
+            return;
+        }
+
         Location loc = event.getEntity().getLocation();
 
         if (loc.getWorld().getName().contains("labyrinth")) {
