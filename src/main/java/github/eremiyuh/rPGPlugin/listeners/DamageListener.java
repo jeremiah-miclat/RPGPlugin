@@ -6,7 +6,10 @@ import github.eremiyuh.rPGPlugin.methods.DamageAbilityManager;
 import github.eremiyuh.rPGPlugin.methods.EffectsAbilityManager;
 import github.eremiyuh.rPGPlugin.perms.PlayerBuffPerms;
 import github.eremiyuh.rPGPlugin.profile.UserProfile;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
@@ -693,12 +696,6 @@ public class DamageListener implements Listener {
             resetHealthIndicator((LivingEntity) event.getEntity(), damage);
         }
 
-
-
-
-
-
-
     }
 
 
@@ -747,8 +744,8 @@ public class DamageListener implements Listener {
 
         if (!weapon.getType().toString().endsWith("_SWORD")
                 && !weapon.getType().toString().endsWith("_AXE")
-                && !weapon.getType().toString().endsWith("_MACE")
-                && !weapon.getType().toString().endsWith("_TRIDENT")
+                && weapon.getType() != Material.MACE
+                && weapon.getType() != Material.TRIDENT
         ) {
             finalDamage *= .2;
         }
@@ -983,38 +980,53 @@ public class DamageListener implements Listener {
             }
         }
 
-        if (event.getDamager() instanceof  Arrow arrow) {
-            Location shooterLoc = attacker.getLocation();
-            double distance = shooterLoc.distance(damagedLocation);
-            if (distance <= 1) {
-                finalDamage *= 0.05;
-            } else if (distance <= 2) {
-                finalDamage *= 0.1;
-            } else if (distance <= 3) {
-                finalDamage *= 0.2;
-            } else if (distance <= 4) {
-                finalDamage *= 0.3;
-            } else if (distance <= 5) {
-                finalDamage *= 0.4;
-            } else if (distance <= 6) {
-                finalDamage *= 0.5;
-            } else if (distance <= 7) {
-                finalDamage *= 0.7;
-            } else if (distance <= 8) {
-                finalDamage *= 0.8;
-            } else if (distance <= 9) {
-                finalDamage *= 0.9;
-            } else if (distance <= 10) {
-                finalDamage *= 1;
+        if (event.getDamager() instanceof  Arrow arrow && arrow.getShooter() instanceof Player player) {
+            if (player.getInventory().getItemInMainHand().getType() == Material.BOW) {
+
+                Location shooterLoc = attacker.getLocation();
+                double distance = shooterLoc.distance(damagedLocation);
+                if (distance <= 1) {
+                    finalDamage *= 0.05;
+                } else if (distance <= 2) {
+                    finalDamage *= 0.1;
+                } else if (distance <= 3) {
+                    finalDamage *= 0.2;
+                } else if (distance <= 4) {
+                    finalDamage *= 0.3;
+                } else if (distance <= 5) {
+                    finalDamage *= 0.4;
+                } else if (distance <= 6) {
+                    finalDamage *= 0.5;
+                } else if (distance <= 7) {
+                    finalDamage *= 0.7;
+                } else if (distance <= 8) {
+                    finalDamage *= 0.8;
+                } else if (distance <= 9) {
+                    player.sendMessage("Damage reduced, target too close.");
+                    finalDamage *= 0.9;
+                } else if (distance <= 10) {
+                    finalDamage *= 1;
+                } else if (distance <= 20 && damagerProfile.getChosenClass().equalsIgnoreCase("archer")) {
+                    finalDamage = finalDamage * 1.5;
+                } else if (distance <= 40 && damagerProfile.getChosenClass().equalsIgnoreCase("archer")) {
+                    finalDamage = finalDamage * 2;
+                } else if (distance > 41 && damagerProfile.getChosenClass().equalsIgnoreCase("archer")) {
+                    finalDamage = finalDamage * 3;
+                }
             }
-            else if (distance <= 20 && damagerProfile.getChosenClass().equalsIgnoreCase("archer")) {
-                finalDamage = finalDamage * 1.5;
-            }
-            else if (distance <= 40 && damagerProfile.getChosenClass().equalsIgnoreCase("archer")) {
-                finalDamage = finalDamage * 2;
-            }
-            else if (distance > 41 && damagerProfile.getChosenClass().equalsIgnoreCase("archer")) {
-                finalDamage = finalDamage * 3;
+
+            if (player.getInventory().getItemInMainHand().getType() == Material.CROSSBOW) {
+
+                Location shooterLoc = attacker.getLocation();
+                double distance = shooterLoc.distance(damagedLocation);
+
+                if (distance <= 20 && damagerProfile.getChosenClass().equalsIgnoreCase("archer")) {
+                    finalDamage = finalDamage * 1.5;
+                } else if (distance <= 40 && damagerProfile.getChosenClass().equalsIgnoreCase("archer")) {
+                    finalDamage = finalDamage * 2;
+                } else if (distance > 41 && damagerProfile.getChosenClass().equalsIgnoreCase("archer")) {
+                    finalDamage = finalDamage * 3;
+                }
             }
 
         }

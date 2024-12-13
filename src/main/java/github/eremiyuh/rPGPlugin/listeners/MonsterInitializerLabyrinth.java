@@ -97,7 +97,7 @@ public class MonsterInitializerLabyrinth implements Listener {
                 entity.remove();
             }
 
-            if (!(entity instanceof Player) && !entity.hasMetadata("worldboss")
+            if (!(entity instanceof Player) && !entity.hasMetadata("worldboss") && !entity.hasMetadata("boss")
                     && entity.hasMetadata("extraHealth")
             ) {
                 mobCount++;
