@@ -21,7 +21,7 @@ public class CustomItemRecipeListener implements Listener {
         ItemStack secondItem = event.getInventory().getItem(1);
         ItemStack thirdItem = event.getInventory().getItem(2);
         assert thirdItem != null;
-        event.getWhoClicked().sendMessage(thirdItem.displayName());
+//        event.getWhoClicked().sendMessage(thirdItem.displayName());
         // Check if any of the items has the custom lore
         if (hasCustomLore(firstItem) || hasCustomLore(secondItem) || hasCustomLore(thirdItem)) {
             event.setCancelled(true); // Cancel the Smithing Table operation
