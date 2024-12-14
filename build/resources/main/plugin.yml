@@ -246,5 +246,16 @@ commands:
   buyhomeslot:
     description: buy /sethome slots
     usage: /buyhomeslot <number>
+  tpallow:
+    description: Allows a player to add others to their TP allow list.
+    usage: /tpallow <playerName>
+  tptoggle:
+    description: Manage teleportation allow list.
+    usage: /tptoggle <list> Or <remove <playername>>
+    subcommands:
+      list:
+        description: Lists players allowed to teleport to you.
+      remove:
+        description: Removes a player from your teleport allow list.
 softdepend:
   - DiscordSRV

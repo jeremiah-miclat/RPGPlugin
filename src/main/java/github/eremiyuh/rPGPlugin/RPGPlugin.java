@@ -35,7 +35,7 @@ public class RPGPlugin extends JavaPlugin {
     private VaultManager vaultManager;
     private ShopsManager shopsManager;
     private ShopTpSaveManager shopTpSaveManager;
-
+    private TpAllowManager tpAllowManager;
 
 
     private final String WORLD_NAME = "world_resource";
@@ -249,6 +249,8 @@ public class RPGPlugin extends JavaPlugin {
         vaultManager = new VaultManager(this, this.getDataFolder());
         Objects.requireNonNull(this.getCommand("vault")).setExecutor(new VaultCommand(vaultManager));
         shopTpSaveManager = new ShopTpSaveManager(this.getDataFolder());
+        tpAllowManager = new TpAllowManager(this);
+
 
 
         this.chunkManager = new ChunkManager(getDataFolder());
@@ -331,7 +333,7 @@ public class RPGPlugin extends JavaPlugin {
         Objects.requireNonNull(getCommand("rest")).setExecutor(new ResetRestCommand(profileManager));
         Objects.requireNonNull(getCommand("ascendtoggle")).setExecutor(new ToggleAscendingCommand(profileManager));
         Objects.requireNonNull(getCommand("tphb")).setExecutor(new TeleportToHighestBlock(profileManager));
-        Objects.requireNonNull(getCommand("tpt")).setExecutor(new TptCommand(this,teleportRequests,profileManager));
+        Objects.requireNonNull(getCommand("tpt")).setExecutor(new TptCommand(this,teleportRequests,profileManager,tpAllowManager,playerStatBuff));
         Objects.requireNonNull(getCommand("tpa")).setExecutor(new TpaCommand(this,teleportRequests,profileManager,playerStatBuff));
         Objects.requireNonNull(this.getCommand("sdw")).setExecutor(new ToggleBossIndicatorCommand(profileManager));
         Objects.requireNonNull(this.getCommand("villagerSetProf")).setExecutor(new VillagerSetProfessionCommand(this));
@@ -346,6 +348,8 @@ public class RPGPlugin extends JavaPlugin {
         Objects.requireNonNull(this.getCommand("addstat")).setExecutor(new AddAttributeCommand(profileManager));
         Objects.requireNonNull(this.getCommand("shopsavetploc")).setExecutor(new ShopTpSaveCommand(shopTpSaveManager));
         Objects.requireNonNull(this.getCommand("tpshop")).setExecutor(new ShopTpCommand(shopsManager, shopTpSaveManager,profileManager));
+
+
 //        vaultManager.loadVaults();
         //auth
         getCommand("register").setExecutor(new RegisterCommand(this,profileManager));
@@ -357,8 +361,9 @@ public class RPGPlugin extends JavaPlugin {
         this.getCommand("discordlink").setExecutor(new DiscordLinkCommand(this));
         Objects.requireNonNull(this.getCommand("showprofile")).setExecutor(new PublicSetCommand(profileManager));
         Objects.requireNonNull(this.getCommand("buyhomeslot")).setExecutor(new AddHomesCommand(profileManager));
-
-
+        Objects.requireNonNull(getCommand("tpallow")).setExecutor(new TpAllowCommand(tpAllowManager));
+        TpToggleCommand tpToggleCommand = new TpToggleCommand(tpAllowManager);
+        getCommand("tptoggle").setExecutor(tpToggleCommand);
 
 
 

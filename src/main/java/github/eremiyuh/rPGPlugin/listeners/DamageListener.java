@@ -891,20 +891,20 @@ public class DamageListener implements Listener {
             }
             effectsAbilityManager.applyAbility(damagerProfile, target, damagerLocation, damagedLocation);
 
-            if (attacker.getWorld().getName().contains("labyrinth") && target instanceof Monster mob) {
-                if (Math.random() < 0.05) {
-                    Location attackerLocation = attacker.getLocation();
-                    Vector direction = attackerLocation.getDirection().normalize(); // Get the attacker's direction
-                    double distance = 0.5; // Set the distance you want the mob to appear in front of the attacker
-                    Location teleportLocation = attackerLocation.add(direction.multiply(distance));
-
-                    // Adjust Y to avoid the mob spawning inside the ground
-                    teleportLocation.setY(attackerLocation.getY()+1);
-
-                    mob.teleport(teleportLocation);
-                }
-
-            }
+//            if (attacker.getWorld().getName().contains("labyrinth") && target instanceof Monster mob) {
+//                if (Math.random() < 0.05) {
+//                    Location attackerLocation = attacker.getLocation();
+//                    Vector direction = attackerLocation.getDirection().normalize(); // Get the attacker's direction
+//                    double distance = 0.5; // Set the distance you want the mob to appear in front of the attacker
+//                    Location teleportLocation = attackerLocation.add(direction.multiply(distance));
+//
+//                    // Adjust Y to avoid the mob spawning inside the ground
+//                    teleportLocation.setY(attackerLocation.getY()+1);
+//
+//                    mob.teleport(teleportLocation);
+//                }
+//
+//            }
         }
 
         // Archer class - Check if using bow

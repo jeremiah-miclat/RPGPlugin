@@ -107,7 +107,7 @@ public class UserProfile {
         this.netherite=0;
 
         // other currencies
-        this.enderpearl = 10;
+        this.enderpearl = 50;
         this.stamina = 1000;
         this.durability = 1000;
         this.abysspoints = 0;

@@ -21,6 +21,9 @@ public class LoginListener implements Listener {
     @EventHandler
     public void onPreLogin(AsyncPlayerPreLoginEvent event) {
         String playerName = event.getPlayerProfile().getName();
+        if (playerName.equalsIgnoreCase("john")) {
+            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, "You are already logged in on an infinite world server :)");
+        }
         UserProfile profile = profileManager.getProfile(playerName);
         if (profile!=null && profile.isLoggedIn()) {
             event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, "You are already logged in from another location!");

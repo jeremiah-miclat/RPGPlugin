@@ -212,7 +212,7 @@ public class PlayerProfileManager {
         profile.setCurrency("netherite", config.getDouble("netherite", 0));
         profile.setJunkPoints(config.getInt("junkpoints",0));
 
-        profile.setCurrency("enderpearl", config.getInt("enderpearl", 10));
+        profile.setCurrency("enderpearl", config.getInt("enderpearl", 50));
         profile.setStamina(config.getInt("stamina", 100));
         profile.setDurability(config.getInt("durability", 100));
         profile.setAbysspoints(config.getDouble("abysspoints",0));

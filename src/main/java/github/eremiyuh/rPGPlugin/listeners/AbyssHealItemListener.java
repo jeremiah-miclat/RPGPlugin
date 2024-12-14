@@ -25,6 +25,8 @@ public class AbyssHealItemListener implements Listener {
         if (item.isSimilar(ItemUtils.getAbyssPotion())) {
             event.setCancelled(true);
 
+            if (player.getHealth()<=0) return;
+
             // Heal the player to full health
             player.setHealth(Objects.requireNonNull(player.getAttribute(Attribute.GENERIC_MAX_HEALTH)).getValue());
             player.sendMessage("§aYou have been healed to full health!");
