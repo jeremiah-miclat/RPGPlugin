@@ -103,7 +103,7 @@ public class ChunkCommand implements CommandExecutor {
                 return true;
             }
 
-            if (isInProtectedArea(player.getLocation().getBlockX(), player.getLocation().getBlockZ())) {
+            if (isInProtectedArea(player.getLocation().getBlockX(), player.getLocation().getBlockZ()) && !player.isOp()) {
                 player.sendMessage("Cannot claim chunks in this area.");
                 return true;
             }

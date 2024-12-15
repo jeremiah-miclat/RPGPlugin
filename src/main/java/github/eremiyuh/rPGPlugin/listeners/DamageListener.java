@@ -885,10 +885,8 @@ public class DamageListener implements Listener {
 
         // Alchemist class - Check if using thrown potion
         if (damagerProfile.getChosenClass().equalsIgnoreCase("alchemist") && event.getDamager() instanceof ThrownPotion) {
-            finalDamage = finalDamage*1.2;
-            if (event.getEntity() instanceof Player player) {
-                finalDamage = finalDamage *.5;
-            }
+            finalDamage = finalDamage *.35;
+
             effectsAbilityManager.applyAbility(damagerProfile, target, damagerLocation, damagedLocation);
 
 //            if (attacker.getWorld().getName().contains("labyrinth") && target instanceof Monster mob) {
@@ -1113,6 +1111,8 @@ public class DamageListener implements Listener {
                                 luk += parseLoreValue(lore);
                             }
                         }
+
+
                     }
                 }
             }

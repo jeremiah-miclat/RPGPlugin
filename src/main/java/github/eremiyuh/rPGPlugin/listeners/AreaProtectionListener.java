@@ -170,7 +170,7 @@ public class AreaProtectionListener implements Listener {
 
     @EventHandler
     public void onRide(EntityMountEvent event) {
-        if (event.getMount() instanceof Minecart || event.getMount() instanceof Boat) {
+        if (event.getMount() instanceof Minecart || event.getMount() instanceof Boat || event.getMount() instanceof Animals) {
             return;
         }
 
@@ -269,8 +269,7 @@ public class AreaProtectionListener implements Listener {
                         item == Material.ITEM_FRAME ||
                         item == Material.GLOW_ITEM_FRAME ||
                         item == Material.BUCKET ||
-                        item== Material.LEAD ||
-                        item == Material.SADDLE)  && !player.isOp()) {
+                        item== Material.LEAD)  && !player.isOp()) {
                     event.setCancelled(true);
                 }
 

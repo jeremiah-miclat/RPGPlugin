@@ -406,7 +406,7 @@ public class RPGPlugin extends JavaPlugin {
             world.setSpawnLimit(SpawnCategory.WATER_ANIMAL,5);
             world.setSpawnLimit(SpawnCategory.WATER_UNDERGROUND_CREATURE,5);
             world.setSpawnLimit(SpawnCategory.AXOLOTL,5);
-            world.setViewDistance(4);
+            world.setViewDistance(6);
             world.setSimulationDistance(4);
             getLogger().info("Created resource world: " + name);
         } else {
