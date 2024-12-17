@@ -322,8 +322,8 @@ public class AlchemistThrowPotion implements Listener {
                                     int baseHealing = 4; // Base healing per amplifier level
                                     double healAmount = baseHealing * (intensity+1); // Add 1 because intensity starts at 0
 
-                                    double newHealth = Math.min(target.getHealth() + healAmount, Objects.requireNonNull(target.getAttribute(Attribute.GENERIC_MAX_HEALTH)).getValue());
-                                    target.setHealth(newHealth*.35);
+                                    double newHealth = Math.min(target.getHealth() + healAmount*.35, Objects.requireNonNull(target.getAttribute(Attribute.GENERIC_MAX_HEALTH)).getValue());
+                                    target.setHealth(newHealth);
                                 }
                             }
                         }

@@ -162,7 +162,7 @@ public class MonsterInitializer implements Listener {
         double customDamage = Math.min(extraHealth / 10, customMaxHealth);
         extraHealth += entity.getHealth();
         // First, check for the purple world boss (0.1% chance)
-        if (Math.random() < .0003 || entity instanceof Warden || entity instanceof Wither || entity instanceof ElderGuardian || entity instanceof Ravager) { //0.0003
+        if (Math.random() < .001 || entity instanceof Warden || entity instanceof Wither || entity instanceof ElderGuardian || entity instanceof Ravager) { //0.0003
             extraHealth = (extraHealth * 1000); // Add 10000% health
             setBossAttributes(entity, maxCoord, "World Boss", ChatColor.DARK_PURPLE);
             entity.setMetadata("worldboss", new FixedMetadataValue(plugin, true));

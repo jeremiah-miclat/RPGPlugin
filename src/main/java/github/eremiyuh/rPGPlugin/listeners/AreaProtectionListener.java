@@ -239,9 +239,10 @@ public class AreaProtectionListener implements Listener {
             return;
         }
 
-        if (isInProtectedArea(entity.getLocation().getBlockX(), entity.getLocation().getBlockZ())) {
+        if (!(entity instanceof Animals) && isInProtectedArea(entity.getLocation().getBlockX(), entity.getLocation().getBlockZ())) {
             event.setCancelled(true);
         }
+
     }
 
     @EventHandler
@@ -441,25 +442,25 @@ public class AreaProtectionListener implements Listener {
 
     }
 
-    @EventHandler
-    public void onTame(EntityTameEvent event) {
-        if (!event.getEntity().getWorld().getName().equals(world.getName())) {
-            return;
-        }
-
-        if (!isInProtectedArea(event.getEntity().getLocation().getBlockX(), event.getEntity().getLocation().getBlockZ())) return;
-
-        Entity entity = event.getEntity();
-        AnimalTamer tamer = event.getOwner();
-
-        if (tamer instanceof Player player) {
-
-            if (!player.isOp()) {
-                event.setCancelled(true);
-                player.sendMessage("You are not allowed to tame this animal!");
-            }
-        }
-    }
+//    @EventHandler
+//    public void onTame(EntityTameEvent event) {
+//        if (!event.getEntity().getWorld().getName().equals(world.getName())) {
+//            return;
+//        }
+//
+//        if (!isInProtectedArea(event.getEntity().getLocation().getBlockX(), event.getEntity().getLocation().getBlockZ())) return;
+//
+//        Entity entity = event.getEntity();
+//        AnimalTamer tamer = event.getOwner();
+//
+//        if (tamer instanceof Player player) {
+//
+//            if (!player.isOp()) {
+//                event.setCancelled(true);
+//                player.sendMessage("You are not allowed to tame this animal!");
+//            }
+//        }
+//    }
 
 
 

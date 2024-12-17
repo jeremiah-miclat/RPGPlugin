@@ -142,15 +142,15 @@ public class SkillsGui implements CommandExecutor, Listener {
                         }
 
                         // Check if the player has selected a skill before
-                        if (!profile.getSelectedSkill().equals("none")) {
-                            // Check if the player has enough lapis
-                            if (profile.getLapiz() < 100) {
-                                player.sendMessage("You need at least 100 lapis to select a new skill.");
-                                return;
-                            }
-                            // Deduct 100 lapis for skill reselection
-                            profile.setLapiz(profile.getLapiz() - 100);
-                        }
+//                        if (!profile.getSelectedSkill().equals("none")) {
+//                            // Check if the player has enough lapis
+//                            if (profile.getLapiz() < 100) {
+//                                player.sendMessage("You need at least 100 lapis to select a new skill.");
+//                                return;
+//                            }
+//                            // Deduct 100 lapis for skill reselection
+//                            profile.setLapiz(profile.getLapiz() - 100);
+//                        }
 
                         // Save the selected skill to the profile
                         profile.setSelectedSkill(selectedSkill);

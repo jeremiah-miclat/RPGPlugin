@@ -114,6 +114,8 @@ public class WorldSwitchCommand implements CommandExecutor, Listener {
 
         ) {
 
+            player.sendMessage(ChatColor.BLUE + "You are in a resource world. Resource worlds RESETS daily. Do not build farms here.");
+
             if ( !(spawnLocation.getBlock().isSolid()
                     && spawnLocation.getBlock().getType() != Material.BEDROCK
                     && spawnLocation.clone().add(0, 1, 0).getBlock().getType() == Material.AIR

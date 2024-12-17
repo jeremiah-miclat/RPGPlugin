@@ -108,6 +108,11 @@ public class ChunkCommand implements CommandExecutor {
                 return true;
             }
 
+            if (args.length == 0) { // Check if no arguments are provided
+                player.sendMessage("Enter /cc <claim> or <unclaim> or <unclaimall> or <check> or <claimlist>");
+                return true;
+            }
+
             UserProfile userProfile = profileManager.getProfile(player.getName());
             double userClaimPoints = userProfile.getClaimPoints();
 

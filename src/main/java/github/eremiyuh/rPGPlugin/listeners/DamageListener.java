@@ -87,19 +87,6 @@ public class DamageListener implements Listener {
             }
 
 
-            if (damaged instanceof Tameable tameable) {
-                AnimalTamer owner = tameable.getOwner();
-
-                // Check if the tameable has an owner
-                if (owner != null && damager instanceof Player player) {
-                    UserProfile ownerProfile = profileManager.getProfile(player.getName());
-                    UserProfile profile = profileManager.getProfile(player.getName());
-                    if ((profile.getTeam().equalsIgnoreCase(ownerProfile.getTeam())) && !profile.getTeam().equalsIgnoreCase("none")) return;
-                    if (!(profile.isPvpEnabled() && ownerProfile.isPvpEnabled())) return;
-                    event.setCancelled(true);
-                }
-            }
-
 
 
             // Get the location of the damaged entity
@@ -205,7 +192,6 @@ public class DamageListener implements Listener {
 
         if (Objects.requireNonNull(event.getDamager().getLocation().getWorld()).getName().equals("world_rpg") || Objects.requireNonNull(event.getEntity().getLocation().getWorld()).getName().contains("world_labyrinth")) {
             Location loc = event.getEntity().getLocation();
-
             // Check if the world name contains "Labyrinth" and coordinates match
             if (loc.getWorld().getName().contains("labyrinth")) {
                 int x = loc.getBlockX();
@@ -705,7 +691,39 @@ public class DamageListener implements Listener {
 
 
     private void handleMeleeDamage(Player attacker, LivingEntity target, EntityDamageByEntityEvent event, Location damagerLocation, Location damagedLocation, UserProfile damagerProfile) {
+        Material blockAtFeet = damagedLocation.getBlock().getType(); // Current block (feet)
+        Material blockBelow = damagedLocation.clone().subtract(0, 1, 0).getBlock().getType(); // Block below
+        Material blockAbove = damagedLocation.clone().add(0, 1, 0).getBlock().getType(); // Block above
+
+// Check water or lava in current, below, or above blocks
+        if (((blockAtFeet == Material.WATER || blockAtFeet == Material.LAVA) ||
+                (blockBelow == Material.WATER || blockBelow == Material.LAVA) ||
+                (blockAbove == Material.WATER || blockAbove == Material.LAVA))
+                && target instanceof Monster && !(target instanceof WaterMob)) {
+
+            event.setCancelled(true);
+            attacker.sendMessage( ChatColor.RED+"Mob is invulnerable on water or lava!");
+            return;
+        }
+
+
         ItemStack weapon = attacker.getInventory().getItemInMainHand();
+
+
+        if (target instanceof Tameable tameable) {
+            AnimalTamer owner = tameable.getOwner();
+
+            // Check if the tameable has an owner
+            if (owner != null) {
+                if (Objects.requireNonNull(owner.getName()).equalsIgnoreCase(attacker.getName())) return;
+
+                UserProfile ownerProfile = profileManager.getProfile(owner.getName());
+                UserProfile profile = profileManager.getProfile(attacker.getName());
+                if (!(profile.getTeam().equalsIgnoreCase(ownerProfile.getTeam())) && !profile.getTeam().equalsIgnoreCase("none")) return;
+                if ((profile.isPvpEnabled() && ownerProfile.isPvpEnabled())) return;
+                event.setCancelled(true);
+            }
+        }
 
         // Fire element check: Disable fire if not selected
         if (!damagerProfile.getSelectedElement().equalsIgnoreCase("fire")
@@ -862,8 +880,36 @@ public class DamageListener implements Listener {
 
     // PvE Long Range Damage
     private void handleLongRangeDamage(Player attacker, LivingEntity target, EntityDamageByEntityEvent event, Location damagerLocation, Location damagedLocation, UserProfile damagerProfile) {
+        Material blockAtFeet = damagedLocation.getBlock().getType(); // Current block (feet)
+        Material blockBelow = damagedLocation.clone().subtract(0, 1, 0).getBlock().getType(); // Block below
+        Material blockAbove = damagedLocation.clone().add(0, 1, 0).getBlock().getType(); // Block above
+
+// Check water or lava in current, below, or above blocks
+        if (((blockAtFeet == Material.WATER || blockAtFeet == Material.LAVA) ||
+                (blockBelow == Material.WATER || blockBelow == Material.LAVA) ||
+                (blockAbove == Material.WATER || blockAbove == Material.LAVA))
+                && target instanceof Monster && !(target instanceof WaterMob)) {
+
+            event.setCancelled(true);
+            attacker.sendMessage(ChatColor.RED+ "Mob is invulnerable on water or lava!");
+            return;
+        }
 
 
+        if (target instanceof Tameable tameable) {
+            AnimalTamer owner = tameable.getOwner();
+
+            // Check if the tameable has an owner
+            if (owner != null) {
+                if (Objects.requireNonNull(owner.getName()).equalsIgnoreCase(attacker.getName())) return;
+
+                UserProfile ownerProfile = profileManager.getProfile(owner.getName());
+                UserProfile profile = profileManager.getProfile(attacker.getName());
+                if (!(profile.getTeam().equalsIgnoreCase(ownerProfile.getTeam()))) return;
+                if ((profile.isPvpEnabled() && ownerProfile.isPvpEnabled())) return;
+                event.setCancelled(true);
+            }
+        }
 
         ItemStack weapon = attacker.getInventory().getItemInMainHand();
 
@@ -885,7 +931,7 @@ public class DamageListener implements Listener {
 
         // Alchemist class - Check if using thrown potion
         if (damagerProfile.getChosenClass().equalsIgnoreCase("alchemist") && event.getDamager() instanceof ThrownPotion) {
-            finalDamage = finalDamage *.35;
+            finalDamage = finalDamage;
 
             effectsAbilityManager.applyAbility(damagerProfile, target, damagerLocation, damagedLocation);
 
@@ -1018,20 +1064,41 @@ public class DamageListener implements Listener {
                 }
             }
 
-            if (player.getInventory().getItemInMainHand().getType() == Material.CROSSBOW) {
+        }
 
-                Location shooterLoc = attacker.getLocation();
-                double distance = shooterLoc.distance(damagedLocation);
 
-                if (distance <= 20 && damagerProfile.getChosenClass().equalsIgnoreCase("archer")) {
-                    finalDamage = finalDamage * 1.5;
-                } else if (distance <= 40 && damagerProfile.getChosenClass().equalsIgnoreCase("archer")) {
-                    finalDamage = finalDamage * 2;
-                } else if (distance > 41 && damagerProfile.getChosenClass().equalsIgnoreCase("archer")) {
-                    finalDamage = finalDamage * 3;
+        try {
+
+            if (attacker.getInventory().getItemInMainHand().getType() == Material.CROSSBOW && damagerProfile.getChosenClass().equalsIgnoreCase("archer")
+
+            && damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")
+            ) {
+
+                AttributeInstance maxHealthAttribute = attacker.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+                if (maxHealthAttribute == null) {
+                    System.err.println("Attacker does not have the GENERIC_MAX_HEALTH attribute.");
+                    return;
                 }
-            }
 
+                double maxHealth = maxHealthAttribute.getValue();
+                double currentHealth = attacker.getHealth();
+                if (currentHealth <= 0) {
+                    System.err.println("Attacker is dead or has invalid health.");
+                    return;
+                }
+
+                if (finalDamage <= 0) {
+                    System.err.println("Final damage is non-positive, no lifesteal will be applied.");
+                    return;
+                }
+
+                double lifestealAmount = finalDamage * 0.1; // 10% lifesteal
+                double newHealth = Math.min(currentHealth + lifestealAmount, maxHealth);
+                attacker.setHealth(newHealth);
+            }
+        } catch (Exception e) {
+            System.err.println("An error occurred in the lifesteal logic.");
+            e.printStackTrace();
         }
 
         event.setDamage(finalDamage);
@@ -1158,6 +1225,7 @@ public class DamageListener implements Listener {
                 if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 1")) {
                     elementalDamage += (intel*.2);
                 }
+                elementalDamage *= .5;
             }
         }
 

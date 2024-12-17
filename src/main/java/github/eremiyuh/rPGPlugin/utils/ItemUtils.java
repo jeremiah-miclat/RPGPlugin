@@ -55,7 +55,7 @@ public class ItemUtils {
     }
 
     public static ItemStack getAbyssPotion() {
-        ItemStack resetItem = new ItemStack(Material.POTION,64); // Choose any material you prefer
+        ItemStack resetItem = new ItemStack(Material.POTION); // Choose any material you prefer
         ItemMeta meta = resetItem.getItemMeta();
 
         if (meta != null) {

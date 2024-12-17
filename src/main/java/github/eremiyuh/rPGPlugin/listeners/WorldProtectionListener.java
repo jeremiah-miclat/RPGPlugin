@@ -115,20 +115,6 @@ public class WorldProtectionListener implements Listener {
         }
     }
 
-    @EventHandler
-    public void onTame(EntityTameEvent event) {
-        if (!isInProtectedWorld(event.getEntity().getWorld())) return;
-
-        Entity entity = event.getEntity();
-        AnimalTamer tamer = event.getOwner();
-
-        if (tamer instanceof Player player) {
-            if (!player.isOp()) {
-                event.setCancelled(true);
-                player.sendMessage("You are not allowed to tame this animal!");
-            }
-        }
-    }
 
     @EventHandler
     public void entitySpawn(EntityPlaceEvent event) {
