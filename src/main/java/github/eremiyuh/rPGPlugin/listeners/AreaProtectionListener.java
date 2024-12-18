@@ -27,6 +27,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.logging.Level;
 
 public class AreaProtectionListener implements Listener {
 
@@ -466,14 +467,27 @@ public class AreaProtectionListener implements Listener {
 
     @EventHandler
     public void signChange(SignChangeEvent event) {
-        if (!event.getPlayer().getWorld().getName().equals(world.getName()) && !event.getPlayer().getWorld().getName().equals("world_rpg")) {
-            return;
-        }
+        try {
+            Player player = event.getPlayer();
+            World world = player.getWorld();
 
-        if (!event.getPlayer().isOp() && isInProtectedArea(event.getPlayer().getLocation().getBlockX(), event.getPlayer().getLocation().getBlockZ())) {
+            // Check if the player is in the correct world
+            if (!world.getName().equals(this.world.getName()) && !world.getName().equals("world_rpg")) {
+                return;
+            }
 
-            event.setCancelled(true);
-
+            // Check if the player is OP or not in a protected area
+            if (!player.isOp() && isInProtectedArea(player.getLocation().getBlockX(), player.getLocation().getBlockZ())) {
+                // Check if the player is within the allowed coordinates
+                if (!(player.getLocation().getBlockX() >= -15 && player.getLocation().getBlockX() <= 15 &&
+                        player.getLocation().getBlockZ() >= -80 && player.getLocation().getBlockZ() <= -50)) {
+                    event.setCancelled(true);
+                    return;
+                }
+            }
+        } catch (Exception e) {
+            // Log the error for debugging
+            Bukkit.getLogger().log(Level.SEVERE, "Error handling sign change event:", e);
         }
     }
 

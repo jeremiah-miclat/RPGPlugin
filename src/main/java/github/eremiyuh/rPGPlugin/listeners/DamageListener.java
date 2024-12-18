@@ -662,12 +662,7 @@ public class DamageListener implements Listener {
         if (!(event.getEntity() instanceof LivingEntity) && !(event.getEntity() instanceof  Monster)) {
             return;
         }
-//
-//        if (event.getEntity() instanceof Monster monsterWithoutMeta && !monsterWithoutMeta.hasMetadata("extraHealth")) {
-//            monsterWithoutMeta.remove();
-//            return;
-//        }
-//
+
         if (event.getDamageSource().getCausingEntity() instanceof Player player && player.getAllowFlight()) {
             player.sendMessage("damaged cancelled. Disable fly mode");
             event.setCancelled(true);
@@ -675,7 +670,10 @@ public class DamageListener implements Listener {
         }
 
 
-
+        if (event.getCause() == EntityDamageEvent.DamageCause.LAVA) {
+            event.setCancelled(true);
+            return;
+        }
 
         double damage = event.getDamage();
         // Create floating text using an ArmorStand
