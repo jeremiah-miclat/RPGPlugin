@@ -18,6 +18,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerUnleashEntityEvent;
 import org.bukkit.event.raid.RaidEvent;
 import org.bukkit.event.raid.RaidTriggerEvent;
+import org.bukkit.event.weather.LightningStrikeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Merchant;
 import org.bukkit.inventory.MerchantRecipe;
@@ -295,7 +296,7 @@ public class AreaProtectionListener implements Listener {
             return;
         }
         Block block = event.getBlock();
-        if (isInProtectedArea(block.getLocation().getBlockX(), block.getLocation().getBlockZ())) {
+        if (isInProtectedArea(block.getLocation().getBlockX(), block.getLocation().getBlockZ())  && block.getType() != Material.OBSIDIAN) {
             event.setCancelled(true);
         }
 
@@ -307,11 +308,13 @@ public class AreaProtectionListener implements Listener {
             return;
         }
         Block block = event.getBlock();
-        if (isInProtectedArea(block.getLocation().getBlockX(), block.getLocation().getBlockZ())) {
+        if (isInProtectedArea(block.getLocation().getBlockX(), block.getLocation().getBlockZ()) && block.getType() != Material.OBSIDIAN) {
             event.setCancelled(true);
         }
 
     }
+
+
 
 
     @EventHandler
