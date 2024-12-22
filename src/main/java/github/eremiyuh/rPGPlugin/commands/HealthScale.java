@@ -22,7 +22,7 @@ public class HealthScale implements CommandExecutor {
 
     private void scalePlayerHealth(Player player) {
         // Get the player's actual max health value
-        double actualMaxHealth = Objects.requireNonNull(player.getAttribute(Attribute.GENERIC_MAX_HEALTH)).getValue();
+        double actualMaxHealth = Objects.requireNonNull(player.getAttribute(Attribute.MAX_HEALTH)).getValue();
 
         player.sendMessage("Your max health. " + actualMaxHealth);
         player.sendMessage("Your health is . " + player.getHealth());

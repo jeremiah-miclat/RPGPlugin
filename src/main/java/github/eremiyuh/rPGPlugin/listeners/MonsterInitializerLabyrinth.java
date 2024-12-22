@@ -171,7 +171,7 @@ public class MonsterInitializerLabyrinth implements Listener {
 
 
         double customMaxHealth = ((1 + (double) (maxY - yCoord) / 6) * healthIncrement)*1001;
-        Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_MAX_HEALTH)).setBaseValue(customMaxHealth);
+        Objects.requireNonNull(entity.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(customMaxHealth);
 
 
         // Calculate extra health based on the y-coordinate
@@ -196,7 +196,7 @@ public class MonsterInitializerLabyrinth implements Listener {
             entity.setMetadata("lvl", new FixedMetadataValue(plugin, lvl));
             entity.setHealth(Math.min(extraHealth, customMaxHealth));
             entity.setMetadata("extraHealth", new FixedMetadataValue(plugin, extraHealth));
-            Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(customDamage*2);
+            Objects.requireNonNull(entity.getAttribute(Attribute.ATTACK_DAMAGE)).setBaseValue(customDamage*2);
             entity.setCustomNameVisible(true);
             entity.setGlowing(true);
             entity.setRemoveWhenFarAway(false);
@@ -212,7 +212,7 @@ public class MonsterInitializerLabyrinth implements Listener {
             entity.setMetadata("lvl", new FixedMetadataValue(plugin, lvl));
             entity.setHealth(Math.min(extraHealth, customMaxHealth));
             entity.setMetadata("extraHealth", new FixedMetadataValue(plugin, extraHealth));
-            Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(customDamage*2);
+            Objects.requireNonNull(entity.getAttribute(Attribute.ATTACK_DAMAGE)).setBaseValue(customDamage*2);
             entity.setMetadata("customDamage", new FixedMetadataValue(plugin, customDamage*2));
             entity.setCustomNameVisible(true);
             entity.setGlowing(true);
@@ -230,7 +230,7 @@ public class MonsterInitializerLabyrinth implements Listener {
             entity.setMetadata("lvl", new FixedMetadataValue(plugin, lvl));
             entity.setHealth(Math.min(extraHealth, customMaxHealth));
             entity.setMetadata("extraHealth", new FixedMetadataValue(plugin, extraHealth));
-            Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(customDamage*1.5);
+            Objects.requireNonNull(entity.getAttribute(Attribute.ATTACK_DAMAGE)).setBaseValue(customDamage*1.5);
             entity.setMetadata("customDamage", new FixedMetadataValue(plugin, customDamage*1.5));
             entity.setRemoveWhenFarAway(false);
             return;
@@ -244,14 +244,14 @@ public class MonsterInitializerLabyrinth implements Listener {
             entity.setMetadata("lvl", new FixedMetadataValue(plugin, lvl));
             entity.setHealth(Math.min(extraHealth, customMaxHealth));
             entity.setMetadata("extraHealth", new FixedMetadataValue(plugin, extraHealth));
-            Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(customDamage*1.2);
+            Objects.requireNonNull(entity.getAttribute(Attribute.ATTACK_DAMAGE)).setBaseValue(customDamage*1.2);
             entity.setMetadata("customDamage", new FixedMetadataValue(plugin, customDamage*1.2));
             return;
         }
 
 
         entity.setHealth(Math.min(extraHealth, customMaxHealth));
-        Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(customDamage*.7);
+        Objects.requireNonNull(entity.getAttribute(Attribute.ATTACK_DAMAGE)).setBaseValue(customDamage*.7);
         entity.setMetadata("customDamage", new FixedMetadataValue(plugin, customDamage));
 
 
@@ -271,23 +271,23 @@ public class MonsterInitializerLabyrinth implements Listener {
         double jumpMultiplier = speedMultiplier * 1.5;
 
         // Set extra movement speed if the attribute is available
-        if (entity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED) != null) {
-            double baseSpeed = Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)).getBaseValue();
+        if (entity.getAttribute(Attribute.MOVEMENT_SPEED) != null) {
+            double baseSpeed = Objects.requireNonNull(entity.getAttribute(Attribute.MOVEMENT_SPEED)).getBaseValue();
             double newSpeed = baseSpeed * speedMultiplier; // Apply the calculated speed multiplier
-            Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)).setBaseValue(newSpeed);
+            Objects.requireNonNull(entity.getAttribute(Attribute.MOVEMENT_SPEED)).setBaseValue(newSpeed);
         }
 
         // Set extra jump strength if applicable
-        if (entity.getAttribute(Attribute.GENERIC_JUMP_STRENGTH) != null) {
-            double baseJumpStrength = Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_JUMP_STRENGTH)).getBaseValue();
+        if (entity.getAttribute(Attribute.JUMP_STRENGTH) != null) {
+            double baseJumpStrength = Objects.requireNonNull(entity.getAttribute(Attribute.JUMP_STRENGTH)).getBaseValue();
             double newJumpStrength = baseJumpStrength * jumpMultiplier; // Apply the calculated jump multiplier
-            Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_JUMP_STRENGTH)).setBaseValue(newJumpStrength);
+            Objects.requireNonNull(entity.getAttribute(Attribute.JUMP_STRENGTH)).setBaseValue(newJumpStrength);
         }
 
         // Set extra safe fall distance if applicable
-        if (entity.getAttribute(Attribute.GENERIC_SAFE_FALL_DISTANCE) != null) {
-            double baseSafeFallDistance = Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_SAFE_FALL_DISTANCE)).getBaseValue();
-            Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_SAFE_FALL_DISTANCE)).setBaseValue(baseSafeFallDistance * jumpMultiplier + 1);
+        if (entity.getAttribute(Attribute.SAFE_FALL_DISTANCE) != null) {
+            double baseSafeFallDistance = Objects.requireNonNull(entity.getAttribute(Attribute.SAFE_FALL_DISTANCE)).getBaseValue();
+            Objects.requireNonNull(entity.getAttribute(Attribute.SAFE_FALL_DISTANCE)).setBaseValue(baseSafeFallDistance * jumpMultiplier + 1);
         }
     }
 

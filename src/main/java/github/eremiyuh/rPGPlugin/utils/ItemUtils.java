@@ -1,16 +1,27 @@
 package github.eremiyuh.rPGPlugin.utils;
 
+import io.papermc.paper.datacomponent.item.Equippable;
+import io.papermc.paper.registry.set.RegistryKeySet;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
-import org.bukkit.enchantments.Enchantment;
+import org.bukkit.Sound;
+import org.bukkit.Tag;
+import org.bukkit.entity.EntityType;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.inventory.meta.components.EquippableComponent;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 public class ItemUtils {
     public static ItemStack getResetItem() {
@@ -92,6 +103,132 @@ public class ItemUtils {
 
         return pointItem;
     }
+
+    public static ItemStack getBlackSaber() {
+        ItemStack pointItem = new ItemStack(Material.NETHERITE_SWORD); // Choose any material you prefer
+        ItemMeta meta = pointItem.getItemMeta();
+
+        if (meta != null) {
+            meta.displayName(Component.text("Dark Blade").color(TextColor.color(255,0,0)));
+            meta.lore(Arrays.asList(
+                    Component.text("Cosmetic")
+            ));
+
+            meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
+            meta.setEnchantmentGlintOverride(false);
+
+
+            meta.setItemModel(NamespacedKey.minecraft("dark_blade"));
+
+            EquippableComponent equippableComponent = meta.getEquippable();
+
+            equippableComponent.setSwappable(false);
+
+            meta.setEquippable(equippableComponent);
+
+            pointItem.setItemMeta(meta);
+        }
+
+        return pointItem;
+    }
+
+    public static ItemStack getCompositeBow() {
+        ItemStack pointItem = new ItemStack(Material.BOW); // Choose any material you prefer
+        ItemMeta meta = pointItem.getItemMeta();
+
+        if (meta != null) {
+            meta.displayName(Component.text("Composite Bow").color(TextColor.color(255,0,0)));
+            meta.lore(Arrays.asList(
+                    Component.text("Cosmetic")
+            ));
+
+            meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
+            meta.setEnchantmentGlintOverride(false);
+            meta.setItemModel(NamespacedKey.minecraft("composite_bow"));
+            pointItem.setItemMeta(meta);
+        }
+
+        return pointItem;
+    }
+
+    public static ItemStack getHaloChestPlate() {
+        return createCustomArmor(
+                Material.NETHERITE_CHESTPLATE,
+                "Halo Chestplate",
+                Arrays.asList(Component.text("Cosmetic")),
+                "halo",
+                "halo_chestplate",
+                EquipmentSlot.CHEST
+        );
+    }
+
+    public static ItemStack getHaloHelmet() {
+        return createCustomArmor(
+                Material.NETHERITE_HELMET,
+                "Halo Helmet",
+                Arrays.asList(Component.text("Cosmetic")),
+                "halo",
+                "halo_helmet",
+                EquipmentSlot.HEAD
+        );
+    }
+
+    public static ItemStack getHaloLeggings() {
+        return createCustomArmor(
+                Material.NETHERITE_LEGGINGS,
+                "Halo Leggings",
+                Arrays.asList(Component.text("Cosmetic")),
+                "halo",
+                "halo_leggings",
+                EquipmentSlot.LEGS
+        );
+    }
+
+    public static ItemStack getHaloBoots() {
+        return createCustomArmor(
+                Material.NETHERITE_BOOTS,
+                "Halo Boots",
+                Arrays.asList(Component.text("Cosmetic")),
+                "halo",
+                "halo_boots",
+                EquipmentSlot.FEET
+        );
+    }
+
+
+
+
+    public static ItemStack createCustomArmor(
+            Material material,
+            String displayName,
+            List<Component> lore,
+            String modelKey,
+            String itemModelKey,
+            EquipmentSlot slot
+    ) {
+        ItemStack item = new ItemStack(material);
+        ItemMeta meta = item.getItemMeta();
+
+        if (meta != null) {
+            meta.displayName(Component.text(displayName).color(TextColor.color(255, 0, 0))); // Customize color as needed
+            meta.lore(lore);
+
+            meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
+            meta.setEnchantmentGlintOverride(false);
+
+            EquippableComponent equippableComponent = meta.getEquippable();
+
+            equippableComponent.setModel(NamespacedKey.minecraft(modelKey));
+            equippableComponent.setSlot(slot);
+            meta.setEquippable(equippableComponent);
+            meta.setItemModel(NamespacedKey.minecraft(itemModelKey));
+
+
+            item.setItemMeta(meta);
+        }
+        return item;
+    }
+
 
 
 

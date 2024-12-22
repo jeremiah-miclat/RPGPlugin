@@ -156,7 +156,7 @@ public class MonsterInitializer implements Listener {
 
         double customMaxHealth = maxCoord * 1001;
 
-        Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_MAX_HEALTH)).setBaseValue(customMaxHealth);
+        Objects.requireNonNull(entity.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(customMaxHealth);
         double extraHealth = Math.max(Math.abs(entity.getLocation().getX()), Math.abs(entity.getLocation().getZ()));
 
         double customDamage = Math.min(extraHealth / 10, customMaxHealth);
@@ -170,7 +170,7 @@ public class MonsterInitializer implements Listener {
             entity.setMetadata("extraHealth", new FixedMetadataValue(plugin, extraHealth));
             entity.setGlowing(true);
             entity.setHealth(Math.min(extraHealth, customMaxHealth));
-            Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(customDamage * 2);
+            Objects.requireNonNull(entity.getAttribute(Attribute.ATTACK_DAMAGE)).setBaseValue(customDamage * 2);
             entity.setMetadata("customDamage", new FixedMetadataValue(plugin, customDamage * 2));
             entity.setRemoveWhenFarAway(false);
             entity.setPersistent(true);
@@ -186,7 +186,7 @@ public class MonsterInitializer implements Listener {
             entity.setMetadata("lvl", new FixedMetadataValue(plugin, lvl));
             entity.setMetadata("extraHealth", new FixedMetadataValue(plugin, extraHealth));
             entity.setHealth(Math.min(extraHealth, customMaxHealth));
-            Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(customDamage * 1.5);
+            Objects.requireNonNull(entity.getAttribute(Attribute.ATTACK_DAMAGE)).setBaseValue(customDamage * 1.5);
             entity.setMetadata("customDamage", new FixedMetadataValue(plugin, customDamage * 1.5));
             entity.setRemoveWhenFarAway(false);
             entity.setCustomNameVisible(true);
@@ -201,7 +201,7 @@ public class MonsterInitializer implements Listener {
             entity.setMetadata("lvl", new FixedMetadataValue(plugin, lvl));
             entity.setMetadata("extraHealth", new FixedMetadataValue(plugin, extraHealth));
             entity.setHealth(Math.min(extraHealth, customMaxHealth));
-            Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(customDamage * 1.2);
+            Objects.requireNonNull(entity.getAttribute(Attribute.ATTACK_DAMAGE)).setBaseValue(customDamage * 1.2);
             entity.setMetadata("customDamage", new FixedMetadataValue(plugin, customDamage * 1.2));
             entity.setCustomNameVisible(true);
             return;
@@ -210,7 +210,7 @@ public class MonsterInitializer implements Listener {
         // If neither of the boss conditions are met, set standard attributes
         entity.setHealth(Math.min(extraHealth, customMaxHealth));
         entity.setMetadata("customDamage", new FixedMetadataValue(plugin, customDamage));
-        Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(customDamage);
+        Objects.requireNonNull(entity.getAttribute(Attribute.ATTACK_DAMAGE)).setBaseValue(customDamage);
     }
 
     private void setBossAttributes(LivingEntity entity, double maxCoord, String type, ChatColor color) {
@@ -228,23 +228,23 @@ public class MonsterInitializer implements Listener {
         double jumpMultiplier = 1 + (0.00015 * maxCoord);  // Continuous increase for jump
 
         // Set extra movement speed if the attribute is available
-        if (entity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED) != null) {
-            double baseSpeed = Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)).getBaseValue();
+        if (entity.getAttribute(Attribute.MOVEMENT_SPEED) != null) {
+            double baseSpeed = Objects.requireNonNull(entity.getAttribute(Attribute.MOVEMENT_SPEED)).getBaseValue();
             double newSpeed = baseSpeed * speedMultiplier; // Apply the calculated multiplier
-            Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)).setBaseValue(newSpeed+.02);
+            Objects.requireNonNull(entity.getAttribute(Attribute.MOVEMENT_SPEED)).setBaseValue(newSpeed+.02);
         }
 
         // Set extra jump strength if applicable
-        if (entity.getAttribute(Attribute.GENERIC_JUMP_STRENGTH) != null) {
-            double baseJumpStrength = Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_JUMP_STRENGTH)).getBaseValue();
+        if (entity.getAttribute(Attribute.JUMP_STRENGTH) != null) {
+            double baseJumpStrength = Objects.requireNonNull(entity.getAttribute(Attribute.JUMP_STRENGTH)).getBaseValue();
             double newJumpStrength = baseJumpStrength * jumpMultiplier; // Apply the calculated multiplier
-            Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_JUMP_STRENGTH)).setBaseValue(newJumpStrength);
+            Objects.requireNonNull(entity.getAttribute(Attribute.JUMP_STRENGTH)).setBaseValue(newJumpStrength);
         }
 
         // Set extra safe fall distance if applicable
-        if (entity.getAttribute(Attribute.GENERIC_SAFE_FALL_DISTANCE) != null) {
-            double baseSafeFallDistance = Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_SAFE_FALL_DISTANCE)).getBaseValue();
-            Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_SAFE_FALL_DISTANCE)).setBaseValue(baseSafeFallDistance * jumpMultiplier + 1);
+        if (entity.getAttribute(Attribute.SAFE_FALL_DISTANCE) != null) {
+            double baseSafeFallDistance = Objects.requireNonNull(entity.getAttribute(Attribute.SAFE_FALL_DISTANCE)).getBaseValue();
+            Objects.requireNonNull(entity.getAttribute(Attribute.SAFE_FALL_DISTANCE)).setBaseValue(baseSafeFallDistance * jumpMultiplier + 1);
         }
     }
 

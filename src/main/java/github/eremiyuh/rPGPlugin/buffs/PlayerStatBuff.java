@@ -120,7 +120,7 @@ public class PlayerStatBuff {
             if (profile == null) return;
 
             // Set max health based on vitality
-            AttributeInstance maxHealthAttr = player.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+            AttributeInstance maxHealthAttr = player.getAttribute(Attribute.MAX_HEALTH);
             assert maxHealthAttr != null;
             double newMaxHealth = calculateMaxHealth(profile, player);
             maxHealthAttr.setBaseValue(newMaxHealth);
@@ -146,7 +146,7 @@ public class PlayerStatBuff {
     public void updatePlayerStatsToNormal(Player player) {
         player.setWalkSpeed(0.2f); // Vanilla walk speed
 
-        AttributeInstance maxHealthAttr = player.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+        AttributeInstance maxHealthAttr = player.getAttribute(Attribute.MAX_HEALTH);
         assert maxHealthAttr != null;
         maxHealthAttr.setBaseValue(20.0); // Vanilla max health (20 = 10 hearts)
     }

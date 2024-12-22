@@ -490,7 +490,7 @@ public class DamageListener implements Listener {
                    ItemStack weapon =  mob.getEquipment().getItemInMainHand();
 
 
-                    double mobDamage = Objects.requireNonNull(mob.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).getValue();
+                    double mobDamage = Objects.requireNonNull(mob.getAttribute(Attribute.ATTACK_DAMAGE)).getValue();
 
                     if (mob instanceof Creeper) {
                         mobDamage *=2;
@@ -841,7 +841,7 @@ public class DamageListener implements Listener {
             if (PlayerBuffPerms.canLifeSteal(damagerProfile)
                     && attacker.getInventory().getItemInMainHand().getType().toString().endsWith("_SWORD")) {
 
-                AttributeInstance maxHealthAttribute = attacker.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+                AttributeInstance maxHealthAttribute = attacker.getAttribute(Attribute.MAX_HEALTH);
                 if (maxHealthAttribute == null) {
                     System.err.println("Attacker does not have the GENERIC_MAX_HEALTH attribute.");
                     return;
@@ -1072,7 +1072,7 @@ public class DamageListener implements Listener {
             && damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")
             ) {
 
-                AttributeInstance maxHealthAttribute = attacker.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+                AttributeInstance maxHealthAttribute = attacker.getAttribute(Attribute.MAX_HEALTH);
                 if (maxHealthAttribute == null) {
                     System.err.println("Attacker does not have the GENERIC_MAX_HEALTH attribute.");
                     return;
@@ -1358,21 +1358,21 @@ public class DamageListener implements Listener {
             entity.setCustomName(bossName);
             entity.setCustomNameVisible(true);
             // Set extra movement speed if the attribute is available
-            if (entity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED) != null) {
-                double newSpeed = Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)).getBaseValue() * 1.5; // Increase speed by 50%
-                Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)).setBaseValue(newSpeed);
+            if (entity.getAttribute(Attribute.MOVEMENT_SPEED) != null) {
+                double newSpeed = Objects.requireNonNull(entity.getAttribute(Attribute.MOVEMENT_SPEED)).getBaseValue() * 1.5; // Increase speed by 50%
+                Objects.requireNonNull(entity.getAttribute(Attribute.MOVEMENT_SPEED)).setBaseValue(newSpeed);
             }
 
             // Set extra jump strength if applicable (for horses or similar entities that support it)
-            if (entity.getAttribute(Attribute.GENERIC_JUMP_STRENGTH) != null) {
-                double newJumpStrength = Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_JUMP_STRENGTH)).getBaseValue() * 3;
-                Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_JUMP_STRENGTH)).setBaseValue(newJumpStrength);
+            if (entity.getAttribute(Attribute.JUMP_STRENGTH) != null) {
+                double newJumpStrength = Objects.requireNonNull(entity.getAttribute(Attribute.JUMP_STRENGTH)).getBaseValue() * 3;
+                Objects.requireNonNull(entity.getAttribute(Attribute.JUMP_STRENGTH)).setBaseValue(newJumpStrength);
             }
 
             // Set extra jump strength if applicable (for horses or similar entities that support it)
-            if (entity.getAttribute(Attribute.GENERIC_SAFE_FALL_DISTANCE) != null) {
-                double newSafeJumpDist = Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_JUMP_STRENGTH)).getBaseValue() * 3;
-                Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_SAFE_FALL_DISTANCE)).setBaseValue(entity.getAttribute(Attribute.GENERIC_SAFE_FALL_DISTANCE).getBaseValue()*3);
+            if (entity.getAttribute(Attribute.SAFE_FALL_DISTANCE) != null) {
+                double newSafeJumpDist = Objects.requireNonNull(entity.getAttribute(Attribute.JUMP_STRENGTH)).getBaseValue() * 3;
+                Objects.requireNonNull(entity.getAttribute(Attribute.SAFE_FALL_DISTANCE)).setBaseValue(entity.getAttribute(Attribute.SAFE_FALL_DISTANCE).getBaseValue()*3);
             }
         }
 
@@ -1388,21 +1388,21 @@ public class DamageListener implements Listener {
             entity.setPersistent(true);
             entity.setCustomNameVisible(true);
             // Set extra movement speed if the attribute is available
-            if (entity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED) != null) {
-                double newSpeed = Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)).getBaseValue() * 1.5; // Increase speed by 50%
-                Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)).setBaseValue(newSpeed);
+            if (entity.getAttribute(Attribute.MOVEMENT_SPEED) != null) {
+                double newSpeed = Objects.requireNonNull(entity.getAttribute(Attribute.MOVEMENT_SPEED)).getBaseValue() * 1.5; // Increase speed by 50%
+                Objects.requireNonNull(entity.getAttribute(Attribute.MOVEMENT_SPEED)).setBaseValue(newSpeed);
             }
 
             // Set extra jump strength if applicable (for horses or similar entities that support it)
-            if (entity.getAttribute(Attribute.GENERIC_JUMP_STRENGTH) != null) {
-                double newJumpStrength = Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_JUMP_STRENGTH)).getBaseValue() * 3;
-                Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_JUMP_STRENGTH)).setBaseValue(newJumpStrength);
+            if (entity.getAttribute(Attribute.JUMP_STRENGTH) != null) {
+                double newJumpStrength = Objects.requireNonNull(entity.getAttribute(Attribute.JUMP_STRENGTH)).getBaseValue() * 3;
+                Objects.requireNonNull(entity.getAttribute(Attribute.JUMP_STRENGTH)).setBaseValue(newJumpStrength);
             }
 
             // Set extra jump strength if applicable (for horses or similar entities that support it)
-            if (entity.getAttribute(Attribute.GENERIC_SAFE_FALL_DISTANCE) != null) {
-                double newSafeJumpDist = Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_JUMP_STRENGTH)).getBaseValue() * 3;
-                Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_SAFE_FALL_DISTANCE)).setBaseValue(entity.getAttribute(Attribute.GENERIC_SAFE_FALL_DISTANCE).getBaseValue()*3);
+            if (entity.getAttribute(Attribute.SAFE_FALL_DISTANCE) != null) {
+                double newSafeJumpDist = Objects.requireNonNull(entity.getAttribute(Attribute.JUMP_STRENGTH)).getBaseValue() * 3;
+                Objects.requireNonNull(entity.getAttribute(Attribute.SAFE_FALL_DISTANCE)).setBaseValue(entity.getAttribute(Attribute.SAFE_FALL_DISTANCE).getBaseValue()*3);
             }
         }
 

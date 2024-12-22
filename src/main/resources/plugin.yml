@@ -257,5 +257,8 @@ commands:
         description: Lists players allowed to teleport to you.
       remove:
         description: Removes a player from your teleport allow list.
+  cosmeticstore:
+    description: Allows a player buy cosmetics.
+    usage: /command
 softdepend:
   - DiscordSRV

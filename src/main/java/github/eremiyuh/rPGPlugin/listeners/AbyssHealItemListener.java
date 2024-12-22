@@ -28,7 +28,7 @@ public class AbyssHealItemListener implements Listener {
             if (player.getHealth()<=0) return;
 
             // Heal the player to full health
-            player.setHealth(Objects.requireNonNull(player.getAttribute(Attribute.GENERIC_MAX_HEALTH)).getValue());
+            player.setHealth(Objects.requireNonNull(player.getAttribute(Attribute.MAX_HEALTH)).getValue());
             player.sendMessage("§aYou have been healed to full health!");
 
             // Reduce the stack size of the item in hand
