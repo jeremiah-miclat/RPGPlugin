@@ -62,7 +62,7 @@ public class CosmeticStore implements CommandExecutor, Listener {
         if (compositeBowItemMeta != null) {
             // Add lore to show the cost
             List<Component> lore = new ArrayList<>();
-            lore.add(Component.text("Cost: 10,000 Iron ingot currency").color(TextColor.color(255, 215, 0))); // Gold color for cost
+            lore.add(Component.text("Cost: 5,000 Copper ingot currency").color(TextColor.color(255, 215, 0))); // Gold color for cost
             compositeBowItemMeta.lore(lore); // Set the lore to the ItemMeta
 
             compositeBow.setItemMeta(compositeBowItemMeta);
@@ -76,7 +76,7 @@ public class CosmeticStore implements CommandExecutor, Listener {
         if (blacksaberItemMeta != null) {
             // Add lore to show the cost
             List<Component> lore = new ArrayList<>();
-            lore.add(Component.text("Cost: 10,000 Iron ingot currency").color(TextColor.color(255, 215, 0))); // Gold color for cost
+            lore.add(Component.text("Cost: 5,000 Iron ingot currency").color(TextColor.color(255, 215, 0))); // Gold color for cost
             blacksaberItemMeta.lore(lore); // Set the lore to the ItemMeta
 
             blacksaber.setItemMeta(blacksaberItemMeta); // Apply the modified ItemMeta to the Ender Pearl
@@ -102,7 +102,13 @@ public class CosmeticStore implements CommandExecutor, Listener {
         cosmeticStore.setItem(5, haloBoots);
 
 
+        ItemStack katana = getKatana();
+        addLoreToItem(katana, "Cost: 5,000 Iron ingot currency");
+        cosmeticStore.setItem(6, katana);
 
+        ItemStack dragonSlayer = getDragonSlayer();
+        addLoreToItem(dragonSlayer, "Cost: 30 Netherite ingot currency");
+        cosmeticStore.setItem(7, dragonSlayer);
 
         // Open the Abyss Store GUI for the player
         player.openInventory(cosmeticStore);
@@ -136,12 +142,12 @@ public class CosmeticStore implements CommandExecutor, Listener {
 
             if (event.getSlot() == 0 && event.getCurrentItem() != null && event.getCurrentItem().getType() == Material.BOW) {
 
-                if (userProfile.getCurrency("iron") < 10000) {
-                    player.sendMessage(ChatColor.RED +"Need 10k iron ingot currency");
+                if (userProfile.getCurrency("copper") < 5000) {
+                    player.sendMessage(ChatColor.RED +"Need 5k copper ingot currency");
                     return;
                 }
 
-                userProfile.setCurrency("iron",userProfile.getIron()-10000);
+                userProfile.setCurrency("copper",userProfile.getCopper()-5000);
 
                 dropOrNotify(player, getCompositeBow(), "Successfully purchased Composite Bow!");
             }
@@ -150,12 +156,12 @@ public class CosmeticStore implements CommandExecutor, Listener {
 
             if (event.getSlot() == 1 && event.getCurrentItem() != null && event.getCurrentItem().getType() == Material.NETHERITE_SWORD) {
 
-                if (userProfile.getCurrency("iron") < 10000) {
-                    player.sendMessage(ChatColor.RED +"Need 10k iron ingot currency");
+                if (userProfile.getCurrency("iron") < 5000) {
+                    player.sendMessage(ChatColor.RED +"Need 5k iron ingot currency");
                     return;
                 }
 
-                userProfile.setCurrency("iron",userProfile.getIron()-10000);
+                userProfile.setCurrency("iron",userProfile.getIron()-5000);
 
                 dropOrNotify(player, getBlackSaber(), "Successfully purchased Dark Blade!");
             }
@@ -163,7 +169,7 @@ public class CosmeticStore implements CommandExecutor, Listener {
             if (event.getSlot() == 2 && event.getCurrentItem() != null && event.getCurrentItem().getType() == Material.NETHERITE_HELMET) {
 
                 if (userProfile.getCurrency("iron") < 2000) {
-                    player.sendMessage(ChatColor.RED +"Need 1k diamond currency");
+                    player.sendMessage(ChatColor.RED +"Need 1k iron ingot currency");
                     return;
                 }
 
@@ -176,7 +182,7 @@ public class CosmeticStore implements CommandExecutor, Listener {
             if (event.getSlot() == 3 && event.getCurrentItem() != null && event.getCurrentItem().getType() == Material.NETHERITE_CHESTPLATE) {
 
                 if (userProfile.getCurrency("iron") < 2000) {
-                    player.sendMessage(ChatColor.RED +"Need 1k diamond currency");
+                    player.sendMessage(ChatColor.RED +"Need 1k iron currency");
                     return;
                 }
 
@@ -188,7 +194,7 @@ public class CosmeticStore implements CommandExecutor, Listener {
             if (event.getSlot() == 4 && event.getCurrentItem() != null && event.getCurrentItem().getType() == Material.NETHERITE_LEGGINGS) {
 
                 if (userProfile.getCurrency("iron") < 2000) {
-                    player.sendMessage(ChatColor.RED +"Need 1k diamond currency");
+                    player.sendMessage(ChatColor.RED +"Need 1k iron currency");
                     return;
                 }
 
@@ -200,13 +206,39 @@ public class CosmeticStore implements CommandExecutor, Listener {
             if (event.getSlot() == 5 && event.getCurrentItem() != null && event.getCurrentItem().getType() == Material.NETHERITE_BOOTS) {
 
                 if (userProfile.getCurrency("iron") < 2000) {
-                    player.sendMessage(ChatColor.RED +"Need 1k diamond currency");
+                    player.sendMessage(ChatColor.RED +"Need 1k iron currency");
                     return;
                 }
 
                 userProfile.setCurrency("iron",userProfile.getIron()-2000);
 
                 dropOrNotify(player, getHaloBoots(), "Successfully purchased!");
+            }
+
+            if (event.getSlot() == 6 && event.getCurrentItem() != null && event.getCurrentItem().getType() == Material.NETHERITE_SWORD) {
+                int cost = 5000;
+                String currency = "iron";
+                if (userProfile.getCurrency(currency) < cost) {
+                    player.sendMessage(ChatColor.RED +"Need "+cost +" " + currency +" currency");
+                    return;
+                }
+
+                userProfile.setCurrency(currency,userProfile.getCurrency(currency)-cost);
+
+                dropOrNotify(player, getKatana(), "Successfully purchased!");
+            }
+
+            if (event.getSlot() == 7 && event.getCurrentItem() != null && event.getCurrentItem().getType() == Material.NETHERITE_SWORD) {
+                int cost = 30;
+                String currency = "netherite";
+                if (userProfile.getCurrency(currency) < cost) {
+                    player.sendMessage(ChatColor.RED +"Need "+cost +" " + currency +" currency");
+                    return;
+                }
+
+                userProfile.setCurrency(currency,userProfile.getCurrency(currency)-cost);
+
+                dropOrNotify(player, getDragonSlayer(), "Successfully purchased!");
             }
 
         }

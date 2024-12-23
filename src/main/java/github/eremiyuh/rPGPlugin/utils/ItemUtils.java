@@ -132,6 +132,62 @@ public class ItemUtils {
         return pointItem;
     }
 
+    public static ItemStack getKatana() {
+        ItemStack pointItem = new ItemStack(Material.NETHERITE_SWORD); // Choose any material you prefer
+        ItemMeta meta = pointItem.getItemMeta();
+
+        if (meta != null) {
+            meta.displayName(Component.text("Broken Katana").color(TextColor.color(255,0,0)));
+            meta.lore(Arrays.asList(
+                    Component.text("Cosmetic")
+            ));
+
+            meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
+            meta.setEnchantmentGlintOverride(false);
+
+
+            meta.setItemModel(NamespacedKey.minecraft("katana"));
+
+            EquippableComponent equippableComponent = meta.getEquippable();
+
+            equippableComponent.setSwappable(false);
+
+            meta.setEquippable(equippableComponent);
+
+            pointItem.setItemMeta(meta);
+        }
+
+        return pointItem;
+    }
+
+    public static ItemStack getDragonSlayer() {
+        ItemStack pointItem = new ItemStack(Material.NETHERITE_SWORD); // Choose any material you prefer
+        ItemMeta meta = pointItem.getItemMeta();
+
+        if (meta != null) {
+            meta.displayName(Component.text("Dragon Slaying Blade").color(TextColor.color(255,0,0)));
+            meta.lore(Arrays.asList(
+                    Component.text("Cosmetic")
+            ));
+
+            meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
+            meta.setEnchantmentGlintOverride(false);
+
+
+            meta.setItemModel(NamespacedKey.minecraft("dragonslayingblade"));
+
+            EquippableComponent equippableComponent = meta.getEquippable();
+
+            equippableComponent.setSwappable(false);
+
+            meta.setEquippable(equippableComponent);
+
+            pointItem.setItemMeta(meta);
+        }
+
+        return pointItem;
+    }
+
     public static ItemStack getCompositeBow() {
         ItemStack pointItem = new ItemStack(Material.BOW); // Choose any material you prefer
         ItemMeta meta = pointItem.getItemMeta();

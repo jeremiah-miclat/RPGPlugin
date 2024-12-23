@@ -381,40 +381,65 @@ public class UserProfile {
     }
 
 
-    // TO UPDATE
     public void setCurrency(String currencyName, double amount) {
+        Player player = Bukkit.getPlayer(this.getPlayerName());
+        double oldAmount = 0;
+
+        // Get the old amount before setting the new one
         switch (currencyName.toLowerCase()) {
             case "diamond":
+                oldAmount = this.diamond;
                 this.diamond = amount;
                 break;
             case "emerald":
+                oldAmount = this.emerald;
                 this.emerald = amount;
                 break;
             case "iron":
+                oldAmount = this.iron;
                 this.iron = amount;
                 break;
             case "lapis":
+                oldAmount = this.lapiz;
                 this.lapiz = amount;
                 break;
             case "gold":
+                oldAmount = this.gold;
                 this.gold = amount;
                 break;
             case "enderpearl":
+                oldAmount = this.enderpearl;
                 this.enderpearl = (int) amount;
                 break;
             case "netherite":
+                oldAmount = this.netherite;
                 this.netherite = amount;
                 break;
             case "copper":
+                oldAmount = this.copper;
                 this.copper = amount;
                 break;
             case "abysspoints":
+                oldAmount = this.abysspoints;
                 this.abysspoints = amount;
                 break;
             default:
                 throw new IllegalArgumentException("Invalid currency name: " + currencyName);
         }
+
+        // Notify the player of the change in currency
+        if (player != null) {
+            double difference = amount - oldAmount;
+            if (difference > 0) {
+                // Player gained currency
+                player.sendMessage("You gained " + difference + " " + currencyName + "(s).");
+            } else if (difference < 0) {
+                // Player spent currency
+                player.sendMessage("You spent " + Math.abs(difference) + " " + currencyName + "(s).");
+            }
+        }
     }
+
 
     public double getAbysspoints() {
         return abysspoints;

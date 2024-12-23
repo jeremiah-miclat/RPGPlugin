@@ -4,6 +4,7 @@ import github.eremiyuh.rPGPlugin.RPGPlugin;
 import io.papermc.paper.event.player.PlayerTradeEvent;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -36,7 +37,7 @@ public class AreaProtectionListener implements Listener {
 
 
     private final int xx1 = 292, zz1 = -293;
-    private final int xx2 = -338, zz2 = 330;
+    private final int xx2 = -338, zz2 = 350;
 
     private final int x1 = -150, z1 = 150;
     private final int x2 = 150, z2 = -150;
@@ -295,7 +296,7 @@ public class AreaProtectionListener implements Listener {
         if (!event.getBlock().getWorld().getName().equals(world.getName()) && !event.getBlock().getWorld().getName().equals("world_rpg")) {
             return;
         }
-        Block block = event.getBlock();
+        Block block = event.getBlock().getRelative(BlockFace.DOWN);
         if (isInProtectedArea(block.getLocation().getBlockX(), block.getLocation().getBlockZ())  && block.getType() != Material.OBSIDIAN) {
             event.setCancelled(true);
         }

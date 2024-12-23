@@ -271,6 +271,9 @@ public class DeadMobListener implements Listener {
         Random random = new Random(); // Create a random number generator
 
         for (ItemStack drop : event.getDrops()) {
+            if (isEquipable(drop.getType())) {
+                continue; // Skip equipable items
+            }
             int originalAmount = drop.getAmount();
             int multipliedAmount = originalAmount * dropMultiplier;
             ItemStack newDrop = new ItemStack(drop.getType(), multipliedAmount);
@@ -285,6 +288,21 @@ public class DeadMobListener implements Listener {
                 }
             }
         }
+    }
+
+    // Helper method to determine if an item is equipable
+    private boolean isEquipable(Material material) {
+        return material.name().endsWith("_HELMET") ||
+                material.name().endsWith("_CHESTPLATE") ||
+                material.name().endsWith("_LEGGINGS") ||
+                material.name().endsWith("_BOOTS") ||
+                material.name().endsWith("_SWORD") ||
+                material.name().endsWith("_AXE") ||
+                material.name().endsWith("_SHOVEL") ||
+                material.name().endsWith("_HOE") ||
+                material.name().contains("CROSSBOW") ||
+                material.name().contains("BOW") ||
+                material.name().contains("SHIELD");
     }
 
 

@@ -8,6 +8,7 @@ import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -27,7 +28,17 @@ public class MonsterInitializer implements Listener {
         this.plugin = plugin;
     }
 
+    @EventHandler
+    public void onMobPickUpItem(EntityPickupItemEvent event) {
+        String world = Objects.requireNonNull(event.getEntity().getLocation().getWorld()).getName();
+        if (!world.contains("world_rpg")) {
+            return;
+        }
 
+        if (!(event.getEntity() instanceof Monster)) return;
+
+        event.setCancelled(true);
+    }
 
 
     @EventHandler

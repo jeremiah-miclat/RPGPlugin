@@ -87,7 +87,38 @@ public class DamageListener implements Listener {
             }
 
 
+            if (damaged instanceof Tameable tameable) {
+                if (damager instanceof Player) {
+                    AnimalTamer owner = tameable.getOwner();
 
+                    // Check if the tameable has an owner
+                    if (owner != null) {
+                        if (!(owner instanceof Player) )return;
+                        if (Objects.requireNonNull(owner.getName()).equalsIgnoreCase(damager.getName())) return;
+
+                        UserProfile ownerProfile = profileManager.getProfile(owner.getName());
+                        UserProfile profile = profileManager.getProfile(damager.getName());
+                        if (!(profile.getTeam().equalsIgnoreCase(ownerProfile.getTeam())) && !profile.getTeam().equalsIgnoreCase("none")) return;
+                        if ((profile.isPvpEnabled() && ownerProfile.isPvpEnabled())) return;
+                        event.setCancelled(true);
+                    }
+                }
+
+                if (damager instanceof Projectile projectile && projectile.getShooter() instanceof Player shooter) {
+                    AnimalTamer owner = tameable.getOwner();
+
+                    // Check if the tameable has an owner
+                    if (owner != null) {
+                        if (Objects.requireNonNull(owner.getName()).equalsIgnoreCase(damager.getName())) return;
+                        if (!(owner instanceof Player) )return;
+                        UserProfile ownerProfile = profileManager.getProfile(owner.getName());
+                        UserProfile profile = profileManager.getProfile(shooter.getName());
+                        if (!(profile.getTeam().equalsIgnoreCase(ownerProfile.getTeam())) && !profile.getTeam().equalsIgnoreCase("none")) return;
+                        if ((profile.isPvpEnabled() && ownerProfile.isPvpEnabled())) return;
+                        event.setCancelled(true);
+                    }
+                }
+            }
 
             // Get the location of the damaged entity
             Location damagedLocation = damaged.getLocation();
@@ -713,6 +744,7 @@ public class DamageListener implements Listener {
 
             // Check if the tameable has an owner
             if (owner != null) {
+                if (!(owner instanceof Player) )return;
                 if (Objects.requireNonNull(owner.getName()).equalsIgnoreCase(attacker.getName())) return;
 
                 UserProfile ownerProfile = profileManager.getProfile(owner.getName());

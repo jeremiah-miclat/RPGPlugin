@@ -65,6 +65,8 @@ task copyToServer(type: Copy) {
     into "C:/Users/USER/Desktop/Paper 1.21/plugins"
     include "*.jar"
 }
+
+
 // Ensure that the task runs after the build task completes
 build.finalizedBy(copyToServer)
 

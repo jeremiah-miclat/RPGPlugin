@@ -147,51 +147,6 @@ public class CreateShopListener implements Listener {
         return lines[2].trim().matches("\\d+");
     }
 
-
-
-
-    // Helper method to check if the first item in the inventory has lore
-    public boolean hasLore(ItemStack item) {
-        // Check if the item is not null and has ItemMeta
-        if (item == null || !item.hasItemMeta()) {
-            return false;
-        }
-
-        ItemMeta meta = item.getItemMeta();
-
-        // Check if the meta has lore
-        return meta != null && meta.hasLore();
-    }
-
-    // Helper method to get the first line of lore from the item
-    private String getItemLore(ItemStack item) {
-        ItemMeta itemMeta = item.getItemMeta();
-        if (itemMeta != null && itemMeta.hasLore()) {
-            TextComponent lore = (TextComponent) Objects.requireNonNull(itemMeta.lore()).getFirst();
-            return lore.content();
-        }
-        return null; // No lore found
-    }
-
-    // Helper method to create floating text using an invisible ArmorStand
-    private void createFloatingText(org.bukkit.Location location, String text, ItemStack item) {
-        ArmorStand armorStand = location.getWorld().spawn(location.add(0.5, 2.5, 0.5), ArmorStand.class);
-
-        // Set the Armor Stand to be invisible, no gravity, and no base plate (so it looks like text)
-        armorStand.setInvisible(true);
-        armorStand.setGravity(false);
-        armorStand.setBasePlate(false);
-        armorStand.setMarker(true);
-        armorStand.setCustomName(text); // Set the text as the custom name
-        armorStand.setCustomNameVisible(true); // Make the custom name visible
-
-        // Set the color of the name if the item has color (for example, from item meta)
-        if (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
-            // Apply the same color as the item (if it's a colored item name)
-            armorStand.setCustomName(item.getItemMeta().getDisplayName());
-        }
-    }
-
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
         Block block = event.getBlock();
@@ -542,25 +497,6 @@ public class CreateShopListener implements Listener {
     }
 
 
-
-
-
-
-    private ArmorStand getFloatingTextAbove(Block block) {
-        // Check if there is an Armor Stand one block above the barrel
-        org.bukkit.Location location = block.getLocation().add(0, 0.25, 0);
-        for (org.bukkit.entity.Entity entity : location.getWorld().getEntities()) {
-            if (entity instanceof ArmorStand) {
-                ArmorStand armorStand = (ArmorStand) entity;
-                // If the Armor Stand has a custom name, assume it's floating text
-                if (armorStand.isInvisible()) {
-                    return armorStand;
-                }
-            }
-        }
-        return null; // No floating text found
-    }
-
     public void setBarrelMetaData(Chest barrel,String sellerName ,ItemStack item, int numberOfItem, String currency, int amountOfCurrency) {
         barrel.setMetadata("seller", new FixedMetadataValue(plugin,sellerName));
         barrel.setMetadata("item", new FixedMetadataValue(plugin,item));
@@ -616,35 +552,6 @@ public class CreateShopListener implements Listener {
             return signBlock.getRelative(org.bukkit.block.BlockFace.DOWN);
         }
         return null;
-    }
-
-    public void openShop(Player player, Block signBlock) {
-        Block chestBLock = getAttachedBlock(signBlock);
-
-        if (!(chestBLock != null && chestBLock.hasMetadata("seller"))) return;
-
-        String sellerName = chestBLock.getMetadata("seller").get(0).asString();
-        UserProfile sellerProfile = profileManager.getProfile(sellerName);
-        ItemStack item = (ItemStack) chestBLock.getMetadata("item").get(0);
-        if (sellerProfile == null ) return;
-
-        Inventory sellerShop = Bukkit.createInventory(null, 9, Component.text(sellerName + "'s"+ " Shop").color(TextColor.color(255, 0, 0)));
-//        ItemStack abyssIngot = getAbyssIngot();
-//
-//
-//
-//        sellerShop.setItem(3, abyssIngot);
-//
-//
-//        player.openInventory(sellerShop);
-//
-//
-//        ItemStack abyssPotion = getAbyssPotion();
-//        sellerShop.setItem(5, abyssPotion);
-
-
-        ItemStack abyssOre = getAbyssOre();
-        sellerShop.setItem(1, abyssOre);
     }
 
 }
