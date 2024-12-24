@@ -23,7 +23,37 @@ public class AnvilLevelRestrictionHandler implements Listener {
         ItemStack secondItem = anvilInventory.getItem(1);
         ItemStack result = event.getResult();
 
-        if (firstItem==null) return;
+        if (firstItem==null || secondItem==null) return;
+
+        if (firstItem.getType() == Material.BOOK && secondItem.getType() == Material.BOOK) {
+            ItemMeta secondMeta = secondItem.getItemMeta();
+            if (secondMeta != null && secondMeta.getLore() != null && secondMeta.getLore().contains("Cosmetic")) {
+
+                // Clone the first item to apply modifications
+                ItemStack resultItem = firstItem.clone();
+                ItemMeta resultMeta = resultItem.getItemMeta();
+
+                // Apply display name from the second item
+                if (secondMeta.hasDisplayName()) {
+                    resultMeta.setDisplayName(secondMeta.getDisplayName());
+                }
+
+                // Apply cosmetic model data (optional)
+                if (secondMeta.hasItemModel()) {
+                    resultMeta.setItemModel(secondMeta.getItemModel());
+                }
+
+                // Set the modified meta back to the result item
+                resultItem.setItemMeta(resultMeta);
+
+                // Set the result item in the anvil
+                event.setResult(resultItem);
+
+                // Optional: Set the level cost of the anvil operation
+                anvilInventory.setRepairCost(30); // Example: 5 levels
+            }
+            return;
+        }
 
         // Ensure both items are present and the first item has lore
         if (firstItem != null) {

@@ -13,10 +13,7 @@ import org.bukkit.event.entity.*;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.inventory.TradeSelectEvent;
-import org.bukkit.event.player.PlayerBucketEmptyEvent;
-import org.bukkit.event.player.PlayerInteractAtEntityEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerUnleashEntityEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.event.raid.RaidEvent;
 import org.bukkit.event.raid.RaidTriggerEvent;
 import org.bukkit.event.weather.LightningStrikeEvent;
@@ -341,6 +338,17 @@ public class AreaProtectionListener implements Listener {
             if (event.getRightClicked().getType() == EntityType.ALLAY && !player.isOp()) {
                 event.setCancelled(true);
             }
+        }
+    }
+
+    @EventHandler
+    public void onArmorStandManipulate(PlayerArmorStandManipulateEvent event) {
+        Player player = event.getPlayer();
+        ArmorStand armorStand = event.getRightClicked();
+        Chunk chunk = armorStand.getLocation().getChunk();
+
+        if (isInProtectedArea((int) event.getRightClicked().getX(), (int) event.getRightClicked().getZ()) && !player.isOp()) {
+            event.setCancelled(true);
         }
     }
 

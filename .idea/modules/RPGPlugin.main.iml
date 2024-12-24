@@ -17,6 +17,7 @@
     <exclude-output />
     <exclude-output />
     <exclude-output />
+    <exclude-output />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>

@@ -55,7 +55,24 @@ public class CosmeticStore implements CommandExecutor, Listener {
         cosmeticItems.add(new CosmeticItem(getFoxChestPlate(), 1000, "iron"));
         cosmeticItems.add(new CosmeticItem(getFoxLeggings(), 1000, "iron"));
         cosmeticItems.add(new CosmeticItem(getFoxBoots(), 1000, "iron"));
+        cosmeticItems.add(new CosmeticItem(getSoulBoundBook(), 3, "netherite"));
+        cosmeticItems.add(new CosmeticItem(getRubyFire(), 3, "netherite"));
+        cosmeticItems.add(new CosmeticItem(getMirrorShield(), 1000, "iron"));
 
+        cosmeticItems.add(new CosmeticItem(getAdamantiumHelmet(), 250, "gold"));
+        cosmeticItems.add(new CosmeticItem(getAdamantiumChestPlate(), 250, "gold"));
+        cosmeticItems.add(new CosmeticItem(getAdamantiumLeggings(), 250, "gold"));
+        cosmeticItems.add(new CosmeticItem(getAdamantiumBoots(), 250, "gold"));
+
+        cosmeticItems.add(new CosmeticItem(getChampHelm(), 250, "gold"));
+        cosmeticItems.add(new CosmeticItem(getChampionChest(), 250, "gold"));
+        cosmeticItems.add(new CosmeticItem(getChampLeg(), 250, "gold"));
+        cosmeticItems.add(new CosmeticItem(getChampBoots(), 250, "gold"));
+
+        cosmeticItems.add(new CosmeticItem(getDragHelm(), 250, "gold"));
+        cosmeticItems.add(new CosmeticItem(getDragChest(), 250, "gold"));
+        cosmeticItems.add(new CosmeticItem(getDragLeg(), 250, "gold"));
+        cosmeticItems.add(new CosmeticItem(getDragBoots(), 250, "gold"));
     }
 
     @Override

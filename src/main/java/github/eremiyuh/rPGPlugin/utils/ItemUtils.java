@@ -188,6 +188,76 @@ public class ItemUtils {
         return pointItem;
     }
 
+
+    // SOUL BOUND
+    public static ItemStack getSoulBoundBook() {
+        ItemStack pointItem = new ItemStack(Material.BOOK); // Choose any material you prefer
+        ItemMeta meta = pointItem.getItemMeta();
+
+        if (meta != null) {
+            meta.displayName(Component.text("Soul Bound").color(TextColor.color(255,0,0)));
+            meta.lore(Arrays.asList(
+                    Component.text("Cosmetic")
+            ));
+
+            meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
+            meta.setEnchantmentGlintOverride(false);
+
+            meta.setItemModel(NamespacedKey.minecraft("soulbound"));
+
+
+            pointItem.setItemMeta(meta);
+        }
+
+        return pointItem;
+    }
+
+    // ruby_fire
+    public static ItemStack getRubyFire() {
+        ItemStack pointItem = new ItemStack(Material.BOOK); // Choose any material you prefer
+        ItemMeta meta = pointItem.getItemMeta();
+
+        if (meta != null) {
+            meta.displayName(Component.text("Ruby Fire").color(TextColor.color(255,0,0)));
+            meta.lore(Arrays.asList(
+                    Component.text("Cosmetic")
+            ));
+
+            meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
+            meta.setEnchantmentGlintOverride(false);
+
+            meta.setItemModel(NamespacedKey.minecraft("ruby_fire"));
+
+
+            pointItem.setItemMeta(meta);
+        }
+
+        return pointItem;
+    }
+
+    // ruby_fire
+    public static ItemStack getMirrorShield() {
+        ItemStack pointItem = new ItemStack(Material.BOOK); // Choose any material you prefer
+        ItemMeta meta = pointItem.getItemMeta();
+
+        if (meta != null) {
+            meta.displayName(Component.text("Mirror Shield").color(TextColor.color(255,0,0)));
+            meta.lore(Arrays.asList(
+                    Component.text("Cosmetic")
+            ));
+
+            meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
+            meta.setEnchantmentGlintOverride(false);
+
+            meta.setItemModel(NamespacedKey.minecraft("mirror_shield"));
+
+
+            pointItem.setItemMeta(meta);
+        }
+
+        return pointItem;
+    }
+
     public static ItemStack getCompositeBow() {
         ItemStack pointItem = new ItemStack(Material.BOW); // Choose any material you prefer
         ItemMeta meta = pointItem.getItemMeta();
@@ -298,6 +368,142 @@ public class ItemUtils {
         );
     }
 
+    // ADAMANTIUM
+    public static ItemStack getAdamantiumChestPlate() {
+        return createCustomArmor(
+                Material.NETHERITE_CHESTPLATE,
+                "Adamantium Chestplate",
+                Arrays.asList(Component.text("Cosmetic")),
+                "adamantium",
+                "adamantium_chestplate",
+                EquipmentSlot.CHEST
+        );
+    }
+
+    public static ItemStack getAdamantiumHelmet() {
+        return createCustomArmor(
+                Material.NETHERITE_HELMET,
+                "Adamantium Helmet",
+                Arrays.asList(Component.text("Cosmetic")),
+                "adamantium",
+                "adamantium_helmet",
+                EquipmentSlot.HEAD
+        );
+    }
+
+    public static ItemStack getAdamantiumLeggings() {
+        return createCustomArmor(
+                Material.NETHERITE_LEGGINGS,
+                "Adamantium Leggings",
+                Arrays.asList(Component.text("Cosmetic")),
+                "adamantium",
+                "adamantium_leggings",
+                EquipmentSlot.LEGS
+        );
+    }
+
+    public static ItemStack getAdamantiumBoots() {
+        return createCustomArmor(
+                Material.NETHERITE_BOOTS,
+                "Adamantium Boots",
+                Arrays.asList(Component.text("Cosmetic")),
+                "adamantium",
+                "adamantium_boots",
+                EquipmentSlot.FEET
+        );
+    }
+
+    // CHAMPION
+
+    public static ItemStack getChampionChest() {
+        return createCustomArmor(
+                Material.NETHERITE_CHESTPLATE,
+                "Champion Petra Chestplate",
+                Arrays.asList(Component.text("Cosmetic")),
+                "champion",
+                "champion_petra_chestplate",
+                EquipmentSlot.CHEST
+        );
+    }
+
+    public static ItemStack getChampHelm() {
+        return createCustomArmor(
+                Material.NETHERITE_HELMET,
+                "Champion Petra Helmet",
+                Arrays.asList(Component.text("Cosmetic")),
+                "champion",
+                "champion_petra_helmet",
+                EquipmentSlot.HEAD
+        );
+    }
+
+    public static ItemStack getChampLeg() {
+        return createCustomArmor(
+                Material.NETHERITE_LEGGINGS,
+                "Champion Petra Leggings",
+                Arrays.asList(Component.text("Cosmetic")),
+                "champion",
+                "champion_petra_leggings",
+                EquipmentSlot.LEGS
+        );
+    }
+
+    public static ItemStack getChampBoots() {
+        return createCustomArmor(
+                Material.NETHERITE_BOOTS,
+                "Champion Petra Boots",
+                Arrays.asList(Component.text("Cosmetic")),
+                "champion",
+                "champion_petra_boots",
+                EquipmentSlot.FEET
+        );
+    }
+
+    // DRAGONSBANE
+
+    public static ItemStack getDragChest() {
+        return createCustomArmor(
+                Material.NETHERITE_CHESTPLATE,
+                "Dragonsbane Chestplate",
+                Arrays.asList(Component.text("Cosmetic")),
+                "dragonsbane",
+                "dragonsbane_chestplate",
+                EquipmentSlot.CHEST
+        );
+    }
+
+    public static ItemStack getDragHelm() {
+        return createCustomArmor(
+                Material.NETHERITE_HELMET,
+                "Dragonsbane Helmet",
+                Arrays.asList(Component.text("Cosmetic")),
+                "dragonsbane",
+                "dragonsbane_helmet",
+                EquipmentSlot.HEAD
+        );
+    }
+
+    public static ItemStack getDragLeg() {
+        return createCustomArmor(
+                Material.NETHERITE_LEGGINGS,
+                "Dragonsbane Leggings",
+                Arrays.asList(Component.text("Cosmetic")),
+                "dragonsbane",
+                "dragonsbane_leggings",
+                EquipmentSlot.LEGS
+        );
+    }
+
+    public static ItemStack getDragBoots() {
+        return createCustomArmor(
+                Material.NETHERITE_BOOTS,
+                "Dragonsbane Boots",
+                Arrays.asList(Component.text("Cosmetic")),
+                "dragonsbane",
+                "dragonsbane_boots",
+                EquipmentSlot.FEET
+        );
+    }
 
 
     public static ItemStack createCustomArmor(

@@ -9,12 +9,14 @@ import org.bukkit.Chunk;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
@@ -53,7 +55,19 @@ public class ChunkProtectionListener implements Listener {
         }
     }
 
-    // Handle player block interaction (place or break)
+    @EventHandler
+    public void onArmorStandManipulate(PlayerArmorStandManipulateEvent event) {
+        Player player = event.getPlayer();
+        ArmorStand armorStand = event.getRightClicked();
+        Chunk chunk = armorStand.getLocation().getChunk();
+
+        if (isInProtectedChunk(chunk, player)) {
+            event.setCancelled(true); // Prevent manipulation of the armor stand
+            chunkHasOwnedChunkNearbyVisualizer(chunk, player);
+        }
+    }
+
+
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
