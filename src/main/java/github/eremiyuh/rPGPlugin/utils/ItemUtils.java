@@ -252,6 +252,52 @@ public class ItemUtils {
     }
 
 
+    // FOX SET
+
+    public static ItemStack getFoxChestPlate() {
+        return createCustomArmor(
+                Material.NETHERITE_CHESTPLATE,
+                "Fox Chestplate",
+                Arrays.asList(Component.text("Cosmetic")),
+                "fox",
+                "fox_chestplate",
+                EquipmentSlot.CHEST
+        );
+    }
+
+    public static ItemStack getFoxHelmet() {
+        return createCustomArmor(
+                Material.NETHERITE_HELMET,
+                "Fox Helmet",
+                Arrays.asList(Component.text("Cosmetic")),
+                "fox",
+                "fox_helmet",
+                EquipmentSlot.HEAD
+        );
+    }
+
+    public static ItemStack getFoxLeggings() {
+        return createCustomArmor(
+                Material.NETHERITE_LEGGINGS,
+                "Fox Leggings",
+                Arrays.asList(Component.text("Cosmetic")),
+                "fox",
+                "fox_leggings",
+                EquipmentSlot.LEGS
+        );
+    }
+
+    public static ItemStack getFoxBoots() {
+        return createCustomArmor(
+                Material.NETHERITE_BOOTS,
+                "Fox Boots",
+                Arrays.asList(Component.text("Cosmetic")),
+                "fox",
+                "fox_boots",
+                EquipmentSlot.FEET
+        );
+    }
+
 
 
     public static ItemStack createCustomArmor(
