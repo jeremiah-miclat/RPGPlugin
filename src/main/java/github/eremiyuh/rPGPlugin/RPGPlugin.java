@@ -238,9 +238,9 @@ public class RPGPlugin extends JavaPlugin {
     private void loadResources() {
         // Load your data, initialize managers, etc.
         // Initialize the profile manager
-        deleteWorld("resource_normal");
-        deleteWorld("resource_nether");
-        deleteWorld("resource_end");
+//        deleteWorld("resource_normal");
+//        deleteWorld("resource_nether");
+//        deleteWorld("resource_end");
         profileManager = new PlayerProfileManager(this);
         shopsManager = new ShopsManager(this);
         shopsManager.loadAllShops();
@@ -390,9 +390,9 @@ public class RPGPlugin extends JavaPlugin {
         Objects.requireNonNull(getCommand("junkshop")).setExecutor(new JunkShopCommand(profileManager));
         getServer().getPluginManager().registerEvents(new JunkShopCommand(profileManager), this);
 
-        createResourceWorld("resource_normal", World.Environment.NORMAL);
-        createResourceWorld("resource_nether", World.Environment.NETHER);
-        createResourceWorld("resource_end", World.Environment.THE_END);
+//        createResourceWorld("resource_normal", World.Environment.NORMAL);
+//        createResourceWorld("resource_nether", World.Environment.NETHER);
+//        createResourceWorld("resource_end", World.Environment.THE_END);
 
     }
 
