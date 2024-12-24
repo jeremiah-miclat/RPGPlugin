@@ -31,6 +31,10 @@ public class AnvilLevelRestrictionHandler implements Listener {
             if (secondItem != null && secondItem.getType() != Material.AIR) {
                 anvilInventory.setMaximumRepairCost(10000);
 
+                if (firstItem.getItemMeta().hasLore() || firstItem.getItemMeta().hasItemModel()) {
+                    anvilInventory.setRepairCost(30);
+                }
+
                 if (result != null) {
                     // Adjust meta or lore of the result if necessary
                     ItemMeta meta = result.getItemMeta();

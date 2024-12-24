@@ -10,12 +10,14 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import java.util.HashMap;
 import java.util.Random;
 
 public class RTPCommand implements CommandExecutor {
 
     private final JavaPlugin plugin;
     private final Random random = new Random();
+    private final HashMap<Player, Long> cooldowns = new HashMap<>();  // To store cooldown times
 
     public RTPCommand(JavaPlugin plugin) {
         this.plugin = plugin;
@@ -29,17 +31,21 @@ public class RTPCommand implements CommandExecutor {
         }
 
         Player player = (Player) sender;
-        World world = player.getWorld();
 
-        if (player.getWorld().getEnvironment() == World.Environment.NETHER ) {
-            player.sendMessage("Not allowed");
+        // Check if player is on cooldown
+        if (isOnCooldown(player)) {
+            player.sendMessage("You must wait before using this command again.");
             return true;
         }
 
+        World world = player.getWorld();
+
+        if (world.getEnvironment() == World.Environment.NETHER) {
+            player.sendMessage("Not allowed in the Nether.");
+            return true;
+        }
 
         WorldBorder border = world.getWorldBorder();
-
-        // Define border limits
         double borderSize = border.getSize() / 2;  // Half-size radius from the center
         double centerX = border.getCenter().getX();
         double centerZ = border.getCenter().getZ();
@@ -50,6 +56,9 @@ public class RTPCommand implements CommandExecutor {
         if (randomLocation != null) {
             player.teleport(randomLocation);
             player.sendMessage("You have been randomly teleported!");
+
+            // Set cooldown for this player
+            setCooldown(player);
         } else {
             player.sendMessage("Could not find a safe location to teleport.");
         }
@@ -67,9 +76,25 @@ public class RTPCommand implements CommandExecutor {
             // Check if the location is safe (not lava, water, etc.)
             Material blockType = location.getBlock().getType();
             if (blockType.isSolid()) {
-                return location.add(0,1,0);
+                return location.add(0, 1, 0);
             }
         }
         return null;  // Return null if no safe spot is found
+    }
+
+    // Check if the player is on cooldown
+    private boolean isOnCooldown(Player player) {
+        if (cooldowns.containsKey(player)) {
+            long lastUsed = cooldowns.get(player);
+            long timePassed = System.currentTimeMillis() - lastUsed;
+            // 60000 milliseconds = 1 minute
+            return timePassed < 60000;
+        }
+        return false;
+    }
+
+    // Set cooldown for the player
+    private void setCooldown(Player player) {
+        cooldowns.put(player, System.currentTimeMillis());
     }
 }

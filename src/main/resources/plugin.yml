@@ -260,5 +260,12 @@ commands:
   cosmeticstore:
     description: Allows a player buy cosmetics.
     usage: /command
+  rename:
+    description: Allows a player rename an item with colors.
+    usage: /command
+  showitem:
+    description: "Announce your held item in chat."
+  showitemgui:
+    description: "Internal command to show GUI for a player's item."
 softdepend:
   - DiscordSRV

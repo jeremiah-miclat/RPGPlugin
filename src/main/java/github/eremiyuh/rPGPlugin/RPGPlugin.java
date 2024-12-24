@@ -238,9 +238,9 @@ public class RPGPlugin extends JavaPlugin {
     private void loadResources() {
         // Load your data, initialize managers, etc.
         // Initialize the profile manager
-        deleteWorld("resource_normal");
-        deleteWorld("resource_nether");
-        deleteWorld("resource_end");
+//        deleteWorld("resource_normal");
+//        deleteWorld("resource_nether");
+//        deleteWorld("resource_end");
         profileManager = new PlayerProfileManager(this);
         shopsManager = new ShopsManager(this);
         shopsManager.loadAllShops();
@@ -353,7 +353,7 @@ public class RPGPlugin extends JavaPlugin {
         Objects.requireNonNull(this.getCommand("addstat")).setExecutor(new AddAttributeCommand(profileManager));
         Objects.requireNonNull(this.getCommand("shopsavetploc")).setExecutor(new ShopTpSaveCommand(shopTpSaveManager));
         Objects.requireNonNull(this.getCommand("tpshop")).setExecutor(new ShopTpCommand(shopsManager, shopTpSaveManager,profileManager));
-
+        getServer().getPluginManager().registerEvents(new GuiListener(this), this);
 
 //        vaultManager.loadVaults();
         //auth
@@ -369,7 +369,10 @@ public class RPGPlugin extends JavaPlugin {
         Objects.requireNonNull(getCommand("tpallow")).setExecutor(new TpAllowCommand(tpAllowManager));
         TpToggleCommand tpToggleCommand = new TpToggleCommand(tpAllowManager);
         getCommand("tptoggle").setExecutor(tpToggleCommand);
-
+        Objects.requireNonNull(getCommand("rename")).setExecutor(new RenameCommand(profileManager));
+        ShowItemCommand showItemCommand = new ShowItemCommand(this);
+        Objects.requireNonNull(getCommand("showitem")).setExecutor(showItemCommand);
+        showItemCommand.registerShowItemGuiCommand();
 
 
 
@@ -386,9 +389,10 @@ public class RPGPlugin extends JavaPlugin {
 
         Objects.requireNonNull(getCommand("junkshop")).setExecutor(new JunkShopCommand(profileManager));
         getServer().getPluginManager().registerEvents(new JunkShopCommand(profileManager), this);
-        createResourceWorld("resource_normal", World.Environment.NORMAL);
-        createResourceWorld("resource_nether", World.Environment.NETHER);
-        createResourceWorld("resource_end", World.Environment.THE_END);
+
+//        createResourceWorld("resource_normal", World.Environment.NORMAL);
+//        createResourceWorld("resource_nether", World.Environment.NETHER);
+//        createResourceWorld("resource_end", World.Environment.THE_END);
 
     }
 
