@@ -34,7 +34,8 @@ public class RTPCommand implements CommandExecutor {
 
         // Check if player is on cooldown
         if (isOnCooldown(player)) {
-            player.sendMessage("You must wait before using this command again.");
+            long remainingTime = getRemainingCooldownTime(player);
+            player.sendMessage("To reduce lag. You must wait " + remainingTime + " seconds before using this command again.");
             return true;
         }
 
@@ -91,6 +92,17 @@ public class RTPCommand implements CommandExecutor {
             return timePassed < 60000;
         }
         return false;
+    }
+
+    // Get the remaining time (in seconds) that the player must wait before using the command again
+    private long getRemainingCooldownTime(Player player) {
+        if (cooldowns.containsKey(player)) {
+            long lastUsed = cooldowns.get(player);
+            long timePassed = System.currentTimeMillis() - lastUsed;
+            long remainingTime = 60000 - timePassed; // Remaining time in milliseconds
+            return remainingTime / 1000; // Convert milliseconds to seconds
+        }
+        return 0;
     }
 
     // Set cooldown for the player
