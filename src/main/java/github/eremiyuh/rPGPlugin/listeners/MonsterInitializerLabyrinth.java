@@ -73,25 +73,6 @@ public class MonsterInitializerLabyrinth implements Listener {
             }
         }
 
-//        // Count the number of players in world_rpg
-//        int playersInRPGWorld = (int) Bukkit.getOnlinePlayers().stream()
-//                .filter(player -> player.getWorld().getName().equals("world_labyrinth2"))
-//                .count();
-//
-//        // Calculate the spawn limit based on players in world_rpg
-//        int mobLimit = Math.min(playersInRPGWorld * 30, 200);
-//
-//        // Count the number of mobs already in the world
-        int currentMobCount = countMobsInWorld(event.getLocation().getWorld());
-//
-//        // Cancel the spawn if the cached mob count exceeds the limit
-//        if (currentMobCount >= mobLimit) {
-//            event.getEntity().setAI(false);
-//            event.setCancelled(true);
-//            return;
-//        }
-
-        // Initialize the mob
         if (event.getEntity() instanceof Monster) {
             Monster mob = (Monster) event.getEntity();
 
@@ -100,34 +81,6 @@ public class MonsterInitializerLabyrinth implements Listener {
         }
     }
 
-
-    private int countMobsInWorld(World world) {
-        int mobCount = 0;
-
-        // Loop through all entities in the world and count the mobs
-        for (LivingEntity entity : world.getLivingEntities()) {
-            if (!entity.hasMetadata("extraHealth") && !(entity instanceof Player)) {
-                entity.remove();
-            }
-
-            if (!(entity instanceof Player) && !entity.hasMetadata("worldboss") && !entity.hasMetadata("boss")
-                    && entity.hasMetadata("extraHealth")
-            ) {
-                mobCount++;
-            }
-        }
-
-        return mobCount;
-    }
-
-    private boolean isPlayerNearby(Location location, double radius) {
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            if (player.getWorld().equals(location.getWorld()) && player.getLocation().distance(location) <= radius) {
-                return true;
-            }
-        }
-        return false;
-    }
 
     private boolean isPlayerOnSameYLevel(Location location) {
         int entityY = location.getBlockY();
@@ -157,19 +110,19 @@ public class MonsterInitializerLabyrinth implements Listener {
     }
 
     private void setHealthIndicator(LivingEntity entity) {
-        // Retrieve the total health (current health + extra health)
         double totalHealth = entity.getHealth();
 
         // Format the health indicator (e.g., [99] for health 99)
         String healthIndicator = ChatColor.YELLOW + " [" + (int) totalHealth + "]";
 
         // Get the existing custom name from metadata, or use the default entity type if no custom name is set
-        String customName = entity.hasMetadata("customName") ? entity.getMetadata("customName").get(0).asString() : entity.getType().name();
+        String customName = entity.getCustomName();
 
 
         // Set the updated custom name with the new health indicator
         entity.setCustomName(customName + healthIndicator);
     }
+
 
 
     // Method to calculate extra attributes (used for both extra health and damage)
@@ -189,7 +142,6 @@ public class MonsterInitializerLabyrinth implements Listener {
 
         // Calculate extra health based on the y-coordinate
         double extraHealth = baseHealth + ((1 + (double) (maxY - yCoord) / 6) * healthIncrement);
-        entity.setMetadata("extraHealth", new FixedMetadataValue(plugin, extraHealth));
         double customDamage = Math.min(extraHealth/10, customMaxHealth);
         extraHealth += entity.getHealth();
 
@@ -200,19 +152,16 @@ public class MonsterInitializerLabyrinth implements Listener {
         String normalName = ChatColor.GREEN + "Lvl " + lvl + " " + entity.getType().name();
 
 
-        entity.setMetadata("customName", new FixedMetadataValue(plugin, normalName));
+        entity.setCustomName(normalName);
 
         if (entity instanceof PiglinBrute) {
             extraHealth *= 1000; // Add 10000% health
             setBossAttributes(entity, targetLocation.getBlockY(), "World Boss", ChatColor.LIGHT_PURPLE, lvl);
-            entity.setMetadata("worldboss", new FixedMetadataValue(plugin, true));
-            entity.setMetadata("lvl", new FixedMetadataValue(plugin, lvl));
             entity.setHealth(Math.min(extraHealth, customMaxHealth));
-            entity.setMetadata("extraHealth", new FixedMetadataValue(plugin, extraHealth));
             Objects.requireNonNull(entity.getAttribute(Attribute.ATTACK_DAMAGE)).setBaseValue(customDamage*2);
             entity.setCustomNameVisible(true);
             entity.setGlowing(true);
-            entity.setRemoveWhenFarAway(false);
+
             entity.setPersistent(true);
             return;
         }
@@ -221,15 +170,11 @@ public class MonsterInitializerLabyrinth implements Listener {
         if (Math.random() < .0009) {
             extraHealth *= 1000; // Add 10000% health
             setBossAttributes(entity, targetLocation.getBlockY(), "World Boss", ChatColor.DARK_PURPLE, lvl);
-            entity.setMetadata("worldboss", new FixedMetadataValue(plugin, true));
-            entity.setMetadata("lvl", new FixedMetadataValue(plugin, lvl));
             entity.setHealth(Math.min(extraHealth, customMaxHealth));
-            entity.setMetadata("extraHealth", new FixedMetadataValue(plugin, extraHealth));
             Objects.requireNonNull(entity.getAttribute(Attribute.ATTACK_DAMAGE)).setBaseValue(customDamage*2);
-            entity.setMetadata("customDamage", new FixedMetadataValue(plugin, customDamage*2));
             entity.setCustomNameVisible(true);
             entity.setGlowing(true);
-            entity.setRemoveWhenFarAway(false);
+
             entity.setPersistent(true);
             return;
         }
@@ -239,13 +184,9 @@ public class MonsterInitializerLabyrinth implements Listener {
         if (Math.random() < .003) {
             extraHealth *= 100; // Add 1000% health
             setBossAttributes(entity, targetLocation.getBlockY(), "Boss", ChatColor.RED, lvl);
-            entity.setMetadata("boss", new FixedMetadataValue(plugin, true));
-            entity.setMetadata("lvl", new FixedMetadataValue(plugin, lvl));
             entity.setHealth(Math.min(extraHealth, customMaxHealth));
-            entity.setMetadata("extraHealth", new FixedMetadataValue(plugin, extraHealth));
             Objects.requireNonNull(entity.getAttribute(Attribute.ATTACK_DAMAGE)).setBaseValue(customDamage*1.5);
-            entity.setMetadata("customDamage", new FixedMetadataValue(plugin, customDamage*1.5));
-            entity.setRemoveWhenFarAway(false);
+
             return;
         }
 
@@ -253,19 +194,13 @@ public class MonsterInitializerLabyrinth implements Listener {
         if (Math.random() < .03) {
             extraHealth *= 10; // Add 1000% health
             setBossAttributes(entity, targetLocation.getBlockY(), "Leader", ChatColor.YELLOW, lvl);
-            entity.setMetadata("boss", new FixedMetadataValue(plugin, true));
-            entity.setMetadata("lvl", new FixedMetadataValue(plugin, lvl));
             entity.setHealth(Math.min(extraHealth, customMaxHealth));
-            entity.setMetadata("extraHealth", new FixedMetadataValue(plugin, extraHealth));
-            Objects.requireNonNull(entity.getAttribute(Attribute.ATTACK_DAMAGE)).setBaseValue(customDamage*1.2);
-            entity.setMetadata("customDamage", new FixedMetadataValue(plugin, customDamage*1.2));
             return;
         }
 
 
         entity.setHealth(Math.min(extraHealth, customMaxHealth));
         Objects.requireNonNull(entity.getAttribute(Attribute.ATTACK_DAMAGE)).setBaseValue(customDamage*.7);
-        entity.setMetadata("customDamage", new FixedMetadataValue(plugin, customDamage));
 
 
     }
@@ -274,7 +209,7 @@ public class MonsterInitializerLabyrinth implements Listener {
     private void setBossAttributes(LivingEntity entity, double maxCoord, String type, ChatColor color, int level) {
         // Set the boss name based on the Y-level (maxCoord) and other parameters
         String bossName = color + "Lvl " + level + " " + type + " " + entity.getType().name();
-        entity.setMetadata("customName", new FixedMetadataValue(plugin, bossName));
+        entity.setCustomName(bossName);
 
         // Calculate speed multiplier based on the floor (Y-level)
         // At Y-level 3, multiplier = 5; at Y-level 251, multiplier = 1

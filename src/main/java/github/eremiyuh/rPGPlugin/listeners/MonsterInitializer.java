@@ -49,22 +49,6 @@ public class MonsterInitializer implements Listener {
             return;
         }
 
-//        // Count the number of players in world_rpg
-//        int playersInRPGWorld = (int) Bukkit.getOnlinePlayers().stream()
-//                .filter(player -> player.getWorld().getName().equals("world_rpg"))
-//                .count();
-//
-//        // Calculate the spawn limit based on players in world_rpg
-//        int mobLimit = Math.min(playersInRPGWorld * 30, 150);
-//
-//        // Count the number of mobs already in the world
-        int currentMobCount = countMobsInWorld(event.getLocation().getWorld());
-//
-//
-//        // Cancel the spawn if the mob limit is reached
-//        if (currentMobCount >= mobLimit) {
-//            event.setCancelled(true);
-//        }
 
         if (!isPlayerOnSameYLevel(event.getLocation())) {
             event.setCancelled(true);
@@ -84,24 +68,6 @@ public class MonsterInitializer implements Listener {
         }
     }
 
-    private int countMobsInWorld(World world) {
-        int mobCount = 0;
-
-        // Loop through all entities in the world and count the mobs
-        for (LivingEntity entity : world.getLivingEntities()) {
-            if (entity instanceof Monster && !entity.hasMetadata("extraHealth")) {
-                entity.remove();
-            }
-
-//            if (entity instanceof Monster && !entity.hasMetadata("worldboss")
-//                && entity.hasMetadata("extraHealth")
-//            ) {
-//                mobCount++;
-//            }
-        }
-
-        return mobCount;
-    }
 
 
 
@@ -124,20 +90,6 @@ public class MonsterInitializer implements Listener {
         Location location = entity.getLocation();
         calculateExtraAttributes(location, entity);
 
-        // Set extra health as metadata
-//        double baseHealth = entity.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue();
-//        entity.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(baseHealth + extraHealth);
-//        entity.setHealth(entity.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
-
-        // Store metadata for extra health and damage
-
-
-        List<String> attackerList = new ArrayList<>();
-        entity.setMetadata("attackerList", new FixedMetadataValue(plugin, attackerList));
-
-
-
-
 
         setHealthIndicator(entity);
     }
@@ -149,7 +101,7 @@ public class MonsterInitializer implements Listener {
         String healthIndicator = ChatColor.YELLOW + " [" + (int) totalHealth + "]";
 
         // Get the existing custom name from metadata, or use the default entity type if no custom name is set
-        String customName = entity.hasMetadata("customName") ? entity.getMetadata("customName").get(0).asString() : entity.getType().name();
+        String customName = entity.getCustomName();
 
 
         // Set the updated custom name with the new health indicator
@@ -159,12 +111,13 @@ public class MonsterInitializer implements Listener {
     private void calculateExtraAttributes(Location targetLocation, LivingEntity entity) {
         double maxCoord = Math.max(Math.abs(targetLocation.getBlockX()), Math.abs(targetLocation.getBlockZ()));
 
+//        if (entity instanceof Warden) {
+//            entity.setRemoveWhenFarAway(false);
+//        }
+
         int lvl = (int) (Math.floor(maxCoord) / 100);
         String normalName = ChatColor.GREEN + "Lvl " + lvl + " " + entity.getType().name();
         entity.setCustomName(normalName);
-        entity.setMetadata("extraHealth", new FixedMetadataValue(plugin, maxCoord));
-        entity.setMetadata("customName", new FixedMetadataValue(plugin, normalName));
-
         double customMaxHealth = maxCoord * 1001;
 
         Objects.requireNonNull(entity.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(customMaxHealth);
@@ -176,13 +129,9 @@ public class MonsterInitializer implements Listener {
         if (Math.random() < .0009 || entity instanceof Warden || entity instanceof Wither || entity instanceof ElderGuardian || entity instanceof Ravager) { //0.0003
             extraHealth = (extraHealth * 1000); // Add 10000% health
             setBossAttributes(entity, maxCoord, "World Boss", ChatColor.DARK_PURPLE);
-            entity.setMetadata("worldboss", new FixedMetadataValue(plugin, true));
-            entity.setMetadata("lvl", new FixedMetadataValue(plugin, lvl));
-            entity.setMetadata("extraHealth", new FixedMetadataValue(plugin, extraHealth));
             entity.setGlowing(true);
             entity.setHealth(Math.min(extraHealth, customMaxHealth));
             Objects.requireNonNull(entity.getAttribute(Attribute.ATTACK_DAMAGE)).setBaseValue(customDamage * 2);
-            entity.setMetadata("customDamage", new FixedMetadataValue(plugin, customDamage * 2));
             entity.setRemoveWhenFarAway(false);
             entity.setPersistent(true);
             entity.setCustomNameVisible(true);
@@ -193,13 +142,9 @@ public class MonsterInitializer implements Listener {
         if (Math.random() < .003 || entity instanceof Evoker) { //0.003
             extraHealth = (extraHealth * 100); // Add 1000% health
             setBossAttributes(entity, maxCoord, "Boss", ChatColor.RED);
-            entity.setMetadata("boss", new FixedMetadataValue(plugin, true));
-            entity.setMetadata("lvl", new FixedMetadataValue(plugin, lvl));
-            entity.setMetadata("extraHealth", new FixedMetadataValue(plugin, extraHealth));
             entity.setHealth(Math.min(extraHealth, customMaxHealth));
             Objects.requireNonNull(entity.getAttribute(Attribute.ATTACK_DAMAGE)).setBaseValue(customDamage * 1.5);
-            entity.setMetadata("customDamage", new FixedMetadataValue(plugin, customDamage * 1.5));
-            entity.setRemoveWhenFarAway(false);
+
             entity.setCustomNameVisible(true);
             return;
         }
@@ -208,19 +153,14 @@ public class MonsterInitializer implements Listener {
         if (Math.random() < 0.03 || entity instanceof Vindicator) {
             extraHealth = (extraHealth * 10); // Add 1000% health
             setBossAttributes(entity, maxCoord, "Leader", ChatColor.YELLOW);
-            entity.setMetadata("boss", new FixedMetadataValue(plugin, true));
-            entity.setMetadata("lvl", new FixedMetadataValue(plugin, lvl));
-            entity.setMetadata("extraHealth", new FixedMetadataValue(plugin, extraHealth));
             entity.setHealth(Math.min(extraHealth, customMaxHealth));
             Objects.requireNonNull(entity.getAttribute(Attribute.ATTACK_DAMAGE)).setBaseValue(customDamage * 1.2);
-            entity.setMetadata("customDamage", new FixedMetadataValue(plugin, customDamage * 1.2));
             entity.setCustomNameVisible(true);
             return;
         }
 
         // If neither of the boss conditions are met, set standard attributes
         entity.setHealth(Math.min(extraHealth, customMaxHealth));
-        entity.setMetadata("customDamage", new FixedMetadataValue(plugin, customDamage));
         Objects.requireNonNull(entity.getAttribute(Attribute.ATTACK_DAMAGE)).setBaseValue(customDamage);
     }
 
@@ -228,8 +168,6 @@ public class MonsterInitializer implements Listener {
         String bossName = color + "Lvl " + (int) (Math.floor(maxCoord) / 100) + " " + type + " " + entity.getType().name();
         entity.setCustomName(bossName);
 
-
-        entity.setMetadata("customName", new FixedMetadataValue(plugin, bossName));
 
         // Update health indicator
         setHealthIndicator(entity);
@@ -257,55 +195,5 @@ public class MonsterInitializer implements Listener {
             double baseSafeFallDistance = Objects.requireNonNull(entity.getAttribute(Attribute.SAFE_FALL_DISTANCE)).getBaseValue();
             Objects.requireNonNull(entity.getAttribute(Attribute.SAFE_FALL_DISTANCE)).setBaseValue(baseSafeFallDistance * jumpMultiplier + 1);
         }
-    }
-
-
-
-    // Method to spawn the floating hologram above the monster
-    private void spawnFloatingHologram(Location location, String text, World world,
-                                       net.md_5.bungee.api.ChatColor color) {
-        // Create the ArmorStand at the given location
-        ArmorStand armorStand = (ArmorStand) world.spawnEntity(location.clone().add(0, 1, 0), EntityType.ARMOR_STAND);
-
-        String coloredText = color + text;
-
-        // Set up the hologram text
-        armorStand.setCustomName(net.md_5.bungee.api.ChatColor.translateAlternateColorCodes('&', coloredText));
-        armorStand.setCustomNameVisible(true);
-
-        // Make the ArmorStand invisible and disable its gravity to simulate a floating text
-        armorStand.setInvisible(true);
-        armorStand.setGravity(false);
-        armorStand.setInvulnerable(true);
-        armorStand.setMarker(true); // Small size and no hitbox
-
-        // Create a task to move the hologram upwards
-        moveHologramUpwards(armorStand);
-    }
-
-    // Method to move the hologram upwards
-    private void moveHologramUpwards(ArmorStand armorStand) {
-        new BukkitRunnable() {
-            private double offsetY = 0;
-
-            @Override
-            public void run() {
-                // Move the hologram upwards
-                armorStand.teleport(armorStand.getLocation().add(0, 0.1, 0)); // Move up by 0.1 blocks
-
-                // After moving upwards by a certain amount, stop the task (you can adjust this)
-                if (offsetY >= 2.0) {
-                    this.cancel(); // Stop the task after moving the hologram upwards by 2 blocks
-                    armorStand.remove(); // Optionally remove the hologram after the animation is complete
-                }
-
-                offsetY += 0.1;
-            }
-        }.runTaskTimer(plugin, 0L, 1L); // Runs every tick (1/20th of a second)
-    }
-
-    private void broadcastFromSeizonSMP(String message) {
-        Bukkit.getServer().getOnlinePlayers().forEach(player ->
-                player.sendMessage(ChatColor.GOLD + "[Seizon SMP] " + ChatColor.RESET + message));
     }
 }

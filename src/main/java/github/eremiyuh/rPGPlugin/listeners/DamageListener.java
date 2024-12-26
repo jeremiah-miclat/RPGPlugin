@@ -328,12 +328,12 @@ public class DamageListener implements Listener {
                     }
                 }
 
-                if (victim instanceof Monster) {
-                    if (!victim.hasMetadata("extraHealth")) {
-                        victim.setHealth(0);
-                        attacker.sendMessage("Server removed monster rewards when it restarted");
-                        return;
-                    }
+                if (victim instanceof Monster && !(victim.hasMetadata("attackerList"))) {
+
+
+                    List<String> attackerList = new ArrayList<>();
+                    victim.setMetadata("attackerList", new FixedMetadataValue(plugin, attackerList));
+
                 }
 
                 if (victim.hasMetadata("attackerList")) {
@@ -413,11 +413,18 @@ public class DamageListener implements Listener {
 
 
 
-                    if (victim.hasMetadata("attackerList")) {
+                    if (victim instanceof Monster && !(victim.hasMetadata("attackerList"))) {
 
+                        List<String> attackerList = new ArrayList<>();
+                        victim.setMetadata("attackerList", new FixedMetadataValue(plugin, attackerList));
+
+                    }
+
+                    if (victim.hasMetadata("attackerList")) {
                         List<String> attackerList = (List<String>) victim.getMetadata("attackerList").get(0).value();
 
                         String attackerName = attacker.getName();
+                        assert attackerList != null;
                         if (!attackerList.contains(attackerName)) {
                             attackerList.add(attackerName);
                             victim.setMetadata("attackerList", new FixedMetadataValue(plugin, attackerList)); // Update metadata
@@ -483,10 +490,18 @@ public class DamageListener implements Listener {
 
 
                     UserProfile attackerProfile = profileManager.getProfile(attacker.getName());
+                    if (victim instanceof Monster && !(victim.hasMetadata("attackerList"))) {
+
+                        List<String> attackerList = new ArrayList<>();
+                        victim.setMetadata("attackerList", new FixedMetadataValue(plugin, attackerList));
+
+                    }
+
                     if (victim.hasMetadata("attackerList")) {
                         List<String> attackerList = (List<String>) victim.getMetadata("attackerList").get(0).value();
 
                         String attackerName = attacker.getName();
+                        assert attackerList != null;
                         if (!attackerList.contains(attackerName)) {
                             attackerList.add(attackerName);
                             victim.setMetadata("attackerList", new FixedMetadataValue(plugin, attackerList)); // Update metadata
@@ -523,9 +538,7 @@ public class DamageListener implements Listener {
 
                     double mobDamage = Objects.requireNonNull(mob.getAttribute(Attribute.ATTACK_DAMAGE)).getValue();
 
-                    if (mob instanceof Creeper) {
-                        mobDamage *=2;
-                    }
+
 
                     mobDamage += event.getDamage();
 
@@ -555,6 +568,9 @@ public class DamageListener implements Listener {
                             }
                         }
 
+                        if (mob instanceof Creeper) {
+                            event.setDamage(mobDamage*5);
+                        }
 
                         event.setDamage(mobDamage);
 
@@ -569,8 +585,8 @@ public class DamageListener implements Listener {
 
             if (event.getDamager() instanceof Projectile projectile) {
                 // Check for custom damage metadata
-                if (projectile.getShooter() instanceof Monster mob && mob.hasMetadata("customDamage")) {
-                    double customDamage = mob.getMetadata("customDamage").get(0).asDouble();
+                if (projectile.getShooter() instanceof Monster mob) {
+                    double customDamage = Objects.requireNonNull(mob.getAttribute(Attribute.ATTACK_DAMAGE)).getBaseValue();
                     customDamage += event.getDamage();
                     ItemStack weapon =  mob.getEquipment().getItemInMainHand();
                     int sharplevel = weapon.getEnchantmentLevel(Enchantment.POWER);
@@ -607,8 +623,8 @@ public class DamageListener implements Listener {
 
             if (event.getDamager() instanceof ThrownPotion projectile) {
                 // Check for custom damage metadata
-                if (projectile.getShooter() instanceof Monster mob && mob.hasMetadata("customDamage")) {
-                    double customDamage = mob.getMetadata("customDamage").get(0).asDouble();
+                if (projectile.getShooter() instanceof Monster mob) {
+                    double customDamage = Objects.requireNonNull(mob.getAttribute(Attribute.ATTACK_DAMAGE)).getBaseValue();
                     customDamage+=event.getDamage();
                     if (damaged instanceof Player player) {
                         UserProfile playerProfile = profileManager.getProfile(player.getName());
@@ -641,18 +657,6 @@ public class DamageListener implements Listener {
 
 
 
-    }
-
-    @EventHandler
-    public void entityTarget(EntityTargetLivingEntityEvent event) {
-        if (!Objects.requireNonNull(event.getEntity().getLocation().getWorld()).getName().equals("world_rpg") && !Objects.requireNonNull(event.getEntity().getLocation().getWorld()).getName().contains("world_labyrinth")) {
-            return;
-        }
-        if (event.getEntity() instanceof Monster mob) {
-            if (!mob.hasMetadata("extraHealth")) {
-                mob.remove();
-            }
-        }
     }
 
 
@@ -712,9 +716,9 @@ public class DamageListener implements Listener {
 
         // Update the health indicator
 
-        if (event.getEntity().hasMetadata("extraHealth")) {
-            resetHealthIndicator((LivingEntity) event.getEntity(), damage);
-        }
+
+        resetHealthIndicator((LivingEntity) event.getEntity(), damage);
+
 
     }
 
@@ -1486,25 +1490,24 @@ public class DamageListener implements Listener {
 
 
     private void resetHealthIndicator(LivingEntity entity, double damage) {
-        // Retrieve the total health (current health + extra health)
         double totalHealth = entity.getHealth();
+        double totalRemainingHealth = Math.max(0, totalHealth - damage);
 
-        int totalRemainingHealth = (int) Math.floor(totalHealth - damage);
+        String healthIndicator = ChatColor.YELLOW + " [" + (int) totalRemainingHealth + "]"; // Format health
 
-        if (totalRemainingHealth< 0) {
-            totalRemainingHealth = 0;
+        String customName = entity.getCustomName();
+
+        // Remove old health indicator if it exists
+        if (customName != null && customName.contains("[")) {
+            int healthIndex = customName.indexOf('[');
+            customName = customName.substring(0, healthIndex).trim(); // Remove old health indicator
         }
-
-        // Format the health indicator (e.g., [99] for health 99)
-        String healthIndicator = org.bukkit.ChatColor.YELLOW + " [" + totalRemainingHealth + "]";
-
-        // Get the existing custom name from metadata, or use the default entity type if no custom name is set
-        String customName = entity.hasMetadata("customName") ? entity.getMetadata("customName").get(0).asString() : entity.getType().name();
 
         // Set the updated custom name with the new health indicator
         entity.setCustomName(customName + healthIndicator);
-
     }
+
+
 
 
 

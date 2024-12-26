@@ -79,22 +79,57 @@ public class DeadMobListener implements Listener {
         int xValidRange = 60;
         int yValidRange = 20;
         double RANDOMCHANCE = .05;
+        int level = 0;
         if (event.getEntity() instanceof Monster mob && event.getEntity().getKiller() instanceof Player killer) {
 
-                if (!mob.hasMetadata("extraHealth")) {
-                    return;
-                }
 
-                UserProfile killerProfile = profileManager.getProfile(killer.getName());
-                String killerTeam = killerProfile.getTeam();
-                double health = mob.hasMetadata("extraHealth") ? mob.getMetadata("extraHealth").get(0).asDouble() : 0.0;
+            // Extract the custom name of the mob
+            String customName = mob.getCustomName();
+
+            // Initialize the health variable
+            double health = 0.0;
+            int multiplier = 1;
+
+
+            // Check if the custom name exists and contains "Lvl"
+            if (customName != null) {
+                if (customName.contains("Leader")) {multiplier*=10;}
+                if (customName.contains("Boss") && !(customName.contains("World"))) {multiplier*=100;}
+                if (customName.contains("Worldboss")) {multiplier*=1000;}
+
+                // Remove the health indicator (anything in the format [number])
+                customName = customName.replaceAll("\\[\\d+\\]", "").trim(); // Removes [number] and trims any extra spaces
+
+                // Check if the custom name contains "Lvl"
+                if (customName.contains("Lvl")) {
+                    try {
+                        // Split the name at "Lvl" and extract the level
+                        String[] parts = customName.split("Lvl"); // Split the name at "Lvl"
+                        if (parts.length > 1) {
+                            // Get the part after "Lvl", then split by spaces to get the level
+                            String levelPart = parts[1].trim().split(" ")[0]; // Extract level number (before any space)
+                            level = Integer.parseInt(levelPart); // Parse the level number
+
+                            // Compute the health based on the level (level * 100)
+                            health = level * 100 * multiplier;
+                        }
+                    } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+                        // If parsing fails, fallback to default health (can be set to 100 or another value)
+                        health = 100.0; // Default value
+                    }
+                }
+            }
+
+
+            UserProfile killerProfile = profileManager.getProfile(killer.getName());
+            String killerTeam = killerProfile.getTeam();
+
                 RANDOMCHANCE += (health * 0.00045);
                 int dropMultiplier = (int) (1+(health * .001));
 
-                String customName = mob.getCustomName();
                 boolean isBoss = isBoss(mob);
                 boolean isWorldBoss = isWorldBoss(mob);
-                int bosslvl = getBossLevel(mob);
+                int bosslvl = level;
 
 
 
@@ -413,18 +448,18 @@ public class DeadMobListener implements Listener {
     }
 
     private boolean isBoss(LivingEntity entity) {
-        return entity.hasMetadata("boss");
+        return (entity.getCustomName().contains("Boss") && !entity.getCustomName().contains("World Boss") );
     }
 
     private boolean isWorldBoss(LivingEntity entity) {
-        return entity.hasMetadata("worldboss");
+        return entity.getCustomName().contains("World Boss");
     }
 
     private int getBossLevel(LivingEntity entity) {
         if (entity.hasMetadata("lvl")) {
-            return entity.getMetadata("lvl").get(0).asInt(); // Retrieve the level from metadata
+            return entity.getMetadata("lvl").get(0).asInt();
         }
-        return 1; // Default level if no metadata is set
+        return 1;
     }
 
     // Method to check if the player is nearby within specified range

@@ -288,28 +288,38 @@ public class AreaProtectionListener implements Listener {
         }
 
     }
+//    @EventHandler
+//    public void onBlockBurn(BlockBurnEvent event) {
+//        if (!event.getBlock().getWorld().getName().equals(world.getName()) && !event.getBlock().getWorld().getName().equals("world_rpg")) {
+//            return;
+//        }
+//        Block block = event.getBlock();
+//        if (isInProtectedArea(block.getLocation().getBlockX(), block.getLocation().getBlockZ())  && block.getType() != Material.OBSIDIAN) {
+//            event.setCancelled(true);
+//        }
+//
+//    }
+//
+//    @EventHandler
+//    public void onBlockBurn(BlockIgniteEvent event) {
+//        if (!event.getBlock().getWorld().getName().equals(world.getName()) && !event.getBlock().getWorld().getName().equals("world_rpg")) {
+//            return;
+//        }
+//        Block block = event.getBlock();
+//        if (isInProtectedArea(block.getLocation().getBlockX(), block.getLocation().getBlockZ()) && block.getType() != Material.OBSIDIAN) {
+//            event.setCancelled(true);
+//        }
+//
+//    }
+
     @EventHandler
-    public void onBlockBurn(BlockBurnEvent event) {
-        if (!event.getBlock().getWorld().getName().equals(world.getName()) && !event.getBlock().getWorld().getName().equals("world_rpg")) {
+    public void onLightning(LightningStrikeEvent event) {
+        if (!event.getWorld().getName().equals(world.getName())) {
             return;
         }
-        Block block = event.getBlock().getRelative(BlockFace.DOWN);
-        if (isInProtectedArea(block.getLocation().getBlockX(), block.getLocation().getBlockZ())  && block.getType() != Material.OBSIDIAN) {
+        if (isInProtectedArea(event.getLightning().getLocation().getBlockX(),event.getLightning().getLocation().getBlockZ())) {
             event.setCancelled(true);
         }
-
-    }
-
-    @EventHandler
-    public void onBlockBurn(BlockIgniteEvent event) {
-        if (!event.getBlock().getWorld().getName().equals(world.getName()) && !event.getBlock().getWorld().getName().equals("world_rpg")) {
-            return;
-        }
-        Block block = event.getBlock();
-        if (isInProtectedArea(block.getLocation().getBlockX(), block.getLocation().getBlockZ()) && block.getType() != Material.OBSIDIAN) {
-            event.setCancelled(true);
-        }
-
     }
 
 
