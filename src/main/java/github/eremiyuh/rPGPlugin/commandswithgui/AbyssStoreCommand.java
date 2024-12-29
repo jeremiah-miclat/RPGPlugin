@@ -56,15 +56,15 @@ public class AbyssStoreCommand implements CommandExecutor, Listener {
 
         // Create the Abyss Mana Stone item
         ItemStack abyssIngot = getAbyssIngot();
-        abyssStore.setItem(3, abyssIngot); // Place the Abyss Mana Stone in the center of the inventory
+        abyssStore.setItem(0, abyssIngot); // Place the Abyss Mana Stone in the center of the inventory
 
         // Create the Abyss Potion item
         ItemStack abyssPotion = getAbyssPotion();
-        abyssStore.setItem(5, abyssPotion);
+        abyssStore.setItem(1, abyssPotion);
 
         // Create the Abyss Ore item
         ItemStack abyssOre = getAbyssOre();
-        abyssStore.setItem(1, abyssOre);
+        abyssStore.setItem(2, abyssOre);
 
         // Create the Ender Pearl item
         ItemStack enderPearl = new ItemStack(Material.ENDER_PEARL);
@@ -79,7 +79,58 @@ public class AbyssStoreCommand implements CommandExecutor, Listener {
             enderPearl.setItemMeta(enderPearlMeta); // Apply the modified ItemMeta to the Ender Pearl
         }
 
-        abyssStore.setItem(7, enderPearl); // Place the Ender Pearl with the lore at the 7th slot
+        abyssStore.setItem(3, enderPearl); // Place the Ender Pearl with the lore at the 7th slot
+
+
+        // WARDEN SPAWN EGG
+        ItemStack wardenSpawnEgg = new ItemStack(Material.WARDEN_SPAWN_EGG);
+        ItemMeta wardenSEMeta = wardenSpawnEgg.getItemMeta();
+
+        if (wardenSEMeta != null) {
+            List<Component> lore = new ArrayList<>();
+            lore.add(Component.text("World Boss Spawn Egg").color(TextColor.color(255, 215, 0)));
+            lore.add(Component.text("Cost: 1,000 Emerald").color(TextColor.color(255, 215, 0)));
+            lore.add(Component.text("Double abyss point reward").color(TextColor.color(255, 215, 0)));
+            lore.add(Component.text("Doesn't despawn").color(TextColor.color(255, 215, 0)));
+            wardenSEMeta.lore(lore);
+
+            wardenSpawnEgg.setItemMeta(wardenSEMeta);
+        }
+
+        abyssStore.setItem(4, wardenSpawnEgg);
+
+        // RAVAGER SPAWN EGG
+        ItemStack ravagerSpawnEgg = new ItemStack(Material.RAVAGER_SPAWN_EGG);
+        ItemMeta ravagerSEMeta = ravagerSpawnEgg.getItemMeta();
+
+        if (ravagerSEMeta != null) {
+            List<Component> lore = new ArrayList<>();
+            lore.add(Component.text("World Boss Spawn Egg").color(TextColor.color(255, 215, 0)));
+            lore.add(Component.text("Cost: 1,000 Emerald").color(TextColor.color(255, 215, 0)));
+            lore.add(Component.text("Doesn't despawn").color(TextColor.color(255, 215, 0)));
+            ravagerSEMeta.lore(lore);
+
+            ravagerSpawnEgg.setItemMeta(ravagerSEMeta);
+        }
+
+        abyssStore.setItem(5, ravagerSpawnEgg);
+
+
+        // EVOKER SPAWN EGG
+        ItemStack evoSpawnEgg = new ItemStack(Material.EVOKER_SPAWN_EGG);
+        ItemMeta evoSEMeta = evoSpawnEgg.getItemMeta();
+
+        if (evoSEMeta != null) {
+            List<Component> lore = new ArrayList<>();
+            lore.add(Component.text("World Boss Spawn Egg").color(TextColor.color(255, 215, 0)));
+            lore.add(Component.text("Cost: 1,000 Emerald").color(TextColor.color(255, 215, 0)));
+            lore.add(Component.text("Doesn't despawn").color(TextColor.color(255, 215, 0)));
+            evoSEMeta.lore(lore);
+
+            evoSpawnEgg.setItemMeta(evoSEMeta);
+        }
+
+        abyssStore.setItem(6, evoSpawnEgg);
 
         // Open the Abyss Store GUI for the player
         player.openInventory(abyssStore);
@@ -100,7 +151,7 @@ public class AbyssStoreCommand implements CommandExecutor, Listener {
             }
 
             // Handle item purchase logic
-            if (event.getSlot() == 1 && event.getCurrentItem() != null && event.getCurrentItem().isSimilar(getAbyssOre())) {
+            if (event.getSlot() == 2 && event.getCurrentItem() != null && event.getCurrentItem().isSimilar(getAbyssOre())) {
                 if (userProfile.getAbysspoints() >= 1000) {
                     userProfile.setAbysspoints(userProfile.getAbysspoints() - 1000); // Deduct Abyss Points
                     dropOrNotify(player, ItemUtils.getAbyssOre(), "Successfully purchased Abyss Ore!");
@@ -109,7 +160,7 @@ public class AbyssStoreCommand implements CommandExecutor, Listener {
                 }
             }
 
-            if (event.getSlot() == 3 && event.getCurrentItem() != null && event.getCurrentItem().isSimilar(getAbyssIngot())) {
+            if (event.getSlot() == 0 && event.getCurrentItem() != null && event.getCurrentItem().isSimilar(getAbyssIngot())) {
                 if (userProfile.getAbysspoints() >= 100000) {
                     userProfile.setAbysspoints(userProfile.getAbysspoints() - 100000); // Deduct Abyss Points
                     dropOrNotify(player, ItemUtils.getAbyssIngot(), "Successfully purchased Abyss Mana Stone!");
@@ -118,7 +169,7 @@ public class AbyssStoreCommand implements CommandExecutor, Listener {
                 }
             }
 
-            if (event.getSlot() == 5 && event.getCurrentItem() != null && event.getCurrentItem().isSimilar(getAbyssPotion())) {
+            if (event.getSlot() == 1 && event.getCurrentItem() != null && event.getCurrentItem().isSimilar(getAbyssPotion())) {
                 if (userProfile.getAbysspoints() >= 1000) {
                     userProfile.setAbysspoints(userProfile.getAbysspoints() - 1000); // Deduct Abyss Points
                     dropOrNotify(player, ItemUtils.getAbyssPotion(), "Successfully purchased Abyss Potion!");
@@ -128,12 +179,43 @@ public class AbyssStoreCommand implements CommandExecutor, Listener {
             }
 
             // Ender Pearl (10,000 Abyss Points)
-            if (event.getSlot() == 7 && event.getCurrentItem() != null && event.getCurrentItem().getType() == Material.ENDER_PEARL) {
+            if (event.getSlot() == 3 && event.getCurrentItem() != null && event.getCurrentItem().getType() == Material.ENDER_PEARL) {
                 if (userProfile.getAbysspoints() >= 10000) {
                     userProfile.setAbysspoints(userProfile.getAbysspoints() - 10000); // Deduct Abyss Points
                     dropOrNotify(player, new ItemStack(Material.ENDER_PEARL), "Successfully purchased Ender Pearl!");
                 } else {
                     player.sendMessage(Component.text("You do not have enough Abyss Points!").color(TextColor.color(255, 0, 0)));
+                }
+            }
+
+
+            //WARDEN
+            if (event.getSlot() == 4 && event.getCurrentItem() != null && event.getCurrentItem().getType() == Material.WARDEN_SPAWN_EGG) {
+                if (userProfile.getEmerald() >= 1000) {
+                    userProfile.setEmerald(userProfile.getEmerald() - 1000); // Deduct Abyss Points
+                    dropOrNotify(player, new ItemStack(Material.WARDEN_SPAWN_EGG), "Successfully purchased!");
+                } else {
+                    player.sendMessage(Component.text("You do not have enough emerald!").color(TextColor.color(255, 0, 0)));
+                }
+            }
+
+            //RAV
+            if (event.getSlot() == 5 && event.getCurrentItem() != null && event.getCurrentItem().getType() == Material.RAVAGER_SPAWN_EGG) {
+                if (userProfile.getEmerald() >= 1000) {
+                    userProfile.setEmerald(userProfile.getEmerald() - 1000); // Deduct Abyss Points
+                    dropOrNotify(player, new ItemStack(Material.RAVAGER_SPAWN_EGG), "Successfully purchased!");
+                } else {
+                    player.sendMessage(Component.text("You do not have enough emerald!").color(TextColor.color(255, 0, 0)));
+                }
+            }
+
+            //EVOKER
+            if (event.getSlot() == 6 && event.getCurrentItem() != null && event.getCurrentItem().getType() == Material.EVOKER_SPAWN_EGG) {
+                if (userProfile.getEmerald() >= 1000) {
+                    userProfile.setEmerald(userProfile.getEmerald() - 1000); // Deduct Abyss Points
+                    dropOrNotify(player, new ItemStack(Material.EVOKER_SPAWN_EGG), "Successfully purchased!");
+                } else {
+                    player.sendMessage(Component.text("You do not have enough emerald!").color(TextColor.color(255, 0, 0)));
                 }
             }
         }

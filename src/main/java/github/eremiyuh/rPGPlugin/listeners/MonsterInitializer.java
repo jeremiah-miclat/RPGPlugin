@@ -10,6 +10,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 
@@ -111,9 +113,20 @@ public class MonsterInitializer implements Listener {
     private void calculateExtraAttributes(Location targetLocation, LivingEntity entity) {
         double maxCoord = Math.max(Math.abs(targetLocation.getBlockX()), Math.abs(targetLocation.getBlockZ()));
 
-//        if (entity instanceof Warden) {
-//            entity.setRemoveWhenFarAway(false);
-//        }
+        if (entity instanceof Warden warden) {
+            warden.setPersistent(true);
+            entity.setRemoveWhenFarAway(false);
+        }
+
+        if (entity instanceof Evoker) {
+            entity.setPersistent(true);
+            entity.setRemoveWhenFarAway(false);
+        }
+
+        if (entity instanceof Ravager) {
+            entity.setPersistent(true);
+            entity.setRemoveWhenFarAway(false);
+        }
 
         int lvl = (int) (Math.floor(maxCoord) / 100);
         String normalName = ChatColor.GREEN + "Lvl " + lvl + " " + entity.getType().name();
@@ -126,20 +139,20 @@ public class MonsterInitializer implements Listener {
         double customDamage = Math.min(extraHealth / 10, customMaxHealth);
         extraHealth += entity.getHealth();
         // First, check for the purple world boss (0.1% chance)
-        if (Math.random() < .0009 || entity instanceof Warden || entity instanceof Wither || entity instanceof ElderGuardian || entity instanceof Ravager) { //0.0003
+        if (Math.random() < .0003 || entity instanceof Warden || entity instanceof Wither || entity instanceof ElderGuardian || entity instanceof Ravager || entity instanceof Evoker && !(entity instanceof Vex)) { //0.0003
             extraHealth = (extraHealth * 1000); // Add 10000% health
             setBossAttributes(entity, maxCoord, "World Boss", ChatColor.DARK_PURPLE);
             entity.setGlowing(true);
             entity.setHealth(Math.min(extraHealth, customMaxHealth));
             Objects.requireNonNull(entity.getAttribute(Attribute.ATTACK_DAMAGE)).setBaseValue(customDamage * 2);
-            entity.setRemoveWhenFarAway(false);
             entity.setPersistent(true);
             entity.setCustomNameVisible(true);
+            entity.addPotionEffect(new PotionEffect((PotionEffectType.REGENERATION),Integer.MAX_VALUE,1,true,true));
             return;
         }
 
         // Only check for red boss (1% chance) if not already a purple boss
-        if (Math.random() < .003 || entity instanceof Evoker) { //0.003
+        if (Math.random() < .003 ) { //0.003
             extraHealth = (extraHealth * 100); // Add 1000% health
             setBossAttributes(entity, maxCoord, "Boss", ChatColor.RED);
             entity.setHealth(Math.min(extraHealth, customMaxHealth));
@@ -196,4 +209,6 @@ public class MonsterInitializer implements Listener {
             Objects.requireNonNull(entity.getAttribute(Attribute.SAFE_FALL_DISTANCE)).setBaseValue(baseSafeFallDistance * jumpMultiplier + 1);
         }
     }
+
+
 }

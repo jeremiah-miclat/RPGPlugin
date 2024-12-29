@@ -46,6 +46,7 @@ public class DeadMobListener implements Listener {
             new BossDropItem(new ItemStack(Material.DIAMOND_BOOTS), random.nextInt(1, 2), 0.99),
             new BossDropItem(new ItemStack(Material.DIAMOND_SWORD), random.nextInt(1, 2), 0.99),
             new BossDropItem(new ItemStack(Material.BOW), random.nextInt(1, 2), 0.99),
+            new BossDropItem(new ItemStack(Material.BOOK), random.nextInt(1, 2), 0.99),
             new BossDropItem(new ItemStack(Material.CROSSBOW), random.nextInt(1, 2), 0.99),
             new BossDropItem(new ItemStack(Material.NETHERITE_HELMET), random.nextInt(1, 2), 0.01),
             new BossDropItem(new ItemStack(Material.NETHERITE_CHESTPLATE), random.nextInt(1, 2), 0.01),
@@ -73,7 +74,7 @@ public class DeadMobListener implements Listener {
         ) {
             return;
         }
-
+        if (!(event.getEntity() instanceof Monster)) return;
 
         World world = event.getEntity().getWorld();
         int xValidRange = 60;
@@ -95,7 +96,7 @@ public class DeadMobListener implements Listener {
             if (customName != null) {
                 if (customName.contains("Leader")) {multiplier*=10;}
                 if (customName.contains("Boss") && !(customName.contains("World"))) {multiplier*=100;}
-                if (customName.contains("Worldboss")) {multiplier*=1000;}
+                if (customName.contains("World Boss")) {multiplier*=1000;}
 
                 // Remove the health indicator (anything in the format [number])
                 customName = customName.replaceAll("\\[\\d+\\]", "").trim(); // Removes [number] and trims any extra spaces
@@ -124,13 +125,18 @@ public class DeadMobListener implements Listener {
             UserProfile killerProfile = profileManager.getProfile(killer.getName());
             String killerTeam = killerProfile.getTeam();
 
-                RANDOMCHANCE += (health * 0.00045);
-                int dropMultiplier = (int) (1+(health * .001));
+            int dropMultiplier = (int) (1+(health * .001));
 
                 boolean isBoss = isBoss(mob);
                 boolean isWorldBoss = isWorldBoss(mob);
                 int bosslvl = level;
+                double chance = (double) bosslvl /400;
 
+
+                if (event.getEntity() instanceof Warden)  {
+                    chance *=2;
+                    health *=2;
+                }
 
 
                 List<String> attackerNames = (List<String>) mob.getMetadata("attackerList").get(0).value();
@@ -152,7 +158,7 @@ public class DeadMobListener implements Listener {
                     }
                     for (Player player : nearbyPlayers) {
                         UserProfile playerProfile = profileManager.getProfile(player.getName());
-                        applyRewards(player, playerProfile, health*3, (double) bosslvl /400, dropMultiplier);
+                        applyRewards(player, playerProfile, health*3, chance, dropMultiplier);
                         distributeDrops(player, event, dropMultiplier);
 
                         if (bosslvl > 9 && isWorldBoss) {
@@ -259,7 +265,7 @@ public class DeadMobListener implements Listener {
 
             // Select a random ore type
             OreType randomOre = OreType.values()[random.nextInt(OreType.values().length)];
-            int randomValue = 1 + (int) (Math.random() * rewardCount);
+            int randomValue = 1 + (int) (Math.random() * ((double) rewardCount /2));
 
             // Give the reward for the selected ore
             switch (randomOre) {
@@ -310,7 +316,8 @@ public class DeadMobListener implements Listener {
                 continue; // Skip equipable items
             }
             int originalAmount = drop.getAmount();
-            int multipliedAmount = originalAmount * dropMultiplier;
+            int multipliedAmount = originalAmount * dropMultiplier/100;
+            if (multipliedAmount < 1) multipliedAmount = 1;
             ItemStack newDrop = new ItemStack(drop.getType(), multipliedAmount);
 
             if (player.getInventory().firstEmpty() != -1) {

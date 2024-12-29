@@ -12,6 +12,8 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerChangedMainHandEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
+import org.bukkit.event.player.PlayerSwapHandItemsEvent;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -73,6 +75,7 @@ public class ArmorChangePlugin  implements Listener {
 //        }.runTaskLater(plugin, 1);
     }
 
+
     @EventHandler
     public void onWeaponChange(PlayerItemHeldEvent event) {
         Player player = event.getPlayer();
@@ -85,6 +88,38 @@ public class ArmorChangePlugin  implements Listener {
                     try {
                         if (player.getHealth() <= 0) return;
                         playerStatBuff.updatePlayerStatsToRPG(player);
+
+                        UserProfile profile = profileManager.getProfile(player.getName());
+
+                        ItemStack item = player.getInventory().getItemInMainHand();
+
+                        if (item.getType() == Material.AIR) {
+                            return;
+                        }
+
+                        if (!item.hasItemMeta() && !item.getItemMeta().hasDisplayName()) {
+                            return;
+                        }
+
+                        ItemMeta itemMeta = item.getItemMeta();
+                        if (itemMeta == null) return;
+                        String displayName = itemMeta.getDisplayName();
+
+                        if (displayName.contains("S1") || displayName.contains("Skill 1") || displayName.contains("skill 1")) {
+                            profile.setSelectedSkill("Skill 1");
+                            player.sendMessage("Switched to Skill 1");
+                        }
+
+                        if (displayName.contains("S2") || displayName.contains("Skill 2") || displayName.contains("skill 2")) {
+                            profile.setSelectedSkill("Skill 2");
+                            player.sendMessage("Switched to Skill 2");
+
+                        }
+
+                        if (displayName.contains("S3") || displayName.contains("Skill 3") || displayName.contains("skill 3")) {
+                            profile.setSelectedSkill("Skill 3");
+                            player.sendMessage("Switched to Skill 3");
+                        }
 
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -102,5 +137,8 @@ public class ArmorChangePlugin  implements Listener {
                 }
             }
         }.runTaskLater(plugin, 1);
+
+
+
     }
 }

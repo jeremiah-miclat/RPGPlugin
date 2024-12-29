@@ -12,6 +12,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.util.*;
 
@@ -132,6 +134,21 @@ public class MonsterInitializerLabyrinth implements Listener {
         double baseHealth = entity.getHealth(); // Base health at max height
         double healthIncrement = 480; // Increment per layer
 
+        if (entity instanceof Warden warden) {
+            warden.setPersistent(true);
+            entity.setRemoveWhenFarAway(false);
+        }
+
+        if (entity instanceof Evoker) {
+            entity.setPersistent(true);
+            entity.setRemoveWhenFarAway(false);
+        }
+
+        if (entity instanceof Ravager) {
+            entity.setPersistent(true);
+            entity.setRemoveWhenFarAway(false);
+        }
+
         // Ensure the y-coordinate is within the range
         int yCoord = Math.min(maxY, Math.max(minY, targetLocation.getBlockY()));
 
@@ -161,20 +178,19 @@ public class MonsterInitializerLabyrinth implements Listener {
             Objects.requireNonNull(entity.getAttribute(Attribute.ATTACK_DAMAGE)).setBaseValue(customDamage*2);
             entity.setCustomNameVisible(true);
             entity.setGlowing(true);
-
             entity.setPersistent(true);
             return;
         }
 
         // World Boss scaling logic
-        if (Math.random() < .0009) {
+        if (Math.random() < .0003 || entity instanceof Warden || entity instanceof Wither || entity instanceof ElderGuardian || entity instanceof Ravager || entity instanceof Evoker && !(entity instanceof Vex)) {
             extraHealth *= 1000; // Add 10000% health
             setBossAttributes(entity, targetLocation.getBlockY(), "World Boss", ChatColor.DARK_PURPLE, lvl);
             entity.setHealth(Math.min(extraHealth, customMaxHealth));
             Objects.requireNonNull(entity.getAttribute(Attribute.ATTACK_DAMAGE)).setBaseValue(customDamage*2);
             entity.setCustomNameVisible(true);
             entity.setGlowing(true);
-
+            entity.addPotionEffect(new PotionEffect((PotionEffectType.REGENERATION),Integer.MAX_VALUE,1,true,true));
             entity.setPersistent(true);
             return;
         }
