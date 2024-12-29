@@ -76,6 +76,8 @@ public class UserProfile {
 
     private boolean isPublic;
 
+    private double activitypoints;
+
     //constructor
     public UserProfile(String playerName) {
         this.playerID = UUID.randomUUID(); // Generate a unique ID for the player
@@ -131,6 +133,7 @@ public class UserProfile {
         this.junkPoints = 0;
 
         this.isPublic = false;
+        this.activitypoints=0;
 
     }
 
@@ -322,6 +325,14 @@ public class UserProfile {
         this.gold = gold;
     }
 
+    public double getActivitypoints() {
+        return activitypoints;
+    }
+
+    public void setActivitypoints(double activitypoints) {
+        this.activitypoints = activitypoints;
+    }
+
     // currencies
     public double getCurrency(String currencyName) {
         switch (currencyName.toLowerCase()) {
@@ -343,6 +354,8 @@ public class UserProfile {
                 return copper;
             case "abysspoints":
                 return abysspoints;
+            case "activitypoints":
+                return activitypoints;
             default:
                 throw new IllegalArgumentException("Invalid currency name: " + currencyName);
         }
@@ -423,6 +436,10 @@ public class UserProfile {
                 oldAmount = this.abysspoints;
                 this.abysspoints = amount;
                 break;
+            case "activitypoints":
+                oldAmount = this.activitypoints;
+                this.activitypoints = amount;
+                break;
             default:
                 throw new IllegalArgumentException("Invalid currency name: " + currencyName);
         }
@@ -432,7 +449,7 @@ public class UserProfile {
             double difference = amount - oldAmount;
             if (difference > 0) {
                 // Player gained currency
-                player.sendMessage("You gained " + difference + " " + currencyName + "(s).");
+                player.sendMessage("You gained " + (int) difference + " " + currencyName + "(s).");
             } else if (difference < 0) {
                 // Player spent currency
                 player.sendMessage("You spent " + Math.abs(difference) + " " + currencyName + "(s).");

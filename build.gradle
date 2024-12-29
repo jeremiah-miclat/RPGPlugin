@@ -51,20 +51,20 @@ processResources {
     }
 }
 
-//task copyToServer(type: Copy) {
-//    from "$buildDir/libs" // Source folder where the .jar file is created
-//    into "C:/Users/jejom/onedrive/Desktop/New folder/plugins" // Destination folder (your server's plugins folder)
-//    include "*.jar"
-//}
-
-
-
-
 task copyToServer(type: Copy) {
-    from "$buildDir/libs"
-    into "C:/Users/jejom/onedrive/Desktop/PAPER SERVER/plugins"
+    from "$buildDir/libs" // Source folder where the .jar file is created
+    into "C:/Users/jejom/onedrive/Desktop/New folder/plugins" // Destination folder (your server's plugins folder)
     include "*.jar"
 }
+
+
+
+
+//task copyToServer(type: Copy) {
+//    from "$buildDir/libs"
+//    into "C:/Users/jejom/onedrive/Desktop/PAPER SERVER/plugins"
+//    include "*.jar"
+//}
 
 
 // Ensure that the task runs after the build task completes

@@ -122,9 +122,10 @@ public class CheckClassCommand implements CommandExecutor, Listener {
             List<String> combatLore = new ArrayList<>();
             combatLore.add("§eStamina: §7" + profile.getStamina());
             combatLore.add("§eDurability: §7" + profile.getDurability());
-            combatLore.add("§eEnder Pearl: §7" + profile.getEnderPearl());
-            combatLore.add("§eAbyss Point: " + (int) (profile.getAbysspoints()));
+            combatLore.add("§eEnder Pearls: §7" + profile.getEnderPearl());
+            combatLore.add("§eAbyss Points: " + (int) (profile.getAbysspoints()));
             combatLore.add("§ePotion: §7" + profile.getPotion());
+            combatLore.add("§eActivity Points: §7" + (int) profile.getCurrency("activitypoints"));
 
 
 

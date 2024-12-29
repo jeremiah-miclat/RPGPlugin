@@ -107,6 +107,7 @@ public class PlayerProfileManager {
 
         // TO ADD
         config.set("enderpearl", profile.getCurrency("enderpearl"));
+        config.set("activitypoints", profile.getCurrency("activitypoints"));
         config.set("stamina", profile.getStamina());
         config.set("durability", profile.getDurability());
         config.set("abysspoints",profile.getAbysspoints());
@@ -210,6 +211,7 @@ public class PlayerProfileManager {
         profile.setCurrency("gold", config.getDouble("gold", 0));
         profile.setCurrency("copper", config.getDouble("copper", 0));
         profile.setCurrency("netherite", config.getDouble("netherite", 0));
+        profile.setCurrency("activitypoints", config.getDouble("activitypoints", 0));
         profile.setJunkPoints(config.getInt("junkpoints",0));
 
         profile.setCurrency("enderpearl", config.getInt("enderpearl", 50));

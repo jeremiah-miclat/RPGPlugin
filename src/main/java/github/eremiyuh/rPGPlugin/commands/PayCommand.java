@@ -15,7 +15,7 @@ public class PayCommand implements CommandExecutor {
 
     private final PlayerProfileManager profileManager;
     private static final List<String> validCurrencies = List.of("gold", "emerald", "diamond","iron", "lapis", "enderpearl","netherite"
-    , "copper", "abysspoints"
+    , "copper", "abysspoints", "activitypoints"
     );
 
 
