@@ -12,7 +12,9 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.components.EquippableComponent;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class AnvilLevelRestrictionHandler implements Listener {
 
@@ -119,6 +121,7 @@ public class AnvilLevelRestrictionHandler implements Listener {
 
                             // Update the anvil result
                             event.setResult(cosmeticResult);
+                            return;
                         }
                     }
                 }
@@ -126,5 +129,80 @@ public class AnvilLevelRestrictionHandler implements Listener {
             }
         }
 
+
+
     }
+
+    @EventHandler
+    public void customEnchant(PrepareAnvilEvent event) {
+        AnvilInventory anvilInventory = event.getInventory();
+        ItemStack firstItem = anvilInventory.getItem(0);
+        ItemStack secondItem = anvilInventory.getItem(1);
+        if (firstItem == null || secondItem == null) return;
+        ItemStack result = firstItem.clone();  // Result item that we want to modify
+
+
+
+        ItemMeta secondMeta = secondItem.getItemMeta();
+        if (secondMeta == null || !secondMeta.hasLore()) return;
+
+        // Extract the second lore line
+        String secondLoreLine = secondMeta.getLore().get(1);
+        String firstItemName = firstItem.getType().name();
+        String secondLoreLine1 = secondMeta.getLore().get(0);
+        if (!firstItemName.contains(secondLoreLine1)) return;
+        if (secondLoreLine == null || secondLoreLine.isEmpty()) return;
+
+        // Get the first item lore from the second item (Enchanted Book)
+        String secondLoreName = Objects.requireNonNull(secondMeta.getLore()).getFirst().toUpperCase();
+
+        if (secondLoreName != null && secondItem.getType() == Material.ENCHANTED_BOOK) {
+            // Debug message to show second lore line
+
+
+            // Modify the result item's lore, not the first item
+            ItemMeta resultMeta = firstItem.getItemMeta().clone();
+
+            List<String> resultLore = resultMeta.hasLore() ? resultMeta.getLore() : new ArrayList<>();
+
+            // Find and handle the lore line (e.g., "Prefix: X")
+            boolean found = false;
+            for (int i = 0; i < resultLore.size(); i++) {
+                String loreLine = resultLore.get(i);
+                if (loreLine.startsWith(secondLoreLine.split(":")[0])) {  // Match the prefix
+                    // Increment the number in the lore
+                    try {
+                        String[] parts = loreLine.split(":");
+                        int currentValue = Integer.parseInt(parts[1].trim());
+                        if (loreLine.contains("OresHunter") && currentValue == 300) {
+                            return;
+                        }
+                        currentValue++; // Increment the value
+                        resultLore.set(i, parts[0] + ": " + currentValue);  // Update the lore line
+                    } catch (NumberFormatException e) {
+
+                        return; // If the value is not a valid number, exit
+                    }
+                    found = true;
+                    break;
+                }
+            }
+
+            // If the lore line doesn't exist, add it to the result item's lore
+            if (!found) {
+                resultLore.add(secondLoreLine);  // Add the new lore line from the second item
+            }
+
+            // Set the modified lore back to the result item
+            resultMeta.setLore(resultLore);
+            result.setItemMeta(resultMeta);
+
+            // Set the result of the anvil (optional)
+            event.setResult(result);
+
+            // Optionally, you can set the repair cost here if you want
+            anvilInventory.setRepairCost(10);  // Example repair cost
+        }
+    }
+
 }
