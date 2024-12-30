@@ -355,6 +355,7 @@ public class RPGPlugin extends JavaPlugin {
         Objects.requireNonNull(this.getCommand("tpshop")).setExecutor(new ShopTpCommand(shopsManager, shopTpSaveManager,profileManager));
         getServer().getPluginManager().registerEvents(new GuiListener(this), this);
         getServer().getPluginManager().registerEvents(new ActivityListener(profileManager), this);
+        getServer().getPluginManager().registerEvents(new OreBreakListener(profileManager), this);
 
 //        vaultManager.loadVaults();
         //auth
