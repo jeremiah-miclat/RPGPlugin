@@ -267,5 +267,11 @@ commands:
     description: "Announce your held item in chat."
   showitemgui:
     description: "Internal command to show GUI for a player's item."
+  cestore:
+    description: "Opens custom enchants store"
+  fishsell:
+    description: "Opens an inventory to convert fish into activity points"
+  passiveskills:
+    description: "Opens passive skills gui"
 softdepend:
   - DiscordSRV

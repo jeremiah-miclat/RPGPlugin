@@ -78,6 +78,11 @@ public class UserProfile {
 
     private double activitypoints;
 
+    private int builder;
+    private int fisherman;
+    private int destroyer;
+    private int hunter;
+
     //constructor
     public UserProfile(String playerName) {
         this.playerID = UUID.randomUUID(); // Generate a unique ID for the player
@@ -134,6 +139,10 @@ public class UserProfile {
 
         this.isPublic = false;
         this.activitypoints=0;
+        this.builder = 0;
+        this.destroyer = 0;
+        this.fisherman = 0;
+        this.hunter = 0;
 
     }
 
@@ -449,10 +458,11 @@ public class UserProfile {
             double difference = amount - oldAmount;
             if (difference > 0) {
                 // Player gained currency
-                player.sendMessage("You gained " + (int) difference + " " + currencyName + "(s).");
+                player.sendMessage(ChatColor.GREEN + "" + ChatColor.ITALIC + "You gained " + (int) difference + " " + currencyName + ".");
+
             } else if (difference < 0) {
                 // Player spent currency
-                player.sendMessage("You spent " + Math.abs(difference) + " " + currencyName + "(s).");
+                player.sendMessage(ChatColor.BLUE + "" + ChatColor.ITALIC + "You spent " + Math.abs(difference) + " " + currencyName + ".");
             }
         }
     }
@@ -761,6 +771,42 @@ public class UserProfile {
 
     public void setIsPublic(boolean isPublic) {
         this.isPublic = isPublic;
+    }
+
+    // Getter and Setter for builder
+    public int getBuilder() {
+        return builder;
+    }
+
+    public void setBuilder(int builder) {
+        this.builder = builder;
+    }
+
+    // Getter and Setter for fisherman
+    public int getFisherman() {
+        return fisherman;
+    }
+
+    public void setFisherman(int fisherman) {
+        this.fisherman = fisherman;
+    }
+
+    // Getter and Setter for destroyer
+    public int getDestroyer() {
+        return destroyer;
+    }
+
+    public void setDestroyer(int destroyer) {
+        this.destroyer = destroyer;
+    }
+
+    // Getter and Setter for hunter
+    public int getHunter() {
+        return hunter;
+    }
+
+    public void setHunter(int hunter) {
+        this.hunter = hunter;
     }
 
 }

@@ -2,6 +2,7 @@ package github.eremiyuh.rPGPlugin.listeners;
 
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -138,34 +139,58 @@ public class AnvilLevelRestrictionHandler implements Listener {
         AnvilInventory anvilInventory = event.getInventory();
         ItemStack firstItem = anvilInventory.getItem(0);
         ItemStack secondItem = anvilInventory.getItem(1);
+
+        // Ensure that both items exist
         if (firstItem == null || secondItem == null) return;
-        ItemStack result = firstItem.clone();  // Result item that we want to modify
 
+        // Clone the first item for modifications
+        ItemStack result = firstItem.clone();
 
-
+        // Ensure the second item has metadata and lore
         ItemMeta secondMeta = secondItem.getItemMeta();
         if (secondMeta == null || !secondMeta.hasLore()) return;
 
-        // Extract the second lore line
-        String secondLoreLine = secondMeta.getLore().get(1);
+        // Extract lore lines from the second item
+        List<String> secondLore = secondMeta.getLore();
+        if (secondLore.size() < 2) return;  // Ensure there are enough lore lines
+
+        String secondLoreLine = secondLore.get(1);
+        String secondLoreLine1 = secondLore.get(0);
         String firstItemName = firstItem.getType().name();
-        String secondLoreLine1 = secondMeta.getLore().get(0);
+
+        // Extract the first lore line from second item (Enchanted Book)
+        String secondLoreName = secondLoreLine != null ? secondLoreLine.toUpperCase() : null;
+
+        // Check if we are dealing with the correct items (Fishing Rod and Enchanted Book with Lure5)
+        if (firstItem.getType() == Material.FISHING_ROD && secondItem.getType() == Material.ENCHANTED_BOOK && secondLoreLine1.contains("Lure5")) {
+            ItemMeta firstMeta = firstItem.getItemMeta();
+            if (firstMeta != null) {
+                firstMeta.removeEnchant(Enchantment.LURE);
+                firstMeta.addEnchant(Enchantment.LURE, 5, true);
+                result.setItemMeta(firstMeta);
+                event.setResult(result);
+                anvilInventory.setRepairCost(10);
+            }
+            return;
+        }
+
+        // Only proceed if the first item name matches the second lore line
         if (!firstItemName.contains(secondLoreLine1)) return;
+
+        // Ensure the lore line is not null or empty
         if (secondLoreLine == null || secondLoreLine.isEmpty()) return;
 
-        // Get the first item lore from the second item (Enchanted Book)
-        String secondLoreName = Objects.requireNonNull(secondMeta.getLore()).getFirst().toUpperCase();
-
+        // Ensure we are working with an Enchanted Book
         if (secondLoreName != null && secondItem.getType() == Material.ENCHANTED_BOOK) {
-            // Debug message to show second lore line
+            // Clone the first item meta for modification
+            ItemMeta firstMeta = firstItem.getItemMeta();
+            if (firstMeta == null) return; // If the first item has no metadata, exit
 
-
-            // Modify the result item's lore, not the first item
-            ItemMeta resultMeta = firstItem.getItemMeta().clone();
-
+            // Create a result item metadata and lore list
+            ItemMeta resultMeta = firstMeta.clone();
             List<String> resultLore = resultMeta.hasLore() ? resultMeta.getLore() : new ArrayList<>();
 
-            // Find and handle the lore line (e.g., "Prefix: X")
+            // Process the lore line from the second item
             boolean found = false;
             for (int i = 0; i < resultLore.size(); i++) {
                 String loreLine = resultLore.get(i);
@@ -180,7 +205,6 @@ public class AnvilLevelRestrictionHandler implements Listener {
                         currentValue++; // Increment the value
                         resultLore.set(i, parts[0] + ": " + currentValue);  // Update the lore line
                     } catch (NumberFormatException e) {
-
                         return; // If the value is not a valid number, exit
                     }
                     found = true;
@@ -200,9 +224,10 @@ public class AnvilLevelRestrictionHandler implements Listener {
             // Set the result of the anvil (optional)
             event.setResult(result);
 
-            // Optionally, you can set the repair cost here if you want
+            // Optionally, set the repair cost here if you want
             anvilInventory.setRepairCost(10);  // Example repair cost
         }
     }
+
 
 }

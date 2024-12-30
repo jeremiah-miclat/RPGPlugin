@@ -3,19 +3,22 @@ package github.eremiyuh.rPGPlugin.listeners;
 import github.eremiyuh.rPGPlugin.manager.PlayerProfileManager;
 import github.eremiyuh.rPGPlugin.profile.UserProfile;
 import io.papermc.paper.event.player.PlayerTradeEvent;
+
 import org.bukkit.Material;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.inventory.BrewEvent;
-import org.bukkit.event.inventory.FurnaceSmeltEvent;
+
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.Objects;
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class ActivityListener implements Listener {
     private final PlayerProfileManager profileManager;
@@ -27,19 +30,25 @@ public class ActivityListener implements Listener {
     @EventHandler
     public void onBreakBlock(BlockBreakEvent event) {
         UserProfile userProfile = profileManager.getProfile(event.getPlayer().getName());
-        userProfile.setActivitypoints(userProfile.getActivitypoints()+1);
+        int bonusBreakPoints = userProfile.getDestroyer();
+        userProfile.setActivitypoints(userProfile.getActivitypoints()+1+bonusBreakPoints);
     }
 
     @EventHandler
     public void onPlaceBlock(BlockPlaceEvent event) {
         UserProfile userProfile = profileManager.getProfile(event.getPlayer().getName());
-        userProfile.setActivitypoints(userProfile.getActivitypoints()+1);
+        int bonusBuildPoints = userProfile.getBuilder();
+        userProfile.setActivitypoints(userProfile.getActivitypoints()+1+bonusBuildPoints);
     }
 
     @EventHandler
     public void onFish(PlayerFishEvent event) {
         // Retrieve the player's profile
         UserProfile userProfile = profileManager.getProfile(event.getPlayer().getName());
+
+        int additionalPoints = 0;
+        double multiplyChance = .1;
+        double multiplier = 0;
 
         // Get the caught entity
         Entity entity = event.getCaught();
@@ -48,17 +57,80 @@ public class ActivityListener implements Listener {
         if (entity instanceof Item item) {
             // Get the item type name
             String itemName = item.getName();
+            Player player = event.getPlayer();
 
-            // Update the currency based on the type of fish caught
+            // Retrieve the player's fishing rod (if held in main hand)
+            ItemStack fishingRod = event.getPlayer().getInventory().getItemInMainHand();
+
+            // Check if the item is a fishing rod and has lore
+            if (fishingRod != null && fishingRod.getType().toString().contains("FISHING_ROD") && fishingRod.hasItemMeta()) {
+                ItemMeta meta = fishingRod.getItemMeta();
+                if (meta != null && meta.hasLore()) {
+                    List<String> lore = meta.getLore();
+
+                    // Check for "Fisherman" tag in the lore and parse the value
+                    for (String line : lore) {
+                        if (line.contains("PointsBonus:")) {
+                            try {
+                                // Extract the additional points from the lore
+                                additionalPoints = Integer.parseInt(line.split(":")[1].trim());
+                            } catch (NumberFormatException e) {
+                                // If lore parsing fails, fallback to 0 additional points
+                                additionalPoints = 0;
+                            }
+                        }
+
+                        if (line.contains("ExtraFish:")) {
+                            try {
+                                // Extract the additional points from the lore
+                                multiplier = Integer.parseInt(line.split(":")[1].trim());
+                            } catch (NumberFormatException e) {
+                                // If lore parsing fails, fallback to 0 additional points
+                                multiplier = 0;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Create the item lore with player's name and the fish details
+            List<String> fishLore = new ArrayList<>();
+            fishLore.add("Caught by: " + player.getName()); // Player's name
+            ItemStack itemStack = item.getItemStack();
+            ItemMeta fishItemmeta = item.getItemStack().getItemMeta();
+            fishItemmeta.setLore(fishLore);
+            itemStack.setItemMeta(fishItemmeta);
+
+
+
+            // Update the currency and fish lore based on the type of fish caught
             assert itemName != null;
             if (itemName.contains("Cod")) {
-                userProfile.setCurrency("activitypoints", userProfile.getCurrency("activitypoints") + 5);
+                if (Math.random() < multiplyChance) {
+                    dropOrNotify(player, new ItemStack(Material.COD, (int) (multiplier)), fishLore);
+                }
+                userProfile.setCurrency("activitypoints", userProfile.getCurrency("activitypoints") + (5 + additionalPoints));
             } else if (itemName.contains("Salmon")) {
-                userProfile.setCurrency("activitypoints", userProfile.getCurrency("activitypoints") + 15);
+                if (Math.random() < multiplyChance) {
+                    dropOrNotify(player, new ItemStack(Material.SALMON, (int) (multiplier)), fishLore);
+                }
+                userProfile.setCurrency("activitypoints", userProfile.getCurrency("activitypoints") + (15 + additionalPoints));
             } else if (itemName.contains("Tropical")) {
-                userProfile.setCurrency("activitypoints", userProfile.getCurrency("activitypoints") + 25);
+                if (Math.random() < multiplyChance) {
+                    dropOrNotify(player, new ItemStack(Material.TROPICAL_FISH, (int) (multiplier)), fishLore);
+                }
+                userProfile.setCurrency("activitypoints", userProfile.getCurrency("activitypoints") + (25 + additionalPoints));
             } else if (itemName.contains("Puffer")) {
-                userProfile.setCurrency("activitypoints", userProfile.getCurrency("activitypoints") + 50);
+                if (Math.random() < multiplyChance) {
+                    dropOrNotify(player, new ItemStack(Material.PUFFERFISH, (int) (multiplier)), fishLore);
+                }
+                userProfile.setCurrency("activitypoints", userProfile.getCurrency("activitypoints") + (50 + additionalPoints));
+            } else if (itemName.contains("Nautilus")) {
+                userProfile.setCurrency("activitypoints", userProfile.getCurrency("activitypoints") + (100 + additionalPoints*2));
+            }
+
+            else {
+                userProfile.setCurrency("activitypoints", userProfile.getCurrency("activitypoints") + (1 + additionalPoints));
             }
         }
     }
@@ -74,5 +146,25 @@ public class ActivityListener implements Listener {
     public void onConsume(PlayerItemConsumeEvent event) {
         UserProfile userProfile = profileManager.getProfile(event.getPlayer().getName());
         userProfile.setActivitypoints(userProfile.getActivitypoints()+1);
+    }
+
+
+
+    private void dropOrNotify(Player player, ItemStack item, List<String> lore) {
+        // Add custom lore to the item
+        ItemMeta meta = item.getItemMeta();
+        if (meta != null) {
+            meta.setLore(lore); // Set the custom lore
+            item.setItemMeta(meta);
+        }
+
+        // Check if the player has space in their inventory
+        if (player.getInventory().firstEmpty() != -1) {
+            // Add item to inventory
+            player.getInventory().addItem(item);
+        } else {
+            // Drop item at player's location
+            player.getWorld().dropItemNaturally(player.getLocation(), item);
+        }
     }
 }

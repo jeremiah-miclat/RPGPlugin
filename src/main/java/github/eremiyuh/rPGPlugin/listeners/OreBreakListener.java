@@ -29,6 +29,11 @@ public class OreBreakListener implements Listener {
 
         // Check if the block is an ore (ends with _ORE)
         if (!(event.getBlockState().getType().name().endsWith("_ORE"))) return;
+        UserProfile profile = profileManager.getProfile(event.getPlayer().getName());
+
+        if (profile!=null) {
+            profile.setActivitypoints(profile.getActivitypoints()+5);
+        }
 
         Player player = event.getPlayer();
         ItemStack itemOnHand = player.getInventory().getItemInMainHand();
@@ -38,7 +43,7 @@ public class OreBreakListener implements Listener {
 
         // If there's no item meta or lore, return
         if (onHandMeta == null || !onHandMeta.hasLore()) return;
-        player.sendMessage(" meta not null");
+
         // Get the lore from the item
         List<String> lore = onHandMeta.getLore();
         String oreHunterLore = null;
@@ -53,7 +58,7 @@ public class OreBreakListener implements Listener {
 
         // If no "Ores Hunter" lore is found, return
         if (oreHunterLore == null) {
-            player.sendMessage("no lore");
+
             return;
         };
 
@@ -66,16 +71,17 @@ public class OreBreakListener implements Listener {
         } catch (Exception e) {
             return; // If parsing fails, return
         }
-
+        int chanceMultiplier = (int) oreChance;
+        int multiplier = chanceMultiplier + 2;
         if (oreChance > .5) {
             oreChance = .5;
         }
 
-        int multiplier = (int) Math.floor(oreChance) + 2;
+
 
         // Check if the ore chance condition is met
         if (Math.random() < oreChance) {
-
+            player.sendMessage(multiplier + " multiplier");
             // Modify the drop amounts based on the multiplier
             for (Item item : event.getItems()) {
                 ItemStack itemStack = item.getItemStack();

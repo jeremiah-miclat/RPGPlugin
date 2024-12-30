@@ -238,9 +238,9 @@ public class RPGPlugin extends JavaPlugin {
     private void loadResources() {
         // Load your data, initialize managers, etc.
         // Initialize the profile manager
-//        deleteWorld("resource_normal");
-//        deleteWorld("resource_nether");
-//        deleteWorld("resource_end");
+        deleteWorld("resource_normal");
+        deleteWorld("resource_nether");
+        deleteWorld("resource_end");
         profileManager = new PlayerProfileManager(this);
         shopsManager = new ShopsManager(this);
         shopsManager.loadAllShops();
@@ -261,6 +261,8 @@ public class RPGPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new PlayerQuitListener(profileManager,vaultManager), this);
         Objects.requireNonNull(getCommand("selectclass")).setExecutor(new SelectClassCommand(this, profileManager));
         Objects.requireNonNull(getCommand("abyssstore")).setExecutor(new AbyssStoreCommand(this, profileManager));
+        Objects.requireNonNull(getCommand("cestore")).setExecutor(new CustomEnchant(this, profileManager));
+        Objects.requireNonNull(getCommand("passiveskills")).setExecutor(new PassiveSkills(this, profileManager));
         Objects.requireNonNull(getCommand("cosmeticstore")).setExecutor(new CosmeticStore(this, profileManager));
         DamageListener damageListenerListener = new DamageListener(profileManager, effectsAbilityManager, damageAbilityManager,this);
         getServer().getPluginManager().registerEvents(damageListenerListener,this);
@@ -388,13 +390,16 @@ public class RPGPlugin extends JavaPlugin {
         Objects.requireNonNull(getCommand("junk")).setExecutor(new JunkCommand(profileManager));
         getServer().getPluginManager().registerEvents(new JunkCommand(profileManager), this);
 
+        Objects.requireNonNull(getCommand("fishsell")).setExecutor(new FishSell(profileManager));
+        getServer().getPluginManager().registerEvents(new FishSell(profileManager), this);
+
 
         Objects.requireNonNull(getCommand("junkshop")).setExecutor(new JunkShopCommand(profileManager));
         getServer().getPluginManager().registerEvents(new JunkShopCommand(profileManager), this);
 
-//        createResourceWorld("resource_normal", World.Environment.NORMAL);
-//        createResourceWorld("resource_nether", World.Environment.NETHER);
-//        createResourceWorld("resource_end", World.Environment.THE_END);
+        createResourceWorld("resource_normal", World.Environment.NORMAL);
+        createResourceWorld("resource_nether", World.Environment.NETHER);
+        createResourceWorld("resource_end", World.Environment.THE_END);
 
     }
 

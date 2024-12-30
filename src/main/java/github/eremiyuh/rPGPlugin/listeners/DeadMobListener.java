@@ -69,9 +69,22 @@ public class DeadMobListener implements Listener {
 
     @EventHandler
     public void onModifiedMobDeath(EntityDeathEvent event) {
+
+
+
         if (!Objects.requireNonNull(event.getEntity().getLocation().getWorld()).getName().equals("world_rpg")
             && !Objects.requireNonNull(event.getEntity().getLocation().getWorld()).getName().contains("world_labyrinth")
         ) {
+            if (event.getEntity().getKiller() instanceof Player player  ) {
+                UserProfile profile = profileManager.getProfile(player.getName());
+                profile.setActivitypoints(profile.getActivitypoints()+1);
+            }
+
+            if ((event.getEntity().getKiller() instanceof Projectile proj && proj.getShooter() instanceof Player shooter)) {
+                UserProfile profile = profileManager.getProfile(shooter.getName());
+                profile.setActivitypoints(profile.getActivitypoints()+1);
+            }
+
             return;
         }
         if (!(event.getEntity() instanceof Monster)) return;

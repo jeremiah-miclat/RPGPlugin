@@ -123,6 +123,12 @@ public class PlayerProfileManager {
         config.set("password",profile.getPassword());
         config.set("loggedin",profile.isLoggedIn());
 
+        // passives
+        config.set("builder",profile.getBuilder());
+        config.set("destroyer",profile.getDestroyer());
+        config.set("hunter",profile.getHunter());
+        config.set("fisherman",profile.getFisherman());
+
         try {
             config.save(profileFile);
         } catch (IOException e) {
@@ -260,6 +266,12 @@ public class PlayerProfileManager {
         profile.setLoggedIn(config.getBoolean("loggedin",false));
 
         profile.setIsPublic(config.getBoolean("isPublic",false));
+
+        //passives
+        profile.setDestroyer(config.getInt("destroyer",0));
+        profile.setBuilder(config.getInt("builder",0));
+        profile.setFisherman(config.getInt("fisherman",0));
+        profile.setHunter(config.getInt("hunter",0));
 
         playerProfiles.put(playerName, profile);
     }

@@ -115,21 +115,6 @@ public class AbyssStoreCommand implements CommandExecutor, Listener {
 
         abyssStore.setItem(5, ravagerSpawnEgg);
 
-        // SAMPLE
-        ItemStack enchant = new ItemStack(Material.ENCHANTED_BOOK);
-        ItemMeta enchatMeta = enchant.getItemMeta();
-
-        if (enchatMeta != null) {
-            List<Component> lore = new ArrayList<>();
-            lore.add(Component.text("PICKAXE"));
-            lore.add(Component.text("OresHunter: 1"));
-            enchatMeta.lore(lore);
-
-            enchant.setItemMeta(enchatMeta);
-        }
-
-        abyssStore.setItem(7, enchant);
-
 
         // EVOKER SPAWN EGG
         ItemStack evoSpawnEgg = new ItemStack(Material.EVOKER_SPAWN_EGG);
@@ -232,12 +217,6 @@ public class AbyssStoreCommand implements CommandExecutor, Listener {
                 } else {
                     player.sendMessage(Component.text("You do not have enough emerald!").color(TextColor.color(255, 0, 0)));
                 }
-            }
-
-            //ENCHANT
-            if (event.getSlot() == 7 && event.getCurrentItem() != null && event.getCurrentItem().getType() == Material.ENCHANTED_BOOK) {
-                ItemStack item = event.getCurrentItem().clone();
-                dropOrNotify(player, item, "OOK");
             }
         }
     }
