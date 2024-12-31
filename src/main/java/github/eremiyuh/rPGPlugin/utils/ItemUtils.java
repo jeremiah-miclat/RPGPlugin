@@ -277,6 +277,44 @@ public class ItemUtils {
         return pointItem;
     }
 
+    public static ItemStack getNetherCrossBow() {
+        ItemStack pointItem = new ItemStack(Material.CROSSBOW); // Choose any material you prefer
+        ItemMeta meta = pointItem.getItemMeta();
+
+        if (meta != null) {
+            meta.displayName(Component.text("Netherite Crossbow").color(TextColor.color(255,0,0)));
+            meta.lore(Arrays.asList(
+                    Component.text("Cosmetic")
+            ));
+
+            meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
+            meta.setEnchantmentGlintOverride(false);
+            meta.setItemModel(NamespacedKey.minecraft("netherite_crossbow"));
+            pointItem.setItemMeta(meta);
+        }
+
+        return pointItem;
+    }
+
+    public static ItemStack getRieslingCrossBow() {
+        ItemStack pointItem = new ItemStack(Material.CROSSBOW); // Choose any material you prefer
+        ItemMeta meta = pointItem.getItemMeta();
+
+        if (meta != null) {
+            meta.displayName(Component.text("Riesling Crossbow").color(TextColor.color(255,0,0)));
+            meta.lore(Arrays.asList(
+                    Component.text("Cosmetic")
+            ));
+
+            meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
+            meta.setEnchantmentGlintOverride(false);
+            meta.setItemModel(NamespacedKey.minecraft("riesling_crossbow"));
+            pointItem.setItemMeta(meta);
+        }
+
+        return pointItem;
+    }
+
     public static ItemStack getHaloChestPlate() {
         return createCustomArmor(
                 Material.NETHERITE_CHESTPLATE,
@@ -501,6 +539,99 @@ public class ItemUtils {
                 Arrays.asList(Component.text("Cosmetic")),
                 "dragonsbane",
                 "dragonsbane_boots",
+                EquipmentSlot.FEET
+        );
+    }
+
+    // ELLEGAARD
+
+
+    public static ItemStack getElleChest() {
+        return createCustomArmor(
+                Material.NETHERITE_CHESTPLATE,
+                "Ellegaard Chestplate",
+                Arrays.asList(Component.text("Cosmetic")),
+                "ellegaard",
+                "ellegaard_chestplate",
+                EquipmentSlot.CHEST
+        );
+    }
+
+    public static ItemStack getElleHelm() {
+        return createCustomArmor(
+                Material.NETHERITE_HELMET,
+                "Ellegaard Helmet",
+                Arrays.asList(Component.text("Cosmetic")),
+                "ellegaard",
+                "ellegaard_helmet",
+                EquipmentSlot.HEAD
+        );
+    }
+
+    public static ItemStack getElleLeg() {
+        return createCustomArmor(
+                Material.NETHERITE_LEGGINGS,
+                "Ellegaard Leggings",
+                Arrays.asList(Component.text("Cosmetic")),
+                "ellegaard",
+                "ellegaard_leggings",
+                EquipmentSlot.LEGS
+        );
+    }
+
+    public static ItemStack getElleBoots() {
+        return createCustomArmor(
+                Material.NETHERITE_BOOTS,
+                "Ellegaard Boots",
+                Arrays.asList(Component.text("Cosmetic")),
+                "ellegaard",
+                "ellegaard_boots",
+                EquipmentSlot.FEET
+        );
+    }
+
+    // GRIM DARK NETHERITE
+
+    public static ItemStack getGrimNethChest() {
+        return createCustomArmor(
+                Material.NETHERITE_CHESTPLATE,
+                "Grimdark Dark Chestplate",
+                Arrays.asList(Component.text("Cosmetic")),
+                "grimdarknetherite",
+                "grimdark_netherite_chestplate",
+                EquipmentSlot.CHEST
+        );
+    }
+
+    public static ItemStack getGrimNethHelm() {
+        return createCustomArmor(
+                Material.NETHERITE_HELMET,
+                "Grimdark Dark Helmet",
+                Arrays.asList(Component.text("Cosmetic")),
+                "grimdarknetherite",
+                "grimdark_netherite_helmet",
+                EquipmentSlot.HEAD
+        );
+    }
+
+    public static ItemStack getGrimNethLeg() {
+        return createCustomArmor(
+                Material.NETHERITE_LEGGINGS,
+                "Grimdark Dark Leggings",
+                Arrays.asList(Component.text("Cosmetic")),
+                "grimdarknetherite",
+                "grimdark_netherite_leggings",
+                EquipmentSlot.LEGS
+        );
+    }
+
+    public static ItemStack getGrimNethBoots() {
+        return createCustomArmor(
+                Material.NETHERITE_BOOTS,
+                "Grimdark Dark Boots",
+                Arrays.asList(Component.text("Cosmetic")),
+                "grimdarknetherite",
+                "grimdark_netherite_boots",
                 EquipmentSlot.FEET
         );
     }

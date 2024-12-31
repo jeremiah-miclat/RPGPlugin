@@ -32,6 +32,7 @@ public class CosmeticStore implements CommandExecutor, Listener {
     private final RPGPlugin plugin;
     private final PlayerProfileManager profileManager;
     private final List<CosmeticItem> cosmeticItems = new ArrayList<>();
+    private final List<CosmeticItem> cosmeticItems2 = new ArrayList<>();
 
 
     public CosmeticStore(RPGPlugin plugin, PlayerProfileManager profileManager) {
@@ -39,6 +40,7 @@ public class CosmeticStore implements CommandExecutor, Listener {
         this.profileManager = profileManager;
         Bukkit.getPluginManager().registerEvents(this, plugin);
         initializeCosmeticItems();
+        initializeCosmeticItems2();
     }
 
     private void initializeCosmeticItems() {
@@ -75,21 +77,65 @@ public class CosmeticStore implements CommandExecutor, Listener {
         cosmeticItems.add(new CosmeticItem(getDragBoots(), 250, "gold"));
     }
 
+    private void initializeCosmeticItems2() {
+
+        // ELLEGAARD
+        cosmeticItems2.add(new CosmeticItem(getElleHelm(), 250, "gold"));
+        cosmeticItems2.add(new CosmeticItem(getElleChest(), 250, "gold"));
+        cosmeticItems2.add(new CosmeticItem(getElleLeg(), 250, "gold"));
+        cosmeticItems2.add(new CosmeticItem(getElleBoots(), 250, "gold"));
+
+        //netherite bow
+        cosmeticItems2.add(new CosmeticItem(getNetherCrossBow(),3,"netherite"));
+
+        // riesling crossbow
+        cosmeticItems2.add(new CosmeticItem(getRieslingCrossBow(),100000,"activitypoints"));
+
+        //grim dark netherite
+        cosmeticItems2.add(new CosmeticItem(getGrimNethHelm(), 25000, "activitypoints"));
+        cosmeticItems2.add(new CosmeticItem(getGrimNethChest(), 25000, "activitypoints"));
+        cosmeticItems2.add(new CosmeticItem(getGrimNethLeg(), 25000, "activitypoints"));
+        cosmeticItems2.add(new CosmeticItem(getGrimNethBoots(), 25000, "activitypoints"));
+
+    }
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (sender instanceof Player) {
             Player player = (Player) sender;
-            openCosmeticStore(player);
+
+            if (args.length == 0 || args[0].equals("1")) {
+                openCosmeticStore(player);
+            } else if (args[0].equals("2")) {
+                openCosmeticStore2(player);
+            } else {
+                player.sendMessage(ChatColor.RED + "Invalid store number. Use /cosmeticstore 1 or 2");
+            }
+            return true;
+        } else {
+            sender.sendMessage("This command can only be used by a player.");
             return true;
         }
-        return false;
     }
+
 
     public void openCosmeticStore(Player player) {
         Inventory cosmeticStore = Bukkit.createInventory(null, 27, Component.text("Cosmetic Store").color(TextColor.color(255, 0, 0)));
 
         for (int i = 0; i < cosmeticItems.size(); i++) {
             CosmeticItem cosmeticItem = cosmeticItems.get(i);
+            // Use getDisplayItem() to show the item with lore in the GUI
+            ItemStack item = cosmeticItem.getDisplayItem();
+            cosmeticStore.setItem(i, item);
+        }
+
+        player.openInventory(cosmeticStore);
+    }
+
+    public void openCosmeticStore2(Player player) {
+        Inventory cosmeticStore = Bukkit.createInventory(null, 27, Component.text("Cosmetic Store 2").color(TextColor.color(255, 0, 0)));
+
+        for (int i = 0; i < cosmeticItems2.size(); i++) {
+            CosmeticItem cosmeticItem = cosmeticItems2.get(i);
             // Use getDisplayItem() to show the item with lore in the GUI
             ItemStack item = cosmeticItem.getDisplayItem();
             cosmeticStore.setItem(i, item);
@@ -114,6 +160,42 @@ public class CosmeticStore implements CommandExecutor, Listener {
             if (slot < 0 || slot >= cosmeticItems.size()) return; // Ensure the slot is valid
 
             CosmeticItem cosmeticItem = cosmeticItems.get(slot);
+            ItemStack clickedItem = event.getCurrentItem();
+
+            // Check if the clicked item is not null and matches the expected cosmetic item
+            if (clickedItem == null || !clickedItem.isSimilar(cosmeticItem.getDisplayItem())) {
+                return;
+            }
+
+            int cost = cosmeticItem.getCost();
+            String currency = cosmeticItem.getCurrency();
+
+            if (userProfile.getCurrency(currency) < cost) {
+                player.sendMessage(ChatColor.RED + "Need " + cost + " " + currency + " currency");
+                return;
+            }
+
+            userProfile.setCurrency(currency, userProfile.getCurrency(currency) - cost);
+            dropOrNotify(player, cosmeticItem.getItem(), "Successfully purchased.");  // Give the original item
+        }
+    }
+
+    @EventHandler
+    public void onInventoryClick2(InventoryClickEvent event) {
+        if (event.getView().title().equals(Component.text("Cosmetic Store 2").color(TextColor.color(255, 0, 0)))) {
+            Player player = (Player) event.getWhoClicked();
+            event.setCancelled(true);
+            UserProfile userProfile = profileManager.getProfile(player.getName());
+
+            if (userProfile == null) {
+                player.sendMessage(Component.text("Profile not found!").color(TextColor.color(255, 0, 0)));
+                return;
+            }
+
+            int slot = event.getSlot();
+            if (slot < 0 || slot >= cosmeticItems2.size()) return; // Ensure the slot is valid
+
+            CosmeticItem cosmeticItem = cosmeticItems2.get(slot);
             ItemStack clickedItem = event.getCurrentItem();
 
             // Check if the clicked item is not null and matches the expected cosmetic item
