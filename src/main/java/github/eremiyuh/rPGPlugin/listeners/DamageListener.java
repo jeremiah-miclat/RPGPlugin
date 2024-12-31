@@ -1140,7 +1140,7 @@ public class DamageListener implements Listener {
 
     // Method to apply stats to damage
     private double applyStatsToDamage(double baseDamage, UserProfile damagerProfile, Player player, EntityDamageByEntityEvent event) {
-        double str = 0, dex = 0, intel = 0, luk = 0;
+        double str = 0, dex = 0, intel = 0, luk = 0, fnl=0;
 
         // Get stats based on the player's chosen class
         if (damagerProfile.getChosenClass().equalsIgnoreCase("archer")) {
@@ -1190,26 +1190,37 @@ public class DamageListener implements Listener {
                             }
 
 
-                        } else if (lore.startsWith("Dexterity: ")) {
+                        }
+                        else if (lore.startsWith("Dexterity: ")) {
                             if (damagerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
                                 dex += (Math.round(1.2*parseLoreValue(lore)));
                             }
                             else {
                                 dex += parseLoreValue(lore);
                             }
-                        } else if (lore.startsWith("Intelligence: ")) {
+                        }
+                        else if (lore.startsWith("Intelligence: ")) {
                             if (damagerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
                                 intel += (Math.round(1.2*parseLoreValue(lore)));
                             }
                             else {
                                 intel += parseLoreValue(lore);
                             }
-                        } else if (lore.startsWith("Luck: ")) {
+                        }
+                        else if (lore.startsWith("Luck: ")) {
                             if (damagerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
                                 luk += (Math.round(1.2*parseLoreValue(lore)));
                             }
                             else {
                                 luk += parseLoreValue(lore);
+                            }
+                        }
+                        else if (lore.contains("StatDamage%: ")) {
+                            if (damagerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
+                                fnl += (Math.round(1.2*parseLoreValue(lore)));
+                            }
+                            else {
+                                fnl += parseLoreValue(lore);
                             }
                         }
 
@@ -1218,7 +1229,6 @@ public class DamageListener implements Listener {
                 }
             }
         }
-
 
         // Damage calculation based on class stats
         double statDmg = 0;
@@ -1353,7 +1363,7 @@ public class DamageListener implements Listener {
 //        if (selectedElement.equalsIgnoreCase("fire") && event.getEntity() instanceof LivingEntity target && target.hasPotionEffect(PotionEffectType.SLOWNESS)) {
 //                spawnFloatingHologram(event.getEntity().getLocation(), "Melt", player.getWorld(), ChatColor.AQUA);
 //        }
-        return calculatedDamage;
+        return calculatedDamage*(1 + (fnl*.01));
     }
 
     private int parseLoreValue(String lore) {

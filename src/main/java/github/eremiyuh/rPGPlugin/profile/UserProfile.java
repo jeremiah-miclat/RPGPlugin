@@ -82,6 +82,7 @@ public class UserProfile {
     private int fisherman;
     private int destroyer;
     private int hunter;
+    private int crafter;
 
     //constructor
     public UserProfile(String playerName) {
@@ -143,6 +144,7 @@ public class UserProfile {
         this.destroyer = 0;
         this.fisherman = 0;
         this.hunter = 0;
+        this.crafter = 0;
 
     }
 
@@ -807,6 +809,15 @@ public class UserProfile {
 
     public void setHunter(int hunter) {
         this.hunter = hunter;
+    }
+
+    // Getter and Setter for hunter
+    public int getCrafter() {
+        return crafter;
+    }
+
+    public void setCrafter(int crafter) {
+        this.crafter = crafter;
     }
 
 }

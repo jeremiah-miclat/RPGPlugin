@@ -30,6 +30,7 @@ public class PlayerStatBuff {
     private double[] getEquipStats(Player player) {
         double equipVitality = 0;
         double equipAgility = 0;
+        double equipFinalHpMultiplier = 0;
 
         ItemStack[] equipment = {
                 player.getInventory().getHelmet(),
@@ -49,12 +50,15 @@ public class PlayerStatBuff {
                             equipVitality += parseLoreValue(lore);
                         } else if (lore.startsWith("Agility: ")) {
                             equipAgility += parseLoreValue(lore);
+                        } else if (lore.contains("HP%: ")) {
+
+                            equipFinalHpMultiplier += parseLoreValue(lore);
                         }
                     }
                 }
             }
         }
-        return new double[]{equipVitality, equipAgility};
+        return new double[]{equipVitality, equipAgility, equipFinalHpMultiplier};
     }
 
     /**
@@ -66,6 +70,7 @@ public class PlayerStatBuff {
 
         double[] equipStats = getEquipStats(player);
         double equipVitality = equipStats[0];
+        double finalHpMultiplier = 1 + (equipStats[2]*.01);
 
         // Calculate base health based on class and vitality
         double classVitality = switch (profile.getChosenClass().toLowerCase()) {
@@ -77,8 +82,7 @@ public class PlayerStatBuff {
         if (profile.getChosenClass().equalsIgnoreCase("alchemist")) {
             equipVitality*=1.2;
         }
-
-        return baseHealth + (healthPerVitality * (classVitality + equipVitality));
+        return (baseHealth + (healthPerVitality * (classVitality + equipVitality)))*finalHpMultiplier;
     }
 
     /**

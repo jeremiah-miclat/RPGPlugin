@@ -11,8 +11,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 
+import org.bukkit.event.block.CrafterCraftEvent;
+import org.bukkit.event.inventory.CraftItemEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
+import org.bukkit.inventory.AnvilInventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -106,22 +110,22 @@ public class ActivityListener implements Listener {
             // Update the currency and fish lore based on the type of fish caught
             assert itemName != null;
             if (itemName.contains("Cod")) {
-                if (Math.random() < multiplyChance) {
+                if (Math.random() < multiplyChance && multiplier>0) {
                     dropOrNotify(player, new ItemStack(Material.COD, (int) (multiplier)), fishLore);
                 }
                 userProfile.setCurrency("activitypoints", userProfile.getCurrency("activitypoints") + (5 + additionalPoints));
             } else if (itemName.contains("Salmon")) {
-                if (Math.random() < multiplyChance) {
+                if (Math.random() < multiplyChance && multiplier>0) {
                     dropOrNotify(player, new ItemStack(Material.SALMON, (int) (multiplier)), fishLore);
                 }
                 userProfile.setCurrency("activitypoints", userProfile.getCurrency("activitypoints") + (15 + additionalPoints));
             } else if (itemName.contains("Tropical")) {
-                if (Math.random() < multiplyChance) {
+                if (Math.random() < multiplyChance && multiplier>0) {
                     dropOrNotify(player, new ItemStack(Material.TROPICAL_FISH, (int) (multiplier)), fishLore);
                 }
                 userProfile.setCurrency("activitypoints", userProfile.getCurrency("activitypoints") + (25 + additionalPoints));
             } else if (itemName.contains("Puffer")) {
-                if (Math.random() < multiplyChance) {
+                if (Math.random() < multiplyChance && multiplier>0) {
                     dropOrNotify(player, new ItemStack(Material.PUFFERFISH, (int) (multiplier)), fishLore);
                 }
                 userProfile.setCurrency("activitypoints", userProfile.getCurrency("activitypoints") + (50 + additionalPoints));
@@ -146,6 +150,41 @@ public class ActivityListener implements Listener {
     public void onConsume(PlayerItemConsumeEvent event) {
         UserProfile userProfile = profileManager.getProfile(event.getPlayer().getName());
         userProfile.setActivitypoints(userProfile.getActivitypoints()+1);
+    }
+
+    @EventHandler
+    public void onCraft(CraftItemEvent event) {
+        Player player = (Player) event.getWhoClicked();
+        ItemStack craftedItem = event.getCurrentItem();
+        UserProfile profile = profileManager.getProfile(player.getName());
+
+        if (craftedItem != null ) {
+            int craftAmount = craftedItem.getAmount();
+            int bonusPoint = profile.getCrafter();
+            profile.setActivitypoints(profile.getActivitypoints()+craftAmount+bonusPoint);
+        }
+    }
+
+    @EventHandler
+    public void onAnvilResultTake(InventoryClickEvent event) {
+        // Check if the inventory is an anvil
+        if (event.getInventory() instanceof AnvilInventory) {
+            AnvilInventory anvilInventory = (AnvilInventory) event.getInventory();
+            ItemStack firstItem = anvilInventory.getItem(0);
+            ItemStack secondItem = anvilInventory.getItem(1);
+            ItemStack resultItem = anvilInventory.getItem(2); // Slot 2 is the result slot
+            if (firstItem == null || secondItem == null )return;
+            // Ensure the player is taking the item from the result slot (slot 2)
+            if (event.getSlot() == 2 && resultItem != null && resultItem.getType() != Material.AIR) {
+                if (secondItem.getType() == Material.ENCHANTED_BOOK) {
+                    Player player = (Player) event.getWhoClicked();
+                    UserProfile profile = profileManager.getProfile(player.getName());
+                    int bonusPoint = profile.getCrafter();
+                    profile.setActivitypoints(profile.getActivitypoints()+50+(bonusPoint*5));
+
+                }
+            }
+        }
     }
 
 

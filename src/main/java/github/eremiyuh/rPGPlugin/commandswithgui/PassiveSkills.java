@@ -62,7 +62,7 @@ public class PassiveSkills implements CommandExecutor, Listener {
         List<String> builderMetalore = new ArrayList<>();
         builderMetalore.add(ChatColor.BLUE + "" + ChatColor.ITALIC + "Builder: " + profile.getBuilder());
         builderMetalore.add(ChatColor.GRAY + "" + ChatColor.ITALIC + "Bonus activity points per level when placing blocks" );
-        builderMetalore.add(ChatColor.GRAY + "" + ChatColor.ITALIC + "Cost: 10000 activity points, 10 obsidians" );
+        builderMetalore.add(ChatColor.GRAY + "" + ChatColor.ITALIC + "Cost: 100000 activity points, 10 obsidians" );
         builderMeta.setLore(builderMetalore);
         builderMeta.setDisplayName("Builder");
         builder.setItemMeta(builderMeta);
@@ -79,6 +79,42 @@ public class PassiveSkills implements CommandExecutor, Listener {
         fishermanMeta.setDisplayName("Fisherman");
         fisherman.setItemMeta(fishermanMeta);
         gui.setItem(1, fisherman);
+
+        // Destroyer or Demolisher
+        ItemStack destroyer = new ItemStack(Material.NETHERITE_PICKAXE);  // Using a diamond sword as the icon for Destroyer skill
+        ItemMeta destroyerMeta = destroyer.getItemMeta();
+        List<String> destroyerLore = new ArrayList<>();
+        destroyerLore.add(ChatColor.RED + "" + ChatColor.ITALIC + "Demolisher: " + profile.getDestroyer());
+        destroyerLore.add(ChatColor.GRAY + "" + ChatColor.ITALIC + "Bonus activity point per level when breaking blocks");
+        destroyerLore.add(ChatColor.GRAY + "" + ChatColor.ITALIC + "Cost: 100000 activity points, 10 TNT");
+        destroyerMeta.setLore(destroyerLore);
+        destroyerMeta.setDisplayName("Demolisher");
+        destroyer.setItemMeta(destroyerMeta);
+        gui.setItem(2, destroyer);
+
+        // Hunter
+        ItemStack hunter = new ItemStack(Material.BOW);  // Using a bow as the icon for Hunter skill
+        ItemMeta hunterMeta = hunter.getItemMeta();
+        List<String> hunterLore = new ArrayList<>();
+        hunterLore.add(ChatColor.YELLOW + "" + ChatColor.ITALIC + "Hunter: " + profile.getHunter());
+        hunterLore.add(ChatColor.GRAY + "" + ChatColor.ITALIC + "Bonus activity point per level when defeating living entities");
+        hunterLore.add(ChatColor.GRAY + "" + ChatColor.ITALIC + "Cost: 100000 activity points, 1 wither skeleton skull");
+        hunterMeta.setLore(hunterLore);
+        hunterMeta.setDisplayName("Hunter");
+        hunter.setItemMeta(hunterMeta);
+        gui.setItem(3, hunter);
+
+        // Crafter
+        ItemStack crafter = new ItemStack(Material.CRAFTING_TABLE);  // Using a crafting table as the icon for Crafter skill
+        ItemMeta crafterMeta = crafter.getItemMeta();
+        List<String> crafterLore = new ArrayList<>();
+        crafterLore.add(ChatColor.LIGHT_PURPLE + "" + ChatColor.ITALIC + "Crafter: " + profile.getCrafter());
+        crafterLore.add(ChatColor.GRAY + "" + ChatColor.ITALIC + "Bonus activity point per level when crafting and enchanting");
+        crafterLore.add(ChatColor.GRAY + "" + ChatColor.ITALIC + "Cost: 100000 activity points, 10 crafting table");
+        crafterMeta.setLore(crafterLore);
+        crafterMeta.setDisplayName("Crafter");
+        crafter.setItemMeta(crafterMeta);
+        gui.setItem(4, crafter);  // Adjust the slot number as needed
 
         // Open the GUI for the player
         player.openInventory(gui);
@@ -129,7 +165,7 @@ public class PassiveSkills implements CommandExecutor, Listener {
                                 // Provide feedback to the player
                                 player.sendMessage(ChatColor.GREEN + "Your Builder skill has been increased to level " + newBuilderLevel + "!");
                             } else {
-                                player.sendMessage(ChatColor.RED + "You need " + requiredObsi + " obsidian to make this purchase.");
+                                player.sendMessage(ChatColor.RED + "You need " + requiredObsi + " obsidian to upgrade.");
                             }
 
                         }
@@ -154,9 +190,84 @@ public class PassiveSkills implements CommandExecutor, Listener {
                                 // Provide feedback to the player
                                 player.sendMessage(ChatColor.GREEN + "Your Fisherman skill has been increased to level " + newFishermanLevel + "!");
                             } else {
-                                player.sendMessage(ChatColor.RED + "You need " + requiredHeart + " heart of the sea to make this purchase.");
+                                player.sendMessage(ChatColor.RED + "You need " + requiredHeart + " heart of the sea to upgrade.");
                             }
                         }
+
+                        // If the clicked item is the Demolisher skill
+                        if (firstLine.contains(ChatColor.RED + "" + ChatColor.ITALIC + "Demolisher")) {
+                            int requiredTNT = 10;
+                            if (profile.getActivitypoints() < 100000) {
+                                player.sendMessage("Need 100000 activity points");
+                                return;
+                            }
+
+                            if (player.getInventory().containsAtLeast(new ItemStack(Material.TNT), requiredTNT)) {
+                                // Increment the Destroyer skill in the profile
+                                player.getInventory().removeItem(new ItemStack(Material.TNT, requiredTNT));
+                                int newDestroyerLevel = profile.getDestroyer() + 1; // Increment destroyer skill by 1
+                                profile.setDestroyer(newDestroyerLevel); // Update the profile
+
+                                // Update the inventory (optional, to reflect new destroyer level)
+                                openSkillsGui(player, profile);
+
+                                // Provide feedback to the player
+                                player.sendMessage(ChatColor.RED + "Your Destroyer skill has been increased to level " + newDestroyerLevel + "!");
+                            } else {
+                                player.sendMessage(ChatColor.RED + "You need " + requiredTNT + " TNT to upgrade.");
+                            }
+                        }
+
+                        // If the clicked item is the Hunter skill
+                        if (firstLine.contains(ChatColor.YELLOW + "" + ChatColor.ITALIC + "Hunter")) {
+                            int requiredWSH = 1;
+                            if (profile.getActivitypoints() < 100000) {
+                                player.sendMessage("Need 100000 activity points");
+                                return;
+                            }
+
+                            if (player.getInventory().containsAtLeast(new ItemStack(Material.WITHER_SKELETON_SKULL), requiredWSH)) {
+                                // Increment the Hunter skill in the profile
+                                player.getInventory().removeItem(new ItemStack(Material.WITHER_SKELETON_SKULL, requiredWSH));
+                                int newHunterLevel = profile.getHunter() + 1; // Increment hunter skill by 1
+                                profile.setHunter(newHunterLevel); // Update the profile
+
+                                // Update the inventory (optional, to reflect new hunter level)
+                                openSkillsGui(player, profile);
+
+                                // Provide feedback to the player
+                                player.sendMessage(ChatColor.YELLOW + "Your Hunter skill has been increased to level " + newHunterLevel + "!");
+                            } else {
+                                player.sendMessage(ChatColor.RED + "You need " + requiredWSH + "wither skeleton skull to upgrade.");
+                            }
+                        }
+
+                        // If the clicked item is the Crafter skill
+                        if (firstLine.contains(ChatColor.LIGHT_PURPLE + "" + ChatColor.ITALIC + "Crafter")) {
+                            int requiredCraftTable = 10;  // Number of enchanted books required for the upgrade
+                            if (profile.getActivitypoints() < 100000) {
+                                player.sendMessage("Need 100000 activity points");
+                                return;
+                            }
+
+                            if (player.getInventory().containsAtLeast(new ItemStack(Material.CRAFTING_TABLE), requiredCraftTable)) {
+                                // Increment the Crafter skill in the profile
+                                player.getInventory().removeItem(new ItemStack(Material.CRAFTING_TABLE, requiredCraftTable));
+                                int newCrafterLevel = profile.getCrafter() + 1; // Increment Crafter skill by 1
+                                profile.setCrafter(newCrafterLevel); // Update the profile
+
+                                // Update the inventory (optional, to reflect new crafter level)
+                                openSkillsGui(player, profile);
+
+                                // Provide feedback to the player
+                                player.sendMessage(ChatColor.BLUE + "Your Crafter skill has been increased to level " + newCrafterLevel + "!");
+                            } else {
+                                player.sendMessage(ChatColor.RED + "You need " + requiredCraftTable + " crafting table to upgrade.");
+                            }
+                        }
+
+
+
                     }
                 }
 

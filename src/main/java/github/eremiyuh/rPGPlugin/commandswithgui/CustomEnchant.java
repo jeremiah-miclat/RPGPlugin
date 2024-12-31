@@ -118,7 +118,72 @@ public class CustomEnchant implements CommandExecutor, Listener {
 
         ceStore.setItem(3, Lure5);
 
+        // BonusStatDamage
+        ItemStack BonusStatDamage = new ItemStack(Material.ENCHANTED_BOOK);
+        ItemMeta BonusStatDamageMeta = BonusStatDamage.getItemMeta();
 
+        if (BonusStatDamageMeta != null) {
+            List<Component> lore = new ArrayList<>();
+            lore.add(Component.text("SWORD"));
+            lore.add(Component.text("StatDamage%: 1").style(Style.style(TextDecoration.ITALIC, TextColor.color(171, 0, 255))));
+            lore.add(Component.text("Cost: 1M activity points, 1 Nether Star"));
+            BonusStatDamageMeta.lore(lore);
+
+            BonusStatDamage.setItemMeta(BonusStatDamageMeta);
+        }
+
+
+        ceStore.setItem(4, BonusStatDamage);
+
+
+        // HP% Enchantment
+        ItemStack HPEnchantment = new ItemStack(Material.ENCHANTED_BOOK);
+        ItemMeta HPEnchantmentMeta = HPEnchantment.getItemMeta();
+
+        if (HPEnchantmentMeta != null) {
+            List<Component> lore = new ArrayList<>();
+            lore.add(Component.text("NETHERITE"));
+            lore.add(Component.text("HP%: 1").style(Style.style(TextDecoration.ITALIC, TextColor.color(0, 171, 255))));
+            lore.add(Component.text("Cost: 1M activity points, 2 Heart of the Sea"));
+            HPEnchantmentMeta.lore(lore);
+
+            HPEnchantment.setItemMeta(HPEnchantmentMeta);
+        }
+        ceStore.setItem(5, HPEnchantment);
+
+
+        // BonusStatDamage BOWS
+        ItemStack BonusStatDamage2 = new ItemStack(Material.ENCHANTED_BOOK);
+        ItemMeta BonusStatDamageMeta2 = BonusStatDamage.getItemMeta();
+        if (BonusStatDamageMeta2 != null) {
+            List<Component> lore = new ArrayList<>();
+            lore.add(Component.text("BOW"));
+            lore.add(Component.text("StatDamage%: 1").style(Style.style(TextDecoration.ITALIC, TextColor.color(171, 0, 255))));
+            lore.add(Component.text("Cost: 1M activity points, 1 Nether Star"));
+            BonusStatDamageMeta2.lore(lore);
+
+            BonusStatDamage2.setItemMeta(BonusStatDamageMeta2);
+
+
+        }
+
+        ceStore.setItem(6, BonusStatDamage2);
+
+        // BonusStatDamage BOOK
+        ItemStack BonusStatDamage3 = new ItemStack(Material.ENCHANTED_BOOK);
+        ItemMeta BonusStatDamageMeta3 = BonusStatDamage.getItemMeta();
+        if (BonusStatDamageMeta3 != null) {
+            List<Component> lore = new ArrayList<>();
+            lore.add(Component.text("BOOK"));
+            lore.add(Component.text("StatDamage%: 1").style(Style.style(TextDecoration.ITALIC, TextColor.color(171, 0, 255))));
+            lore.add(Component.text("Cost: 1M activity points, 1 Nether Star"));
+            BonusStatDamageMeta3.lore(lore);
+
+            BonusStatDamage3.setItemMeta(BonusStatDamageMeta3);
+        }
+
+
+        ceStore.setItem(7, BonusStatDamage3);
 
         player.openInventory(ceStore);
     }
@@ -259,6 +324,102 @@ public class CustomEnchant implements CommandExecutor, Listener {
                     dropOrNotify(player, item, "Successfully purchased.");
                 } else {
                     player.sendMessage(ChatColor.RED + "You need " + requiredShell + " nautilus shell to make this purchase.");
+                }
+            }
+
+            // BonusStatDamage
+            if (event.getSlot() == 4 && event.getCurrentItem() != null && event.getCurrentItem().getType() == Material.ENCHANTED_BOOK
+                    && icon) {
+                double cost = 1000000;
+                String activityPoint = " activity points ";
+                int requiredStar = 1;
+
+                if (userProfile.getActivitypoints() < cost) {
+                    player.sendMessage(ChatColor.RED + "Needs " + ((int) cost) + activityPoint);
+                    return;
+                }
+                if (player.getInventory().containsAtLeast(new ItemStack(Material.NETHER_STAR), requiredStar)) {
+
+                    player.getInventory().removeItem(new ItemStack(Material.NETHER_STAR, requiredStar));
+
+                    userProfile.setCurrency("activitypoints", userProfile.getActivitypoints() - cost);
+
+                    ItemStack item = event.getCurrentItem().clone();
+                    dropOrNotify(player, item, "Successfully purchased.");
+                } else {
+                    player.sendMessage(ChatColor.RED + "You need " + requiredStar + " nether star to make this purchase.");
+                }
+            }
+
+            // HP% Enchantment Purchase
+            if (event.getSlot() == 5 && event.getCurrentItem() != null && event.getCurrentItem().getType() == Material.ENCHANTED_BOOK
+                    && icon) {
+                double cost = 1000000;
+                String activityPoint = " activity points ";
+                int requiredHearts = 2;
+
+                if (userProfile.getActivitypoints() < cost) {
+                    player.sendMessage(ChatColor.RED + "Needs " + ((int) cost) + activityPoint);
+                    return;
+                }
+                if (player.getInventory().containsAtLeast(new ItemStack(Material.HEART_OF_THE_SEA), requiredHearts)) {
+
+                    player.getInventory().removeItem(new ItemStack(Material.HEART_OF_THE_SEA, requiredHearts));
+
+                    userProfile.setCurrency("activitypoints", userProfile.getActivitypoints() - cost);
+
+                    ItemStack item = event.getCurrentItem().clone();
+                    dropOrNotify(player, item, "Successfully purchased.");
+                } else {
+                    player.sendMessage(ChatColor.RED + "You need " + requiredHearts + " Heart of the Sea to make this purchase.");
+                }
+            }
+
+            // BonusStatDamage
+            if (event.getSlot() == 6 && event.getCurrentItem() != null && event.getCurrentItem().getType() == Material.ENCHANTED_BOOK
+                    && icon) {
+                double cost = 1000000;
+                String activityPoint = " activity points ";
+                int requiredStar = 1;
+
+                if (userProfile.getActivitypoints() < cost) {
+                    player.sendMessage(ChatColor.RED + "Needs " + ((int) cost) + activityPoint);
+                    return;
+                }
+                if (player.getInventory().containsAtLeast(new ItemStack(Material.NETHER_STAR), requiredStar)) {
+
+                    player.getInventory().removeItem(new ItemStack(Material.NETHER_STAR, requiredStar));
+
+                    userProfile.setCurrency("activitypoints", userProfile.getActivitypoints() - cost);
+
+                    ItemStack item = event.getCurrentItem().clone();
+                    dropOrNotify(player, item, "Successfully purchased.");
+                } else {
+                    player.sendMessage(ChatColor.RED + "You need " + requiredStar + " nether star to make this purchase.");
+                }
+            }
+
+            // BonusStatDamage BOOK
+            if (event.getSlot() == 7 && event.getCurrentItem() != null && event.getCurrentItem().getType() == Material.ENCHANTED_BOOK
+                    && icon) {
+                double cost = 1000000;
+                String activityPoint = " activity points ";
+                int requiredStar = 1;
+
+                if (userProfile.getActivitypoints() < cost) {
+                    player.sendMessage(ChatColor.RED + "Needs " + ((int) cost) + activityPoint);
+                    return;
+                }
+                if (player.getInventory().containsAtLeast(new ItemStack(Material.NETHER_STAR), requiredStar)) {
+
+                    player.getInventory().removeItem(new ItemStack(Material.NETHER_STAR, requiredStar));
+
+                    userProfile.setCurrency("activitypoints", userProfile.getActivitypoints() - cost);
+
+                    ItemStack item = event.getCurrentItem().clone();
+                    dropOrNotify(player, item, "Successfully purchased.");
+                } else {
+                    player.sendMessage(ChatColor.RED + "You need " + requiredStar + " nether star to make this purchase.");
                 }
             }
 
