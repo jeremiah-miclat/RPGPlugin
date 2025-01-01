@@ -52,10 +52,10 @@ public class MonsterInitializer implements Listener {
         }
 
 
-        if (!isPlayerOnSameYLevel(event.getLocation())) {
-            event.setCancelled(true);
-            return;
-        }
+//        if (!isPlayerOnSameYLevel(event.getLocation())) {
+//            event.setCancelled(true);
+//            return;
+//        }
 
         if ((event.getEntity() instanceof Animals || event.getEntity() instanceof Phantom)
                 && !(event.getEntity() instanceof Spider) && !(event.getEntity() instanceof CaveSpider)) {

@@ -114,7 +114,19 @@ public class PassiveSkills implements CommandExecutor, Listener {
         crafterMeta.setLore(crafterLore);
         crafterMeta.setDisplayName("Crafter");
         crafter.setItemMeta(crafterMeta);
-        gui.setItem(4, crafter);  // Adjust the slot number as needed
+        gui.setItem(4, crafter);
+
+        // Trader
+        ItemStack trader = new ItemStack(Material.VILLAGER_SPAWN_EGG);  // Using a villager spawn egg as the icon for Trader skill
+        ItemMeta traderMeta = trader.getItemMeta();
+        List<String> traderLore = new ArrayList<>();
+        traderLore.add(ChatColor.GOLD + "" + ChatColor.ITALIC + "Trader: " + profile.getTrader());
+        traderLore.add(ChatColor.GRAY + "" + ChatColor.ITALIC + "Bonus activity point per level when trading with villagers");
+        traderLore.add(ChatColor.GRAY + "" + ChatColor.ITALIC + "Cost: 100000 activity points, 10 books");
+        traderMeta.setLore(traderLore);
+        traderMeta.setDisplayName("Trader");
+        trader.setItemMeta(traderMeta);
+        gui.setItem(5, trader);
 
         // Open the GUI for the player
         player.openInventory(gui);
@@ -265,6 +277,31 @@ public class PassiveSkills implements CommandExecutor, Listener {
                                 player.sendMessage(ChatColor.RED + "You need " + requiredCraftTable + " crafting table to upgrade.");
                             }
                         }
+
+                        // If the clicked item is the Trader skill
+                        if (firstLine.contains(ChatColor.GOLD + "" + ChatColor.ITALIC + "Trader")) {
+                            int requiredBooks = 10;
+                            if (profile.getActivitypoints() < 100000) {
+                                player.sendMessage("Need 100000 activity points");
+                                return;
+                            }
+
+                            if (player.getInventory().containsAtLeast(new ItemStack(Material.BOOK), requiredBooks)) {
+                                // Increment the Trader skill in the profile
+                                player.getInventory().removeItem(new ItemStack(Material.BOOK, requiredBooks));
+                                int newTraderLevel = profile.getTrader() + 1; // Increment Trader skill by 1
+                                profile.setTrader(newTraderLevel); // Update the profile
+
+                                // Update the inventory (optional, to reflect new trader level)
+                                openSkillsGui(player, profile);
+
+                                // Provide feedback to the player
+                                player.sendMessage(ChatColor.BLUE + "Your Trader skill has been increased to level " + newTraderLevel + "!");
+                            } else {
+                                player.sendMessage(ChatColor.RED + "You need " + requiredBooks + " books to upgrade.");
+                            }
+                        }
+
 
 
 

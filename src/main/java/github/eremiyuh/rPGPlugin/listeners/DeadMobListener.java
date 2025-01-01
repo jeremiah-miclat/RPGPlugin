@@ -80,12 +80,25 @@ public class DeadMobListener implements Listener {
                     UserProfile profile = profileManager.getProfile(player.getName());
                     int bonusPoints = profile.getHunter();
                     profile.setActivitypoints(profile.getActivitypoints()+1+bonusPoints);
+                    if (event.getEntity() instanceof  Warden || event.getEntity() instanceof Wither) {
+                        profile.setCurrency("activitypoints", profile.getCurrency("activitypoints") + (1000));
+                    }
+
+                    if (event.getEntity() instanceof EnderDragon) {
+                        profile.setCurrency("activitypoints", profile.getCurrency("activitypoints") + (2000));
+                    }
                 }
 
                 if ((event.getEntity().getKiller() instanceof Projectile proj && proj.getShooter() instanceof Player shooter)) {
                     UserProfile profile = profileManager.getProfile(shooter.getName());
                     int bonusPoints = profile.getHunter();
                     profile.setActivitypoints(profile.getActivitypoints()+1+bonusPoints);
+                    if (event.getEntity() instanceof  Warden || event.getEntity() instanceof Wither) {
+                        profile.setCurrency("activitypoints", profile.getCurrency("activitypoints") + (1000));
+                    }
+                    if (event.getEntity() instanceof EnderDragon) {
+                        profile.setCurrency("activitypoints", profile.getCurrency("activitypoints") + (2000));;
+                    }
                 }
 
 
@@ -156,20 +169,24 @@ public class DeadMobListener implements Listener {
                 }
 
 
-                List<String> attackerNames = (List<String>) mob.getMetadata("attackerList").get(0).value();
-                List<Player> nearbyPlayers = new ArrayList<>();
+
 
                 if (world.getName().contains("labyrinth")) {xValidRange = 60; yValidRange = 5;}
 
-                // Iterate over the list of attacker names and check if they are players nearby
-                for (String attackerName : attackerNames) {
-                    Player player = Bukkit.getPlayer(attackerName); // Get the player by name
-                    if (player != null && mob.getWorld().getName().equals(player.getWorld().getName())) {
-                        nearbyPlayers.add(player); // Add player to nearby players list
-                    }
-                }
+
 
                 if ((isBoss || isWorldBoss) && bosslvl >= 1) {
+                    List<String> attackerNames = (List<String>) mob.getMetadata("attackerList").get(0).value();
+                    List<Player> nearbyPlayers = new ArrayList<>();
+                    // Iterate over the list of attacker names and check if they are players nearby
+                    assert attackerNames != null;
+                    for (String attackerName : attackerNames) {
+                        Player player = Bukkit.getPlayer(attackerName); // Get the player by name
+                        if (player != null && mob.getWorld().getName().equals(player.getWorld().getName())) {
+                            nearbyPlayers.add(player); // Add player to nearby players list
+                        }
+                    }
+
                     if (isWorldBoss) {
                         BossKillMessages.broadcastBossKill(killer.getName(), customName);
                     }
@@ -361,7 +378,8 @@ public class DeadMobListener implements Listener {
                 material.name().endsWith("_HOE") ||
                 material.name().contains("CROSSBOW") ||
                 material.name().contains("BOW") ||
-                material.name().contains("SHIELD");
+                material.name().contains("SHIELD") ||
+                material.name().contains("SADDLE");
     }
 
 

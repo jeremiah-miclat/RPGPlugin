@@ -4,7 +4,9 @@ import github.eremiyuh.rPGPlugin.manager.PlayerProfileManager;
 import github.eremiyuh.rPGPlugin.profile.UserProfile;
 import io.papermc.paper.event.player.PlayerTradeEvent;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -14,6 +16,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.CrafterCraftEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.PlayerBucketEntityEvent;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.AnvilInventory;
@@ -26,9 +29,18 @@ import java.util.List;
 
 public class ActivityListener implements Listener {
     private final PlayerProfileManager profileManager;
+    private final World world;
+    private final int x1 = -150, z1 = 150;
+    private final int x2 = 150, z2 = -150;
 
     public ActivityListener(PlayerProfileManager profileManager) {
         this.profileManager = profileManager;
+        this.world = Bukkit.getWorld("world");
+    }
+
+    private boolean inFishingArea(int x, int z) {
+        return x >= Math.min(x1, x2) && x <= Math.max(x1, x2) &&
+                z >= Math.min(z1, z2) && z <= Math.max(z1, z2);
     }
 
     @EventHandler
@@ -106,6 +118,10 @@ public class ActivityListener implements Listener {
             itemStack.setItemMeta(fishItemmeta);
 
 
+            if (inFishingArea(player.getLocation().getBlockX(), player.getLocation().getBlockZ())
+                    && (player.getWorld().getName().equals(world.getName()))) {
+                additionalPoints+=50;
+            }
 
             // Update the currency and fish lore based on the type of fish caught
             assert itemName != null;
@@ -143,7 +159,8 @@ public class ActivityListener implements Listener {
     @EventHandler
     public void onTrade(PlayerTradeEvent event) {
         UserProfile userProfile = profileManager.getProfile(event.getPlayer().getName());
-        userProfile.setActivitypoints(userProfile.getActivitypoints()+1);
+        int bonusPoint = userProfile.getTrader();
+        userProfile.setActivitypoints(userProfile.getActivitypoints()+1+bonusPoint);
     }
 
     @EventHandler

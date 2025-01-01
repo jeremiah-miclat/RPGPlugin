@@ -129,6 +129,7 @@ public class PlayerProfileManager {
         config.set("hunter",profile.getHunter());
         config.set("fisherman",profile.getFisherman());
         config.set("crafter",profile.getCrafter());
+        config.set("trader",profile.getTrader());
 
         try {
             config.save(profileFile);
@@ -274,6 +275,7 @@ public class PlayerProfileManager {
         profile.setFisherman(config.getInt("fisherman",0));
         profile.setHunter(config.getInt("hunter",0));
         profile.setCrafter(config.getInt("crafter",0));
+        profile.setTrader(config.getInt("trader",0));
 
         playerProfiles.put(playerName, profile);
     }
