@@ -466,7 +466,7 @@ public class UserProfile {
 
             } else if (difference < 0) {
                 // Player spent currency
-                player.sendMessage(ChatColor.BLUE + "" + ChatColor.ITALIC + "You spent " + Math.abs(difference) + " " + currencyName + ".");
+                player.sendMessage(ChatColor.BLUE + "" + ChatColor.ITALIC + "You spent " + (int) Math.abs(difference) + " " + currencyName + ".");
             }
         }
     }

@@ -17,6 +17,7 @@ import org.bukkit.event.player.*;
 import org.bukkit.event.raid.RaidEvent;
 import org.bukkit.event.raid.RaidTriggerEvent;
 import org.bukkit.event.weather.LightningStrikeEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Merchant;
 import org.bukkit.inventory.MerchantRecipe;
@@ -288,29 +289,52 @@ public class AreaProtectionListener implements Listener {
         }
 
     }
-//    @EventHandler
-//    public void onBlockBurn(BlockBurnEvent event) {
-//        if (!event.getBlock().getWorld().getName().equals(world.getName()) && !event.getBlock().getWorld().getName().equals("world_rpg")) {
-//            return;
-//        }
-//        Block block = event.getBlock();
-//        if (isInProtectedArea(block.getLocation().getBlockX(), block.getLocation().getBlockZ())  && block.getType() != Material.OBSIDIAN) {
-//            event.setCancelled(true);
-//        }
-//
-//    }
-//
-//    @EventHandler
-//    public void onBlockBurn(BlockIgniteEvent event) {
-//        if (!event.getBlock().getWorld().getName().equals(world.getName()) && !event.getBlock().getWorld().getName().equals("world_rpg")) {
-//            return;
-//        }
-//        Block block = event.getBlock();
-//        if (isInProtectedArea(block.getLocation().getBlockX(), block.getLocation().getBlockZ()) && block.getType() != Material.OBSIDIAN) {
-//            event.setCancelled(true);
-//        }
-//
-//    }
+
+    @EventHandler
+    public void onSpawnEgg(PlayerInteractEvent event) {
+        if (!event.getPlayer().getWorld().getName().contains("world_rpg")) {
+            return;
+        }
+        if (event.getHand() != EquipmentSlot.HAND) return; // Only check for main hand
+        if (event.getItem() == null || (event.getItem().getType() != Material.WARDEN_SPAWN_EGG && event.getItem().getType() != Material.RAVAGER_SPAWN_EGG
+                && event.getItem().getType() != Material.EVOKER_SPAWN_EGG
+        )) return; // Only check for spawn eggs
+
+        Player player = event.getPlayer();
+        Block clickedBlock = event.getClickedBlock();
+
+        if (clickedBlock == null) {
+            event.setCancelled(true);
+            return;
+        }
+
+        Location location = Objects.requireNonNull(event.getClickedBlock()).getLocation();
+
+        // Check for air 3 blocks above
+        for (int i = 1; i <= 3; i++) {
+            Block blockAbove = location.clone().add(0, i, 0).getBlock();
+            if (blockAbove.getType() != Material.AIR) {
+                event.setCancelled(true);
+                player.sendMessage("§cNot enough space above to spawn!");
+                return;
+            }
+        }
+
+        // Check for air 2 blocks around x and z, excluding player's location
+        for (int xOffset = -3; xOffset <= 3; xOffset++) {
+            for (int zOffset = -3; zOffset <= 3; zOffset++) {
+                Location checkLocation = location.clone().add(xOffset, 1, zOffset);
+                if (!checkLocation.equals(player.getLocation())) { // Check if it's not the player's location
+                    Block blockAround = checkLocation.getBlock();
+                    if (blockAround.getType().isSolid()) {
+                        event.setCancelled(true);
+                        player.sendMessage("§cNot enough space around to spawn!");
+                        return;
+                    }
+                }
+            }
+        }
+    }
 
     @EventHandler
     public void onLightning(LightningStrikeEvent event) {
@@ -377,7 +401,10 @@ public class AreaProtectionListener implements Listener {
 
     @EventHandler
     public void onEntityDamage(EntityDamageEvent event) {
-        if (!event.getEntity().getWorld().getName().equals(world.getName()) && !event.getEntity().getWorld().getName().equals("world_rpg")) {
+        if (!event.getEntity().getWorld().getName().equals(world.getName())
+//                && !event.getEntity().getWorld().getName().equals("world_rpg")
+
+        ) {
             return;
         }
 

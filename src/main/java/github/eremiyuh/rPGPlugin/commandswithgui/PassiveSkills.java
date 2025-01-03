@@ -62,7 +62,7 @@ public class PassiveSkills implements CommandExecutor, Listener {
         List<String> builderMetalore = new ArrayList<>();
         builderMetalore.add(ChatColor.BLUE + "" + ChatColor.ITALIC + "Builder: " + profile.getBuilder());
         builderMetalore.add(ChatColor.GRAY + "" + ChatColor.ITALIC + "Bonus activity points per level when placing blocks" );
-        builderMetalore.add(ChatColor.GRAY + "" + ChatColor.ITALIC + "Cost: 100000 activity points, 10 obsidians" );
+        builderMetalore.add(ChatColor.GRAY + "" + ChatColor.ITALIC + "Cost: 10000 activity points, 10 obsidians" );
         builderMeta.setLore(builderMetalore);
         builderMeta.setDisplayName("Builder");
         builder.setItemMeta(builderMeta);
@@ -117,7 +117,7 @@ public class PassiveSkills implements CommandExecutor, Listener {
         gui.setItem(4, crafter);
 
         // Trader
-        ItemStack trader = new ItemStack(Material.VILLAGER_SPAWN_EGG);  // Using a villager spawn egg as the icon for Trader skill
+        ItemStack trader = new ItemStack(Material.EMERALD);  // Using a villager spawn egg as the icon for Trader skill
         ItemMeta traderMeta = trader.getItemMeta();
         List<String> traderLore = new ArrayList<>();
         traderLore.add(ChatColor.GOLD + "" + ChatColor.ITALIC + "Trader: " + profile.getTrader());

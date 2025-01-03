@@ -183,7 +183,7 @@ public class MonsterInitializerLabyrinth implements Listener {
         }
 
         // World Boss scaling logic
-        if (Math.random() < .0003 || entity instanceof Warden || entity instanceof Wither || entity instanceof ElderGuardian || entity instanceof Ravager || entity instanceof Evoker && !(entity instanceof Vex)) {
+        if (Math.random() < .0001 || entity instanceof Warden || entity instanceof Wither || entity instanceof ElderGuardian || entity instanceof Ravager || entity instanceof Evoker && !(entity instanceof Vex)) {
             extraHealth *= 1000; // Add 10000% health
             setBossAttributes(entity, targetLocation.getBlockY(), "World Boss", ChatColor.DARK_PURPLE, lvl);
             entity.setHealth(Math.min(extraHealth, customMaxHealth));

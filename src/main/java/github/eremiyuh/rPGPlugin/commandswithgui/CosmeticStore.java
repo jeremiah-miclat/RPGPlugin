@@ -86,7 +86,7 @@ public class CosmeticStore implements CommandExecutor, Listener {
         cosmeticItems2.add(new CosmeticItem(getElleBoots(), 250, "gold"));
 
         //netherite bow
-        cosmeticItems2.add(new CosmeticItem(getNetherCrossBow(),3,"netherite"));
+        cosmeticItems2.add(new CosmeticItem(getNetherCrossBow(),5,"netherite"));
 
         // riesling crossbow
         cosmeticItems2.add(new CosmeticItem(getRieslingCrossBow(),100000,"activitypoints"));
