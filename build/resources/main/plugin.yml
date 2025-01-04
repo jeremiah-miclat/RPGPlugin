@@ -215,6 +215,9 @@ commands:
     description: Opens abyss store.
     usage: /abyssstore
     notes: "Gain abyss points by going to abyss world - /warp abyss"
+  activityshop:
+    description: Opens active point store.
+    usage: /activityshop
   addstat:
     description: Add attributes.
     usage: /addstat attributename amount

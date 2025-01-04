@@ -97,6 +97,9 @@ public class CosmeticStore implements CommandExecutor, Listener {
         cosmeticItems2.add(new CosmeticItem(getGrimNethLeg(), 25000, "activitypoints"));
         cosmeticItems2.add(new CosmeticItem(getGrimNethBoots(), 25000, "activitypoints"));
 
+        //demonicblade
+        cosmeticItems2.add(new CosmeticItem(getDemonicBlade(), 500000, "activitypoints"));
+
     }
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {

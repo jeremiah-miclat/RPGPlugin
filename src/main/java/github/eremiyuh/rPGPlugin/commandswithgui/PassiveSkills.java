@@ -170,7 +170,7 @@ public class PassiveSkills implements CommandExecutor, Listener {
                                 player.getInventory().removeItem(new ItemStack(Material.OBSIDIAN, requiredObsi));
                                 int newBuilderLevel = profile.getBuilder() + 1; // Increment builder skill by 1
                                 profile.setBuilder(newBuilderLevel); // Update the profile
-
+                                profile.setCurrency("activitypoints", profile.getActivitypoints()-10000);
                                 // Update the inventory (optional, to reflect new builder level)
                                 openSkillsGui(player, profile);
 
@@ -195,7 +195,7 @@ public class PassiveSkills implements CommandExecutor, Listener {
                                 player.getInventory().removeItem(new ItemStack(Material.HEART_OF_THE_SEA, requiredHeart));
                                 int newFishermanLevel = profile.getFisherman() + 1; // Increment fisherman skill by 1
                                 profile.setFisherman(newFishermanLevel); // Update the profile
-
+                                profile.setCurrency("activitypoints", profile.getActivitypoints()-100000);
                                 // Update the inventory (optional, to reflect new fisherman level)
                                 openSkillsGui(player, profile);
 
@@ -219,7 +219,7 @@ public class PassiveSkills implements CommandExecutor, Listener {
                                 player.getInventory().removeItem(new ItemStack(Material.TNT, requiredTNT));
                                 int newDestroyerLevel = profile.getDestroyer() + 1; // Increment destroyer skill by 1
                                 profile.setDestroyer(newDestroyerLevel); // Update the profile
-
+                                profile.setCurrency("activitypoints", profile.getActivitypoints()-100000);
                                 // Update the inventory (optional, to reflect new destroyer level)
                                 openSkillsGui(player, profile);
 
@@ -243,7 +243,7 @@ public class PassiveSkills implements CommandExecutor, Listener {
                                 player.getInventory().removeItem(new ItemStack(Material.WITHER_SKELETON_SKULL, requiredWSH));
                                 int newHunterLevel = profile.getHunter() + 1; // Increment hunter skill by 1
                                 profile.setHunter(newHunterLevel); // Update the profile
-
+                                profile.setCurrency("activitypoints", profile.getActivitypoints()-100000);
                                 // Update the inventory (optional, to reflect new hunter level)
                                 openSkillsGui(player, profile);
 
@@ -267,7 +267,7 @@ public class PassiveSkills implements CommandExecutor, Listener {
                                 player.getInventory().removeItem(new ItemStack(Material.CRAFTING_TABLE, requiredCraftTable));
                                 int newCrafterLevel = profile.getCrafter() + 1; // Increment Crafter skill by 1
                                 profile.setCrafter(newCrafterLevel); // Update the profile
-
+                                profile.setCurrency("activitypoints", profile.getActivitypoints()-100000);
                                 // Update the inventory (optional, to reflect new crafter level)
                                 openSkillsGui(player, profile);
 
@@ -291,7 +291,7 @@ public class PassiveSkills implements CommandExecutor, Listener {
                                 player.getInventory().removeItem(new ItemStack(Material.BOOK, requiredBooks));
                                 int newTraderLevel = profile.getTrader() + 1; // Increment Trader skill by 1
                                 profile.setTrader(newTraderLevel); // Update the profile
-
+                                profile.setCurrency("activitypoints", profile.getActivitypoints()-100000);
                                 // Update the inventory (optional, to reflect new trader level)
                                 openSkillsGui(player, profile);
 

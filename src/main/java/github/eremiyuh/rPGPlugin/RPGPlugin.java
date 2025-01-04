@@ -383,7 +383,7 @@ public class RPGPlugin extends JavaPlugin {
 
 
         worldConfig();
-        loadWorld("world_rpg",-15,72,-35, 270,0,-1,-1,-1,18000,GameRule.DO_DAYLIGHT_CYCLE,false, World.Environment.NORMAL, null);
+        loadWorld("world_rpg",-91,75,-91, 0,0,-1,-1,-1,18000,GameRule.DO_DAYLIGHT_CYCLE,false, World.Environment.NORMAL, null);
         loadWorld("world_labyrinth",-23,312,-35, 270,0,0,0,100,18000,null,false, World.Environment.NORMAL,Biome.NETHER_WASTES);
         loadWorld("world_labyrinth2",-19,251,-36,270,0,0,0,100,18000,null,false, World.Environment.NETHER,Biome.NETHER_WASTES);
         new TabListCustomizer(this, profileManager);

@@ -107,6 +107,7 @@ public class AbyssStoreCommand implements CommandExecutor, Listener {
             List<Component> lore = new ArrayList<>();
             lore.add(Component.text("World Boss Spawn Egg").color(TextColor.color(255, 215, 0)));
             lore.add(Component.text("Cost: 1,000 Emerald").color(TextColor.color(255, 215, 0)));
+            lore.add(Component.text("x1.5 abyss point reward").color(TextColor.color(255, 215, 0)));
             lore.add(Component.text("Doesn't despawn").color(TextColor.color(255, 215, 0)));
             ravagerSEMeta.lore(lore);
 
@@ -124,6 +125,7 @@ public class AbyssStoreCommand implements CommandExecutor, Listener {
             List<Component> lore = new ArrayList<>();
             lore.add(Component.text("World Boss Spawn Egg").color(TextColor.color(255, 215, 0)));
             lore.add(Component.text("Cost: 1,000 Emerald").color(TextColor.color(255, 215, 0)));
+            lore.add(Component.text("x1.5 abyss point reward").color(TextColor.color(255, 215, 0)));
             lore.add(Component.text("Doesn't despawn").color(TextColor.color(255, 215, 0)));
             evoSEMeta.lore(lore);
 

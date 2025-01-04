@@ -23,8 +23,14 @@ public class ResetRestCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+
+
         if (!(sender instanceof Player player)) {
             sender.sendMessage("Only players can use this command.");
+            return true;
+        }
+        if (((Player) sender).getWorld().getName().contains("_rpg")) {
+            sender.sendMessage("Not allowed on this world.");
             return true;
         }
 

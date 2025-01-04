@@ -188,6 +188,34 @@ public class ItemUtils {
         return pointItem;
     }
 
+    public static ItemStack getDemonicBlade() {
+        ItemStack pointItem = new ItemStack(Material.NETHERITE_SWORD); // Choose any material you prefer
+        ItemMeta meta = pointItem.getItemMeta();
+
+        if (meta != null) {
+            meta.displayName(Component.text("Unknown Blade").color(TextColor.color(255,0,0)));
+            meta.lore(Arrays.asList(
+                    Component.text("Cosmetic")
+            ));
+
+            meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
+            meta.setEnchantmentGlintOverride(false);
+
+
+            meta.setItemModel(NamespacedKey.minecraft("demonicblade"));
+
+            EquippableComponent equippableComponent = meta.getEquippable();
+
+            equippableComponent.setSwappable(false);
+
+            meta.setEquippable(equippableComponent);
+
+            pointItem.setItemMeta(meta);
+        }
+
+        return pointItem;
+    }
+
 
     // SOUL BOUND
     public static ItemStack getSoulBoundBook() {

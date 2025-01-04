@@ -323,6 +323,18 @@ public class DamageListener implements Listener {
                 if (attackerProfile != null) {
                     try {
                         handleMeleeDamage(attacker,victim,event,damagerLocation,damagedLocation,attackerProfile);
+                        if ((damaged instanceof Warden || damaged instanceof Evoker || damaged instanceof Ravager) && Math.random() < 0.1) {
+                            ((Monster) damaged).attack(attacker);
+                            Vector knockbackDirection = attacker.getLocation().toVector().subtract(damaged.getLocation().toVector()).normalize();
+                            knockbackDirection.multiply(1.5);
+                            knockbackDirection.setY(0.5);
+                            attacker.setVelocity(knockbackDirection);
+
+                        }
+
+                        if ((damaged instanceof Warden || damaged instanceof Evoker || damaged instanceof Ravager) && Math.random() < 0.1) {
+                            damaged.teleport(attacker.getLocation().clone().add(0, 2, 0));
+                        }
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
@@ -433,6 +445,18 @@ public class DamageListener implements Listener {
                     if (attackerProfile != null) {
                       try {
                           handleLongRangeDamage(attacker,victim,event,damagerLocation,damagedLocation,attackerProfile);
+                          if ((damaged instanceof Warden || damaged instanceof Evoker || damaged instanceof Ravager) && Math.random() < 0.1) {
+                              ((Monster) damaged).attack(attacker);
+                              Vector knockbackDirection = attacker.getLocation().toVector().subtract(damaged.getLocation().toVector()).normalize();
+                              knockbackDirection.multiply(1.5);
+                              knockbackDirection.setY(0.5);
+                              attacker.setVelocity(knockbackDirection);
+
+                          }
+
+                          if ((damaged instanceof Warden || damaged instanceof Evoker || damaged instanceof Ravager) && Math.random() < 0.1) {
+                              damaged.teleport(attacker.getLocation().clone().add(0, 2, 0));
+                          }
                       } catch (Exception e) {
                           throw new RuntimeException(e);
                       }
@@ -510,6 +534,19 @@ public class DamageListener implements Listener {
                     if (attackerProfile != null) {
                         if (attackerProfile.getChosenClass().equalsIgnoreCase("alchemist") && attacker.getName().equals(victim.getName())) {event.setCancelled(true); return;}
                         handleLongRangeDamage(attacker,victim,event,damagerLocation,damagedLocation,attackerProfile);
+                        if ((damaged instanceof Warden || damaged instanceof Evoker || damaged instanceof Ravager) && Math.random() < 0.1) {
+                            ((Monster) damaged).attack(attacker);
+                            Vector knockbackDirection = attacker.getLocation().toVector().subtract(damaged.getLocation().toVector()).normalize();
+                            knockbackDirection.multiply(1.5);
+                            knockbackDirection.setY(0.5);
+                            attacker.setVelocity(knockbackDirection);
+
+                        }
+
+                        if ((damaged instanceof Warden || damaged instanceof Evoker || damaged instanceof Ravager) && Math.random() < 0.1) {
+                            damaged.teleport(attacker.getLocation().clone().add(0, 2, 0));
+                        }
+
                     }
                 }
 
@@ -652,6 +689,9 @@ public class DamageListener implements Listener {
                     event.setDamage(customDamage);
                 }
             }
+
+
+
         }
 
 
@@ -665,6 +705,11 @@ public class DamageListener implements Listener {
     public void onEntityTakeDamage(EntityDamageEvent event) {
         if (!Objects.requireNonNull(event.getEntity().getLocation().getWorld()).getName().equals("world_rpg") && !Objects.requireNonNull(event.getEntity().getLocation().getWorld()).getName().contains("world_labyrinth")) {
             return;
+        }
+
+        if (event.getCause() == EntityDamageEvent.DamageCause.SONIC_BOOM) {
+            // Notify or perform actions
+            event.setDamage(event.getDamage()*5);
         }
 
         if (event.getEntity() instanceof  Villager) {
