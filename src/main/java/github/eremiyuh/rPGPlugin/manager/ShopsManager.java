@@ -13,10 +13,8 @@ import org.bukkit.metadata.FixedMetadataValue;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class ShopsManager {
 
@@ -45,7 +43,7 @@ public class ShopsManager {
         }
 
         // Generate a new shop ID (next available shop number)
-        int shopID = shopsConfig.getConfigurationSection("shops").getKeys(false).size() + 1;
+        int shopID = findNextAvailableShopId();
         String shopPath = "shops.shop" + shopID;
 
         // Save the location details as separate components
@@ -67,6 +65,20 @@ public class ShopsManager {
 
         // Save the file
         saveFile(shopsFile, shopsConfig);
+    }
+
+    private int findNextAvailableShopId() {
+        List<Integer> existingShopIds = shopsConfig.getConfigurationSection("shops")
+                .getKeys(false)
+                .stream()
+                .map(key -> Integer.parseInt(key.replace("shop", "")))
+                .collect(Collectors.toList());
+
+        if (existingShopIds.isEmpty()) {
+            return 1;
+        }
+
+        return Collections.max(existingShopIds) + 1;
     }
 
 

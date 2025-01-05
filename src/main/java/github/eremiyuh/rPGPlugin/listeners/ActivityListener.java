@@ -45,6 +45,7 @@ public class ActivityListener implements Listener {
 
     @EventHandler
     public void onBreakBlock(BlockBreakEvent event) {
+        if (event.isCancelled()) return;
         UserProfile userProfile = profileManager.getProfile(event.getPlayer().getName());
         int bonusBreakPoints = userProfile.getDestroyer();
         userProfile.setActivitypoints(userProfile.getActivitypoints()+1+bonusBreakPoints);

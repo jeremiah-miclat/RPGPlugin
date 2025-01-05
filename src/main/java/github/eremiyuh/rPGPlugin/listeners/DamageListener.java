@@ -333,7 +333,7 @@ public class DamageListener implements Listener {
                         }
 
                         if ((damaged instanceof Warden || damaged instanceof Evoker || damaged instanceof Ravager) && Math.random() < 0.1) {
-                            damaged.teleport(attacker.getLocation().clone().add(0, 2, 0));
+                            damaged.teleport(attacker.getLocation().clone());
                         }
                     } catch (Exception e) {
                         throw new RuntimeException(e);
@@ -368,7 +368,8 @@ public class DamageListener implements Listener {
 
 
 
-                if (projectile instanceof Arrow && shooter instanceof Player attacker) {
+                if (projectile instanceof Arrow && shooter instanceof Player || projectile instanceof Firework && shooter instanceof Player) {
+                    Player attacker = (Player) shooter;
                     Location loc2 = attacker.getLocation();
 
                     // Check if the world name contains "Labyrinth" and coordinates match

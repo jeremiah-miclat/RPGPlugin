@@ -81,8 +81,7 @@ public class OreBreakListener implements Listener {
 
         // Check if the ore chance condition is met
         if (Math.random() < oreChance) {
-            player.sendMessage(multiplier + " multiplier");
-            // Modify the drop amounts based on the multiplier
+
             for (Item item : event.getItems()) {
                 ItemStack itemStack = item.getItemStack();
                 // Increase the dropped amount based on the multiplier

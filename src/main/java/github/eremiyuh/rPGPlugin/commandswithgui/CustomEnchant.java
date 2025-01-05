@@ -110,7 +110,7 @@ public class CustomEnchant implements CommandExecutor, Listener {
             List<Component> lore = new ArrayList<>();
             lore.add(Component.text("Lure5").style(Style.style(TextDecoration.ITALIC,TextColor.color(255,0,0))));
             lore.add(Component.text("For fishing rods"));
-            lore.add(Component.text("Cost: 100000 activity points, 10 Nautilus Shell"));
+            lore.add(Component.text("Cost: 1M activity points, 10 Nautilus Shell"));
             Lure5Meta.lore(lore);
 
             Lure5.setItemMeta(Lure5Meta);
@@ -303,7 +303,7 @@ public class CustomEnchant implements CommandExecutor, Listener {
             if (event.getSlot() == 3 && event.getCurrentItem() != null && event.getCurrentItem().getType() == Material.ENCHANTED_BOOK
                     && icon
             ) {
-                double cost = 100000;
+                double cost = 1000000;
                 String activityPoint = " active points ";
                 int requiredShell = 10;
 

@@ -101,8 +101,8 @@ public class ActivitiyShop implements CommandExecutor, Listener {
             if (!itemmeta.hasLore()) return;
             // Handle item purchase logic
             if (event.getSlot() == 0 && event.getCurrentItem() != null && event.getCurrentItem().getType() == Material.ENDER_PEARL) {
-                if (userProfile.getAbysspoints() >= 1000) {
-                    userProfile.setCurrency("activitypoints", userProfile.getActivitypoints()-1000);
+                if (userProfile.getActivitypoints() >= 5000) {
+                    userProfile.setCurrency("activitypoints", userProfile.getActivitypoints()-5000);
                     dropOrNotify(player, new ItemStack(Material.ENDER_PEARL), "Successfully purchased.");
                 } else {
                     player.sendMessage(Component.text("You do not have enough Points!").color(TextColor.color(255, 0, 0)));
@@ -112,7 +112,7 @@ public class ActivitiyShop implements CommandExecutor, Listener {
             if (event.getSlot() == 1 && event.getCurrentItem() != null  && event.getCurrentItem().getType() == Material.VILLAGER_SPAWN_EGG
             ) {
 
-                if (userProfile.getAbysspoints() >= 100000) {
+                if (userProfile.getActivitypoints() >= 10000) {
                     userProfile.setCurrency("activitypoints", userProfile.getActivitypoints()-10000);
                     dropOrNotify(player, new ItemStack(Material.VILLAGER_SPAWN_EGG), "Successfully purchased.");
                 } else {

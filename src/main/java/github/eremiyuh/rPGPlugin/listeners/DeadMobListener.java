@@ -164,17 +164,17 @@ public class DeadMobListener implements Listener {
 
 
                 if (event.getEntity() instanceof Warden)  {
-                    chance *=2;
+                    chance *=1.2;
                     health *=2;
                 }
 
             if (event.getEntity() instanceof Ravager)  {
-                chance *=2;
+                chance *=1.2;
                 health *=1.5;
             }
 
             if (event.getEntity() instanceof Evoker)  {
-                chance *=2;
+                chance *=1.2;
                 health *=1.5;
             }
 
@@ -202,7 +202,7 @@ public class DeadMobListener implements Listener {
                     }
                     for (Player player : nearbyPlayers) {
                         UserProfile playerProfile = profileManager.getProfile(player.getName());
-                        applyRewards(player, playerProfile, health*3, chance, dropMultiplier);
+                        applyRewards(player, playerProfile, health*3, chance+.3, dropMultiplier);
                         distributeDrops(player, event, dropMultiplier);
 
                         if (bosslvl > 9 && isWorldBoss) {
@@ -309,7 +309,7 @@ public class DeadMobListener implements Listener {
 
             // Select a random ore type
             OreType randomOre = OreType.values()[random.nextInt(OreType.values().length)];
-            int randomValue = 1 + (int) (Math.random() * ((double) rewardCount /2));
+            int randomValue = 1 + (int) (Math.random() * ((double) rewardCount /100));
 
             // Give the reward for the selected ore
             switch (randomOre) {
