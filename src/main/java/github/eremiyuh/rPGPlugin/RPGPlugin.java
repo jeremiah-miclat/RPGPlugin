@@ -265,6 +265,7 @@ public class RPGPlugin extends JavaPlugin {
         Objects.requireNonNull(getCommand("cestore")).setExecutor(new CustomEnchant(this, profileManager));
         Objects.requireNonNull(getCommand("passiveskills")).setExecutor(new PassiveSkills(this, profileManager));
         Objects.requireNonNull(getCommand("cosmeticstore")).setExecutor(new CosmeticStore(this, profileManager));
+        Objects.requireNonNull(getCommand("viewitem")).setExecutor(new ViewItemCommand());
         DamageListener damageListenerListener = new DamageListener(profileManager, effectsAbilityManager, damageAbilityManager,this);
         getServer().getPluginManager().registerEvents(damageListenerListener,this);
         getServer().getPluginManager().registerEvents(new PotionGiveListener(this,profileManager),this);

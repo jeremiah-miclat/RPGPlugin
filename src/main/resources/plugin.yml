@@ -276,5 +276,11 @@ commands:
     description: "Opens an inventory to convert fish into activity points"
   passiveskills:
     description: "Opens passive skills gui"
+  viewitem:
+    description: View another player's inventory.
+    usage: /viewitem <playerName>
+    permission: RPGPlugin.viewitem
+    permission-default: op
+
 softdepend:
   - DiscordSRV

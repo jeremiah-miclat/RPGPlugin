@@ -70,23 +70,23 @@ public class FishSell implements CommandExecutor, Listener {
                 if (lore != null && lore.stream().anyMatch(line -> line.equals("Caught by: " + player.getName()))) {
                     // Calculate points based on the item type
                     if (item.getType() == Material.COD) {
-                        itemCount += (item.getAmount()*(1 + bonusPointsFromPassive));
+                        itemCount += (item.getAmount()*(10 + bonusPointsFromPassive));
                         isConverted = true;
                     }
                     else if (item.getType() == Material.SALMON) {
-                        itemCount += (item.getAmount() *(2 + bonusPointsFromPassive));
+                        itemCount += (item.getAmount() *(20 + bonusPointsFromPassive));
                         isConverted = true;
                     }
                     else if (item.getType() == Material.TROPICAL_FISH) {
-                        itemCount += (item.getAmount() *(3 + bonusPointsFromPassive));
+                        itemCount += (item.getAmount() *(30 + bonusPointsFromPassive));
                         isConverted = true;
                     }
                     else if (item.getType() == Material.PUFFERFISH) {
-                        itemCount += (item.getAmount() *(4 + bonusPointsFromPassive));
+                        itemCount += (item.getAmount() *(40 + bonusPointsFromPassive));
                         isConverted = true;
                     }
                     else if (item.getType() == Material.NAUTILUS_SHELL) {
-                        itemCount += (item.getAmount() *(10 + bonusPointsFromPassive));
+                        itemCount += (item.getAmount() *(100 + bonusPointsFromPassive));
                         isConverted = true;
                     }
                     else {

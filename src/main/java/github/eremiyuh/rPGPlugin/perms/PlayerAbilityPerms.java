@@ -8,7 +8,8 @@ public class PlayerAbilityPerms {
         // Conditions for Alchemist, Archer, or Swordsman with Fire element and Skill 1
         return (profile.getChosenClass().equalsIgnoreCase("Alchemist") ||
                 profile.getChosenClass().equalsIgnoreCase("Archer") ||
-                profile.getChosenClass().equalsIgnoreCase("Swordsman"))
+                profile.getChosenClass().equalsIgnoreCase("Swordsman")||
+                profile.getChosenClass().equalsIgnoreCase("Rocket"))
                 && profile.getSelectedElement().equalsIgnoreCase("Fire")
                 && profile.getSelectedSkill().equalsIgnoreCase("Skill 1");
     }
@@ -17,7 +18,8 @@ public class PlayerAbilityPerms {
         // Conditions for Alchemist, Archer, or Swordsman with Ice element and Skill 1
         return (profile.getChosenClass().equalsIgnoreCase("Alchemist") ||
                 profile.getChosenClass().equalsIgnoreCase("Archer") ||
-                profile.getChosenClass().equalsIgnoreCase("Swordsman"))
+                profile.getChosenClass().equalsIgnoreCase("Swordsman")||
+                profile.getChosenClass().equalsIgnoreCase("Rocket"))
                 && profile.getSelectedElement().equalsIgnoreCase("Ice")
                 && profile.getSelectedSkill().equalsIgnoreCase("Skill 1");
     }
@@ -27,7 +29,8 @@ public class PlayerAbilityPerms {
         // Conditions for Alchemist, Archer, or Swordsman with Ice element and Skill 1
         return (profile.getChosenClass().equalsIgnoreCase("Alchemist") ||
                 profile.getChosenClass().equalsIgnoreCase("Archer") ||
-                profile.getChosenClass().equalsIgnoreCase("Swordsman"))
+                profile.getChosenClass().equalsIgnoreCase("Swordsman") ||
+                profile.getChosenClass().equalsIgnoreCase("Rocket"))
                 && profile.getSelectedElement().equalsIgnoreCase("Water")
                 && profile.getSelectedSkill().equalsIgnoreCase("Skill 1");
     }

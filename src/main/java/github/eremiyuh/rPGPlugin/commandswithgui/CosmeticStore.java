@@ -100,6 +100,35 @@ public class CosmeticStore implements CommandExecutor, Listener {
         //demonicblade
         cosmeticItems2.add(new CosmeticItem(getDemonicBlade(), 500000, "activitypoints"));
 
+        //warbow
+        cosmeticItems2.add(new CosmeticItem(getWarBow(), 500000, "activitypoints"));
+
+        // mythic blade
+        cosmeticItems2.add(new CosmeticItem(getMythicBlade(), 200, "diamond"));
+
+        // toxic blade
+        cosmeticItems2.add(new CosmeticItem(getTLS(), 3000, "emerald"));
+
+        // creationsplitter
+        cosmeticItems2.add(new CosmeticItem(getCreationSplitter(), 500000, "activitypoints"));
+
+        //grim dark gold
+        cosmeticItems2.add(new CosmeticItem(getGrimGHelm(), 25000, "activitypoints"));
+        cosmeticItems2.add(new CosmeticItem(getGrimGChest(), 25000, "activitypoints"));
+        cosmeticItems2.add(new CosmeticItem(getGrimGLeg(), 25000, "activitypoints"));
+        cosmeticItems2.add(new CosmeticItem(getGrimGBoots(), 25000, "activitypoints"));
+
+        //grim dark diamond
+        cosmeticItems2.add(new CosmeticItem(getGrimDHelm(), 25000, "activitypoints"));
+        cosmeticItems2.add(new CosmeticItem(getGrimDChest(), 25000, "activitypoints"));
+        cosmeticItems2.add(new CosmeticItem(getGrimDLeg(), 25000, "activitypoints"));
+        cosmeticItems2.add(new CosmeticItem(getGrimDBoots(), 25000, "activitypoints"));
+
+        // kalam0n
+        cosmeticItems2.add(new CosmeticItem(getKalPa(), 100000, "activitypoints"));
+        cosmeticItems2.add(new CosmeticItem(getKalA(), 100000, "activitypoints"));
+        cosmeticItems2.add(new CosmeticItem(getKalH(), 100000, "activitypoints"));
+        cosmeticItems2.add(new CosmeticItem(getKalS(), 100000, "activitypoints"));
     }
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {

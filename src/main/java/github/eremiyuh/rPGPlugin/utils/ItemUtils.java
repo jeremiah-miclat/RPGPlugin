@@ -216,6 +216,178 @@ public class ItemUtils {
         return pointItem;
     }
 
+    // mythicblade
+    public static ItemStack getMythicBlade() {
+        ItemStack pointItem = new ItemStack(Material.NETHERITE_SWORD); // Choose any material you prefer
+        ItemMeta meta = pointItem.getItemMeta();
+
+        if (meta != null) {
+            meta.displayName(Component.text("Mythic Blade").color(TextColor.color(255,0,0)));
+            meta.lore(Arrays.asList(
+                    Component.text("Cosmetic")
+            ));
+
+            meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
+            meta.setEnchantmentGlintOverride(false);
+
+
+            meta.setItemModel(NamespacedKey.minecraft("mythic_blade"));
+
+            EquippableComponent equippableComponent = meta.getEquippable();
+
+            equippableComponent.setSwappable(false);
+
+            meta.setEquippable(equippableComponent);
+
+            pointItem.setItemMeta(meta);
+        }
+
+        return pointItem;
+    }
+
+    // toxic long sword
+    public static ItemStack getTLS() {
+        ItemStack pointItem = new ItemStack(Material.NETHERITE_SWORD); // Choose any material you prefer
+        ItemMeta meta = pointItem.getItemMeta();
+
+        if (meta != null) {
+            meta.displayName(Component.text("Toxic Long Sword").color(TextColor.color(255,0,0)));
+            meta.lore(Arrays.asList(
+                    Component.text("Cosmetic")
+            ));
+
+            meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
+            meta.setEnchantmentGlintOverride(false);
+
+
+            meta.setItemModel(NamespacedKey.minecraft("toxic_longsword"));
+
+            EquippableComponent equippableComponent = meta.getEquippable();
+
+            equippableComponent.setSwappable(false);
+
+            meta.setEquippable(equippableComponent);
+
+            pointItem.setItemMeta(meta);
+        }
+
+        return pointItem;
+    }
+
+    // Creation Splitter
+    public static ItemStack getCreationSplitter() {
+        ItemStack pointItem = new ItemStack(Material.NETHERITE_SWORD); // Choose any material you prefer
+        ItemMeta meta = pointItem.getItemMeta();
+
+        if (meta != null) {
+            meta.displayName(Component.text("Creation Splitter").color(TextColor.color(255,0,0)));
+            meta.lore(Arrays.asList(
+                    Component.text("Cosmetic")
+            ));
+
+            meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
+            meta.setEnchantmentGlintOverride(false);
+
+
+            meta.setItemModel(NamespacedKey.minecraft("creationsplitter"));
+
+            EquippableComponent equippableComponent = meta.getEquippable();
+
+            equippableComponent.setSwappable(false);
+
+            meta.setEquippable(equippableComponent);
+
+            pointItem.setItemMeta(meta);
+        }
+
+        return pointItem;
+    }
+
+    // Kalam0n tools
+    public static ItemStack getKalPa() {
+        ItemStack pointItem = new ItemStack(Material.NETHERITE_PICKAXE); // Choose any material you prefer
+        ItemMeta meta = pointItem.getItemMeta();
+
+        if (meta != null) {
+            meta.displayName(Component.text("Kalam0n's Pickaxe").color(TextColor.color(255,0,0)));
+
+
+            meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
+            meta.setEnchantmentGlintOverride(false);
+
+
+            meta.setItemModel(NamespacedKey.minecraft("kalam0n_pa"));
+
+
+
+            pointItem.setItemMeta(meta);
+        }
+
+        return pointItem;
+    }
+    public static ItemStack getKalA() {
+        ItemStack pointItem = new ItemStack(Material.NETHERITE_AXE); // Choose any material you prefer
+        ItemMeta meta = pointItem.getItemMeta();
+
+        if (meta != null) {
+            meta.displayName(Component.text("Kalam0n's Axe").color(TextColor.color(255,0,0)));
+
+
+            meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
+            meta.setEnchantmentGlintOverride(false);
+
+
+            meta.setItemModel(NamespacedKey.minecraft("kalam0n_a"));
+
+
+
+            pointItem.setItemMeta(meta);
+        }
+
+        return pointItem;
+    }
+    public static ItemStack getKalH() {
+        ItemStack pointItem = new ItemStack(Material.NETHERITE_HOE); // Choose any material you prefer
+        ItemMeta meta = pointItem.getItemMeta();
+
+        if (meta != null) {
+            meta.displayName(Component.text("Kalam0n's Hoe").color(TextColor.color(255,0,0)));
+
+
+            meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
+            meta.setEnchantmentGlintOverride(false);
+
+
+            meta.setItemModel(NamespacedKey.minecraft("kalam0n_h"));
+
+
+            pointItem.setItemMeta(meta);
+        }
+
+        return pointItem;
+    }
+    public static ItemStack getKalS() {
+        ItemStack pointItem = new ItemStack(Material.NETHERITE_SHOVEL); // Choose any material you prefer
+        ItemMeta meta = pointItem.getItemMeta();
+
+        if (meta != null) {
+            meta.displayName(Component.text("Kalam0n's Shovel").color(TextColor.color(255,0,0)));
+
+
+            meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
+            meta.setEnchantmentGlintOverride(false);
+
+
+            meta.setItemModel(NamespacedKey.minecraft("kalam0n_s"));
+
+
+
+            pointItem.setItemMeta(meta);
+        }
+
+        return pointItem;
+    }
+
 
     // SOUL BOUND
     public static ItemStack getSoulBoundBook() {
@@ -299,6 +471,26 @@ public class ItemUtils {
             meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
             meta.setEnchantmentGlintOverride(false);
             meta.setItemModel(NamespacedKey.minecraft("composite_bow"));
+            pointItem.setItemMeta(meta);
+        }
+
+        return pointItem;
+    }
+
+    // warbow
+    public static ItemStack getWarBow() {
+        ItemStack pointItem = new ItemStack(Material.BOW); // Choose any material you prefer
+        ItemMeta meta = pointItem.getItemMeta();
+
+        if (meta != null) {
+            meta.displayName(Component.text("Thundering Pulse").color(TextColor.color(255,0,0)));
+            meta.lore(Arrays.asList(
+                    Component.text("Cosmetic")
+            ));
+
+            meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
+            meta.setEnchantmentGlintOverride(false);
+            meta.setItemModel(NamespacedKey.minecraft("warbow"));
             pointItem.setItemMeta(meta);
         }
 
@@ -660,6 +852,99 @@ public class ItemUtils {
                 Arrays.asList(Component.text("Cosmetic")),
                 "grimdarknetherite",
                 "grimdark_netherite_boots",
+                EquipmentSlot.FEET
+        );
+    }
+
+    // GRIM DARK GOLD
+
+    public static ItemStack getGrimGChest() {
+        return createCustomArmor(
+                Material.NETHERITE_CHESTPLATE,
+                "Grimdark Gold Chestplate",
+                Arrays.asList(Component.text("Cosmetic")),
+                "grimdarkgold",
+                "grimdark_gold_chestplate",
+                EquipmentSlot.CHEST
+        );
+    }
+
+    public static ItemStack getGrimGHelm() {
+        return createCustomArmor(
+                Material.NETHERITE_HELMET,
+                "Grimdark Gold Helmet",
+                Arrays.asList(Component.text("Cosmetic")),
+                "grimdarkgold",
+                "grimdark_gold_helmet",
+                EquipmentSlot.HEAD
+        );
+    }
+
+    public static ItemStack getGrimGLeg() {
+        return createCustomArmor(
+                Material.NETHERITE_LEGGINGS,
+                "Grimdark Gold Leggings",
+                Arrays.asList(Component.text("Cosmetic")),
+                "grimdarkgold",
+                "grimdark_gold_leggings",
+                EquipmentSlot.LEGS
+        );
+    }
+
+    public static ItemStack getGrimGBoots() {
+        return createCustomArmor(
+                Material.NETHERITE_BOOTS,
+                "Grimdark Gold Boots",
+                Arrays.asList(Component.text("Cosmetic")),
+                "grimdarkgold",
+                "grimdark_gold_boots",
+                EquipmentSlot.FEET
+        );
+    }
+
+
+    // GRIM DARK DIAMOND
+
+    public static ItemStack getGrimDChest() {
+        return createCustomArmor(
+                Material.NETHERITE_CHESTPLATE,
+                "Grimdark Diamond Chestplate",
+                Arrays.asList(Component.text("Cosmetic")),
+                "grimdarkdiamond",
+                "grimdark_diamond_chestplate",
+                EquipmentSlot.CHEST
+        );
+    }
+
+    public static ItemStack getGrimDHelm() {
+        return createCustomArmor(
+                Material.NETHERITE_HELMET,
+                "Grimdark Diamond Helmet",
+                Arrays.asList(Component.text("Cosmetic")),
+                "grimdarkdiamond",
+                "grimdark_diamond_helmet",
+                EquipmentSlot.HEAD
+        );
+    }
+
+    public static ItemStack getGrimDLeg() {
+        return createCustomArmor(
+                Material.NETHERITE_LEGGINGS,
+                "Grimdark Diamond Leggings",
+                Arrays.asList(Component.text("Cosmetic")),
+                "grimdarkdiamond",
+                "grimdark_diamond_leggings",
+                EquipmentSlot.LEGS
+        );
+    }
+
+    public static ItemStack getGrimDBoots() {
+        return createCustomArmor(
+                Material.NETHERITE_BOOTS,
+                "Grimdark Diamond Boots",
+                Arrays.asList(Component.text("Cosmetic")),
+                "grimdarkdiamond",
+                "grimdark_diamond_boots",
                 EquipmentSlot.FEET
         );
     }

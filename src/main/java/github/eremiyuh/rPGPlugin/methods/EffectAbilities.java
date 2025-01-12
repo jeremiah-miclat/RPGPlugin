@@ -47,6 +47,7 @@ public class EffectAbilities {
         if (userClass.equalsIgnoreCase("archer")) userInt= profile.getArcherClassInfo().getIntel();
         if (userClass.equalsIgnoreCase("alchemist")) userInt= profile.getArcherClassInfo().getIntel();
         if (userClass.equalsIgnoreCase("swordsman")) userInt= profile.getSwordsmanClassInfo().getIntel();
+        if (userClass.equalsIgnoreCase("rocket")) userInt= profile.getSwordsmanClassInfo().getIntel();
 
         // Check if the entity has the fire resistance potion effect
         if (target.hasPotionEffect(PotionEffectType.FIRE_RESISTANCE)) {
@@ -91,6 +92,7 @@ public class EffectAbilities {
         if (userClass.equalsIgnoreCase("archer")) userInt= profile.getArcherClassInfo().getIntel();
         if (userClass.equalsIgnoreCase("alchemist")) userInt= profile.getArcherClassInfo().getIntel();
         if (userClass.equalsIgnoreCase("swordsman")) userInt= profile.getSwordsmanClassInfo().getIntel();
+        if (userClass.equalsIgnoreCase("rocket")) userInt= profile.getSwordsmanClassInfo().getIntel();
 
 
         target.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, slownessDuration+ (userInt *5), 0));
@@ -106,6 +108,7 @@ public class EffectAbilities {
         if (userClass.equalsIgnoreCase("archer")) userInt= profile.getArcherClassInfo().getIntel();
         if (userClass.equalsIgnoreCase("alchemist")) userInt= profile.getArcherClassInfo().getIntel();
         if (userClass.equalsIgnoreCase("swordsman")) userInt= profile.getSwordsmanClassInfo().getIntel();
+        if (userClass.equalsIgnoreCase("rocket")) userInt= profile.getSwordsmanClassInfo().getIntel();
         int weaknessDuration = 100+ (userInt *5); // Duration of the nausea effect in ticks (5 seconds)
 
         Location targetLocation = target.getLocation();
@@ -155,6 +158,7 @@ public class EffectAbilities {
         if (userClass.equalsIgnoreCase("alchemist")) userInt= profile.getArcherClassInfo().getIntel();
         if (userClass.equalsIgnoreCase("swordsman")) userInt= profile.getSwordsmanClassInfo().getIntel();
         int weaknessDuration = 100+ (userInt *10); // Duration of the nausea effect in ticks (5 seconds)
+        if (userClass.equalsIgnoreCase("rocket")) userInt= profile.getSwordsmanClassInfo().getIntel();
 
         Location targetLocation = target.getLocation();
         World world = target.getWorld();

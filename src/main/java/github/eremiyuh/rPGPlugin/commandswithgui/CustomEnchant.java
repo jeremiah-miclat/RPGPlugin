@@ -154,7 +154,7 @@ public class CustomEnchant implements CommandExecutor, Listener {
 
         // BonusStatDamage BOWS
         ItemStack BonusStatDamage2 = new ItemStack(Material.ENCHANTED_BOOK);
-        ItemMeta BonusStatDamageMeta2 = BonusStatDamage.getItemMeta();
+        ItemMeta BonusStatDamageMeta2 = BonusStatDamage2.getItemMeta();
         if (BonusStatDamageMeta2 != null) {
             List<Component> lore = new ArrayList<>();
             lore.add(Component.text("BOW"));
@@ -171,7 +171,7 @@ public class CustomEnchant implements CommandExecutor, Listener {
 
         // BonusStatDamage BOOK
         ItemStack BonusStatDamage3 = new ItemStack(Material.ENCHANTED_BOOK);
-        ItemMeta BonusStatDamageMeta3 = BonusStatDamage.getItemMeta();
+        ItemMeta BonusStatDamageMeta3 = BonusStatDamage3.getItemMeta();
         if (BonusStatDamageMeta3 != null) {
             List<Component> lore = new ArrayList<>();
             lore.add(Component.text("BOOK"));

@@ -6,6 +6,8 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.inventory.AnvilInventory;
 import org.bukkit.inventory.ItemStack;
@@ -122,7 +124,7 @@ public class AnvilLevelRestrictionHandler implements Listener {
 
                             // Update the anvil result
                             event.setResult(cosmeticResult);
-                            return;
+
                         }
                     }
                 }
@@ -230,6 +232,33 @@ public class AnvilLevelRestrictionHandler implements Listener {
             anvilInventory.setRepairCost(10);  // Example repair cost
         }
     }
+
+    @EventHandler
+    public void onInventoryClick(InventoryClickEvent event) {
+        // Check if the event happens in an anvil
+        if (event.getInventory().getType() == InventoryType.ANVIL) {
+            // Check if the result slot is clicked (usually slot 2)
+            if (event.getSlot() == 2) {
+                // Get the items in the anvil
+                ItemStack firstItem = event.getInventory().getItem(0);
+                ItemStack secondItem = event.getInventory().getItem(1);
+
+                // If the result is picked up, consume the second item
+                if (firstItem != null && secondItem != null) {
+                    ItemMeta secondMeta = secondItem.getItemMeta();
+                    List<String> secondLore = secondMeta.getLore();
+
+                    // Check if lore contains "Cosmetic" to ensure it was involved in the crafting
+                    if (secondLore != null ) {
+                        // Decrease the amount of the second item only when the result is picked up
+                        secondItem.setAmount(secondItem.getAmount() - 1);
+
+                    }
+                }
+            }
+        }
+    }
+
 
 
 }

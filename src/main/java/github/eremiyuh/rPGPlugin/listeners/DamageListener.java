@@ -368,8 +368,7 @@ public class DamageListener implements Listener {
 
 
 
-                if (projectile instanceof Arrow && shooter instanceof Player || projectile instanceof Firework && shooter instanceof Player) {
-                    Player attacker = (Player) shooter;
+                if (projectile instanceof Arrow && shooter instanceof Player attacker) {
                     Location loc2 = attacker.getLocation();
 
                     // Check if the world name contains "Labyrinth" and coordinates match
@@ -461,6 +460,104 @@ public class DamageListener implements Listener {
                       } catch (Exception e) {
                           throw new RuntimeException(e);
                       }
+                    }
+                }
+
+                if (projectile.getType() == EntityType.FIREWORK_ROCKET) {
+                    Firework firework = (Firework) event.getDamager();
+                    Entity fireworkShooter = (Entity) firework.getShooter();
+                    if (!(fireworkShooter instanceof Player attacker)) return;
+                    Location loc2 = attacker.getLocation();
+
+                    // Check if the world name contains "Labyrinth" and coordinates match
+                    if (loc2.getWorld().getName().contains("labyrinth")) {
+                        int x = loc2.getBlockX();
+                        int z = loc2.getBlockZ();
+
+
+                        // Check if the coordinates are within the specified range
+                        if (x >= -23 && x <= -17 && z >= -38 && z <= -34) {
+                            // Cancel the damage
+                            event.setCancelled(true);
+                            return;
+                        }
+                    }
+
+                    if (damaged instanceof Player damagedPlayer) {
+
+                        UserProfile attackerProfile = profileManager.getProfile(attacker.getName());
+                        UserProfile damagedProfile = profileManager.getProfile(damagedPlayer.getName());
+
+                        if (attackerProfile == null || damagedProfile == null) {
+                            attacker.sendMessage("Your profile or target's profile can not be found. contact developer to fix files");
+                            damaged.sendMessage("Your profile or dude's profile can not be found. contact developer to fix files");
+                            event.setCancelled(true);
+                            return;
+                        }
+
+                        assert attackerProfile != null;
+                        if (!attackerProfile.isPvpEnabled()) {
+                            event.setCancelled(true);
+                            return;
+                        }
+
+                        assert damagedProfile != null;
+                        if (!damagedProfile.isPvpEnabled()) {
+                            event.setCancelled(true);
+                            return;
+                        }
+
+                        if (!Objects.equals(damagedProfile.getTeam(), "none") && Objects.equals(damagedProfile.getTeam(), attackerProfile.getTeam())) {
+                            event.setCancelled(true);
+                            return;
+                        }
+
+
+
+                    }
+
+
+
+
+                    UserProfile attackerProfile = profileManager.getProfile(attacker.getName());
+
+
+
+                    if (victim instanceof Monster && !(victim.hasMetadata("attackerList"))) {
+
+                        List<String> attackerList = new ArrayList<>();
+                        victim.setMetadata("attackerList", new FixedMetadataValue(plugin, attackerList));
+
+                    }
+
+                    if (victim.hasMetadata("attackerList")) {
+                        List<String> attackerList = (List<String>) victim.getMetadata("attackerList").get(0).value();
+
+                        String attackerName = attacker.getName();
+                        assert attackerList != null;
+                        if (!attackerList.contains(attackerName)) {
+                            attackerList.add(attackerName);
+                            victim.setMetadata("attackerList", new FixedMetadataValue(plugin, attackerList)); // Update metadata
+                        }
+                    }
+                    if (attackerProfile != null) {
+                        try {
+                            handleLongRangeDamage(attacker,victim,event,damagerLocation,damagedLocation,attackerProfile);
+                            if ((damaged instanceof Warden || damaged instanceof Evoker || damaged instanceof Ravager) && Math.random() < 0.1) {
+                                ((Monster) damaged).attack(attacker);
+                                Vector knockbackDirection = attacker.getLocation().toVector().subtract(damaged.getLocation().toVector()).normalize();
+                                knockbackDirection.multiply(1.5);
+                                knockbackDirection.setY(0.5);
+                                attacker.setVelocity(knockbackDirection);
+
+                            }
+
+                            if ((damaged instanceof Warden || damaged instanceof Evoker || damaged instanceof Ravager) && Math.random() < 0.1) {
+                                damaged.teleport(attacker.getLocation().clone().add(0, 2, 0));
+                            }
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
                     }
                 }
 
@@ -1304,6 +1401,15 @@ public class DamageListener implements Listener {
                 if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 1")) {
                     elementalDamage += (intel*1.2);
                 }
+            }
+        }
+
+        // rocket
+        if (event.getDamager().getType() == EntityType.FIREWORK_ROCKET) {
+            elementalDamage += (intel*.5);
+            //archers
+            if (damagerProfile.getChosenClass().equalsIgnoreCase("rocket")) {
+                elementalDamage += (intel*.5);
             }
         }
 
