@@ -83,7 +83,7 @@ public class CreateShopListener implements Listener {
         }
 
         // List of valid currencies
-        Set<String> validCurrencies = Set.of("diamond", "emerald", "iron", "lapis", "gold", "enderpearl", "netherite", "copper","abysspoints");
+        Set<String> validCurrencies = Set.of("diamond", "emerald", "iron", "lapis", "gold", "enderpearl", "netherite", "copper","abysspoints","activitypoints");
 
         try {
             int numberOfItems = Integer.parseInt(lines[0].trim());
@@ -92,7 +92,7 @@ public class CreateShopListener implements Listener {
 
             if (!validCurrencies.contains(itemBeingTraded)) {
                 player.sendMessage("Invalid currency: " + itemBeingTraded);
-                player.sendMessage("Currencies: diamond, emerald, iron, lapis, gold, enderpearl, netherite, copper","abysspoints");
+                player.sendMessage("Currencies: diamond, emerald, iron, lapis, gold, enderpearl, netherite, copper, abysspoints, activitypoints");
                 event.setCancelled(true);
                 return;
             }
@@ -140,7 +140,7 @@ public class CreateShopListener implements Listener {
         if (!lines[0].trim().matches("\\d+")) return false;
 
         // Second line must be a valid currency name (case-insensitive)
-        Set<String> validCurrencies = Set.of("diamond", "emerald", "iron", "lapis", "gold", "enderpearl", "netherite", "copper", "abysspoints");
+        Set<String> validCurrencies = Set.of("diamond", "emerald", "iron", "lapis", "gold", "enderpearl", "netherite", "copper", "abysspoints","activitypoints");
         if (!validCurrencies.contains(lines[1].trim().toLowerCase())) return false;
 
         // Third line must be a valid integer

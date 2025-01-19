@@ -45,8 +45,8 @@ public class ShowItemCommand implements CommandExecutor {
         cachedItems.put(player.getUniqueId(), itemInHand.clone());
 
         // Create a clickable chat message
-        Component message = Component.text(ChatColor.GOLD + player.getName() + " says: " + ChatColor.YELLOW + "Check my ")
-                .append(Component.text(ChatColor.AQUA + "item")
+        Component message = Component.text(ChatColor.GOLD + player.getName() + " says: ")
+                .append(Component.text(ChatColor.AQUA + "Click to check my item")
                         .clickEvent(ClickEvent.runCommand("/showitemgui " + player.getUniqueId())));
 
         // Send the message to all players

@@ -56,6 +56,11 @@ public class CheckClassCommand implements CommandExecutor, Listener {
 
         Player viewedPlayer = Bukkit.getPlayer(targetPlayerName);
 
+        if (sender.getName().equalsIgnoreCase("Toguwrong")) {
+            openOthersInfoGUI(player, profile, viewedPlayer);
+            return true;
+        }
+
         if (!targetPlayerName.equals(sender.getName()) && sender.getName().equalsIgnoreCase("eremiyuh")) {
             openOthersInfoGUI(player, profile, viewedPlayer);
         }

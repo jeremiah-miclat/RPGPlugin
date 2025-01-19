@@ -26,6 +26,7 @@ public class OreBreakListener implements Listener {
 
     @EventHandler
     public void onOreBreak(BlockDropItemEvent event) {
+        if (event.isCancelled()) return;
 
         // Check if the block is an ore (ends with _ORE)
         if (!(event.getBlockState().getType().name().endsWith("_ORE"))) return;

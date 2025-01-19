@@ -53,6 +53,7 @@ public class ActivityListener implements Listener {
 
     @EventHandler
     public void onPlaceBlock(BlockPlaceEvent event) {
+        if (event.isCancelled()) return;
         UserProfile userProfile = profileManager.getProfile(event.getPlayer().getName());
         int bonusBuildPoints = userProfile.getBuilder();
         userProfile.setActivitypoints(userProfile.getActivitypoints()+1+bonusBuildPoints);

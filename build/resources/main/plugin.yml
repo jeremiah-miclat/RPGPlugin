@@ -281,6 +281,8 @@ commands:
     usage: /viewitem <playerName>
     permission: RPGPlugin.viewitem
     permission-default: op
-
+  shop:
+    description: Opens the shop by teleporting to eremiyuh's shop.
+    usage: /<command>
 softdepend:
   - DiscordSRV

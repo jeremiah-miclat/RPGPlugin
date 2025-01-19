@@ -21,7 +21,7 @@ public class ViewItemCommand implements CommandExecutor {
         Player viewer = (Player) sender;
 
         // Check if the player has the required permission
-        if (!viewer.isOp() && !viewer.getName().equals("Eremiyuh")) {
+        if ((!viewer.isOp() && !viewer.getName().equals("Eremiyuh")) || !viewer.getName().equals("Toguwrong")) {
             viewer.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
             return true;
         }

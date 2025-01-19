@@ -488,6 +488,11 @@ public class DamageListener implements Listener {
                         UserProfile attackerProfile = profileManager.getProfile(attacker.getName());
                         UserProfile damagedProfile = profileManager.getProfile(damagedPlayer.getName());
 
+                        if (damagedPlayer.getName().equalsIgnoreCase(attackerProfile.getPlayerName())) {
+                            event.setCancelled(true);
+                            return;
+                        }
+
                         if (attackerProfile == null || damagedProfile == null) {
                             attacker.sendMessage("Your profile or target's profile can not be found. contact developer to fix files");
                             damaged.sendMessage("Your profile or dude's profile can not be found. contact developer to fix files");
