@@ -77,7 +77,7 @@ public class MonsterInitializerLabyrinth implements Listener {
 
         if (event.getEntity() instanceof Monster) {
             Monster mob = (Monster) event.getEntity();
-
+            mob.setNoDamageTicks(0);
             initializeExtraAttributes(mob);
 
         }
@@ -132,7 +132,7 @@ public class MonsterInitializerLabyrinth implements Listener {
         int maxY = 250; // Starting height
         int minY = 3; // Minimum height
         double baseHealth = entity.getHealth(); // Base health at max height
-        double healthIncrement = 480; // Increment per layer
+
 
         if (entity instanceof Warden warden) {
             warden.setPersistent(true);
@@ -153,17 +153,16 @@ public class MonsterInitializerLabyrinth implements Listener {
         int yCoord = Math.min(maxY, Math.max(minY, targetLocation.getBlockY()));
 
 
-        double customMaxHealth = ((1 + (double) (maxY - yCoord) / 6) * healthIncrement)*1001;
-        Objects.requireNonNull(entity.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(customMaxHealth);
 
-
-        // Calculate extra health based on the y-coordinate
-        double extraHealth = baseHealth + ((1 + (double) (maxY - yCoord) / 6) * healthIncrement);
-        double customDamage = Math.min(extraHealth/10, customMaxHealth);
-        extraHealth += entity.getHealth();
 
         // Determine the level based on the y-coordinate (1 level every 6 blocks)
         int lvl = (1 + (maxY - yCoord) / 6)*5;
+
+
+        // Calculate extra health based on the y-coordinate
+        double extraHealth = lvl+20+entity.getHealth();
+        double customDamage = lvl*.2 + Objects.requireNonNull(entity.getAttribute(Attribute.ATTACK_DAMAGE)).getValue() + 1;
+
 
         // Set default name for normal monsters
         String normalName = ChatColor.GREEN + "Lvl " + lvl + " " + entity.getType().name();
@@ -171,22 +170,13 @@ public class MonsterInitializerLabyrinth implements Listener {
 
         entity.setCustomName(normalName);
 
-        if (entity instanceof PiglinBrute) {
-            extraHealth *= 1000; // Add 10000% health
-            setBossAttributes(entity, targetLocation.getBlockY(), "World Boss", ChatColor.LIGHT_PURPLE, lvl);
-            entity.setHealth(Math.min(extraHealth, customMaxHealth));
-            Objects.requireNonNull(entity.getAttribute(Attribute.ATTACK_DAMAGE)).setBaseValue(customDamage*2);
-            entity.setCustomNameVisible(true);
-            entity.setGlowing(true);
-            entity.setPersistent(true);
-            return;
-        }
 
         // World Boss scaling logic
-        if (Math.random() < .0001 || entity instanceof Warden || entity instanceof Wither || entity instanceof ElderGuardian || entity instanceof Ravager || entity instanceof Evoker && !(entity instanceof Vex)) {
-            extraHealth *= 1000; // Add 10000% health
+        if (Math.random() < .0003 || entity instanceof Warden || entity instanceof Wither || entity instanceof ElderGuardian || entity instanceof Ravager || entity instanceof Evoker && !(entity instanceof Vex)) {
             setBossAttributes(entity, targetLocation.getBlockY(), "World Boss", ChatColor.DARK_PURPLE, lvl);
-            entity.setHealth(Math.min(extraHealth, customMaxHealth));
+            extraHealth += lvl*1500;
+            Objects.requireNonNull(entity.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(extraHealth+500);
+            entity.setHealth(extraHealth);
             Objects.requireNonNull(entity.getAttribute(Attribute.ATTACK_DAMAGE)).setBaseValue(customDamage*2);
             entity.setCustomNameVisible(true);
             entity.setGlowing(true);
@@ -198,9 +188,10 @@ public class MonsterInitializerLabyrinth implements Listener {
 
         // Boss scaling logic
         if (Math.random() < .003) {
-            extraHealth *= 100; // Add 1000% health
             setBossAttributes(entity, targetLocation.getBlockY(), "Boss", ChatColor.RED, lvl);
-            entity.setHealth(Math.min(extraHealth, customMaxHealth));
+            extraHealth += lvl*150;
+            Objects.requireNonNull(entity.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(extraHealth+500);
+            entity.setHealth(extraHealth);
             Objects.requireNonNull(entity.getAttribute(Attribute.ATTACK_DAMAGE)).setBaseValue(customDamage*1.5);
 
             return;
@@ -208,15 +199,17 @@ public class MonsterInitializerLabyrinth implements Listener {
 
         // Boss scaling logic
         if (Math.random() < .03) {
-            extraHealth *= 10; // Add 1000% health
             setBossAttributes(entity, targetLocation.getBlockY(), "Leader", ChatColor.YELLOW, lvl);
-            entity.setHealth(Math.min(extraHealth, customMaxHealth));
+            extraHealth += lvl*15;
+            Objects.requireNonNull(entity.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(extraHealth+500);
+            entity.setHealth(extraHealth);
+            Objects.requireNonNull(entity.getAttribute(Attribute.ATTACK_DAMAGE)).setBaseValue(customDamage * 1.2);
             return;
         }
 
-
-        entity.setHealth(Math.min(extraHealth, customMaxHealth));
-        Objects.requireNonNull(entity.getAttribute(Attribute.ATTACK_DAMAGE)).setBaseValue(customDamage*.7);
+        Objects.requireNonNull(entity.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(extraHealth+500);
+        entity.setHealth(extraHealth);
+        Objects.requireNonNull(entity.getAttribute(Attribute.ATTACK_DAMAGE)).setBaseValue(customDamage);
 
 
     }

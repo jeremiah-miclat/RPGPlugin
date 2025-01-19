@@ -285,17 +285,26 @@ public class DamageListener implements Listener {
                         return;
                     }
 
-                    assert attackerProfile != null;
-                    if (!attackerProfile.isPvpEnabled()) {
+                    int attackerTotalPoints = (int) (attackerProfile.getTotalAllocatedPoints() + getTotalStatsFromEquipment(attacker, attackerProfile.getChosenClass()));
+                    int damagedTotalPoints = (int) (damagedProfile.getTotalAllocatedPoints()+ getTotalStatsFromEquipment(damagedPlayer, damagedProfile.getChosenClass()));
+
+                    // Check if the difference between the total points is greater than 1000
+                    if (Math.abs(attackerTotalPoints - damagedTotalPoints) > 1000) {
                         event.setCancelled(true);
                         return;
                     }
 
-                    assert damagedProfile != null;
-                    if (!damagedProfile.isPvpEnabled()) {
-                        event.setCancelled(true);
-                        return;
-                    }
+//                    assert attackerProfile != null;
+//                    if (!attackerProfile.isPvpEnabled()) {
+//                        event.setCancelled(true);
+//                        return;
+//                    }
+//
+//                    assert damagedProfile != null;
+//                    if (!damagedProfile.isPvpEnabled()) {
+//                        event.setCancelled(true);
+//                        return;
+//                    }
 
                     if (!Objects.equals(damagedProfile.getTeam(), "none") && Objects.equals(damagedProfile.getTeam(), attackerProfile.getTeam())) {
                         event.setCancelled(true);
@@ -309,13 +318,13 @@ public class DamageListener implements Listener {
 
                 if (event.getCause() == EntityDamageEvent.DamageCause.THORNS && !attackerProfile.getChosenClass().equalsIgnoreCase("swordsman")) {
 
-                    event.setDamage(4);
+                    event.setCancelled(true);
                     return;
                 }
 
                 if (event.getCause() == EntityDamageEvent.DamageCause.THORNS && !attackerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
 
-                    event.setDamage(4);
+                    event.setCancelled(true);
                     return;
                 }
 
@@ -387,8 +396,15 @@ public class DamageListener implements Listener {
 
                     if (damaged instanceof Player damagedPlayer) {
 
+                        if (attacker.getName().equalsIgnoreCase(damagedPlayer.getName())) {
+                            event.setCancelled(true);
+                            return;
+                        }
+
                         UserProfile attackerProfile = profileManager.getProfile(attacker.getName());
                         UserProfile damagedProfile = profileManager.getProfile(damagedPlayer.getName());
+
+
 
                         if (attackerProfile == null || damagedProfile == null) {
                             attacker.sendMessage("Your profile or target's profile can not be found. contact developer to fix files");
@@ -397,17 +413,27 @@ public class DamageListener implements Listener {
                             return;
                         }
 
-                        assert attackerProfile != null;
-                        if (!attackerProfile.isPvpEnabled()) {
+
+                        int attackerTotalPoints = (int) (attackerProfile.getTotalAllocatedPoints() + getTotalStatsFromEquipment(attacker, attackerProfile.getChosenClass()));
+                        int damagedTotalPoints = (int) (damagedProfile.getTotalAllocatedPoints()+ getTotalStatsFromEquipment(damagedPlayer, damagedProfile.getChosenClass()));
+
+                        // Check if the difference between the total points is greater than 1000
+                        if (Math.abs(attackerTotalPoints - damagedTotalPoints) > 1000) {
                             event.setCancelled(true);
                             return;
                         }
 
-                        assert damagedProfile != null;
-                        if (!damagedProfile.isPvpEnabled()) {
-                            event.setCancelled(true);
-                            return;
-                        }
+//                        assert attackerProfile != null;
+//                        if (!attackerProfile.isPvpEnabled()) {
+//                            event.setCancelled(true);
+//                            return;
+//                        }
+//
+//                        assert damagedProfile != null;
+//                        if (!damagedProfile.isPvpEnabled()) {
+//                            event.setCancelled(true);
+//                            return;
+//                        }
 
                         if (!Objects.equals(damagedProfile.getTeam(), "none") && Objects.equals(damagedProfile.getTeam(), attackerProfile.getTeam())) {
                             event.setCancelled(true);
@@ -500,17 +526,27 @@ public class DamageListener implements Listener {
                             return;
                         }
 
-                        assert attackerProfile != null;
-                        if (!attackerProfile.isPvpEnabled()) {
+
+                        int attackerTotalPoints = (int) (attackerProfile.getTotalAllocatedPoints() + getTotalStatsFromEquipment(attacker, attackerProfile.getChosenClass()));
+                        int damagedTotalPoints = (int) (damagedProfile.getTotalAllocatedPoints()+ getTotalStatsFromEquipment(damagedPlayer, damagedProfile.getChosenClass()));
+
+                        // Check if the difference between the total points is greater than 1000
+                        if (Math.abs(attackerTotalPoints - damagedTotalPoints) > 1000) {
                             event.setCancelled(true);
                             return;
                         }
 
-                        assert damagedProfile != null;
-                        if (!damagedProfile.isPvpEnabled()) {
-                            event.setCancelled(true);
-                            return;
-                        }
+//                        assert attackerProfile != null;
+//                        if (!attackerProfile.isPvpEnabled()) {
+//                            event.setCancelled(true);
+//                            return;
+//                        }
+//
+//                        assert damagedProfile != null;
+//                        if (!damagedProfile.isPvpEnabled()) {
+//                            event.setCancelled(true);
+//                            return;
+//                        }
 
                         if (!Objects.equals(damagedProfile.getTeam(), "none") && Objects.equals(damagedProfile.getTeam(), attackerProfile.getTeam())) {
                             event.setCancelled(true);
@@ -596,17 +632,26 @@ public class DamageListener implements Listener {
                             return;
                         }
 
-                        assert attackerProfile != null;
-                        if (!attackerProfile.isPvpEnabled()) {
+                        int attackerTotalPoints = (int) (attackerProfile.getTotalAllocatedPoints() + getTotalStatsFromEquipment(attacker, attackerProfile.getChosenClass()));
+                        int damagedTotalPoints = (int) (damagedProfile.getTotalAllocatedPoints()+ getTotalStatsFromEquipment(damagedPlayer, damagedProfile.getChosenClass()));
+
+                        // Check if the difference between the total points is greater than 1000
+                        if (Math.abs(attackerTotalPoints - damagedTotalPoints) > 1000) {
                             event.setCancelled(true);
                             return;
                         }
 
-                        assert damagedProfile != null;
-                        if (!damagedProfile.isPvpEnabled()) {
-                            event.setCancelled(true);
-                            return;
-                        }
+//                        assert attackerProfile != null;
+//                        if (!attackerProfile.isPvpEnabled()) {
+//                            event.setCancelled(true);
+//                            return;
+//                        }
+//
+//                        assert damagedProfile != null;
+//                        if (!damagedProfile.isPvpEnabled()) {
+//                            event.setCancelled(true);
+//                            return;
+//                        }
 
                         if (!Objects.equals(damagedProfile.getTeam(), "none") && Objects.equals(damagedProfile.getTeam(), attackerProfile.getTeam())) {
                             event.setCancelled(true);
@@ -709,7 +754,8 @@ public class DamageListener implements Listener {
                         }
 
                         if (mob instanceof Creeper) {
-                            event.setDamage(mobDamage*5);
+                            event.setDamage((mobDamage+event.getDamage()));
+                            return;
                         }
 
                         event.setDamage(mobDamage);
@@ -876,6 +922,7 @@ public class DamageListener implements Listener {
         Material blockBelow = damagedLocation.clone().subtract(0, 1, 0).getBlock().getType(); // Block below
         Material blockAbove = damagedLocation.clone().add(0, 1, 0).getBlock().getType(); // Block above
 
+
 // Check water or lava in current, below, or above blocks
         if (((blockAtFeet == Material.WATER || blockAtFeet == Material.LAVA) ||
                 (blockBelow == Material.WATER || blockBelow == Material.LAVA) ||
@@ -891,21 +938,21 @@ public class DamageListener implements Listener {
         ItemStack weapon = attacker.getInventory().getItemInMainHand();
 
 
-        if (target instanceof Tameable tameable) {
-            AnimalTamer owner = tameable.getOwner();
-
-            // Check if the tameable has an owner
-            if (owner != null) {
-                if (!(owner instanceof Player) )return;
-                if (Objects.requireNonNull(owner.getName()).equalsIgnoreCase(attacker.getName())) return;
-
-                UserProfile ownerProfile = profileManager.getProfile(owner.getName());
-                UserProfile profile = profileManager.getProfile(attacker.getName());
-                if (!(profile.getTeam().equalsIgnoreCase(ownerProfile.getTeam())) && !profile.getTeam().equalsIgnoreCase("none")) return;
-                if ((profile.isPvpEnabled() && ownerProfile.isPvpEnabled())) return;
-                event.setCancelled(true);
-            }
-        }
+//        if (target instanceof Tameable tameable) {
+//            AnimalTamer owner = tameable.getOwner();
+//
+//            // Check if the tameable has an owner
+//            if (owner != null) {
+//                if (!(owner instanceof Player) )return;
+//                if (Objects.requireNonNull(owner.getName()).equalsIgnoreCase(attacker.getName())) return;
+//
+//                UserProfile ownerProfile = profileManager.getProfile(owner.getName());
+//                UserProfile profile = profileManager.getProfile(attacker.getName());
+//                if (!(profile.getTeam().equalsIgnoreCase(ownerProfile.getTeam())) && !profile.getTeam().equalsIgnoreCase("none")) return;
+//                if ((profile.isPvpEnabled() && ownerProfile.isPvpEnabled())) return;
+//                event.setCancelled(true);
+//            }
+//        }
 
         // Fire element check: Disable fire if not selected
         if (!damagerProfile.getSelectedElement().equalsIgnoreCase("fire")
@@ -926,7 +973,7 @@ public class DamageListener implements Listener {
 
         if (event.getCause() == EntityDamageEvent.DamageCause.THORNS && damagerProfile.getChosenClass().equalsIgnoreCase("swordsman") && damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
 
-            event.setDamage(finalDamage*.1);
+            event.setDamage(finalDamage*.1+ event.getDamage());
             return;
         }
 
@@ -970,9 +1017,7 @@ public class DamageListener implements Listener {
             if (playerProfile.getChosenClass().equalsIgnoreCase("swordsman") && playerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
                 finalDamage *= .5;
             }
-            if (playerProfile.getChosenClass().equalsIgnoreCase("swordsman") && !playerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
-                finalDamage *= .8;
-            }
+
         }
 
 
@@ -1078,20 +1123,20 @@ public class DamageListener implements Listener {
         }
 
 
-        if (target instanceof Tameable tameable) {
-            AnimalTamer owner = tameable.getOwner();
-
-            // Check if the tameable has an owner
-            if (owner != null) {
-                if (Objects.requireNonNull(owner.getName()).equalsIgnoreCase(attacker.getName())) return;
-
-                UserProfile ownerProfile = profileManager.getProfile(owner.getName());
-                UserProfile profile = profileManager.getProfile(attacker.getName());
-                if (!(profile.getTeam().equalsIgnoreCase(ownerProfile.getTeam()))) return;
-                if ((profile.isPvpEnabled() && ownerProfile.isPvpEnabled())) return;
-                event.setCancelled(true);
-            }
-        }
+//        if (target instanceof Tameable tameable) {
+//            AnimalTamer owner = tameable.getOwner();
+//
+//            // Check if the tameable has an owner
+//            if (owner != null) {
+//                if (Objects.requireNonNull(owner.getName()).equalsIgnoreCase(attacker.getName())) return;
+//
+//                UserProfile ownerProfile = profileManager.getProfile(owner.getName());
+//                UserProfile profile = profileManager.getProfile(attacker.getName());
+//                if (!(profile.getTeam().equalsIgnoreCase(ownerProfile.getTeam()))) return;
+//                if ((profile.isPvpEnabled() && ownerProfile.isPvpEnabled())) return;
+//                event.setCancelled(true);
+//            }
+//        }
 
         ItemStack weapon = attacker.getInventory().getItemInMainHand();
 
@@ -1168,9 +1213,6 @@ public class DamageListener implements Listener {
             finalDamage *= playerProfile.getDurability() == 0 ? 2 : 1;
             if (playerProfile.getChosenClass().equalsIgnoreCase("swordsman") && playerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
                 finalDamage *= .5;
-            }
-            if (playerProfile.getChosenClass().equalsIgnoreCase("swordsman") && !playerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
-                finalDamage *= .8;
             }
         }
 
@@ -1292,20 +1334,20 @@ public class DamageListener implements Listener {
 
         // Get stats based on the player's chosen class
         if (damagerProfile.getChosenClass().equalsIgnoreCase("archer")) {
-            str = damagerProfile.getArcherClassInfo().getStr();
-            dex = damagerProfile.getArcherClassInfo().getDex();
-            intel = damagerProfile.getArcherClassInfo().getIntel();
+            str = (double) damagerProfile.getArcherClassInfo().getStr() /100;
+            dex = (double) damagerProfile.getArcherClassInfo().getDex() /100;
+            intel = (double) damagerProfile.getArcherClassInfo().getIntel() /100;
             luk = damagerProfile.getArcherClassInfo().getLuk();
         } else if (damagerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
-            str = damagerProfile.getAlchemistClassInfo().getStr();
-            dex = damagerProfile.getAlchemistClassInfo().getDex();
-            intel = damagerProfile.getAlchemistClassInfo().getIntel();
+            str = (double) damagerProfile.getAlchemistClassInfo().getStr() /100;
+            dex = (double) damagerProfile.getAlchemistClassInfo().getDex() /100;
+            intel = (double) damagerProfile.getAlchemistClassInfo().getIntel() /100;
             luk = damagerProfile.getAlchemistClassInfo().getLuk();
         }
         else if (damagerProfile.getChosenClass().equalsIgnoreCase("swordsman")) {
-            str = damagerProfile.getSwordsmanClassInfo().getStr();
-            dex = damagerProfile.getSwordsmanClassInfo().getDex();
-            intel = damagerProfile.getSwordsmanClassInfo().getIntel();
+            str = (double) damagerProfile.getSwordsmanClassInfo().getStr() /100;
+            dex = (double) damagerProfile.getSwordsmanClassInfo().getDex() /100;
+            intel = (double) damagerProfile.getSwordsmanClassInfo().getIntel() /100;
             luk = damagerProfile.getSwordsmanClassInfo().getLuk();
         }
 
@@ -1331,28 +1373,28 @@ public class DamageListener implements Listener {
                         if (lore.startsWith("Strength: ")) {
 
                             if (damagerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
-                                str += (Math.round(1.2*parseLoreValue(lore)));
+                                str += ((double) (Math.round(1.2 * parseLoreValue(lore))) /100);
                             }
                             else {
-                                str += parseLoreValue(lore);
+                                str += ((double) parseLoreValue(lore) /100);
                             }
 
 
                         }
                         else if (lore.startsWith("Dexterity: ")) {
                             if (damagerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
-                                dex += (Math.round(1.2*parseLoreValue(lore)));
+                                dex += ((double) (Math.round(1.2 * parseLoreValue(lore))) /100);
                             }
                             else {
-                                dex += parseLoreValue(lore);
+                                dex += ((double) parseLoreValue(lore) /100);
                             }
                         }
                         else if (lore.startsWith("Intelligence: ")) {
                             if (damagerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
-                                intel += (Math.round(1.2*parseLoreValue(lore)));
+                                intel += ((double) (Math.round(1.2 * parseLoreValue(lore))) /100);
                             }
                             else {
-                                intel += parseLoreValue(lore);
+                                intel += ((double) parseLoreValue(lore) /100);
                             }
                         }
                         else if (lore.startsWith("Luck: ")) {
@@ -1463,7 +1505,7 @@ public class DamageListener implements Listener {
                 p1Luk = player1Profile.getAlchemistClassInfo().getLuk();
             }
 
-            critChance -= Math.max(0,p1Luk*0.0002);
+            critChance -= (Math.max(0,p1Luk*0.0002)) + getTotalLuckFromEquipment(player1, player1Profile.getChosenClass());
 
         }
 
@@ -1523,14 +1565,7 @@ public class DamageListener implements Listener {
         return calculatedDamage*(1 + (fnl*.01));
     }
 
-    private int parseLoreValue(String lore) {
-        try {
-            return Integer.parseInt(lore.split(": ")[1]);
-        } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
-            // Handle parsing errors or missing values
-            return 0;
-        }
-    }
+
 
     // Method to apply extra health and return adjusted damage
     private double applyExtraHealthAndDamage(LivingEntity target, double calculatedDamage, Player player) {
@@ -1674,9 +1709,113 @@ public class DamageListener implements Listener {
         entity.setCustomName(customName + healthIndicator);
     }
 
+    public static double getTotalStatsFromEquipment(Player player, String chosenClass) {
+        double totalStats = 0.0;
 
+        ItemStack[] equipment = {
+                player.getInventory().getHelmet(),
+                player.getInventory().getChestplate(),
+                player.getInventory().getLeggings(),
+                player.getInventory().getBoots(),
+                player.getInventory().getItemInMainHand(),
+                player.getInventory().getItemInOffHand()
+        };
 
+        for (ItemStack item : equipment) {
+            if (item != null && item.hasItemMeta()) {
+                ItemMeta meta = item.getItemMeta();
+                if (meta != null && meta.hasLore()) {
+                    for (String lore : Objects.requireNonNull(meta.getLore())) {
+                        double statValue = 0.0;
+                        if (lore.startsWith("Strength: ")) {
+                            statValue = parseLoreValue(lore) ;
+                        } else if (lore.startsWith("Dexterity: ")) {
+                            statValue = parseLoreValue(lore) ;
+                        } else if (lore.startsWith("Intelligence: ")) {
+                            statValue = parseLoreValue(lore) ;
+                        } else if (lore.startsWith("Luck: ")) {
+                            statValue = parseLoreValue(lore);
+                        } else if (lore.startsWith("Agility: ")) {
+                            statValue = parseLoreValue(lore) ;
 
+                        }
+                        else if (lore.startsWith("Vitality: ")) {
+                            statValue = parseLoreValue(lore) ;
+                        }
+                        else if (lore.contains("StatDamage%: ")) {
+                            statValue = parseLoreValue(lore);
+                        }
+                        else if (lore.contains("HP%: ")) {
+                            statValue = parseLoreValue(lore);
+                        }
+
+                        // Apply class modifier if applicable
+                        statValue = applyClassModifier(statValue, chosenClass, lore);
+                        totalStats += statValue;
+                    }
+                }
+            }
+        }
+
+        return totalStats;
+    }
+
+    private static double applyClassModifier(double value, String chosenClass, String loreType) {
+        if (chosenClass.equalsIgnoreCase("alchemist") &&
+                (loreType.startsWith("Strength: ") || loreType.startsWith("Dexterity: ") ||
+                        loreType.startsWith("Intelligence: ") || loreType.startsWith("Agility: "))) {
+            return Math.round(1.2 * value);
+        } else if (chosenClass.equalsIgnoreCase("alchemist") &&
+                (loreType.startsWith("Luck: ") || loreType.contains("StatDamage%: "))) {
+            return Math.round(1.2 * value);
+        } else {
+            return value;
+        }
+    }
+
+    public static double getTotalLuckFromEquipment(Player player, String chosenClass) {
+        double totalLuck = 0.0;
+
+        ItemStack[] equipment = {
+                player.getInventory().getHelmet(),
+                player.getInventory().getChestplate(),
+                player.getInventory().getLeggings(),
+                player.getInventory().getBoots(),
+                player.getInventory().getItemInMainHand(),
+                player.getInventory().getItemInOffHand()
+        };
+
+        for (ItemStack item : equipment) {
+            if (item != null && item.hasItemMeta()) {
+                ItemMeta meta = item.getItemMeta();
+                if (meta != null && meta.hasLore()) {
+                    for (String lore : Objects.requireNonNull(meta.getLore())) {
+                        if (lore.startsWith("Luck: ")) {
+                            double luckValue = parseLoreValue(lore);
+
+                            // Apply class modifier if applicable
+                            if (chosenClass.equalsIgnoreCase("alchemist")) {
+                                luckValue = Math.round(1.2 * luckValue);
+                            }
+
+                            totalLuck += luckValue;
+                        }
+                    }
+                }
+            }
+        }
+
+        return totalLuck;
+    }
+
+    private static int parseLoreValue(String lore) {
+        try {
+            return Integer.parseInt(lore.split(": ")[1]);
+        } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+            // Handle parsing errors or missing values
+            return 0;
+        }
+    }
 
 }
 

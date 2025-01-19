@@ -65,6 +65,7 @@ public class MonsterInitializer implements Listener {
         }
 
         if (event.getEntity() instanceof Monster monster) {
+            monster.setNoDamageTicks(0);
             initializeExtraAttributes(monster);
 
         }
@@ -131,19 +132,21 @@ public class MonsterInitializer implements Listener {
         int lvl = (int) (Math.floor(maxCoord) / 100);
         String normalName = ChatColor.GREEN + "Lvl " + lvl + " " + entity.getType().name();
         entity.setCustomName(normalName);
-        double customMaxHealth = maxCoord * 1001;
+        double customMaxHealth =entity.getHealth() + lvl+20;
 
-        Objects.requireNonNull(entity.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(customMaxHealth);
-        double extraHealth = Math.max(Math.abs(entity.getLocation().getX()), Math.abs(entity.getLocation().getZ()));
 
-        double customDamage = Math.min(extraHealth / 10, customMaxHealth);
-        extraHealth += entity.getHealth();
+        double extraHealth = lvl+20+entity.getHealth();
+
+        double customDamage = lvl*.2 + Objects.requireNonNull(entity.getAttribute(Attribute.ATTACK_DAMAGE)).getValue() + 1;
+
         // First, check for the purple world boss (0.1% chance)
-        if (Math.random() < .0001 || entity instanceof Warden || entity instanceof Wither || entity instanceof ElderGuardian || entity instanceof Ravager || entity instanceof Evoker && !(entity instanceof Vex)) { //0.0003
-            extraHealth = (extraHealth * 1000); // Add 10000% health
+        if (Math.random() < .0003 || entity instanceof Warden || entity instanceof Wither || entity instanceof ElderGuardian || entity instanceof Ravager || entity instanceof Evoker && !(entity instanceof Vex)) { //0.0003
+            extraHealth += lvl*1500;
             setBossAttributes(entity, maxCoord, "World Boss", ChatColor.DARK_PURPLE);
             entity.setGlowing(true);
-            entity.setHealth(Math.min(extraHealth, customMaxHealth));
+            Objects.requireNonNull(entity.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(extraHealth+500);
+            entity.setHealth(extraHealth);
+
             Objects.requireNonNull(entity.getAttribute(Attribute.ATTACK_DAMAGE)).setBaseValue(customDamage * 2);
             entity.setPersistent(true);
             entity.setCustomNameVisible(true);
@@ -153,9 +156,10 @@ public class MonsterInitializer implements Listener {
 
         // Only check for red boss (1% chance) if not already a purple boss
         if (Math.random() < .003 ) { //0.003
-            extraHealth = (extraHealth * 100); // Add 1000% health
+            extraHealth += lvl*150;
             setBossAttributes(entity, maxCoord, "Boss", ChatColor.RED);
-            entity.setHealth(Math.min(extraHealth, customMaxHealth));
+            Objects.requireNonNull(entity.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(extraHealth+500);
+            entity.setHealth(extraHealth);
             Objects.requireNonNull(entity.getAttribute(Attribute.ATTACK_DAMAGE)).setBaseValue(customDamage * 1.5);
 
             entity.setCustomNameVisible(true);
@@ -164,16 +168,18 @@ public class MonsterInitializer implements Listener {
 
 
         if (Math.random() < 0.03 || entity instanceof Vindicator) {
-            extraHealth = (extraHealth * 10); // Add 1000% health
+            extraHealth += lvl*15;
             setBossAttributes(entity, maxCoord, "Leader", ChatColor.YELLOW);
-            entity.setHealth(Math.min(extraHealth, customMaxHealth));
+            Objects.requireNonNull(entity.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(extraHealth+500);
+            entity.setHealth(extraHealth);
             Objects.requireNonNull(entity.getAttribute(Attribute.ATTACK_DAMAGE)).setBaseValue(customDamage * 1.2);
             entity.setCustomNameVisible(true);
             return;
         }
 
         // If neither of the boss conditions are met, set standard attributes
-        entity.setHealth(Math.min(extraHealth, customMaxHealth));
+        Objects.requireNonNull(entity.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(extraHealth+500);
+        entity.setHealth(extraHealth);
         Objects.requireNonNull(entity.getAttribute(Attribute.ATTACK_DAMAGE)).setBaseValue(customDamage);
     }
 

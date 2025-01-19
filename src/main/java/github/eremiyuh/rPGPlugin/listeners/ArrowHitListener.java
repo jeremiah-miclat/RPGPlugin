@@ -51,7 +51,7 @@ public class ArrowHitListener implements Listener {
 
                 // Check if the arrow hit a living entity
                 if (event.getHitEntity() instanceof LivingEntity target) {
-                    target.setFireTicks((100+archerInt*10));
+                    target.setFireTicks((100+(archerInt/100)*10));
                 }
             }
 

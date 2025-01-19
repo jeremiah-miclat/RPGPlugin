@@ -69,15 +69,15 @@ public class PlayerStatBuff {
         double healthPerVitality = 2;
 
         double[] equipStats = getEquipStats(player);
-        double equipVitality = equipStats[0];
+        double equipVitality = equipStats[0]/100;
         double finalHpMultiplier = 1 + (equipStats[2]*.01);
 
         // Calculate base health based on class and vitality
         double classVitality = switch (profile.getChosenClass().toLowerCase()) {
-            case "archer" -> profile.getArcherClassInfo().getVit();
-            case "swordsman" -> profile.getSwordsmanClassInfo().getVit();
-            case "alchemist" -> profile.getAlchemistClassInfo().getVit();
-            default -> profile.getDefaultClassInfo().getVit();
+            case "archer" -> (double) profile.getArcherClassInfo().getVit() /100;
+            case "swordsman" -> (double) profile.getSwordsmanClassInfo().getVit() /100;
+            case "alchemist" -> (double) profile.getAlchemistClassInfo().getVit() /100;
+            default -> (double) profile.getDefaultClassInfo().getVit() /100;
         };
         if (profile.getChosenClass().equalsIgnoreCase("alchemist")) {
             equipVitality*=1.2;
