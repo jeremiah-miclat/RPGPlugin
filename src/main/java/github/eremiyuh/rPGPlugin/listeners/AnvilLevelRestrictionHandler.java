@@ -11,6 +11,7 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.inventory.AnvilInventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.components.EquippableComponent;
 import org.jetbrains.annotations.Nullable;
@@ -148,6 +149,40 @@ public class AnvilLevelRestrictionHandler implements Listener {
         // Clone the first item for modifications
         ItemStack result = firstItem.clone();
 
+        if (firstItem.getType() == Material.NETHERITE_PICKAXE && secondItem.getType() == Material.ENCHANTED_BOOK) {
+            // Get the item metas
+
+            ItemMeta firstMeta = firstItem.getItemMeta();
+            EnchantmentStorageMeta secondEnchantMeta = (EnchantmentStorageMeta) secondItem.getItemMeta();
+
+            // Ensure both metas are not null
+            if (firstMeta != null && secondEnchantMeta != null) {
+                // Check if the pickaxe has Silk Touch
+                if (firstMeta.hasEnchant(Enchantment.SILK_TOUCH)) {
+                    // Check if the enchanted book has Fortune
+                    if (secondEnchantMeta.hasStoredEnchant(Enchantment.FORTUNE)) {
+
+                        // Remove Silk Touch from the pickaxe
+                        firstMeta.removeEnchant(Enchantment.SILK_TOUCH);
+
+                        // Add Fortune from the book (keep the level of Fortune)
+                        int fortuneLevel = secondEnchantMeta.getStoredEnchantLevel(Enchantment.FORTUNE);
+                        firstMeta.addEnchant(Enchantment.FORTUNE, fortuneLevel, true);
+
+                        // Apply the updated meta to the result item
+                        result.setItemMeta(firstMeta);
+
+                        // Set the result and repair cost
+                        event.setResult(result);
+                        anvilInventory.setRepairCost(10);
+                        return;
+                    }
+                }
+            }
+
+        }
+
+
         // Ensure the second item has metadata and lore
         ItemMeta secondMeta = secondItem.getItemMeta();
         if (secondMeta == null || !secondMeta.hasLore()) return;
@@ -175,6 +210,8 @@ public class AnvilLevelRestrictionHandler implements Listener {
             }
             return;
         }
+
+
 
         // Only proceed if the first item name matches the second lore line
         if (!firstItemName.contains(secondLoreLine1)) return;
@@ -220,6 +257,7 @@ public class AnvilLevelRestrictionHandler implements Listener {
             if (!found) {
                 resultLore.add(secondLoreLine);  // Add the new lore line from the second item
             }
+
 
             // Set the modified lore back to the result item
             resultMeta.setLore(resultLore);

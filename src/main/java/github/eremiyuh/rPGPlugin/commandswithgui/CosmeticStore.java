@@ -33,7 +33,7 @@ public class CosmeticStore implements CommandExecutor, Listener {
     private final PlayerProfileManager profileManager;
     private final List<CosmeticItem> cosmeticItems = new ArrayList<>();
     private final List<CosmeticItem> cosmeticItems2 = new ArrayList<>();
-
+    private final List<CosmeticItem> cosmeticItems3 = new ArrayList<>();
 
     public CosmeticStore(RPGPlugin plugin, PlayerProfileManager profileManager) {
         this.plugin = plugin;
@@ -41,6 +41,7 @@ public class CosmeticStore implements CommandExecutor, Listener {
         Bukkit.getPluginManager().registerEvents(this, plugin);
         initializeCosmeticItems();
         initializeCosmeticItems2();
+        initializeCosmeticItems3();
     }
 
     private void initializeCosmeticItems() {
@@ -130,6 +131,56 @@ public class CosmeticStore implements CommandExecutor, Listener {
         cosmeticItems2.add(new CosmeticItem(getKalH(), 100000, "activitypoints"));
         cosmeticItems2.add(new CosmeticItem(getKalS(), 100000, "activitypoints"));
     }
+
+
+    private void initializeCosmeticItems3() {
+
+        // black n
+        cosmeticItems3.add(new CosmeticItem(blackNHelm(), 2500000, "activitypoints"));
+        cosmeticItems3.add(new CosmeticItem(blackNChest(), 2500000, "activitypoints"));
+        cosmeticItems3.add(new CosmeticItem(blackNLeg(), 2500000, "activitypoints"));
+        cosmeticItems3.add(new CosmeticItem(blackNBoots(), 2500000, "activitypoints"));
+
+        // white n
+        cosmeticItems3.add(new CosmeticItem(whiteNHelm(), 2500000, "activitypoints"));
+        cosmeticItems3.add(new CosmeticItem(whiteNChest(), 2500000, "activitypoints"));
+        cosmeticItems3.add(new CosmeticItem(whiteNLeg(), 2500000, "activitypoints"));
+        cosmeticItems3.add(new CosmeticItem(whiteNBoots(), 2500000, "activitypoints"));
+
+        // green n
+        cosmeticItems3.add(new CosmeticItem(greenNHelm(), 2500000, "activitypoints"));
+        cosmeticItems3.add(new CosmeticItem(greenNChest(), 2500000, "activitypoints"));
+        cosmeticItems3.add(new CosmeticItem(greenNLeg(), 2500000, "activitypoints"));
+        cosmeticItems3.add(new CosmeticItem(greenNBoots(), 2500000, "activitypoints"));
+
+        // blue n
+        cosmeticItems3.add(new CosmeticItem(blueNHelm(), 2500000, "activitypoints"));
+        cosmeticItems3.add(new CosmeticItem(blueNChest(), 2500000, "activitypoints"));
+        cosmeticItems3.add(new CosmeticItem(blueNLeg(), 2500000, "activitypoints"));
+        cosmeticItems3.add(new CosmeticItem(blueNBoots(), 2500000, "activitypoints"));
+
+        // red n
+        cosmeticItems3.add(new CosmeticItem(redNHelm(), 2500000, "activitypoints"));
+        cosmeticItems3.add(new CosmeticItem(redNChest(), 2500000, "activitypoints"));
+        cosmeticItems3.add(new CosmeticItem(redNLeg(), 2500000, "activitypoints"));
+        cosmeticItems3.add(new CosmeticItem(redNBoots(), 2500000, "activitypoints"));
+
+        //assassin bow
+        cosmeticItems3.add(new CosmeticItem(getAssassinBow(), 20000000, "activitypoints"));
+
+        //creation weaver
+        cosmeticItems3.add(new CosmeticItem(getCreationWeaver(), 20000000, "activitypoints"));
+
+        //cyber katana
+        cosmeticItems3.add(new CosmeticItem(getCyberKatana(), 20000000, "activitypoints"));
+
+        //flamatic katana
+        cosmeticItems3.add(new CosmeticItem(getFlamaticKatana(), 10000000, "activitypoints"));
+
+        //cyber shield
+        cosmeticItems3.add(new CosmeticItem(getCyberShield(), 10000000, "activitypoints"));
+    }
+
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (sender instanceof Player) {
@@ -139,8 +190,13 @@ public class CosmeticStore implements CommandExecutor, Listener {
                 openCosmeticStore(player);
             } else if (args[0].equals("2")) {
                 openCosmeticStore2(player);
-            } else {
-                player.sendMessage(ChatColor.RED + "Invalid store number. Use /cosmeticstore 1 or 2");
+
+            }
+            else if (args[0].equals("3")) {
+                openCosmeticStore3(player);
+            }
+            else {
+                player.sendMessage(ChatColor.RED + "Invalid store number. Use /cosmeticstore 1, 2 or 3");
             }
             return true;
         } else {
@@ -168,6 +224,19 @@ public class CosmeticStore implements CommandExecutor, Listener {
 
         for (int i = 0; i < cosmeticItems2.size(); i++) {
             CosmeticItem cosmeticItem = cosmeticItems2.get(i);
+            // Use getDisplayItem() to show the item with lore in the GUI
+            ItemStack item = cosmeticItem.getDisplayItem();
+            cosmeticStore.setItem(i, item);
+        }
+
+        player.openInventory(cosmeticStore);
+    }
+
+    public void openCosmeticStore3(Player player) {
+        Inventory cosmeticStore = Bukkit.createInventory(null, 54, Component.text("Cosmetic Store 3").color(TextColor.color(255, 0, 0)));
+
+        for (int i = 0; i < cosmeticItems3.size(); i++) {
+            CosmeticItem cosmeticItem = cosmeticItems3.get(i);
             // Use getDisplayItem() to show the item with lore in the GUI
             ItemStack item = cosmeticItem.getDisplayItem();
             cosmeticStore.setItem(i, item);
@@ -228,6 +297,42 @@ public class CosmeticStore implements CommandExecutor, Listener {
             if (slot < 0 || slot >= cosmeticItems2.size()) return; // Ensure the slot is valid
 
             CosmeticItem cosmeticItem = cosmeticItems2.get(slot);
+            ItemStack clickedItem = event.getCurrentItem();
+
+            // Check if the clicked item is not null and matches the expected cosmetic item
+            if (clickedItem == null || !clickedItem.isSimilar(cosmeticItem.getDisplayItem())) {
+                return;
+            }
+
+            int cost = cosmeticItem.getCost();
+            String currency = cosmeticItem.getCurrency();
+
+            if (userProfile.getCurrency(currency) < cost) {
+                player.sendMessage(ChatColor.RED + "Need " + cost + " " + currency + " currency");
+                return;
+            }
+
+            userProfile.setCurrency(currency, userProfile.getCurrency(currency) - cost);
+            dropOrNotify(player, cosmeticItem.getItem(), "Successfully purchased.");  // Give the original item
+        }
+    }
+
+    @EventHandler
+    public void onInventoryClick3(InventoryClickEvent event) {
+        if (event.getView().title().equals(Component.text("Cosmetic Store 3").color(TextColor.color(255, 0, 0)))) {
+            Player player = (Player) event.getWhoClicked();
+            event.setCancelled(true);
+            UserProfile userProfile = profileManager.getProfile(player.getName());
+
+            if (userProfile == null) {
+                player.sendMessage(Component.text("Profile not found!").color(TextColor.color(255, 0, 0)));
+                return;
+            }
+
+            int slot = event.getSlot();
+            if (slot < 0 || slot >= cosmeticItems3.size()) return; // Ensure the slot is valid
+
+            CosmeticItem cosmeticItem = cosmeticItems3.get(slot);
             ItemStack clickedItem = event.getCurrentItem();
 
             // Check if the clicked item is not null and matches the expected cosmetic item

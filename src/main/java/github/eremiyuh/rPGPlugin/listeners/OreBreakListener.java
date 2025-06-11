@@ -3,6 +3,7 @@ package github.eremiyuh.rPGPlugin.listeners;
 import github.eremiyuh.rPGPlugin.manager.PlayerProfileManager;
 import github.eremiyuh.rPGPlugin.profile.UserProfile;
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -49,6 +50,8 @@ public class OreBreakListener implements Listener {
         List<String> lore = onHandMeta.getLore();
         String oreHunterLore = null;
 
+        if (onHandMeta.hasEnchant(Enchantment.SILK_TOUCH)) return;
+
         // Look through the lore to find the "Ores Hunter" line
         assert lore != null;
         for (String line : lore) {
@@ -83,12 +86,14 @@ public class OreBreakListener implements Listener {
         // Check if the ore chance condition is met
         if (Math.random() < oreChance) {
 
+
             for (Item item : event.getItems()) {
                 ItemStack itemStack = item.getItemStack();
-                // Increase the dropped amount based on the multiplier
-                int amount = itemStack.getAmount() * multiplier;
-                if (amount >= 100) amount = 99;
-                itemStack.setAmount(amount);
+               if (!itemStack.getType().isBlock()) {
+                   int amount = itemStack.getAmount() * multiplier;
+                   if (amount >= 100) amount = 99;
+                   itemStack.setAmount(amount);
+               }
             }
         }
     }

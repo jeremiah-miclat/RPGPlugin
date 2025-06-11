@@ -309,7 +309,7 @@ public class DeadMobListener implements Listener {
 
             // Select a random ore type
             OreType randomOre = OreType.values()[random.nextInt(OreType.values().length)];
-            int randomValue = 1 + (int) (Math.random() * ((double) rewardCount /100));
+            int randomValue = 10 + (int) (Math.random() * ((double) rewardCount /100));
 
             // Give the reward for the selected ore
             switch (randomOre) {

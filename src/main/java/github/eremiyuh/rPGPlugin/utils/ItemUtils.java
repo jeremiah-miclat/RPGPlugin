@@ -303,6 +303,122 @@ public class ItemUtils {
         return pointItem;
     }
 
+    // Creation Weaver
+    public static ItemStack getCreationWeaver() {
+        ItemStack pointItem = new ItemStack(Material.NETHERITE_SWORD); // Choose any material you prefer
+        ItemMeta meta = pointItem.getItemMeta();
+
+        if (meta != null) {
+            meta.displayName(Component.text("Creation Weaver").color(TextColor.color(255,0,0)));
+            meta.lore(Arrays.asList(
+                    Component.text("Cosmetic")
+            ));
+
+            meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
+            meta.setEnchantmentGlintOverride(false);
+
+
+            meta.setItemModel(NamespacedKey.minecraft("creation_weaver"));
+
+            EquippableComponent equippableComponent = meta.getEquippable();
+
+            equippableComponent.setSwappable(false);
+
+            meta.setEquippable(equippableComponent);
+
+            pointItem.setItemMeta(meta);
+        }
+
+        return pointItem;
+    }
+
+    // Cyber Katana
+    public static ItemStack getCyberKatana() {
+        ItemStack pointItem = new ItemStack(Material.NETHERITE_SWORD); // Choose any material you prefer
+        ItemMeta meta = pointItem.getItemMeta();
+
+        if (meta != null) {
+            meta.displayName(Component.text("Cyber Katana").color(TextColor.color(255,0,0)));
+            meta.lore(Arrays.asList(
+                    Component.text("Cosmetic")
+            ));
+
+            meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
+            meta.setEnchantmentGlintOverride(false);
+
+
+            meta.setItemModel(NamespacedKey.minecraft("cyber_katana"));
+
+            EquippableComponent equippableComponent = meta.getEquippable();
+
+            equippableComponent.setSwappable(false);
+
+            meta.setEquippable(equippableComponent);
+
+            pointItem.setItemMeta(meta);
+        }
+
+        return pointItem;
+    }
+
+    // Flamatic Katana
+    public static ItemStack getFlamaticKatana() {
+        ItemStack pointItem = new ItemStack(Material.NETHERITE_SWORD); // Choose any material you prefer
+        ItemMeta meta = pointItem.getItemMeta();
+
+        if (meta != null) {
+            meta.displayName(Component.text("Flamatic Katana").color(TextColor.color(255,0,0)));
+            meta.lore(Arrays.asList(
+                    Component.text("Cosmetic")
+            ));
+
+            meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
+            meta.setEnchantmentGlintOverride(false);
+
+
+            meta.setItemModel(NamespacedKey.minecraft("flamatic_katana"));
+
+            EquippableComponent equippableComponent = meta.getEquippable();
+
+            equippableComponent.setSwappable(false);
+
+            meta.setEquippable(equippableComponent);
+
+            pointItem.setItemMeta(meta);
+        }
+
+        return pointItem;
+    }
+
+    // Cyber Shield
+    public static ItemStack getCyberShield() {
+        ItemStack pointItem = new ItemStack(Material.SHIELD); // Choose any material you prefer
+        ItemMeta meta = pointItem.getItemMeta();
+
+        if (meta != null) {
+            meta.displayName(Component.text("Cyber Shield").color(TextColor.color(255,0,0)));
+            meta.lore(Arrays.asList(
+                    Component.text("Cosmetic")
+            ));
+
+            meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
+            meta.setEnchantmentGlintOverride(false);
+
+
+            meta.setItemModel(NamespacedKey.minecraft("cyber_shield"));
+
+            EquippableComponent equippableComponent = meta.getEquippable();
+
+            equippableComponent.setSwappable(false);
+
+            meta.setEquippable(equippableComponent);
+
+            pointItem.setItemMeta(meta);
+        }
+
+        return pointItem;
+    }
+
     // Kalam0n tools
     public static ItemStack getKalPa() {
         ItemStack pointItem = new ItemStack(Material.NETHERITE_PICKAXE); // Choose any material you prefer
@@ -491,6 +607,26 @@ public class ItemUtils {
             meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
             meta.setEnchantmentGlintOverride(false);
             meta.setItemModel(NamespacedKey.minecraft("warbow"));
+            pointItem.setItemMeta(meta);
+        }
+
+        return pointItem;
+    }
+
+    // assassination bow
+    public static ItemStack getAssassinBow() {
+        ItemStack pointItem = new ItemStack(Material.BOW); // Choose any material you prefer
+        ItemMeta meta = pointItem.getItemMeta();
+
+        if (meta != null) {
+            meta.displayName(Component.text("Assassination").color(TextColor.color(255,0,0)));
+            meta.lore(Arrays.asList(
+                    Component.text("Cosmetic")
+            ));
+
+            meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
+            meta.setEnchantmentGlintOverride(false);
+            meta.setItemModel(NamespacedKey.minecraft("assassination_bow"));
             pointItem.setItemMeta(meta);
         }
 
@@ -945,6 +1081,229 @@ public class ItemUtils {
                 Arrays.asList(Component.text("Cosmetic")),
                 "grimdarkdiamond",
                 "grimdark_diamond_boots",
+                EquipmentSlot.FEET
+        );
+    }
+
+    // BLACK N
+
+    public static ItemStack blackNChest() {
+        return createCustomArmor(
+                Material.NETHERITE_CHESTPLATE,
+                "Black Ninja Chestplate",
+                Arrays.asList(Component.text("Cosmetic")),
+                "black_n",
+                "black_n_chestplate",
+                EquipmentSlot.CHEST
+        );
+    }
+
+    public static ItemStack blackNHelm() {
+        return createCustomArmor(
+                Material.NETHERITE_HELMET,
+                "Black Ninja Helmet",
+                Arrays.asList(Component.text("Cosmetic")),
+                "black_n",
+                "black_n_helmet",
+                EquipmentSlot.HEAD
+        );
+    }
+
+    public static ItemStack blackNLeg() {
+        return createCustomArmor(
+                Material.NETHERITE_LEGGINGS,
+                "Black Ninja Leggings",
+                Arrays.asList(Component.text("Cosmetic")),
+                "black_n",
+                "black_n_leggings",
+                EquipmentSlot.LEGS
+        );
+    }
+
+    public static ItemStack blackNBoots() {
+        return createCustomArmor(
+                Material.NETHERITE_BOOTS,
+                "Black Ninja Boots",
+                Arrays.asList(Component.text("Cosmetic")),
+                "black_n",
+                "black_n_boots",
+                EquipmentSlot.FEET
+        );
+    }
+
+    // Create the same sets for white, green, blue and red
+    public static ItemStack whiteNChest() {
+        return createCustomArmor(
+                Material.NETHERITE_CHESTPLATE,
+                "White Ninja Chestplate",
+                Arrays.asList(Component.text("Cosmetic")),
+                "white_n",
+                "white_n_chestplate",
+                EquipmentSlot.CHEST
+        );
+    }
+
+    public static ItemStack whiteNHelm() {
+        return createCustomArmor(
+                Material.NETHERITE_HELMET,
+                "White Ninja Helmet",
+                Arrays.asList(Component.text("Cosmetic")),
+                "white_n",
+                "white_n_helmet",
+                EquipmentSlot.HEAD
+        );
+    }
+
+    public static ItemStack whiteNLeg() {
+        return createCustomArmor(
+                Material.NETHERITE_LEGGINGS,
+                "White Ninja Leggings",
+                Arrays.asList(Component.text("Cosmetic")),
+                "white_n",
+                "white_n_leggings",
+                EquipmentSlot.LEGS
+        );
+    }
+
+    public static ItemStack whiteNBoots() {
+        return createCustomArmor(
+                Material.NETHERITE_BOOTS,
+                "White Ninja Boots",
+                Arrays.asList(Component.text("Cosmetic")),
+                "white_n",
+                "white_n_boots",
+                EquipmentSlot.FEET
+        );
+    }
+
+    public static ItemStack greenNChest() {
+        return createCustomArmor(
+                Material.NETHERITE_CHESTPLATE,
+                "Green Ninja Chestplate",
+                Arrays.asList(Component.text("Cosmetic")),
+                "green_n",
+                "green_n_chestplate",
+                EquipmentSlot.CHEST
+        );
+    }
+
+    public static ItemStack greenNHelm() {
+        return createCustomArmor(
+                Material.NETHERITE_HELMET,
+                "Green Ninja Helmet",
+                Arrays.asList(Component.text("Cosmetic")),
+                "green_n",
+                "green_n_helmet",
+                EquipmentSlot.HEAD
+        );
+    }
+
+    public static ItemStack greenNLeg() {
+        return createCustomArmor(
+                Material.NETHERITE_LEGGINGS,
+                "Green Ninja Leggings",
+                Arrays.asList(Component.text("Cosmetic")),
+                "green_n",
+                "green_n_leggings",
+                EquipmentSlot.LEGS
+        );
+    }
+
+    public static ItemStack greenNBoots() {
+        return createCustomArmor(
+                Material.NETHERITE_BOOTS,
+                "Green Ninja Boots",
+                Arrays.asList(Component.text("Cosmetic")),
+                "green_n",
+                "green_n_boots",
+                EquipmentSlot.FEET
+        );
+    }
+
+    public static ItemStack blueNChest() {
+        return createCustomArmor(
+                Material.NETHERITE_CHESTPLATE,
+                "Blue Ninja Chestplate",
+                Arrays.asList(Component.text("Cosmetic")),
+                "blue_n",
+                "blue_n_chestplate",
+                EquipmentSlot.CHEST
+        );
+    }
+
+    public static ItemStack blueNHelm() {
+        return createCustomArmor(
+                Material.NETHERITE_HELMET,
+                "Blue Ninja Helmet",
+                Arrays.asList(Component.text("Cosmetic")),
+                "blue_n",
+                "blue_n_helmet",
+                EquipmentSlot.HEAD
+        );
+    }
+
+    public static ItemStack blueNLeg() {
+        return createCustomArmor(
+                Material.NETHERITE_LEGGINGS,
+                "Blue Ninja Leggings",
+                Arrays.asList(Component.text("Cosmetic")),
+                "blue_n",
+                "blue_n_leggings",
+                EquipmentSlot.LEGS
+        );
+    }
+
+    public static ItemStack blueNBoots() {
+        return createCustomArmor(
+                Material.NETHERITE_BOOTS,
+                "Blue Ninja Boots",
+                Arrays.asList(Component.text("Cosmetic")),
+                "blue_n",
+                "blue_n_boots",
+                EquipmentSlot.FEET
+        );
+    }
+
+    public static ItemStack redNChest() {
+        return createCustomArmor(
+                Material.NETHERITE_CHESTPLATE,
+                "Red Ninja Chestplate",
+                Arrays.asList(Component.text("Cosmetic")),
+                "red_n",
+                "red_n_chestplate",
+                EquipmentSlot.CHEST
+        );
+    }
+
+    public static ItemStack redNHelm() {
+        return createCustomArmor(
+                Material.NETHERITE_HELMET,
+                "Red Ninja Helmet",
+                Arrays.asList(Component.text("Cosmetic")),
+                "red_n",
+                "red_n_helmet",
+                EquipmentSlot.HEAD
+        );
+    }
+
+    public static ItemStack redNLeg() {
+        return createCustomArmor(
+                Material.NETHERITE_LEGGINGS,
+                "Red Ninja Leggings",
+                Arrays.asList(Component.text("Cosmetic")),
+                "red_n",
+                "red_n_leggings",
+                EquipmentSlot.LEGS
+        );
+    }
+
+    public static ItemStack redNBoots() {
+        return createCustomArmor(
+                Material.NETHERITE_BOOTS,
+                "Red Ninja Boots",
+                Arrays.asList(Component.text("Cosmetic")),
+                "red_n",
+                "red_n_boots",
                 EquipmentSlot.FEET
         );
     }
