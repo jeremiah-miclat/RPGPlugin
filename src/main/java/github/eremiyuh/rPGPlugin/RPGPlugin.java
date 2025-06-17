@@ -105,34 +105,34 @@ public class RPGPlugin extends JavaPlugin {
         }
 
         // Save labyrinth world
-        World labyrinthWorld = getServer().getWorld("world_labyrinth");
-        if (labyrinthWorld != null) {
-            try {
-
-                labyrinthWorld.save();
-                getLogger().info("World 'world_labyrinth' has been saved.");
-            } catch (Exception e) {
-                getLogger().severe("Error saving world 'world_labyrinth': " + e.getMessage());
-                e.printStackTrace();
-            }
-        } else {
-            getLogger().warning("World 'world_labyrinth' was not found.");
-        }
-
-        // Save labyrinth world
-        World labyrinthWorld2 = getServer().getWorld("world_labyrinth2");
-        if (labyrinthWorld2 != null) {
-            try {
-
-                labyrinthWorld2.save();
-                getLogger().info("World 'world_labyrinth' has been saved.");
-            } catch (Exception e) {
-                getLogger().severe("Error saving world 'world_labyrinth2': " + e.getMessage());
-                e.printStackTrace();
-            }
-        } else {
-            getLogger().warning("World 'world_labyrinth2' was not found.");
-        }
+//        World labyrinthWorld = getServer().getWorld("world_labyrinth");
+//        if (labyrinthWorld != null) {
+//            try {
+//
+//                labyrinthWorld.save();
+//                getLogger().info("World 'world_labyrinth' has been saved.");
+//            } catch (Exception e) {
+//                getLogger().severe("Error saving world 'world_labyrinth': " + e.getMessage());
+//                e.printStackTrace();
+//            }
+//        } else {
+//            getLogger().warning("World 'world_labyrinth' was not found.");
+//        }
+//
+//        // Save labyrinth world
+//        World labyrinthWorld2 = getServer().getWorld("world_labyrinth2");
+//        if (labyrinthWorld2 != null) {
+//            try {
+//
+//                labyrinthWorld2.save();
+//                getLogger().info("World 'world_labyrinth' has been saved.");
+//            } catch (Exception e) {
+//                getLogger().severe("Error saving world 'world_labyrinth2': " + e.getMessage());
+//                e.printStackTrace();
+//            }
+//        } else {
+//            getLogger().warning("World 'world_labyrinth2' was not found.");
+//        }
 
 
         // Save chunk data
@@ -194,7 +194,7 @@ public class RPGPlugin extends JavaPlugin {
                     sx, sy, sz,             // Coordinates
                     syaw, spitch                     // Yaw (90° East), Pitch (0° level)
             );
-            world.setSpawnLocation(spawnLocation);
+//            world.setSpawnLocation(spawnLocation);
         }
 
         if (bcx != -1) {
@@ -214,7 +214,7 @@ public class RPGPlugin extends JavaPlugin {
     private void worldConfig() {
         World world = Bukkit.getWorld("world");
         if (world != null) {
-            world.setSpawnLocation(-14,72,-46);
+//            world.setSpawnLocation(-14,72,-46);
             world.setGameRule(GameRule.SPAWN_RADIUS, 0);
             world.setGameRule(GameRule.PLAYERS_SLEEPING_PERCENTAGE, 0);
         }
@@ -228,7 +228,7 @@ public class RPGPlugin extends JavaPlugin {
         Location[] locations = {loc1};
         String[][] stacks = {stack1};
 
-        HologramUtil.createMultipleStacks(world, locations, stacks);
+//        HologramUtil.createMultipleStacks(world, locations, stacks);
     }
 
     public boolean isServerLoaded() {
@@ -369,7 +369,7 @@ public class RPGPlugin extends JavaPlugin {
         getCommand("tradinghall").setExecutor(new TradeHall(profileManager));
         this.getCommand("pay").setExecutor(new PayCommand(profileManager));
         this.getCommand("rwseed").setExecutor(new RWSeedCommand());
-        getServer().getPluginManager().registerEvents(new PlayerMovementListener(this,profileManager), this);
+//        getServer().getPluginManager().registerEvents(new PlayerMovementListener(this,profileManager), this);
         this.getCommand("discordlink").setExecutor(new DiscordLinkCommand(this));
         Objects.requireNonNull(this.getCommand("showprofile")).setExecutor(new PublicSetCommand(profileManager));
         Objects.requireNonNull(this.getCommand("buyhomeslot")).setExecutor(new AddHomesCommand(profileManager));
@@ -386,8 +386,8 @@ public class RPGPlugin extends JavaPlugin {
 
         worldConfig();
         loadWorld("world_rpg",-91,75,-91, 0,0,-1,-1,-1,18000,GameRule.DO_DAYLIGHT_CYCLE,false, World.Environment.NORMAL, null);
-        loadWorld("world_labyrinth",-23,312,-35, 270,0,0,0,100,18000,null,false, World.Environment.NORMAL,Biome.NETHER_WASTES);
-        loadWorld("world_labyrinth2",-19,251,-36,270,0,0,0,100,18000,null,false, World.Environment.NETHER,Biome.NETHER_WASTES);
+//        loadWorld("world_labyrinth",-23,312,-35, 270,0,0,0,100,18000,null,false, World.Environment.NORMAL,Biome.NETHER_WASTES);
+//        loadWorld("world_labyrinth2",-19,251,-36,270,0,0,0,100,18000,null,false, World.Environment.NETHER,Biome.NETHER_WASTES);
         new TabListCustomizer(this, profileManager);
 
         Objects.requireNonNull(getCommand("junk")).setExecutor(new JunkCommand(profileManager));

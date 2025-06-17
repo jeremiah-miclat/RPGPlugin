@@ -53,7 +53,7 @@ public class TabListCustomizer {
         onlinePlayers.sort((player1, player2) -> player1.getName().compareToIgnoreCase(player2.getName()));
 
         // Set header and footer dynamically (set once for all players)
-        TextComponent header = Component.newline().append(Component.text("                                §eSEIZON SMP                                ")
+        TextComponent header = Component.newline().append(Component.text("                                §eYeye's Server                                ")
                         .color(TextColor.fromCSSHexString("#53ff1a")).append(Component.newline())).append(Component.newline()).append(Component.text("Online Players: " + onlinePlayersCount).color(TextColor.fromCSSHexString("#00ff55")))
                 .append(Component.newline());
         TextComponent footer =

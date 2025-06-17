@@ -26,28 +26,32 @@ public class TradeHall implements CommandExecutor {
         }
 
         Player player = (Player) sender;
-        World world = Bukkit.getWorld("world");
-        if (world == null) {
-            player.sendMessage("The 'world' map is not loaded.");
-            return true;
-        }
 
-        UserProfile profile = playerProfileManager.getProfile(player.getName());
-        int profileEnderPearl = profile.getEnderPearl();
+        player.sendMessage("Server needs to build a trading hall first");
+        return  true;
 
-        if (profileEnderPearl <= 0) {
-            player.sendMessage("Ender Pearl currency required. Collect ender pearl and then enter /convertmaterial enderpearl");
-            return true;
-        }
-
-        Location location = new Location(world, -48, 74, 112);
-        if (player.teleport(location)) {
-            player.sendMessage(ChatColor.GREEN +"Welcome to the trading hall!");
-            profile.setEnderPearl(profileEnderPearl-1);
-        }
-        else {
-            player.sendMessage("Failed to teleport.");
-        }
-        return true;
+//        World world = Bukkit.getWorld("world");
+//        if (world == null) {
+//            player.sendMessage("The 'world' map is not loaded.");
+//            return true;
+//        }
+//
+//        UserProfile profile = playerProfileManager.getProfile(player.getName());
+//        int profileEnderPearl = profile.getEnderPearl();
+//
+//        if (profileEnderPearl <= 0) {
+//            player.sendMessage("Ender Pearl currency required. Collect ender pearl and then enter /convertmaterial enderpearl");
+//            return true;
+//        }
+//
+//        Location location = new Location(world, -48, 74, 112);
+//        if (player.teleport(location)) {
+//            player.sendMessage(ChatColor.GREEN +"Welcome to the trading hall!");
+//            profile.setEnderPearl(profileEnderPearl-1);
+//        }
+//        else {
+//            player.sendMessage("Failed to teleport.");
+//        }
+//        return true;
     }
 }

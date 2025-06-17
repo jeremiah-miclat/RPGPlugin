@@ -32,37 +32,39 @@ public class RTPCommand implements CommandExecutor {
 
         Player player = (Player) sender;
 
+        player.sendMessage("This feature is disabled as it may impact server storage. Request to yeye if you want this feature to be enabled");
+
         // Check if player is on cooldown
-        if (isOnCooldown(player)) {
-            long remainingTime = getRemainingCooldownTime(player);
-            player.sendMessage("To reduce lag. You must wait " + remainingTime + " seconds before using this command again.");
-            return true;
-        }
-
-        World world = player.getWorld();
-
-        if (world.getEnvironment() == World.Environment.NETHER) {
-            player.sendMessage("Not allowed in the Nether.");
-            return true;
-        }
-
-        WorldBorder border = world.getWorldBorder();
-        double borderSize = border.getSize() / 2;  // Half-size radius from the center
-        double centerX = border.getCenter().getX();
-        double centerZ = border.getCenter().getZ();
-
-        // Attempt to find a safe location within world borders
-        Location randomLocation = getRandomSafeLocation(world, centerX, centerZ, borderSize);
-
-        if (randomLocation != null) {
-            player.teleport(randomLocation);
-            player.sendMessage("You have been randomly teleported!");
-
-            // Set cooldown for this player
-            setCooldown(player);
-        } else {
-            player.sendMessage("Could not find a safe location to teleport.");
-        }
+//        if (isOnCooldown(player)) {
+//            long remainingTime = getRemainingCooldownTime(player);
+//            player.sendMessage("To reduce lag. You must wait " + remainingTime + " seconds before using this command again.");
+//            return true;
+//        }
+//
+//        World world = player.getWorld();
+//
+//        if (world.getEnvironment() == World.Environment.NETHER) {
+//            player.sendMessage("Not allowed in the Nether.");
+//            return true;
+//        }
+//
+//        WorldBorder border = world.getWorldBorder();
+//        double borderSize = border.getSize() / 2;  // Half-size radius from the center
+//        double centerX = border.getCenter().getX();
+//        double centerZ = border.getCenter().getZ();
+//
+//        // Attempt to find a safe location within world borders
+//        Location randomLocation = getRandomSafeLocation(world, centerX, centerZ, borderSize);
+//
+//        if (randomLocation != null) {
+//            player.teleport(randomLocation);
+//            player.sendMessage("You have been randomly teleported!");
+//
+//            // Set cooldown for this player
+//            setCooldown(player);
+//        } else {
+//            player.sendMessage("Could not find a safe location to teleport.");
+//        }
 
         return true;
     }

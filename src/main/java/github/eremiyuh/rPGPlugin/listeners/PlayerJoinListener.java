@@ -47,7 +47,7 @@ public class PlayerJoinListener implements Listener {
             "Good luck, adventurer! May you find allies, treasures, and glory.",
             "May your swords stay sharp and your potions plentiful. Adventure awaits!",
             "Every great story starts with a single step. Begin yours!",
-            "Welcome, hero! The legends of Seizon SMP are waiting for your name to be etched into them.",
+            "Welcome, hero! The legends of yeye's server are waiting for your name to be etched into them.",
             "Your destiny calls! May luck and skill guide you."
     );
 
@@ -79,29 +79,29 @@ public class PlayerJoinListener implements Listener {
             }
 
             player.teleport(spawnLocation);
-            player.sendTitle("§0§l§k⚜§r§6§lWelcome Adventurer!",
-                    "§7Use /register <password> <password> to start your adventure",
-                    10, 200, 20);
-            player.spigot().sendMessage(ChatMessageType.ACTION_BAR,
-                    new TextComponent("§c§lHeed the Call: Register to Enter!"));
-            player.sendMessage("§6[§eSeizonSMP§6] §7Welcome, adventurer! Your profile hath been forged.");
-            player.sendMessage("§6[§eSeizonSMP§6] §7Enter the command §e/register <password> <password>§7 to inscribe your credentials.");
-            player.sendMessage("§6[§eSeizonSMP§6] §7Then enter the realm by using §e/login <password>§7.");
+//            player.sendTitle("§0§l§k⚜§r§6§lWelcome Adventurer!",
+//                    "§7Use /register <password> <password> to start your adventure",
+//                    10, 200, 20);
+//            player.spigot().sendMessage(ChatMessageType.ACTION_BAR,
+//                    new TextComponent("§c§lHeed the Call: Register to Enter!"));
+            player.sendMessage("§6[§eYeye§6] §7Welcome, adventurer! Your profile hath been forged.");
+//            player.sendMessage("§6[§eYeye§6] §7Enter the command §e/register <password> <password>§7 to inscribe your credentials.");
+//            player.sendMessage("§6[§eYeye§6] §7Then enter the realm by using §e/login <password>§7.");
 
             event.setJoinMessage(ChatColor.GOLD + "⚜ Hail, " + ChatColor.AQUA + playerName + ChatColor.GOLD +
                     "! Welcome to the realm for the very first time!");
         } else {
             // Handle returning players
             String suggestion = suggestRandomThing();
-            player.sendMessage("§6[§eSeizonSMP§6] §7Welcome back adventurer! Your profile has been loaded.");
+            player.sendMessage("§6[§eYeye§6] §7Welcome back adventurer! Your profile has been loaded.");
             profile.setLoggedIn(false);
-            player.sendMessage("§6[§eSeizonSMP§6] §cLog in to continue your quest.");
-            player.sendMessage("§6[§eSeizonSMP§6] §cEnter /login <your password>");
-            player.sendTitle("§0§l§k⚜§r§6§lWelcome Back!",
-                    "§7Use /login <password> to continue your journey.",
-                    10, 100, 20);
-            player.spigot().sendMessage(ChatMessageType.ACTION_BAR,
-                    new TextComponent("§7Use /login <password> to proceed."));
+//            player.sendMessage("§6[§eYeye§6] §cLog in to continue your quest.");
+//            player.sendMessage("§6[§eYeye§6] §cEnter /login <your password>");
+//            player.sendTitle("§0§l§k⚜§r§6§lWelcome Back!",
+//                    "§7Use /login <password> to continue your journey.",
+//                    10, 100, 20);
+//            player.spigot().sendMessage(ChatMessageType.ACTION_BAR,
+//                    new TextComponent("§7Use /login <password> to proceed."));
             event.setJoinMessage(ChatColor.DARK_GREEN + "⚔ Welcome back, " + ChatColor.AQUA + playerName +". " +
                     ChatColor.DARK_GREEN + suggestion);
         }
