@@ -17,7 +17,7 @@ import java.util.Objects;
 public class PlayerDeathListener implements Listener {
     private final PlayerProfileManager profileManager;
 
-    private final String noItemSave = "world_lose_item"; // Name of the world where item loss is allowed
+    private final String keepInventoryWorld  = "world_rpg"; // Name of the world where item loss is allowed
 
     public PlayerDeathListener(PlayerProfileManager profileManager) {
         this.profileManager = profileManager;
@@ -26,12 +26,12 @@ public class PlayerDeathListener implements Listener {
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
         Player player = event.getEntity();
-        event.getDrops().clear();
+//        event.getDrops().clear();
         // Check if the player is in a world other than "world_resource"
-        if (!Objects.requireNonNull(player.getLocation().getWorld()).getName().equals(noItemSave)) {
+        if (Objects.requireNonNull(player.getLocation().getWorld()).getName().equals(keepInventoryWorld)) {
             event.setKeepInventory(true);
 
-            player.sendMessage("You will not lose your items in this world.");
+//            player.sendMessage("You will not lose your items in this world.");
         }
         if (player.getAllowFlight()) {
             player.setAllowFlight(false);

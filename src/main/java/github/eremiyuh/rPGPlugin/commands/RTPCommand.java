@@ -32,7 +32,7 @@ public class RTPCommand implements CommandExecutor {
 
         Player player = (Player) sender;
 
-        player.sendMessage("This feature is disabled as it may impact server storage. Request to yeye if you want this feature to be enabled");
+        player.sendMessage("feature disabled");
 
         // Check if player is on cooldown
 //        if (isOnCooldown(player)) {
