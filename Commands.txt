@@ -1,0 +1,263 @@
+📘 General Team Commands
+teamcreate:
+  description: Creates a new team using your player name.
+  usage: /teamcreate
+  notes: Recommended for raiding the Abyss. All members gain the same EXP if within 40 blocks of the killed monster.
+
+teaminvite:
+  description: Invite a player to your team.
+  usage: /teaminvite <player>
+  notes: Teams can have up to 5 members.
+
+teamleave:
+  description: Leave your current team.
+  usage: /teamleave
+
+teaminviteaccept:
+  description: Accept a team invitation.
+  usage: /teaminviteaccept <inviterName>
+
+teamremove:
+  description: Remove a player from your team.
+  usage: /teamremove <playerName>
+
+
+Land Claims
+cc:
+  description: Chunk claim management.
+  usage: /cc <claim|check|unclaim|unclaimall>
+  notes: Claim a chunk using 1 claim point. Check nearby claims with soul fire (yours) or fire (others).
+
+trust:
+  description: Trust a player in your current claimed chunk.
+  usage: /trust <playerName>
+
+trustall:
+  description: Trust a player in all your claimed chunks.
+  usage: /trustall <playerName>
+
+untrust:
+  description: Untrust a player from your current chunk.
+  usage: /untrust <playerName>
+
+untrustall:
+  description: Untrust a player from all your claimed chunks.
+  usage: /untrustall <playerName>
+
+buyclaim:
+  description: Buy additional claim points.
+  usage: /buyclaim <amount>
+
+buyhomeslot:
+  description: Buy additional /sethome slots.
+  usage: /buyhomeslot <amount>
+
+
+⚔️ PvP
+pvpstatus:
+  description: Toggle PvP on or off.
+  usage: /pvpstatus <on|off>
+
+
+🔁 Conversion Commands
+convertmaterial:
+  description: Convert ores or ingots into currency.
+  usage: /convert <oreName>
+  notes: Currency appears in /status GUI.
+
+convertcurrency:
+  description: Convert currency back into real materials.
+  usage: /convertcurrency <ore> <amount>
+
+
+🌍 World Navigation & Homes
+warp:
+  description: Warp between Overworld and Abyss.
+  usage: /warp <a|o>
+  notes: Bring full Protection IV netherite gear. Fighting in Abyss drains stamina and durability.
+
+fly:
+  description: Enables flight.
+  usage: /fly
+  notes: Costs 10 diamonds per minute.
+
+sethome:
+  description: Set a home location.
+  usage: /sethome <homeName>
+
+home:
+  description: Teleport to a home.
+  usage: /home <homeName>
+  note: Costs 1 ender pearl.
+
+homedelete:
+  description: Delete a saved home.
+  usage: /homedelete <homeName>
+
+
+📍 Teleport Commands
+tphb:
+  description: Teleport to the highest block above you.
+  usage: /tphb
+  note: 5-block range. Costs 1 ender pearl.
+
+tpt:
+  description: Request to teleport to a player.
+  usage: /tpt <playerName>
+  note: Costs 1 ender pearl upon teleport.
+
+tpa:
+  description: Accept a teleport request.
+  usage: /tpa <playerName>
+
+tpallow:
+  description: Allow a player to teleport to you.
+  usage: /tpallow <playerName>
+
+tptoggle:
+  description: Manage teleport allow list.
+  usage: /tptoggle <list|remove <playerName>>
+  subcommands:
+    list:
+      description: Show allowed players.
+    remove:
+      description: Remove a player from your allow list.
+
+
+🛠 Utility & Settings
+sdw:
+  description: Toggle stamina and durability warnings.
+  usage: /sdw
+
+rest:
+  description: Simulate sleep to avoid phantom attacks.
+  usage: /rest
+
+ascendtoggle:
+  description: Toggle equip ascension.
+  usage: /ascendtoggle
+  notes: Drag and drop same-type gear. Consumes donor item, 50% chance per matching stat to enhance.
+
+iteminfo:
+  description: Show the item name of what you're holding.
+  usage: /iteminfo
+
+rename:
+  description: Rename an item using color codes.
+  usage: /rename
+
+showitem:
+  description: Announce your held item in chat.
+  usage: /showitem
+
+showprofile:
+  description: Toggle your profile's visibility.
+  usage: /showprofile
+
+vault:
+  description: Open your player vault.
+  usage: /vault <1-5>
+
+enderchest:
+  description: Open your ender chest.
+  usage: /enderchest
+
+
+💱 Trading & Currency
+tm:
+  description: Initiate a trade.
+  usage: /tm <player> <offerItem> <offerAmount> <wantItem> <wantAmount>
+
+ta:
+  description: Accept or reject a trade.
+  usage: /ta <player>
+
+pay:
+  description: Pay another player currency.
+  usage: /pay <player> <currency> <amount>
+
+
+🏪 Shops & Junk
+activityshop:
+  description: Open activity point store.
+  usage: /activityshop
+
+junk:
+  description: Open a trash inventory for disposal.
+  usage: /junk
+
+junkshop:
+  description: Open a shop that buys junk items.
+  usage: /junkshop
+
+shopsavetploc:
+  description: Save your shop teleport location.
+  usage: /shopsavetploc
+
+tpshop:
+  description: Teleport to a player's shop.
+  usage: /tpshop <playerName>
+
+cosmeticstore:
+  description: Buy cosmetic items.
+  usage: /cosmeticstore
+
+cestore:
+  description: Open the custom enchantments store.
+  usage: /cestore
+
+fishsell:
+  description: Convert fish into activity points.
+  usage: /fishsell
+
+
+🧪 Abyss World Commands
+selectclass:
+  description: Select a class (swordsman, archer, alchemist).
+  usage: /selectclass
+  notes: Swordsman = balanced, Archer = long-range DPS, Alchemist = high power but resource-heavy.
+
+status:
+  description: View your character stats.
+  usage: /status
+
+convertabysspoints:
+  description: Convert abyss points into attribute points.
+  usage: /convertabysspoints <amount|all>
+
+selectelement:
+  description: Choose an elemental affinity.
+  usage: /selectelement <fire|ice|water>
+  notes: PvP: fire > ice > water > fire. Fire = +10% damage, Ice = slows, Water = weakens.
+
+selectskill:
+  description: Open the skill selection GUI.
+  usage: /selectskill
+  notes: Each class has 3 skills. Swordsman: Skill 2 = lifesteal, Skill 3 = damage reduction.
+
+abyssstore:
+  description: Opens the Abyss points store.
+  usage: /abyssstore
+  notes: Earn Abyss points via /warp a
+
+addstamina:
+  description: Convert all food in inventory to stamina (Abyss only).
+  usage: /addstamina
+
+adddurability:
+  description: Convert ores into durability (Abyss only).
+  usage: /adddurability
+  notes: Conversion rates:
+    - Iron Ingot: 100
+    - Gold Ingot: 200
+    - Emerald: 200
+    - Diamond: 1000
+
+healthscale:
+  description: Force health display to 10 hearts (visual only).
+  usage: /healthscale
+
+craftpotion:
+  description: Alchemist-only potion crafting.
+  usage: /craftpotion
+  notes: Hold a book in offhand and right-click to convert lapis to throwable potions.

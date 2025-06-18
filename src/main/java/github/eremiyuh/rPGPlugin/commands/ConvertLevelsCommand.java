@@ -25,61 +25,85 @@ public class ConvertLevelsCommand implements CommandExecutor {
 
         Player player = (Player) sender;
         UserProfile profile = profileManager.getProfile(player.getName());
-        double playerClassTotalAttrib = profile.getTotalAllocatedPoints()+profile.getCurrentAttributePoints();
+        double playerClassTotalAttrib = profile.getTotalAllocatedPoints() + profile.getCurrentAttributePoints();
         double abyssPoints = profile.getAbysspoints();
 
         if (playerClassTotalAttrib >= 20000) {
-            player.sendMessage("Max attributes reached.");
+            player.sendMessage(ChatColor.RED + "Max attributes reached.");
             return true;
         }
 
-        // Determine the number of attribute points to convert
-        int pointsToConvert = 1; // default to 1 if no argument provided
+        int pointsToConvert = 1;
+        boolean convertAll = false;
+
         if (args.length > 0) {
-            try {
-                pointsToConvert = Integer.parseInt(args[0]);
-                if (pointsToConvert <= 0) {
-                    player.sendMessage(ChatColor.RED + "Please specify a positive number of attribute points to convert.");
+            if (args[0].equalsIgnoreCase("all")) {
+                convertAll = true;
+            } else {
+                try {
+                    pointsToConvert = Integer.parseInt(args[0]);
+                    if (pointsToConvert <= 0) {
+                        player.sendMessage(ChatColor.RED + "Please specify a positive number of attribute points to convert.");
+                        return true;
+                    }
+                } catch (NumberFormatException e) {
+                    player.sendMessage(ChatColor.RED + "Invalid number of attribute points.");
                     return true;
                 }
-            } catch (NumberFormatException e) {
-                player.sendMessage(ChatColor.RED + "Invalid number of attribute points.");
-                return true;
             }
         }
 
-        if (pointsToConvert+playerClassTotalAttrib > 20000) {
-            player.sendMessage("Max attributes reached.");
+        // Determine how many points can be converted if "all"
+        if (convertAll) {
+            double currentAttrib = playerClassTotalAttrib;
+            int abyssAvailable = (int) abyssPoints;
+            int maxConvertible = 0;
+
+            while (currentAttrib < 20000) {
+                int cost = getLevelsRequiredForConversion(currentAttrib);
+                if (abyssAvailable < cost) break;
+
+                abyssAvailable -= cost;
+                currentAttrib++;
+                maxConvertible++;
+            }
+
+            if (maxConvertible == 0) {
+                player.sendMessage(ChatColor.RED + "You don't have enough abyss points to convert any attributes.");
+                return true;
+            }
+
+            pointsToConvert = maxConvertible;
+        }
+
+        if (pointsToConvert + playerClassTotalAttrib > 20000) {
+            player.sendMessage(ChatColor.RED + "Max attributes reached.");
             return true;
         }
 
-        // Calculate the total abyss points needed by dynamically adjusting cost per point
+        // Calculate the total abyss points needed
         int totalAbyssPointsRequired = 0;
         double currentAttribPoints = playerClassTotalAttrib;
 
         for (int i = 0; i < pointsToConvert; i++) {
-            int costForCurrentPoint = getLevelsRequiredForConversion(currentAttribPoints);
-            totalAbyssPointsRequired += costForCurrentPoint;
+            int cost = getLevelsRequiredForConversion(currentAttribPoints);
+            totalAbyssPointsRequired += cost;
             currentAttribPoints++;
         }
 
-        // Check if the player has enough abyss points for the entire transaction
         if (abyssPoints < totalAbyssPointsRequired) {
             player.sendMessage(ChatColor.RED + "You need at least " + totalAbyssPointsRequired + " abyss points to convert " + pointsToConvert + " attribute point(s).");
             return true;
         }
 
-        // Perform the conversion, updating the player's profile
         profile.setCurrentAttributePoints(profile.getCurrentAttributePoints() + pointsToConvert);
         profile.setAbysspoints(profile.getAbysspoints() - totalAbyssPointsRequired);
-
-        // Save the profile
         profileManager.saveProfile(player.getName());
 
         player.sendMessage(ChatColor.GREEN + "You have converted " + totalAbyssPointsRequired + " abyss points into " + pointsToConvert + " attribute point(s)!");
-
         return true;
     }
+
 
     /**
      * This method determines how many abyss points are required to convert 1 attribute point,
