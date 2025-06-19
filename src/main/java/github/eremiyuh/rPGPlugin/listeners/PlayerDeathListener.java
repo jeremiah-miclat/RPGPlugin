@@ -30,6 +30,7 @@ public class PlayerDeathListener implements Listener {
         // Check if the player is in a world other than "world_resource"
         if (Objects.requireNonNull(player.getLocation().getWorld()).getName().equals(keepInventoryWorld)) {
             event.setKeepInventory(true);
+            event.getDrops().clear();
 
 //            player.sendMessage("You will not lose your items in this world.");
         }
