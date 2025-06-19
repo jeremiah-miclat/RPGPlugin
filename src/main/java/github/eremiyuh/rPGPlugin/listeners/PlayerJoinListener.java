@@ -72,24 +72,26 @@ public class PlayerJoinListener implements Listener {
         assert world != null;
         Location spawnLocation = world.getSpawnLocation();
 
-        if (profile == null || profile.getPassword() == null || profile.getPassword().isEmpty()) {
+        if (profile == null) {
             // Handle new players
             if (profile == null) {
+                event.setJoinMessage(ChatColor.GOLD + "⚜ Hail, " + ChatColor.AQUA + playerName + ChatColor.GOLD +
+                        "! Welcome to the realm for the very first time!");
+                player.sendMessage("§6[§Server§6] §7Welcome, adventurer! Your profile hath been forged.");
                 profileManager.createProfile(playerName); // Create a new profile
             }
 
-            player.teleport(spawnLocation);
+//            player.teleport(spawnLocation);
 //            player.sendTitle("§0§l§k⚜§r§6§lWelcome Adventurer!",
 //                    "§7Use /register <password> <password> to start your adventure",
 //                    10, 200, 20);
 //            player.spigot().sendMessage(ChatMessageType.ACTION_BAR,
 //                    new TextComponent("§c§lHeed the Call: Register to Enter!"));
-            player.sendMessage("§6[§Server§6] §7Welcome, adventurer! Your profile hath been forged.");
+
 //            player.sendMessage("§6[§Server§6] §7Enter the command §e/register <password> <password>§7 to inscribe your credentials.");
 //            player.sendMessage("§6[§Server§6] §7Then enter the realm by using §e/login <password>§7.");
 
-            event.setJoinMessage(ChatColor.GOLD + "⚜ Hail, " + ChatColor.AQUA + playerName + ChatColor.GOLD +
-                    "! Welcome to the realm for the very first time!");
+
         } else {
             // Handle returning players
             String suggestion = suggestRandomThing();
@@ -110,8 +112,8 @@ public class PlayerJoinListener implements Listener {
         Location playerLocation = player.getLocation();
         Material blockType = playerLocation.clone().subtract(0, 1, 0).getBlock().getType();
         if (blockType == Material.AIR || !isSolidBlock(blockType)) {
-            Location groundLocation = getGroundLocation(playerLocation, player);
-            player.teleport(groundLocation);
+//            Location groundLocation = getGroundLocation(playerLocation, player);
+//            player.teleport(groundLocation);
         }
 
 

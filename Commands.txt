@@ -200,7 +200,7 @@ tpshop:
 
 cosmeticstore:
   description: Buy cosmetic items.
-  usage: /cosmeticstore
+  usage: /cosmeticstore 1 2 or 3
 
 cestore:
   description: Open the custom enchantments store.
