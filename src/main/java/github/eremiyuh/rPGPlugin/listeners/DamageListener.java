@@ -861,10 +861,10 @@ public class DamageListener implements Listener {
             event.setDamage(event.getDamage()*3);
         }
 
-        if (event.getEntity() instanceof  Villager) {
-            event.setCancelled(true);
-            return;
-        }
+//        if (event.getEntity() instanceof  Villager) {
+//            event.setCancelled(true);
+//            return;
+//        }
 
         Location loc = event.getEntity().getLocation();
 

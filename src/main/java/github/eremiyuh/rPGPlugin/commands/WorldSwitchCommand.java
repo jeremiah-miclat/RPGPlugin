@@ -70,18 +70,18 @@ public class WorldSwitchCommand implements CommandExecutor, Listener {
 //            case "n":
 //                targetWorldName = "world_nether";
 //                break;
-            case "ad":
-                targetWorldName = "world_labyrinth2"; // abyss dungeon
-                break;
-            case "ro":
-                targetWorldName = "resource_normal"; // resource overworld
-                break;
-            case "rn":
-                targetWorldName = "resource_nether"; // resource nether
-                break;
-            case "re":
-                targetWorldName = "resource_end"; // resource end
-                break;
+//            case "ad":
+//                targetWorldName = "world_labyrinth2"; // abyss dungeon
+//                break;
+//            case "ro":
+//                targetWorldName = "resource_normal"; // resource overworld
+//                break;
+//            case "rn":
+//                targetWorldName = "resource_nether"; // resource nether
+//                break;
+//            case "re":
+//                targetWorldName = "resource_end"; // resource end
+//                break;
             default:
                 player.sendMessage("/warp a or ad or o | a for abyss | ad for abyss dungeon | o for Overworld");
                 return false;
@@ -171,20 +171,20 @@ public class WorldSwitchCommand implements CommandExecutor, Listener {
 
         // Create Ender Pearl items for each world
         ItemStack abyssItem = createWorldSwitchItem("Abyss", "a", true);
-        ItemStack abyssDungeonItem = createWorldSwitchItem("Abyss Dungeon", "ad", true);
+//        ItemStack abyssDungeonItem = createWorldSwitchItem("Abyss Dungeon", "ad", true);
         ItemStack overworldItem = createWorldSwitchItem("Overworld", "o", false);
-        ItemStack resourceOverworldItem = createWorldSwitchItem("Resource Overworld", "ro", false);
-        ItemStack resourceNetherItem = createWorldSwitchItem("Resource Nether", "rn", false);
-        ItemStack resourceEndItem = createWorldSwitchItem("Resource End", "re", false);
+//        ItemStack resourceOverworldItem = createWorldSwitchItem("Resource Overworld", "ro", false);
+//        ItemStack resourceNetherItem = createWorldSwitchItem("Resource Nether", "rn", false);
+//        ItemStack resourceEndItem = createWorldSwitchItem("Resource End", "re", false);
 
         // Set the items in the inventory
         gui.setItem(0, overworldItem);
-        gui.setItem(1, resourceOverworldItem);
-        gui.setItem(2, resourceNetherItem);
-        gui.setItem(3, resourceEndItem);
+//        gui.setItem(1, resourceOverworldItem);
+//        gui.setItem(2, resourceNetherItem);
+//        gui.setItem(3, resourceEndItem);
         // Abyss and Abyss Dungeon should be at the bottom row (6th, 7th, and 8th slots)
         gui.setItem(18, abyssItem);
-        gui.setItem(19, abyssDungeonItem);
+//        gui.setItem(19, abyssDungeonItem);
 
         // Open the GUI for the player
         player.openInventory(gui);
@@ -230,21 +230,21 @@ public class WorldSwitchCommand implements CommandExecutor, Listener {
             case 0:
                 teleportPlayerToWorld(player, "world", "Overworld"); // Overworld
                 break;
-            case 1:
-                teleportPlayerToWorld(player, "resource_normal", "Resource Overworld"); // Resource Overworld
-                break;
-            case 2:
-                teleportPlayerToWorld(player, "resource_nether", "Resource Nether"); // Resource Nether
-                break;
-            case 3:
-                teleportPlayerToWorld(player, "resource_end", "Resource End"); // Resource End
-                break;
+//            case 1:
+//                teleportPlayerToWorld(player, "resource_normal", "Resource Overworld"); // Resource Overworld
+//                break;
+//            case 2:
+//                teleportPlayerToWorld(player, "resource_nether", "Resource Nether"); // Resource Nether
+//                break;
+//            case 3:
+//                teleportPlayerToWorld(player, "resource_end", "Resource End"); // Resource End
+//                break;
             case 18:
                 teleportPlayerToWorld(player, "world_rpg", "Abyss Overworld"); // Abyss
                 break;
-            case 19:
-                teleportPlayerToWorld(player, "world_labyrinth2", "Abyss Dungeon"); // Abyss Dungeon
-                break;
+//            case 19:
+//                teleportPlayerToWorld(player, "world_labyrinth2", "Abyss Dungeon"); // Abyss Dungeon
+//                break;
             default:
                 player.sendMessage(ChatColor.RED + "Invalid selection.");
                 break;

@@ -95,25 +95,26 @@ public class TabListCustomizer {
     private String getPlayerRank(Player player) {
         UserProfile profile = profileManager.getProfile(player.getName());
         String profileClass = profile.getChosenClass();
-        String profileClassPoints = "";
+        int points = 0;
 
         switch (profileClass.toLowerCase()) {
             case "alchemist":
-                profileClassPoints = String.valueOf(profile.getTotalAlchemistAllocatedPoints());
+                points = profile.getTotalAlchemistAllocatedPoints();
                 break;
             case "archer":
-                profileClassPoints = String.valueOf(profile.getTotalArcherAllocatedPoints());
+                points = profile.getTotalArcherAllocatedPoints();
                 break;
             case "swordsman":
-                profileClassPoints = String.valueOf(profile.getTotalSwordsmanAllocatedPoints());
+                points = profile.getTotalSwordsmanAllocatedPoints();
                 break;
             default:
-                profileClassPoints = "0";
                 break;
         }
 
-        return " - " + profileClass + " ";
-//                + profileClassPoints;
+        int level = Math.max(1, points / 100);
+
+        return " - " + profileClass + " Lvl "
+                + level;
     }
 
     /**

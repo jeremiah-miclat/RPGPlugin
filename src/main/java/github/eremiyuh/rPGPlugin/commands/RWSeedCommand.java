@@ -26,6 +26,11 @@ public class RWSeedCommand implements TabExecutor {
 
         Player player = (Player) sender;
 
+        if (sender instanceof Player) {
+            player.sendMessage("disabled feature");
+            return true;
+        }
+
         // List of resource world names and descriptions
         List<String> worldNames = Arrays.asList("resource_normal", "resource_nether", "resource_end");
         List<String> worldDescriptions = Arrays.asList(
