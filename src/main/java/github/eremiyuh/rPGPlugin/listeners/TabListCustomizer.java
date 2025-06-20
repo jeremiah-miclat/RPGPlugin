@@ -60,9 +60,9 @@ public class TabListCustomizer {
                 Component.newline().append(Component.newline())
                         .append(Component.text(String.format("Memory Usage: %d MB / %d MB", usedMemory, maxMemory))
                                 .color(memoryColor)).append(Component.newline()).append(Component.newline())
-                        .append(Component.text("                                §eDiscord: discord.gg/tNJrWP4E5W                           ")
+                        .append(Component.text("                                §eDiscord: discord.gg/5h695G2Edx                           ")
                                 .color(TextColor.fromCSSHexString("#53ff1a"))).decorate(TextDecoration.ITALIC)
-                        .clickEvent(ClickEvent.openUrl("https://discord.gg/tNJrWP4E5W"))
+                        .clickEvent(ClickEvent.openUrl("https://discord.gg/5h695G2Edx"))
                         .hoverEvent(HoverEvent.showText(Component.text("Click to join our Discord!")))
         .append(Component.newline());
 

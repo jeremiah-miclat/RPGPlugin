@@ -26,7 +26,7 @@ public class DiscordLinkCommand implements CommandExecutor {
             return true;
         }
 
-        String discordLink = "https://discord.gg/tNJrWP4E5W";
+        String discordLink = "https://discord.gg/5h695G2Edx";
 
         // Create the clickable and hoverable message
         Component discordMessage = Component.text("Click here to join our Discord!")
