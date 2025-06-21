@@ -302,6 +302,7 @@ public class RPGPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new SelectElement(profileManager), this);
         getServer().getPluginManager().registerEvents(new SkillPaperListener(profileManager), this);
         getServer().getPluginManager().registerEvents(new AnvilLevelRestrictionHandler(), this);
+        getServer().getPluginManager().registerEvents(new ArmorEquipListener(), this);
 
 
 

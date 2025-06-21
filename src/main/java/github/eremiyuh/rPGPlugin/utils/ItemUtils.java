@@ -586,6 +586,7 @@ public class ItemUtils {
 
             meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
             meta.setEnchantmentGlintOverride(false);
+            meta.setCustomModelData(1);
             meta.setItemModel(NamespacedKey.minecraft("composite_bow"));
             pointItem.setItemMeta(meta);
         }
