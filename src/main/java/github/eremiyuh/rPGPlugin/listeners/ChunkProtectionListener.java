@@ -5,10 +5,10 @@ import github.eremiyuh.rPGPlugin.manager.ShopsManager;
 import github.eremiyuh.rPGPlugin.methods.ChunkBorderBlueVisualizer;
 import github.eremiyuh.rPGPlugin.methods.ChunkBorderRedVisualizer;
 import github.eremiyuh.rPGPlugin.profile.OwnedChunk;
+import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.block.Sign;
+import org.bukkit.block.*;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -75,6 +75,29 @@ public class ChunkProtectionListener implements Listener {
         if (event.hasBlock()) { // Check if the interaction involves a block
             Block block = event.getClickedBlock();
             assert block != null;
+
+            BlockState state = block.getState();
+            if (state instanceof Chest) {
+                Chest chest = (Chest) state;
+                if (!chest.hasMetadata("seller")) return;
+
+                String ownerName =chest.getMetadata("seller").getFirst().asString();
+                if (!event.getPlayer().getName().equals(ownerName)) {
+                    event.setCancelled(true);
+                }
+
+            }
+
+            if (state instanceof Barrel) {
+                Barrel barrel = (Barrel) state;
+                if (!barrel.hasMetadata("seller")) return;
+
+                String ownerName =barrel.getMetadata("seller").getFirst().asString();
+                if (!event.getPlayer().getName().equals(ownerName)) {
+                    event.setCancelled(true);
+                }
+
+            }
 
             Chunk chunk = block.getChunk();
             if (isInProtectedChunk(chunk, player)) {
