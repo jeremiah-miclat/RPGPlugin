@@ -79,24 +79,22 @@ public class ChunkProtectionListener implements Listener {
             BlockState state = block.getState();
             if (state instanceof Chest) {
                 Chest chest = (Chest) state;
-                if (!chest.hasMetadata("seller")) return;
-
-                String ownerName =chest.getMetadata("seller").getFirst().asString();
-                if (!event.getPlayer().getName().equals(ownerName)) {
-                    event.setCancelled(true);
+                if (chest.hasMetadata("seller")) {
+                    String ownerName =chest.getMetadata("seller").getFirst().asString();
+                    if (!event.getPlayer().getName().equals(ownerName)) {
+                        event.setCancelled(true);
+                    }
                 }
-
             }
 
             if (state instanceof Barrel) {
                 Barrel barrel = (Barrel) state;
-                if (!barrel.hasMetadata("seller")) return;
-
-                String ownerName =barrel.getMetadata("seller").getFirst().asString();
-                if (!event.getPlayer().getName().equals(ownerName)) {
-                    event.setCancelled(true);
+                if (barrel.hasMetadata("seller")) {
+                    String ownerName =barrel.getMetadata("seller").getFirst().asString();
+                    if (!event.getPlayer().getName().equals(ownerName)) {
+                        event.setCancelled(true);
+                    }
                 }
-
             }
 
             Chunk chunk = block.getChunk();
