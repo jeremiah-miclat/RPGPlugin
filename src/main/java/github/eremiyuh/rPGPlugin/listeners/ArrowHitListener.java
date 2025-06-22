@@ -48,7 +48,7 @@ public class ArrowHitListener implements Listener {
             double intensitymodifier = Math.min(archerInt / 2500, 4);
 
             if (arrow.hasMetadata("FireArrowBarrage")) {
-                arrow.setLifetimeTicks(100);
+
                 // Check if the arrow hit a living entity
                 if (event.getHitEntity() instanceof LivingEntity target) {
                     target.setFireTicks((100+(archerInt/100)*10));
@@ -57,7 +57,7 @@ public class ArrowHitListener implements Listener {
 
 
             if (arrow.hasMetadata("FreezeArrowBarrage")) {
-                arrow.setLifetimeTicks(100);
+
                 // Check if the arrow hit a living entity
                 if (event.getHitEntity() instanceof LivingEntity target) {
 
@@ -68,7 +68,7 @@ public class ArrowHitListener implements Listener {
             }
 
             if (arrow.hasMetadata("WeaknessArrowBarrage")) {
-                arrow.setLifetimeTicks(100);
+
                 // Check if the arrow hit a living entity
                 if (event.getHitEntity() instanceof LivingEntity target) {
                     // Apply a freeze effect (slowness) to the target
