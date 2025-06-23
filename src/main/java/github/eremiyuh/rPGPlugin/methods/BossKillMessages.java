@@ -13,20 +13,20 @@ public class BossKillMessages {
 
     // Minecraft messages (with colors and symbols)
     private static final List<String> MC_BOSS_KILL_MESSAGES = Arrays.asList(
-            ChatColor.GOLD + "🏆 [Seizon SMP] %player% has slain the mighty %boss%! Legends will speak of this day!",
-            ChatColor.RED + "⚔️ [Seizon SMP] Against all odds, %player% has conquered the fearsome %boss%!",
-            ChatColor.BLUE + "🌟 [Seizon SMP] %boss%, the terror of the lands, has been defeated by %player%! Glory to the hero!",
-            ChatColor.LIGHT_PURPLE + "🎉 [Seizon SMP] A great victory! %player% has brought down %boss% and claimed the spoils!",
-            ChatColor.YELLOW + "🔥 [Seizon SMP] The battle is over, and %boss% has fallen to %player%. Balance is restored to the realm."
+            ChatColor.GOLD + "🏆 [BoringServer] %player% has slain the mighty %boss%! Legends will speak of this day!",
+            ChatColor.RED + "⚔️ [BoringServer] Against all odds, %player% has conquered the fearsome %boss%!",
+            ChatColor.BLUE + "🌟 [BoringServer] %boss%, the terror of the lands, has been defeated by %player%! Glory to the hero!",
+            ChatColor.LIGHT_PURPLE + "🎉 [BoringServer] A great victory! %player% has brought down %boss% and claimed the spoils!",
+            ChatColor.YELLOW + "🔥 [BoringServer] The battle is over, and %boss% has fallen to %player%. Balance is restored to the realm."
     );
 
     // Discord messages (plain text, suitable for Markdown)
     private static final List<String> DISCORD_BOSS_KILL_MESSAGES = Arrays.asList(
-            "**🏆 [Seizon SMP] %player% has slain the mighty %boss%! Legends will speak of this day!**",
-            "**⚔️ [Seizon SMP] Against all odds, %player% has conquered the fearsome %boss%!**",
-            "**🌟 [Seizon SMP] %boss%, the terror of the lands, has been defeated by %player%! Glory to the hero!**",
-            "**🎉 [Seizon SMP] A great victory! %player% has brought down %boss% and claimed the spoils!**",
-            "**🔥 [Seizon SMP] The battle is over, and %boss% has fallen to %player%. Balance is restored to the realm.**"
+            "**🏆 [BoringServer] %player% has slain the mighty %boss%! Legends will speak of this day!**",
+            "**⚔️ [BoringServer] Against all odds, %player% has conquered the fearsome %boss%!**",
+            "**🌟 [BoringServer] %boss%, the terror of the lands, has been defeated by %player%! Glory to the hero!**",
+            "**🎉 [BoringServer] A great victory! %player% has brought down %boss% and claimed the spoils!**",
+            "**🔥 [BoringServer] The battle is over, and %boss% has fallen to %player%. Balance is restored to the realm.**"
     );
 
     // Method to broadcast a random message to both Minecraft and Discord
@@ -57,7 +57,7 @@ public class BossKillMessages {
         // Check if DiscordSRV is loaded
         if (DiscordSRV.getPlugin() != null) {
             // Get the default channel for Discord (you can specify a channel ID if needed)
-            TextChannel channel = DiscordSRV.getPlugin().getJda().getTextChannelById("1312945610969841705");
+            TextChannel channel = DiscordSRV.getPlugin().getJda().getTextChannelById("1385632825969213531");
 
             if (channel != null) {
                 // Send the message to the Discord channel
