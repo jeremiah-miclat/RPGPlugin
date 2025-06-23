@@ -99,24 +99,34 @@ public class SelectClassCommand implements CommandExecutor, Listener {
                 }
 
 
+                // Update profile with the new class
+                profile.setChosenClass(displayName);
+                profileManager.saveProfile(player.getName());
 
-                // Check if the player has enough diamonds to change class
-                if (profile.getDiamond() >= 100 || profile.getChosenClass().equalsIgnoreCase("default")) {
-                    // Deduct diamonds from player
-                    if (!profile.getChosenClass().equalsIgnoreCase("default")) profile.setDiamond(profile.getDiamond()-10);
+                // Apply buffs based on the new class selection
+                playerStatBuff.onClassSwitchOrAttributeChange(player);
 
-                    // Update profile with the new class
-                    profile.setChosenClass(displayName);
-                    profileManager.saveProfile(player.getName());
+                player.sendMessage("You have selected the " + displayName + " class!");
 
-                    // Apply buffs based on the new class selection
-                    playerStatBuff.onClassSwitchOrAttributeChange(player);
 
-                    player.sendMessage("You have selected the " + displayName + " class!");
-                } else {
-                    player.sendMessage("You have " + (int) profile.getDiamond() + "diamond/s");
-                    player.sendMessage("You need at least " + CLASS_CHANGE_COST + " diamonds to change your class.");
-                }
+
+//                // Check if the player has enough diamonds to change class
+//                if (profile.getDiamond() >= 100 || profile.getChosenClass().equalsIgnoreCase("default")) {
+//                    // Deduct diamonds from player
+//                    if (!profile.getChosenClass().equalsIgnoreCase("default")) profile.setDiamond(profile.getDiamond()-10);
+//
+//                    // Update profile with the new class
+//                    profile.setChosenClass(displayName);
+//                    profileManager.saveProfile(player.getName());
+//
+//                    // Apply buffs based on the new class selection
+//                    playerStatBuff.onClassSwitchOrAttributeChange(player);
+//
+//                    player.sendMessage("You have selected the " + displayName + " class!");
+//                } else {
+//                    player.sendMessage("You have " + (int) profile.getDiamond() + "diamond/s");
+//                    player.sendMessage("You need at least " + CLASS_CHANGE_COST + " diamonds to change your class.");
+//                }
 
                 player.closeInventory();
             }

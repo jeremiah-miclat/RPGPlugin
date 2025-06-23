@@ -55,12 +55,12 @@ public class SelectElement implements CommandExecutor, Listener {
         }
 
 
-        if (profile.getLapiz()<100 && !profile.getSelectedElement().equalsIgnoreCase("none")) {
-            player.sendMessage("Need 100 lapis to reselect element");
-            return true;
-        }
-
-        if (!profile.getSelectedElement().equalsIgnoreCase("none")) profile.setLapiz(profile.getLapiz()-100);
+//        if (profile.getLapiz()<100 && !profile.getSelectedElement().equalsIgnoreCase("none")) {
+//            player.sendMessage("Need 100 lapis to reselect element");
+//            return true;
+//        }
+//
+//        if (!profile.getSelectedElement().equalsIgnoreCase("none")) profile.setLapiz(profile.getLapiz()-100);
 
         // Validate the chosen element and set it
         switch (element) {
@@ -89,7 +89,7 @@ public class SelectElement implements CommandExecutor, Listener {
         ItemMeta fireMeta = fire.getItemMeta();
         if (fireMeta != null) {
             fireMeta.setDisplayName("§cFire Element");
-            fireMeta.setLore(Arrays.asList("§7Master the flames!", "§7Price: 100 Lapis"));
+//            fireMeta.setLore(Arrays.asList("§7Master the flames!", "§7Price: 100 Lapis"));
             fire.setItemMeta(fireMeta);
         }
 
@@ -98,7 +98,7 @@ public class SelectElement implements CommandExecutor, Listener {
         ItemMeta waterMeta = water.getItemMeta();
         if (waterMeta != null) {
             waterMeta.setDisplayName("§9Water Element");
-            waterMeta.setLore(Arrays.asList("§7Control the oceans!", "§7Price: 100 Lapis"));
+//            waterMeta.setLore(Arrays.asList("§7Control the oceans!", "§7Price: 100 Lapis"));
             water.setItemMeta(waterMeta);
         }
 
@@ -107,7 +107,7 @@ public class SelectElement implements CommandExecutor, Listener {
         ItemMeta iceMeta = ice.getItemMeta();
         if (iceMeta != null) {
             iceMeta.setDisplayName("§bIce Element");
-            iceMeta.setLore(Arrays.asList("§7Harness the cold!", "§7Price: 100 Lapis"));
+//            iceMeta.setLore(Arrays.asList("§7Harness the cold!", "§7Price: 100 Lapis"));
             ice.setItemMeta(iceMeta);
         }
 
