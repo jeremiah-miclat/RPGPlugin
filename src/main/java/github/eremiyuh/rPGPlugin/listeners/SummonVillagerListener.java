@@ -1,12 +1,16 @@
 package github.eremiyuh.rPGPlugin.listeners;
 
 import github.eremiyuh.rPGPlugin.utils.ItemUtils;
+import io.papermc.paper.event.player.PlayerTradeEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.AbstractVillager;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -76,18 +80,26 @@ public class SummonVillagerListener implements Listener {
         }
     }
 
-//    @EventHandler
-//    public void onPlayerInteractWithVillager(PlayerInteractEntityEvent event) {
-//        if (event.getRightClicked() instanceof Villager villager && event.getPlayer().getInventory().getItemInMainHand().getType() == Material.NAME_TAG) {
-//            ItemStack item = event.getPlayer().getInventory().getItemInMainHand();
-//
-//            // Check if the name tag is named "Armorer"
-//            if (item.hasItemMeta() && item.getItemMeta().hasDisplayName() && Objects.equals(item.getItemMeta().displayName(), Component.text("Armorer"))) {
-//                setupArmorerVillager(villager);
-//                event.getPlayer().sendMessage("A Super Trader Villager has been created with custom trades and profession!");
-//            }
-//        }
-//    }
+    @EventHandler
+    public void onTradeSelect(PlayerTradeEvent event) {
+        Player player = event.getPlayer();
+        AbstractVillager villager = event.getVillager();
+
+        // Check if villager has a custom name
+        if (villager.getCustomName() != null) {
+            MerchantRecipe recipe = event.getTrade();
+
+            // Get the amount of items the player receives from the trade
+            int receivedAmount = recipe.getResult().getAmount();
+
+            // Give 5 XP per item received
+            int xpToGive = 5 * receivedAmount;
+            player.giveExp(xpToGive);
+
+            // Optional: Send feedback message to player
+            player.sendMessage(ChatColor.GREEN + "You received " + xpToGive + " XP for trading with " + villager.getCustomName());
+        }
+    }
 
     private void setupArmorerVillager(Villager villager) {
         villager.setAI(false);

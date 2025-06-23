@@ -856,6 +856,10 @@ public class DamageListener implements Listener {
             return;
         }
 
+        if (event.getEntity() instanceof LivingEntity entity) {
+            entity.setNoDamageTicks(0);
+        }
+
         if (event.getCause() == EntityDamageEvent.DamageCause.SONIC_BOOM) {
             // Notify or perform actions
             event.setDamage(event.getDamage()*3);
