@@ -53,7 +53,7 @@ public class LapisToPotion implements CommandExecutor {
 
         // Deduct lapis and add to potion points
         userProfile.setLapiz(userProfile.getLapiz() - amount);
-        userProfile.setPotion(userProfile.getPotion() + amount*10);
+        userProfile.setPotion(userProfile.getPotion() + amount*100);
 
         player.sendMessage(ChatColor.GREEN + "Successfully converted " + amount + " lapis into potion points.");
         return true;
