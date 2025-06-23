@@ -144,7 +144,7 @@ public class MonsterInitializer implements Listener {
             extraHealth += lvl*2000;
             setBossAttributes(entity, maxCoord, "World Boss", ChatColor.DARK_PURPLE);
             entity.setGlowing(true);
-            Objects.requireNonNull(entity.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(extraHealth+500);
+            Objects.requireNonNull(entity.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(extraHealth+10);
             entity.setHealth(extraHealth);
 
             Objects.requireNonNull(entity.getAttribute(Attribute.ATTACK_DAMAGE)).setBaseValue(customDamage + 3);
@@ -158,7 +158,7 @@ public class MonsterInitializer implements Listener {
         if (Math.random() < .003 ) { //0.003
             extraHealth += lvl*200;
             setBossAttributes(entity, maxCoord, "Boss", ChatColor.RED);
-            Objects.requireNonNull(entity.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(extraHealth+500);
+            Objects.requireNonNull(entity.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(extraHealth+10);
             entity.setHealth(extraHealth);
             Objects.requireNonNull(entity.getAttribute(Attribute.ATTACK_DAMAGE)).setBaseValue(customDamage +2);
 
@@ -170,7 +170,7 @@ public class MonsterInitializer implements Listener {
         if (Math.random() < 0.03 || entity instanceof Vindicator) {
             extraHealth += lvl*10;
             setBossAttributes(entity, maxCoord, "Leader", ChatColor.YELLOW);
-            Objects.requireNonNull(entity.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(extraHealth+500);
+            Objects.requireNonNull(entity.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(extraHealth+10);
             entity.setHealth(extraHealth);
             Objects.requireNonNull(entity.getAttribute(Attribute.ATTACK_DAMAGE)).setBaseValue(customDamage +1);
             entity.setCustomNameVisible(true);
@@ -178,7 +178,7 @@ public class MonsterInitializer implements Listener {
         }
 
         // If neither of the boss conditions are met, set standard attributes
-        Objects.requireNonNull(entity.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(extraHealth+500);
+        Objects.requireNonNull(entity.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(extraHealth+10);
         entity.setHealth(extraHealth);
         Objects.requireNonNull(entity.getAttribute(Attribute.ATTACK_DAMAGE)).setBaseValue(customDamage);
     }
