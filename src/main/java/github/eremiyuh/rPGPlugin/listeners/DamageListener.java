@@ -1894,8 +1894,7 @@ public class DamageListener implements Listener {
                 if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 1")) {
                     elementalDamage += (intel*.2);
                 }
-                elementalDamage *= .5;
-                elementalDamage *=100;
+                elementalDamage *=10;
             }
         }
 
