@@ -45,7 +45,7 @@ public class EffectAbilities {
         String userClass = profile.getChosenClass();
 
         if (userClass.equalsIgnoreCase("archer")) userInt= profile.getArcherClassInfo().getIntel()/100;
-        if (userClass.equalsIgnoreCase("alchemist")) userInt= profile.getArcherClassInfo().getIntel()/100;
+        if (userClass.equalsIgnoreCase("alchemist")) userInt= profile.getAlchemistClassInfo().getIntel()/20;
         if (userClass.equalsIgnoreCase("swordsman")) userInt= profile.getSwordsmanClassInfo().getIntel()/100;
         if (userClass.equalsIgnoreCase("rocket")) userInt= profile.getSwordsmanClassInfo().getIntel()/100;
 
@@ -89,13 +89,13 @@ public class EffectAbilities {
         int userInt = 0;
         String userClass = profile.getChosenClass();
 
-        if (userClass.equalsIgnoreCase("archer")) userInt= profile.getArcherClassInfo().getIntel();
-        if (userClass.equalsIgnoreCase("alchemist")) userInt= profile.getArcherClassInfo().getIntel();
-        if (userClass.equalsIgnoreCase("swordsman")) userInt= profile.getSwordsmanClassInfo().getIntel();
-        if (userClass.equalsIgnoreCase("rocket")) userInt= profile.getSwordsmanClassInfo().getIntel()/100;
+        if (userClass.equalsIgnoreCase("archer")) userInt= profile.getArcherClassInfo().getIntel()/20;
+        if (userClass.equalsIgnoreCase("alchemist")) userInt= profile.getAlchemistClassInfo().getIntel()/15;
+        if (userClass.equalsIgnoreCase("swordsman")) userInt= profile.getSwordsmanClassInfo().getIntel()/20;
+        if (userClass.equalsIgnoreCase("rocket")) userInt= profile.getSwordsmanClassInfo().getIntel()/20;
 
 
-        target.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, slownessDuration+ (userInt *5), 0));
+        target.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, slownessDuration+ (userInt/10), 0));
 
         target.getWorld().spawnParticle(Particle.SNOWFLAKE, target.getLocation(), 10, 0.5, .5, 0.5);
     }
@@ -105,11 +105,11 @@ public class EffectAbilities {
         int userInt = 0;
         String userClass = profile.getChosenClass();
 
-        if (userClass.equalsIgnoreCase("archer")) userInt= profile.getArcherClassInfo().getIntel();
-        if (userClass.equalsIgnoreCase("alchemist")) userInt= profile.getArcherClassInfo().getIntel();
-        if (userClass.equalsIgnoreCase("swordsman")) userInt= profile.getSwordsmanClassInfo().getIntel();
-        if (userClass.equalsIgnoreCase("rocket")) userInt= profile.getSwordsmanClassInfo().getIntel();
-        int weaknessDuration = 100+ ((userInt/100) *5); // Duration of the nausea effect in ticks (5 seconds)
+        if (userClass.equalsIgnoreCase("archer")) userInt= profile.getArcherClassInfo().getIntel()/20;
+        if (userClass.equalsIgnoreCase("alchemist")) userInt= profile.getAlchemistClassInfo().getIntel()/15;
+        if (userClass.equalsIgnoreCase("swordsman")) userInt= profile.getSwordsmanClassInfo().getIntel()/20;
+        if (userClass.equalsIgnoreCase("rocket")) userInt= profile.getSwordsmanClassInfo().getIntel()/20;
+        int weaknessDuration = 100+ (userInt/10); // Duration of the nausea effect in ticks (5 seconds)
 
         Location targetLocation = target.getLocation();
         World world = target.getWorld();
@@ -154,11 +154,11 @@ public class EffectAbilities {
         int userInt = 0;
         String userClass = profile.getChosenClass();
 
-        if (userClass.equalsIgnoreCase("archer")) userInt= profile.getArcherClassInfo().getIntel();
-        if (userClass.equalsIgnoreCase("alchemist")) userInt= profile.getArcherClassInfo().getIntel();
-        if (userClass.equalsIgnoreCase("swordsman")) userInt= profile.getSwordsmanClassInfo().getIntel();
-        if (userClass.equalsIgnoreCase("rocket")) userInt= profile.getSwordsmanClassInfo().getIntel();
-        int weaknessDuration = 100+ ((userInt/100) *10); // Duration of the nausea effect in ticks (5 seconds)
+        if (userClass.equalsIgnoreCase("archer")) userInt= profile.getArcherClassInfo().getIntel()/20;
+        if (userClass.equalsIgnoreCase("alchemist")) userInt= profile.getAlchemistClassInfo().getIntel()/15;
+        if (userClass.equalsIgnoreCase("swordsman")) userInt= profile.getSwordsmanClassInfo().getIntel()/20;
+        if (userClass.equalsIgnoreCase("rocket")) userInt= profile.getSwordsmanClassInfo().getIntel()/20;
+        int weaknessDuration = 100+ (userInt/10); // Duration of the nausea effect in ticks (5 seconds)
 
 
         Location targetLocation = target.getLocation();

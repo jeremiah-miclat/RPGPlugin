@@ -111,7 +111,7 @@ public class AlchemistThrowPotion implements Listener {
 
                                 duration = (int) (intel/10);
 
-                                int finalDuration = baseDuration + duration + 100;
+                                int finalDuration = (baseDuration + duration + 100) * 5;
                                 target.addPotionEffect(new PotionEffect(effect.getType(), finalDuration, 1, true, true));
                             }
 
@@ -119,7 +119,7 @@ public class AlchemistThrowPotion implements Listener {
 
                                 duration = (int) (intel/10);
 
-                                int finalDuration = baseDuration + duration + 100;
+                                int finalDuration = (baseDuration + duration + 100) * 5;
                                 target.addPotionEffect(new PotionEffect(effect.getType(), finalDuration, 1, true, true));
                             }
 
@@ -128,7 +128,7 @@ public class AlchemistThrowPotion implements Listener {
                                 duration = (int) (intel/10);
 
                                 int finalDuration = baseDuration + duration + 100;
-                                target.addPotionEffect(new PotionEffect(effect.getType(), finalDuration, (int) intensity, true, true));
+                                target.addPotionEffect(new PotionEffect(effect.getType(), finalDuration*5, (int) intensity, true, true));
                             }
 
                             if (effect.getType() == PotionEffectType.POISON) {
@@ -136,7 +136,7 @@ public class AlchemistThrowPotion implements Listener {
                                 duration = (int) ((intel/100)*10);
 
                                 int finalDuration = baseDuration + duration + 200;
-                                target.addPotionEffect(new PotionEffect(effect.getType(), finalDuration/5, 4, true, true));
+                                target.addPotionEffect(new PotionEffect(effect.getType(), finalDuration*5, 4, true, true));
                             }
 
                             if (effect.getType() == PotionEffectType.WITHER) {
@@ -144,20 +144,20 @@ public class AlchemistThrowPotion implements Listener {
                                 duration = (int) ((intel/100)*10);
 
                                 int finalDuration = baseDuration + duration + 200;
-                                target.addPotionEffect(new PotionEffect(effect.getType(), finalDuration/5, 4, true, true));
+                                target.addPotionEffect(new PotionEffect(effect.getType(), finalDuration*5, 4, true, true));
                             }
 
                             if (effect.getType() == PotionEffectType.FIRE_RESISTANCE) {
                                 duration = (int) (intel/10);
                                 int finalDuration = baseDuration + duration + 100;
-                                target.addPotionEffect(new PotionEffect(effect.getType(), finalDuration, baseIntensity, true, true));
+                                target.addPotionEffect(new PotionEffect(effect.getType(), finalDuration*5, baseIntensity, true, true));
                             }
 
                             if (effect.getType() == PotionEffectType.NIGHT_VISION) {
 
                                 duration = (int) (intel/10);
                                 int finalDuration = baseDuration + duration + 100;
-                                target.addPotionEffect(new PotionEffect(effect.getType(), finalDuration, baseIntensity, true, true));
+                                target.addPotionEffect(new PotionEffect(effect.getType(), finalDuration*5, baseIntensity, true, true));
                             }
 
                             if (effect.getType() == PotionEffectType.SLOW_FALLING) {
@@ -181,7 +181,7 @@ public class AlchemistThrowPotion implements Listener {
                             }
 
                             if (effect.getType() == PotionEffectType.RESISTANCE) {
-                                target.addPotionEffect(new PotionEffect(effect.getType(), 100, 1, true, true));
+                                target.addPotionEffect(new PotionEffect(effect.getType(), 100*5, 1, true, true));
                             }
 
 
@@ -227,7 +227,7 @@ public class AlchemistThrowPotion implements Listener {
 
                                 if (target instanceof Monster monster && isPositiveEffect ) {
                                     monster.removePotionEffect(effect.getType());
-                                    target.addPotionEffect(new PotionEffect((PotionEffectType.WITHER),(100+(int)((intel/100)*10))/5,4,true,true));
+                                    target.addPotionEffect(new PotionEffect((PotionEffectType.WITHER),(100+(int)((intel/100)*10)),4,true,true));
                                 }
 
 
@@ -286,6 +286,7 @@ public class AlchemistThrowPotion implements Listener {
                         boolean isPositiveEffect = HEAL_EFFECTS.contains(effect.getType());
 
                         int intensity = (int) (intel / 400);
+                        intensity *= 5;
 
 
                         for (LivingEntity target : event.getAffectedEntities()) {
@@ -319,10 +320,10 @@ public class AlchemistThrowPotion implements Listener {
                             // Apply the effect if conditions are met
                             if (applyEffect) {
                                 if (target.getHealth()>0) {
-                                    int baseHealing = 4; // Base healing per amplifier level
+                                    int baseHealing = 8; // Base healing per amplifier level
                                     double healAmount = baseHealing * (intensity+1); // Add 1 because intensity starts at 0
 
-                                    double newHealth = Math.min(target.getHealth() + healAmount*.2, Objects.requireNonNull(target.getAttribute(Attribute.MAX_HEALTH)).getValue());
+                                    double newHealth = Math.min(target.getHealth() + healAmount, Objects.requireNonNull(target.getAttribute(Attribute.MAX_HEALTH)).getValue());
                                     target.setHealth(newHealth);
                                 }
                             }

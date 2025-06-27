@@ -807,25 +807,29 @@ public class DamageListener implements Listener {
                             return;
                         }
 
-                        final double remainingHealth = player.getHealth() - (event.getDamage()+mobDamage);
-                        if (remainingHealth <= 0) {
-                            // Use the same downed state logic as in onFatalDamage
-                            player.setHealth(0.1);
-                            event.setDamage(0);
-                            setDownedState(player);
-
-                            // Schedule death
-                            BukkitTask deathTask = Bukkit.getScheduler().runTaskLater(plugin, () -> {
-                                if (downedPlayers.containsKey(player.getUniqueId())) {
-                                    removeDownedState(player);
-                                    player.setHealth(0);
-                                }
-                            }, 20L * 60); // 60s
-
-                            downedPlayers.put(player.getUniqueId(), deathTask);
-
-                            return;
-                        }
+//                        final double remainingHealth = player.getHealth() - (event.getDamage()+mobDamage);
+//                        if (remainingHealth <= 0) {
+//                            // Use the same downed state logic as in onFatalDamage
+//                            player.setHealth(0.1);
+//                            event.setDamage(0);
+//                            player.sendMessage("on mob. the damage was "+ event.getDamage()+mobDamage);
+//                            player.sendMessage("on mob. the f damage was "+ event.getFinalDamage()+mobDamage);
+//                            player.sendMessage("on mob. remaining h "+ remainingHealth);
+//                            player.sendMessage("on mob. current h "+ player.getHealth());
+//                            setDownedState(player);
+//
+//                            // Schedule death
+//                            BukkitTask deathTask = Bukkit.getScheduler().runTaskLater(plugin, () -> {
+//                                if (downedPlayers.containsKey(player.getUniqueId())) {
+//                                    removeDownedState(player);
+//                                    player.setHealth(0);
+//                                }
+//                            }, 20L * 60); // 60s
+//
+//                            downedPlayers.put(player.getUniqueId(), deathTask);
+//
+//                            return;
+//                        }
 
                         event.setDamage(mobDamage);
 
@@ -938,6 +942,7 @@ public class DamageListener implements Listener {
 
             // ⛑️ Down the player instead of dying
             player.setHealth(0.1);  // minimal value, not zero
+//            player.sendMessage("on fatal. the damage was "+ event.getDamage());
             event.setDamage(0);     // prevent actual death
             setDownedState(player); // your custom logic
 
@@ -1890,6 +1895,7 @@ public class DamageListener implements Listener {
                     elementalDamage += (intel*.2);
                 }
                 elementalDamage *= .5;
+                elementalDamage *=100;
             }
         }
 

@@ -15,9 +15,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class PotionGiveListener implements Listener {
     private final JavaPlugin plugin;
@@ -28,91 +26,98 @@ public class PotionGiveListener implements Listener {
         this.profileManager = profileManager;
     }
 
+    private final Map<UUID, Long> alchemistCooldowns = new HashMap<>();
+
     @EventHandler
     public void onPlayerRightClick(PlayerInteractEvent event) {
-        if (!event.getPlayer().getWorld().getName().equals("world_rpg") && !event.getPlayer().getWorld().getName().contains("labyrinth")) {
-            return;
-        }
-
         Player player = event.getPlayer();
-        UserProfile playerProfile = profileManager.getProfile(player.getName());
+        UUID uuid = player.getUniqueId();
 
-
-        if (!playerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
+        if (!player.getWorld().getName().equals("world_rpg") &&
+                !player.getWorld().getName().contains("labyrinth")) {
             return;
         }
+
+        UserProfile playerProfile = profileManager.getProfile(player.getName());
+        if (!playerProfile.getChosenClass().equalsIgnoreCase("alchemist")) return;
 
         if (event.getAction() != Action.RIGHT_CLICK_AIR &&
-                event.getAction() != Action.RIGHT_CLICK_BLOCK) {
-            return; // Only handle right-click actions
-        }
+                event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
 
         ItemStack mainHandItem = player.getInventory().getItemInMainHand();
         ItemStack offHandItem = player.getInventory().getItemInOffHand();
 
-        // Check if main hand has a book and off-hand is empty
+        // ✅ Cooldown check (5 seconds = 5000 ms)
+        long now = System.currentTimeMillis();
+        if (alchemistCooldowns.containsKey(uuid)) {
+            long lastUse = alchemistCooldowns.get(uuid);
+            long remaining = 5000 - (now - lastUse);
+            if (remaining > 0) {
+//                player.sendMessage(ChatColor.RED + "⏳ You must wait " + (remaining / 1000 + 1) + " more second(s).");
+                return;
+            }
+        }
+
         if (mainHandItem.getType() == Material.BOOK && offHandItem.getType() == Material.AIR) {
             if (playerProfile.getPotion() < 1) {
                 player.sendMessage("No potions");
                 return;
             }
-            // Cancel the event to prevent any default behavior
+
             event.setCancelled(true);
 
-            // Create a potion item
-            ItemStack potion = new ItemStack(Material.SPLASH_POTION); // Change to a different potion type if needed
+            ItemStack potion = new ItemStack(Material.SPLASH_POTION);
             PotionMeta potionMeta = (PotionMeta) potion.getItemMeta();
 
             if (potionMeta != null) {
-                // Set the potion display name
                 potionMeta.setDisplayName("Alchemist Potion");
 
-                // Determine the potion effect based on the selected skill
                 PotionEffect potionEffect = null;
-                if (playerProfile.getSelectedSkill().equalsIgnoreCase("skill 1")) {
+                String skill = playerProfile.getSelectedSkill().trim().toLowerCase();
+
+                if (skill.equals("skill 1")) {
                     potionEffect = new PotionEffect(PotionEffectType.INSTANT_DAMAGE, 1, 1);
-                } else if (playerProfile.getSelectedSkill().equalsIgnoreCase("skill 2")) {
-                    // Create a list of potential PotionEffectTypes for "skill 2"
+                } else if (skill.equals("skill 2")) {
                     List<PotionEffectType> possibleEffects = Arrays.asList(
                             PotionEffectType.POISON,
                             PotionEffectType.WITHER,
                             PotionEffectType.SLOWNESS,
-                            PotionEffectType.STRENGTH, // Strength
+                            PotionEffectType.STRENGTH,
                             PotionEffectType.SPEED,
-                            PotionEffectType.RESISTANCE // Resistance
+                            PotionEffectType.RESISTANCE
                     );
 
-                    // Randomly select an effect
                     Random random = new Random();
                     PotionEffectType selectedEffect = possibleEffects.get(random.nextInt(possibleEffects.size()));
-
-                    // Create the potion effect with a duration of 20 ticks (1 second) and amplifier 1
-                    potionEffect = new PotionEffect(selectedEffect, 0, 0);
+                    potionEffect = new PotionEffect(selectedEffect, 0, 0); // ⛔ untouched duration
                     player.sendMessage(ChatColor.BLUE + "Crafted Potion: " + formatPotionEffectName(selectedEffect));
-                } else if (playerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
+                } else if (skill.equals("skill 3")) {
                     potionEffect = new PotionEffect(PotionEffectType.INSTANT_HEALTH, 1, 0);
                 }
 
-                // Add the custom effect to the potion
                 if (potionEffect != null) {
                     potionMeta.addCustomEffect(potionEffect, true);
                 }
 
-                // Set the modified meta back to the potion
                 potion.setItemMeta(potionMeta);
             }
 
-            // Set the potion directly into the off-hand
+            // 🧪 Give potion to off-hand
+            player.swingMainHand();
             player.getInventory().setItemInOffHand(potion);
+            player.updateInventory();
+
+            // Update profile + cooldown
             playerProfile.setPotion(playerProfile.getPotion() - 1);
+            alchemistCooldowns.put(uuid, now); // ✅ start cooldown
         }
     }
 
     private String formatPotionEffectName(PotionEffectType effectType) {
         if (effectType == null) return "Unknown Effect";
-        // Convert the effect type name to a readable format
         String name = effectType.getName().toLowerCase().replace('_', ' ');
         return Character.toUpperCase(name.charAt(0)) + name.substring(1);
     }
+
 }
 
