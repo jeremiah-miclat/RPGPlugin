@@ -121,7 +121,7 @@ public class DamageListener implements Listener {
                 z >= Math.min(z1, z2) && z <= Math.max(z1, z2);
     }
 
-    @EventHandler
+    @EventHandler (priority = EventPriority.LOWEST)
     public void onEntityDamage(EntityDamageByEntityEvent event) {
 
         if (!Objects.requireNonNull(event.getDamager().getLocation().getWorld()).getName().equals("world_rpg") && !Objects.requireNonNull(event.getEntity().getLocation().getWorld()).getName().contains("world_labyrinth")) {
@@ -918,35 +918,38 @@ public class DamageListener implements Listener {
     }
 
 
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onFatalDamage(EntityDamageEvent event) {
+        // ✅ Exit early if event already cancelled by other plugin or mechanics
+        if (event.isCancelled()) return;
+
         if (!(event.getEntity() instanceof Player player)) return;
 
         double currentHealth = player.getHealth();
         double finalDamage = event.getFinalDamage();
 
-
         if ((currentHealth - finalDamage) <= 0) {
-            player.sendMessage("currentHealth - finalDamage = " + (currentHealth - finalDamage));
+
+            // ✅ If player is already downed, prevent repeated triggering
             if (downedPlayers.containsKey(player.getUniqueId())) {
                 event.setCancelled(true);
                 return;
             }
 
-            // Down the player
-            player.setHealth(0.1);
-            event.setDamage(0);
-            setDownedState(player);
+            // ⛑️ Down the player instead of dying
+            player.setHealth(0.1);  // minimal value, not zero
+            event.setDamage(0);     // prevent actual death
+            setDownedState(player); // your custom logic
 
-
-            // Schedule death
+            // ⏳ Schedule forced death after 60 seconds
             BukkitTask deathTask = Bukkit.getScheduler().runTaskLater(plugin, () -> {
                 if (downedPlayers.containsKey(player.getUniqueId())) {
                     removeDownedState(player);
-                    player.setHealth(0);
+                    player.setHealth(0); // force death
                 }
-            }, 20L * 60); // 60s
+            }, 20L * 60); // 60 seconds
 
+            // Store the task for later cancellation if revived
             downedPlayers.put(player.getUniqueId(), deathTask);
         }
     }
@@ -1328,9 +1331,74 @@ public class DamageListener implements Listener {
         player.sendMessage(ChatColor.RED + "You can't use commands");
     }
 
+//    private void startRevivalCheck(Player downedPlayer) {
+//        final UUID uuid = downedPlayer.getUniqueId();
+//        final int requiredTime = 5; // seconds
+//        final int radius = 2;
+//
+//        final BukkitTask[] taskRef = new BukkitTask[1];
+//
+//        taskRef[0] = Bukkit.getScheduler().runTaskTimer(plugin, new Runnable() {
+//            int ticksNear = 0;
+//
+//            @Override
+//            public void run() {
+//                if (!downedPlayers.containsKey(uuid)) {
+//                    taskRef[0].cancel();
+//                    return;
+//                }
+//
+//                boolean someoneNearby = false;
+//                UserProfile downedProfile = profileManager.getProfile(downedPlayer.getName());
+//
+//                for (Player other : downedPlayer.getWorld().getPlayers()) {
+//                    if (other.equals(downedPlayer)) continue;
+//                    if (downedPlayers.containsKey(other.getUniqueId())) continue;
+//                    UserProfile otherProfile = profileManager.getProfile(other.getName());
+//                    if (!downedProfile.getTeam().equalsIgnoreCase(otherProfile.getTeam()) || downedProfile.getTeam().equalsIgnoreCase("none")) continue;
+//
+//                    if (other.getLocation().distance(downedPlayer.getLocation()) <= radius) {
+//                        someoneNearby = true;
+//
+//                        // ❤️ Show particle
+//                        downedPlayer.getWorld().spawnParticle(
+//                                Particle.HEART,
+//                                downedPlayer.getLocation().add(0, 1, 0),
+//                                1
+//                        );
+//                        break;
+//                    }
+//                }
+//
+//                if (someoneNearby) {
+//                    ticksNear++;
+//
+//                    // ⏳ Show progress
+//                    downedPlayer.spigot().sendMessage(
+//                            net.md_5.bungee.api.ChatMessageType.ACTION_BAR,
+//                            new net.md_5.bungee.api.chat.TextComponent("§eReviving... §a" + ticksNear + "§7/§c5")
+//                    );
+//
+//                    if (ticksNear >= requiredTime) {
+//                        taskRef[0].cancel();
+//                        revivePlayer(downedPlayer);
+//                    }
+//                } else {
+//                    ticksNear = 0;
+//
+//                    // 👀 Waiting message
+//                    downedPlayer.spigot().sendMessage(
+//                            net.md_5.bungee.api.ChatMessageType.ACTION_BAR,
+//                            new net.md_5.bungee.api.chat.TextComponent("§7Waiting for teammate...")
+//                    );
+//                }
+//            }
+//        }, 0L, 20L); // every second
+//    }
+
     private void startRevivalCheck(Player downedPlayer) {
         final UUID uuid = downedPlayer.getUniqueId();
-        final int requiredTime = 5; // seconds
+        final int requiredTime = 5; // seconds needed to revive
         final int radius = 2;
 
         final BukkitTask[] taskRef = new BukkitTask[1];
@@ -1346,18 +1414,23 @@ public class DamageListener implements Listener {
                 }
 
                 boolean someoneNearby = false;
+                Player revivingPlayer = null;
+
                 UserProfile downedProfile = profileManager.getProfile(downedPlayer.getName());
 
                 for (Player other : downedPlayer.getWorld().getPlayers()) {
                     if (other.equals(downedPlayer)) continue;
                     if (downedPlayers.containsKey(other.getUniqueId())) continue;
+
                     UserProfile otherProfile = profileManager.getProfile(other.getName());
-                    if (!downedProfile.getTeam().equalsIgnoreCase(otherProfile.getTeam()) || downedProfile.getTeam().equalsIgnoreCase("none")) continue;
+                    if (!downedProfile.getTeam().equalsIgnoreCase(otherProfile.getTeam()) ||
+                            downedProfile.getTeam().equalsIgnoreCase("none")) continue;
 
                     if (other.getLocation().distance(downedPlayer.getLocation()) <= radius) {
+                        revivingPlayer = other;
                         someoneNearby = true;
 
-                        // ❤️ Show particle
+                        // ❤️ Show heart particle
                         downedPlayer.getWorld().spawnParticle(
                                 Particle.HEART,
                                 downedPlayer.getLocation().add(0, 1, 0),
@@ -1370,28 +1443,29 @@ public class DamageListener implements Listener {
                 if (someoneNearby) {
                     ticksNear++;
 
-                    // ⏳ Show progress
-                    downedPlayer.spigot().sendMessage(
-                            net.md_5.bungee.api.ChatMessageType.ACTION_BAR,
-                            new net.md_5.bungee.api.chat.TextComponent("§eReviving... §a" + ticksNear + "§7/§c5")
-                    );
+                    // ⏳ Downed player sees revive progress
+                    downedPlayer.sendActionBar(Component.text("§eReviving... §a" + ticksNear + "§7/§c" + requiredTime));
+
+                    // ✅ Reviver sees who they’re reviving
+                    if (revivingPlayer != null) {
+                        revivingPlayer.sendActionBar(Component.text("§aReviving §e" + downedPlayer.getName() + " §a" + ticksNear + "§7/§c" + requiredTime));
+                    }
 
                     if (ticksNear >= requiredTime) {
                         taskRef[0].cancel();
                         revivePlayer(downedPlayer);
                     }
+
                 } else {
                     ticksNear = 0;
 
-                    // 👀 Waiting message
-                    downedPlayer.spigot().sendMessage(
-                            net.md_5.bungee.api.ChatMessageType.ACTION_BAR,
-                            new net.md_5.bungee.api.chat.TextComponent("§7Waiting for teammate...")
-                    );
+                    // 👀 Downed player sees waiting message
+                    downedPlayer.sendActionBar(Component.text("§7Waiting for teammate..."));
                 }
             }
-        }, 0L, 20L); // every second
+        }, 0L, 20L); // Run every second
     }
+
 
 
 
@@ -1432,7 +1506,13 @@ public class DamageListener implements Listener {
 
 
     private void removeDownedState(Player player) {
-        if (!downedPlayers.containsKey(player.getUniqueId())) return;
+        UUID uuid = player.getUniqueId();
+
+        // Cancel the scheduled death task if it exists
+        BukkitTask task = downedPlayers.remove(uuid);
+        if (task != null) {
+            task.cancel();
+        }
         downedPlayers.remove(player.getUniqueId());
         player.removePotionEffect(PotionEffectType.SLOWNESS);
         player.removePotionEffect(PotionEffectType.GLOWING);
