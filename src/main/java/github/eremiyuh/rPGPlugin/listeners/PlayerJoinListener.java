@@ -65,6 +65,10 @@ public class PlayerJoinListener implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
+        if (player.isInvulnerable()) {
+            player.setInvulnerable(false);
+        }
+
         String playerName = player.getName();
         UserProfile profile = profileManager.getProfile(playerName);
 

@@ -15,6 +15,7 @@ import org.bukkit.*;
 import org.bukkit.block.Biome;
 import org.bukkit.entity.*;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.potion.PotionEffectType;
 
 import java.io.File;
 import java.util.HashMap;
@@ -57,7 +58,14 @@ public class RPGPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
-
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            player.setInvulnerable(false);
+            player.removePotionEffect(PotionEffectType.SLOWNESS);
+            player.removePotionEffect(PotionEffectType.GLOWING);
+            player.removePotionEffect(PotionEffectType.WITHER);
+            player.removePotionEffect(PotionEffectType.WEAKNESS);
+            player.removePotionEffect(PotionEffectType.BLINDNESS);
+        }
 
 
         int x1 = -150, z1 = 150;

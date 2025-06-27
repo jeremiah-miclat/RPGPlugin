@@ -21,19 +21,21 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.*;
-import org.bukkit.event.player.PlayerItemDamageEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class DamageListener implements Listener {
 
@@ -41,6 +43,7 @@ public class DamageListener implements Listener {
     private final EffectsAbilityManager effectsAbilityManager;
     private  final DamageAbilityManager damageAbilityManager;
     private final RPGPlugin plugin;
+    private final Map<UUID, BukkitTask> downedPlayers = new HashMap<>();
 
 
     private final int x1 = -150, z1 = 150;
@@ -52,6 +55,52 @@ public class DamageListener implements Listener {
         this. damageAbilityManager = damageAbilityManager;
         this.plugin = plugin;
     }
+
+    Set<UUID> rejoinDowned = new HashSet<>();
+    private final Set<UUID> forceDeath = new HashSet<>();
+
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        Player player = event.getPlayer();
+        if (downedPlayers.containsKey(player.getUniqueId())) {
+            removeDownedState(player);
+            player.setHealth(0); // Instant death
+        }
+    }
+
+//    @EventHandler
+//    public void onPlayerQuit(PlayerQuitEvent event) {
+//        Player player = event.getPlayer();
+//        UUID uuid = player.getUniqueId();
+//
+//        if (downedPlayers.containsKey(uuid)) {
+//            BukkitTask task = downedPlayers.remove(uuid);
+//            if (task != null) task.cancel();
+//
+//            removeDownedState(player);
+//            rejoinDowned.add(uuid); // Mark as was downed
+//        }
+//    }
+//
+//    @EventHandler
+//    public void onPlayerJoin(PlayerJoinEvent event) {
+//        Player player = event.getPlayer();
+//        UUID uuid = player.getUniqueId();
+//
+//        if (rejoinDowned.contains(uuid)) {
+//            setDownedState(player); // Reapply effects
+//            // Re-schedule the death
+//            BukkitTask task = Bukkit.getScheduler().runTaskLater(plugin, () -> {
+//                removeDownedState(player);
+//                player.setHealth(0);
+//            }, 20L * 60);
+//
+//            downedPlayers.put(uuid, task);
+//            rejoinDowned.remove(uuid);
+//        }
+//    }
+
+
 
     @EventHandler
     public void onEquipDamage(PlayerItemDamageEvent event) {
@@ -758,6 +807,26 @@ public class DamageListener implements Listener {
                             return;
                         }
 
+                        final double remainingHealth = player.getHealth() - (event.getDamage()+mobDamage);
+                        if (remainingHealth <= 0) {
+                            // Use the same downed state logic as in onFatalDamage
+                            player.setHealth(0.1);
+                            event.setDamage(0);
+                            setDownedState(player);
+
+                            // Schedule death
+                            BukkitTask deathTask = Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                                if (downedPlayers.containsKey(player.getUniqueId())) {
+                                    removeDownedState(player);
+                                    player.setHealth(0);
+                                }
+                            }, 20L * 60); // 60s
+
+                            downedPlayers.put(player.getUniqueId(), deathTask);
+
+                            return;
+                        }
+
                         event.setDamage(mobDamage);
 
                         return;
@@ -849,6 +918,38 @@ public class DamageListener implements Listener {
     }
 
 
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onFatalDamage(EntityDamageEvent event) {
+        if (!(event.getEntity() instanceof Player player)) return;
+
+        double currentHealth = player.getHealth();
+        double finalDamage = event.getFinalDamage();
+
+
+        if ((currentHealth - finalDamage) <= 0) {
+            player.sendMessage("currentHealth - finalDamage = " + (currentHealth - finalDamage));
+            if (downedPlayers.containsKey(player.getUniqueId())) {
+                event.setCancelled(true);
+                return;
+            }
+
+            // Down the player
+            player.setHealth(0.1);
+            event.setDamage(0);
+            setDownedState(player);
+
+
+            // Schedule death
+            BukkitTask deathTask = Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                if (downedPlayers.containsKey(player.getUniqueId())) {
+                    removeDownedState(player);
+                    player.setHealth(0);
+                }
+            }, 20L * 60); // 60s
+
+            downedPlayers.put(player.getUniqueId(), deathTask);
+        }
+    }
 
     @EventHandler (priority = EventPriority.HIGH)
     public void onEntityTakeDamage(EntityDamageEvent event) {
@@ -896,8 +997,8 @@ public class DamageListener implements Listener {
             return;
         }
 
-        if (event.getDamageSource().getCausingEntity() instanceof Player player && player.getAllowFlight()) {
-            player.sendMessage("damaged cancelled. Disable fly mode");
+        if (event.getDamageSource().getCausingEntity() instanceof Player player1 && player1.getAllowFlight()) {
+            player1.sendMessage("damaged cancelled. Disable fly mode");
             event.setCancelled(true);
             return;
         }
@@ -1107,6 +1208,242 @@ public class DamageListener implements Listener {
 //                *dmgReductionMultiplier
         );
     }
+
+    @EventHandler
+    public void onInventoryOpen(InventoryOpenEvent event) {
+        if (!(event.getPlayer() instanceof Player player)) return;
+
+        if (downedPlayers.containsKey(player.getUniqueId())) {
+            event.setCancelled(true);
+
+        }
+    }
+
+    @EventHandler
+    public void onDownedPlayerJump(PlayerMoveEvent event) {
+        Player player = event.getPlayer();
+
+        if (!downedPlayers.containsKey(player.getUniqueId())) return;
+
+        double fromY = event.getFrom().getY();
+        double toY = event.getTo().getY();
+
+        // If the Y increased and it's not a simple walk up a slope
+        if (toY > fromY && (toY - fromY) > 0.419) { // typical jump is ~0.42
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onTargetDownPlayer(EntityTargetEvent event) {
+        if (!(event.getEntity() instanceof Monster && event.getTarget() instanceof Player player)) return;
+
+        if (downedPlayers.containsKey(player.getUniqueId())) {
+                event.setCancelled(true);
+            }
+
+    }
+
+    @EventHandler
+    public void onItemHeldChange(PlayerItemHeldEvent event) {
+        Player player = event.getPlayer();
+
+        if (downedPlayers.containsKey(player.getUniqueId())) {
+            event.setCancelled(true); // Prevent the item from actually changing
+
+            Bukkit.getScheduler().runTask(plugin, () -> killPlayerImmediately(player)); // Defer to next tick
+        }
+    }
+    @EventHandler
+    public void onFoodConsume(PlayerItemConsumeEvent event) {
+        Player player = event.getPlayer();
+
+        if (downedPlayers.containsKey(player.getUniqueId())) {
+            event.setCancelled(true);
+        }
+    }
+
+    private void killPlayerImmediately(Player player) {
+        if (!downedPlayers.containsKey(player.getUniqueId())) return;
+
+        removeDownedState(player);
+
+//
+//        forceDeath.add(player.getUniqueId()); // ✅ tell the damage event to skip downing
+
+        player.sendMessage("§cYou gave up while downed.");
+        player.setHealth(0); // Triggers EntityDamageEvent again
+    }
+
+    @EventHandler
+    public void onDropItem(PlayerDropItemEvent event) {
+        Player player = event.getPlayer();
+
+        if (downedPlayers.containsKey(player.getUniqueId())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onInteract(PlayerInteractEvent event) {
+        Player player = event.getPlayer();
+
+        if (downedPlayers.containsKey(player.getUniqueId())) {
+            event.setCancelled(true);
+        }
+    }
+
+//    @EventHandler
+//    public void onBucketUse(PlayerBucketEvent event) {
+//        if (downedPlayers.containsKey(event.getPlayer().getUniqueId())) {
+//            event.setCancelled(true);
+//        }
+//    }
+
+//    @EventHandler
+//    public void onProjectileLaunch(ProjectileLaunchEvent event) {
+//        if (event.getEntity().getShooter() instanceof Player player &&
+//                downedPlayers.containsKey(player.getUniqueId())) {
+//            event.setCancelled(true);
+//        }
+//    }
+
+//    @EventHandler
+//    public void onTeleport(PlayerTeleportEvent event) {
+//        if (event.getCause() == PlayerTeleportEvent.TeleportCause.ENDER_PEARL &&
+//                downedPlayers.containsKey(event.getPlayer().getUniqueId())) {
+//            event.setCancelled(true);
+//        }
+//    }
+
+    @EventHandler
+    public void onCommand(PlayerCommandPreprocessEvent event) {
+        Player player = event.getPlayer();
+
+        // If not downed, let them run commands
+        if (!downedPlayers.containsKey(player.getUniqueId())) return;
+
+        // Cancel any command (starts with '/')
+        event.setCancelled(true);
+        player.sendMessage(ChatColor.RED + "You can't use commands");
+    }
+
+    private void startRevivalCheck(Player downedPlayer) {
+        final UUID uuid = downedPlayer.getUniqueId();
+        final int requiredTime = 5; // seconds
+        final int radius = 2;
+
+        final BukkitTask[] taskRef = new BukkitTask[1];
+
+        taskRef[0] = Bukkit.getScheduler().runTaskTimer(plugin, new Runnable() {
+            int ticksNear = 0;
+
+            @Override
+            public void run() {
+                if (!downedPlayers.containsKey(uuid)) {
+                    taskRef[0].cancel();
+                    return;
+                }
+
+                boolean someoneNearby = false;
+                UserProfile downedProfile = profileManager.getProfile(downedPlayer.getName());
+
+                for (Player other : downedPlayer.getWorld().getPlayers()) {
+                    if (other.equals(downedPlayer)) continue;
+                    if (downedPlayers.containsKey(other.getUniqueId())) continue;
+                    UserProfile otherProfile = profileManager.getProfile(other.getName());
+                    if (!downedProfile.getTeam().equalsIgnoreCase(otherProfile.getTeam()) || downedProfile.getTeam().equalsIgnoreCase("none")) continue;
+
+                    if (other.getLocation().distance(downedPlayer.getLocation()) <= radius) {
+                        someoneNearby = true;
+
+                        // ❤️ Show particle
+                        downedPlayer.getWorld().spawnParticle(
+                                Particle.HEART,
+                                downedPlayer.getLocation().add(0, 1, 0),
+                                1
+                        );
+                        break;
+                    }
+                }
+
+                if (someoneNearby) {
+                    ticksNear++;
+
+                    // ⏳ Show progress
+                    downedPlayer.spigot().sendMessage(
+                            net.md_5.bungee.api.ChatMessageType.ACTION_BAR,
+                            new net.md_5.bungee.api.chat.TextComponent("§eReviving... §a" + ticksNear + "§7/§c5")
+                    );
+
+                    if (ticksNear >= requiredTime) {
+                        taskRef[0].cancel();
+                        revivePlayer(downedPlayer);
+                    }
+                } else {
+                    ticksNear = 0;
+
+                    // 👀 Waiting message
+                    downedPlayer.spigot().sendMessage(
+                            net.md_5.bungee.api.ChatMessageType.ACTION_BAR,
+                            new net.md_5.bungee.api.chat.TextComponent("§7Waiting for teammate...")
+                    );
+                }
+            }
+        }, 0L, 20L); // every second
+    }
+
+
+
+    private void revivePlayer(Player player) {
+//        BukkitTask task = downedPlayers.remove(player.getUniqueId());
+//        if (task != null) task.cancel();
+        player.setFoodLevel(6);
+        player.setHealth(6);
+        removeDownedState(player);
+ // 3 hearts
+        player.sendMessage("§aYou were revived!");
+    }
+
+
+
+    private void setDownedState(Player player) {
+        startRevivalCheck(player); // Start revival check task
+        player.setInvulnerable(true);
+        player.setSneaking(true);
+        player.setFoodLevel(0);
+        player.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 20 * 60, 1, false, false));
+        player.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 20 * 60, 1, false, false));
+        player.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 20 * 60, 5, false, false));
+        player.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 20 * 60, 255, false, false));
+        player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20 * 60, 255, false, false));
+
+        player.sendTitle(
+                "§cYOU ARE DOWN! DON'T MOVE! WAIT FOR YOUR TEAM",
+                "§7or Switch item in hand to give up early.",
+                10, 60, 10
+        );
+        player.sendMessage(
+                "§cYOU ARE DOWN! DON'T MOVE! WAIT FOR YOUR TEAM",
+                "§7or Switch item in hand to give up early."
+
+        );
+    }
+
+
+    private void removeDownedState(Player player) {
+        if (!downedPlayers.containsKey(player.getUniqueId())) return;
+        downedPlayers.remove(player.getUniqueId());
+        player.removePotionEffect(PotionEffectType.SLOWNESS);
+        player.removePotionEffect(PotionEffectType.GLOWING);
+        player.removePotionEffect(PotionEffectType.WITHER);
+        player.removePotionEffect(PotionEffectType.WEAKNESS);
+        player.removePotionEffect(PotionEffectType.BLINDNESS);
+        player.setInvulnerable(false);
+        player.setSneaking(false);
+
+    }
+
 
 
     // PvE Long Range Damage
