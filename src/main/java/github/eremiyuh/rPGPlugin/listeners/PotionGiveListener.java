@@ -80,7 +80,7 @@ public class PotionGiveListener implements Listener {
                 } else if (skill.equals("skill 2")) {
                     List<PotionEffectType> possibleEffects = Arrays.asList(
                             PotionEffectType.POISON,
-                            PotionEffectType.WITHER,
+//                            PotionEffectType.WITHER,
                             PotionEffectType.SLOWNESS,
                             PotionEffectType.STRENGTH,
                             PotionEffectType.SPEED,

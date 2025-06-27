@@ -133,10 +133,10 @@ public class AlchemistThrowPotion implements Listener {
 
                             if (effect.getType() == PotionEffectType.POISON) {
 
-                                duration = (int) ((intel/100)*10);
+                                duration = (int) ((intel/100)*20);
 
                                 int finalDuration = baseDuration + duration + 200;
-                                target.addPotionEffect(new PotionEffect(effect.getType(), finalDuration*5, 4, true, true));
+                                target.addPotionEffect(new PotionEffect(effect.getType(), finalDuration, 4, true, true));
                             }
 
                             if (effect.getType() == PotionEffectType.WITHER) {
@@ -227,7 +227,7 @@ public class AlchemistThrowPotion implements Listener {
 
                                 if (target instanceof Monster monster && isPositiveEffect ) {
                                     monster.removePotionEffect(effect.getType());
-                                    target.addPotionEffect(new PotionEffect((PotionEffectType.WITHER),(100+(int)((intel/100)*10)),4,true,true));
+                                    target.addPotionEffect(new PotionEffect((PotionEffectType.POISON),(100+(int)((intel/100)*10)),4,true,true));
                                 }
 
 
