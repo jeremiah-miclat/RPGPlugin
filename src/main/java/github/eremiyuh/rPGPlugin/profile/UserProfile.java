@@ -671,7 +671,7 @@ public class UserProfile {
 
     // Method to add a team member (only if the list has fewer than 4 members)
     public boolean addTeamMember(String playerName) {
-        if (teamMembers.size() < 4 && !teamMembers.contains(playerName)) {
+        if (teamMembers.size() < 10 && !teamMembers.contains(playerName)) {
             teamMembers.add(playerName);
             return true; // Successfully added
         }

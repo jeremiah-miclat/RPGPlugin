@@ -966,6 +966,9 @@ public class DamageListener implements Listener {
         }
 
         if (event.getEntity() instanceof LivingEntity entity) {
+            if (entity instanceof Monster monster) {
+                monster.setInvulnerable(false);
+            }
             entity.setNoDamageTicks(0);
         }
 
@@ -1037,15 +1040,15 @@ public class DamageListener implements Listener {
 
 
 // Check water or lava in current, below, or above blocks
-        if (((blockAtFeet == Material.WATER || blockAtFeet == Material.LAVA) ||
-                (blockBelow == Material.WATER || blockBelow == Material.LAVA) ||
-                (blockAbove == Material.WATER || blockAbove == Material.LAVA))
-                && target instanceof Monster && !(target instanceof WaterMob)) {
-
-            event.setCancelled(true);
-            attacker.sendMessage( ChatColor.RED+"Mob is invulnerable on water or lava!");
-            return;
-        }
+//        if (((blockAtFeet == Material.WATER || blockAtFeet == Material.LAVA) ||
+//                (blockBelow == Material.WATER || blockBelow == Material.LAVA) ||
+//                (blockAbove == Material.WATER || blockAbove == Material.LAVA))
+//                && target instanceof Monster && !(target instanceof WaterMob)) {
+//
+//            event.setCancelled(true);
+//            attacker.sendMessage( ChatColor.RED+"Mob is invulnerable on water or lava!");
+//            return;
+//        }
 
 
         ItemStack weapon = attacker.getInventory().getItemInMainHand();
@@ -1538,15 +1541,15 @@ public class DamageListener implements Listener {
         Material blockAbove = damagedLocation.clone().add(0, 1, 0).getBlock().getType(); // Block above
 
 // Check water or lava in current, below, or above blocks
-        if (((blockAtFeet == Material.WATER || blockAtFeet == Material.LAVA) ||
-                (blockBelow == Material.WATER || blockBelow == Material.LAVA) ||
-                (blockAbove == Material.WATER || blockAbove == Material.LAVA))
-                && target instanceof Monster && !(target instanceof WaterMob)) {
-
-            event.setCancelled(true);
-            attacker.sendMessage(ChatColor.RED+ "Mob is invulnerable on water or lava!");
-            return;
-        }
+//        if (((blockAtFeet == Material.WATER || blockAtFeet == Material.LAVA) ||
+//                (blockBelow == Material.WATER || blockBelow == Material.LAVA) ||
+//                (blockAbove == Material.WATER || blockAbove == Material.LAVA))
+//                && target instanceof Monster && !(target instanceof WaterMob)) {
+//
+//            event.setCancelled(true);
+//            attacker.sendMessage(ChatColor.RED+ "Mob is invulnerable on water or lava!");
+//            return;
+//        }
 
 
 //        if (target instanceof Tameable tameable) {
