@@ -97,7 +97,7 @@ public class SummonVillagerListener implements Listener {
             player.giveExp(xpToGive);
 
             // Optional: Send feedback message to player
-            player.sendMessage(ChatColor.GREEN + "You received " + xpToGive + " XP for trading with " + villager.getCustomName());
+//            player.sendMessage(ChatColor.GREEN + "You received " + xpToGive + " XP for trading with " + villager.getCustomName());
         }
     }
 
