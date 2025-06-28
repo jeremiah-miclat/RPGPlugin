@@ -1093,7 +1093,7 @@ public class DamageListener implements Listener {
 
 
         // Swordsman-specific ability if holding a sword
-        if (damagerProfile.getChosenClass().equalsIgnoreCase("swordsman") && weapon.getType().toString().endsWith("_SWORD")) {
+        if (damagerProfile.getChosenClass().equalsIgnoreCase("swordsman") && (weapon.getType().toString().endsWith("_SWORD") || weapon.getType().toString().endsWith("_AXE"))) {
 
             effectsAbilityManager.applyAbility(damagerProfile, target, damagerLocation, damagedLocation);
             if (target instanceof Monster mob && (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 2") || damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 3"))) {
@@ -1181,7 +1181,7 @@ public class DamageListener implements Listener {
             }
 
             if (PlayerBuffPerms.canLifeSteal(damagerProfile)
-                    && attacker.getInventory().getItemInMainHand().getType().toString().endsWith("_SWORD")) {
+                    && (attacker.getInventory().getItemInMainHand().getType().toString().endsWith("_SWORD") || attacker.getInventory().getItemInMainHand().getType().toString().endsWith("_AXE"))) {
 
                 AttributeInstance maxHealthAttribute = attacker.getAttribute(Attribute.MAX_HEALTH);
                 if (maxHealthAttribute == null) {
@@ -1854,7 +1854,7 @@ public class DamageListener implements Listener {
         if (event.getDamager() instanceof Player) {
             statDmg+=str*1;
             if (damagerProfile.getChosenClass().equalsIgnoreCase("swordsman")) {
-                if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 1") && player.getInventory().getItemInMainHand().getType().toString().endsWith("_SWORD")) {
+                if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 1") && (player.getInventory().getItemInMainHand().getType().toString().endsWith("_SWORD") || player.getInventory().getItemInMainHand().getType().toString().endsWith("_AXE"))) {
                     elementalDamage += (intel * 1.2);
                 }
             }
@@ -1891,10 +1891,11 @@ public class DamageListener implements Listener {
             elementalDamage += intel * 1;
             //alchemists
             if (damagerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
+                elementalDamage +=50;
                 if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 1")) {
                     elementalDamage += (intel*.2);
                 }
-                elementalDamage *=10;
+
             }
         }
 
