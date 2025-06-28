@@ -921,6 +921,13 @@ public class DamageListener implements Listener {
 
     }
 
+    private boolean hasTotem(Player player) {
+        ItemStack mainHand = player.getInventory().getItemInMainHand();
+        ItemStack offHand = player.getInventory().getItemInOffHand();
+
+        return mainHand.getType() == Material.TOTEM_OF_UNDYING || offHand.getType() == Material.TOTEM_OF_UNDYING;
+    }
+
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onFatalDamage(EntityDamageEvent event) {
@@ -933,7 +940,7 @@ public class DamageListener implements Listener {
         double finalDamage = event.getFinalDamage();
 
         if ((currentHealth - finalDamage) <= 0) {
-
+            if (hasTotem(player)) return;
             // ✅ If player is already downed, prevent repeated triggering
             if (downedPlayers.containsKey(player.getUniqueId())) {
                 event.setCancelled(true);
