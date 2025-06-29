@@ -951,6 +951,7 @@ public class DamageListener implements Listener {
             player.setHealth(0.1);  // minimal value, not zero
 //            player.sendMessage("on fatal. the damage was "+ event.getDamage());
             event.setDamage(0);     // prevent actual death
+            Bukkit.broadcastMessage(ChatColor.RED + player.getName() + " needs help");
             setDownedState(player); // your custom logic
 
             // ⏳ Schedule forced death after 60 seconds
@@ -984,10 +985,10 @@ public class DamageListener implements Listener {
             event.setDamage(event.getDamage()*3);
         }
 
-//        if (event.getEntity() instanceof  Villager) {
-//            event.setCancelled(true);
-//            return;
-//        }
+        if (event.getEntity() instanceof  Villager) {
+            event.setCancelled(true);
+            return;
+        }
 
         Location loc = event.getEntity().getLocation();
 
@@ -1490,6 +1491,7 @@ public class DamageListener implements Listener {
         player.setFoodLevel(6);
         player.setHealth(6);
         removeDownedState(player);
+        Bukkit.broadcastMessage(ChatColor.GREEN + player.getName() + " was revived");
  // 3 hearts
         player.sendMessage("§aYou were revived!");
     }
@@ -1711,7 +1713,6 @@ public class DamageListener implements Listener {
                 } else if (distance <= 8) {
                     finalDamage *= 0.8;
                 } else if (distance <= 9) {
-                    player.sendMessage("Damage reduced, target too close.");
                     finalDamage *= 0.9;
                 } else if (distance <= 10) {
                     finalDamage *= 1;
