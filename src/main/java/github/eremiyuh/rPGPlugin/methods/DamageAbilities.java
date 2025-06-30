@@ -50,7 +50,11 @@ public class DamageAbilities {
                 arrow.setDamage(arrowDamage);
                 // Tag arrow with metadata for recognition in handleLongRangeDamage
                 arrow.setMetadata("FireArrowBarrage", new FixedMetadataValue(plugin, true));
-                arrow.setLifetimeTicks(160);
+                Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                    if (!arrow.isDead() && arrow.isValid()) {
+                        arrow.remove();
+                    }
+                }, 160L);
                 arrow.setPickupStatus(AbstractArrow.PickupStatus.DISALLOWED);
             }
         }
@@ -77,7 +81,11 @@ public class DamageAbilities {
 
                 // Tag arrow with metadata for recognition in handleLongRangeDamage
                 arrow.setMetadata("FreezeArrowBarrage", new FixedMetadataValue(plugin, true));
-                arrow.setLifetimeTicks(160);
+                Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                    if (!arrow.isDead() && arrow.isValid()) {
+                        arrow.remove();
+                    }
+                }, 160L);
                 arrow.setPickupStatus(AbstractArrow.PickupStatus.DISALLOWED);
             }
         }
@@ -104,7 +112,11 @@ public class DamageAbilities {
                 arrow.setShooter(Bukkit.getPlayer(profile.getPlayerName()));
                 // Tag arrow with metadata for recognition in handleLongRangeDamage
                 arrow.setMetadata("WeaknessArrowBarrage", new FixedMetadataValue(plugin, true));
-                arrow.setLifetimeTicks(160);
+                Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                    if (!arrow.isDead() && arrow.isValid()) {
+                        arrow.remove();
+                    }
+                }, 160L);
                 arrow.setPickupStatus(AbstractArrow.PickupStatus.DISALLOWED);
             }
         }

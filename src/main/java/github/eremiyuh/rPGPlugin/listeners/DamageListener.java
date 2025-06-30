@@ -1763,6 +1763,15 @@ public class DamageListener implements Listener {
         event.setDamage(finalDamage);
     }
 
+    @EventHandler
+    public void onArrowLaunch(ProjectileLaunchEvent event) {
+        if (Objects.requireNonNull(event.getEntity().getLocation().getWorld()).getName().equals("world_rpg") || Objects.requireNonNull(event.getEntity().getLocation().getWorld()).getName().contains("world_labyrinth")) {
+            if (event.getEntity() instanceof Arrow arrow) {
+                arrow.setPickupStatus(AbstractArrow.PickupStatus.DISALLOWED);
+            }
+        }
+    }
+
     // Method to apply stats to damage
     private double applyStatsToDamage(double baseDamage, UserProfile damagerProfile, Player player, EntityDamageByEntityEvent event) {
         double str = 0, dex = 0, intel = 0, luk = 0, fnl=0;
@@ -1864,7 +1873,7 @@ public class DamageListener implements Listener {
             statDmg+=str*1;
             if (damagerProfile.getChosenClass().equalsIgnoreCase("swordsman")) {
                 if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 1") && (player.getInventory().getItemInMainHand().getType().toString().endsWith("_SWORD") || player.getInventory().getItemInMainHand().getType().toString().endsWith("_AXE"))) {
-                    elementalDamage += (intel * 2.4);
+                    elementalDamage += (intel * 3);
                 }
             }
         }
@@ -1877,11 +1886,11 @@ public class DamageListener implements Listener {
             if (damagerProfile.getChosenClass().equalsIgnoreCase("archer")) {
 
                 if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 2")) {
-                    elementalDamage += (intel);
+                    elementalDamage += (intel*1.5);
                 }
 
                 if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 1")) {
-                    elementalDamage += (intel*1.5);
+                    elementalDamage += (intel*2);
                 }
             }
         }

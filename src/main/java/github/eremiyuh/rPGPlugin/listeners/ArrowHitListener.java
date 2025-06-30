@@ -12,9 +12,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.Particle;
+
+import java.util.Objects;
 
 public class ArrowHitListener implements Listener {
 
@@ -41,7 +44,7 @@ public class ArrowHitListener implements Listener {
         }
 
         if (event.getEntity() instanceof Arrow arrow && arrow.getShooter() instanceof Player player) {
-            if (event.getEntity().getName().equalsIgnoreCase(player.getName())) return;
+            if (event.getHitEntity() instanceof LivingEntity hitTarget && hitTarget.getName().equalsIgnoreCase(player.getName())) return;
             UserProfile userProfile = profileManager.getProfile(player.getName());
             int archerInt = userProfile.getArcherClassInfo().getIntel();
             double modifier = .02;
