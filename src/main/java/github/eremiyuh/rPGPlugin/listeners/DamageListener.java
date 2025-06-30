@@ -770,7 +770,7 @@ public class DamageListener implements Listener {
                    ItemStack weapon =  mob.getEquipment().getItemInMainHand();
 
 
-                    double mobDamage = Objects.requireNonNull(mob.getAttribute(Attribute.ATTACK_DAMAGE)).getValue();
+                    double mobDamage = 1+Objects.requireNonNull(mob.getAttribute(Attribute.ATTACK_DAMAGE)).getValue();
 
 
 
@@ -845,7 +845,7 @@ public class DamageListener implements Listener {
             if (event.getDamager() instanceof Projectile projectile) {
                 // Check for custom damage metadata
                 if (projectile.getShooter() instanceof Monster mob) {
-                    double customDamage = Objects.requireNonNull(mob.getAttribute(Attribute.ATTACK_DAMAGE)).getBaseValue();
+                    double customDamage = 1+Objects.requireNonNull(mob.getAttribute(Attribute.ATTACK_DAMAGE)).getBaseValue();
                     customDamage += event.getDamage();
                     ItemStack weapon =  mob.getEquipment().getItemInMainHand();
                     int sharplevel = weapon.getEnchantmentLevel(Enchantment.POWER);
