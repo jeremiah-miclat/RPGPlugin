@@ -121,6 +121,22 @@ public class ArmorChangePlugin  implements Listener {
                             player.sendMessage("Switched to Skill 3");
                         }
 
+                        if (displayName.contains("Fire") || displayName.contains("fire") || displayName.contains("FIRE")) {
+                            profile.setSelectedElement("fire");
+                            player.sendMessage("Switched to fire element");
+                        }
+
+                        if (displayName.contains("Ice") || displayName.contains("ice") || displayName.contains("ICE")) {
+                            profile.setSelectedElement("ice");
+                            player.sendMessage("Switched to ice element");
+
+                        }
+
+                        if (displayName.contains("Water") || displayName.contains("water") || displayName.contains("WATER")) {
+                            profile.setSelectedElement("water");
+                            player.sendMessage("Switched to water element");
+                        }
+
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

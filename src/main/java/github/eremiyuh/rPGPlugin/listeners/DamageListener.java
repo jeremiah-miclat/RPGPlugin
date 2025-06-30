@@ -1655,9 +1655,6 @@ public class DamageListener implements Listener {
             }
         }
 
-        if (event.getEntity() instanceof Player player) {
-            finalDamage /=1.5;
-        }
 
         if (event.getEntity() instanceof Player victim) {
             UserProfile victimProfile = profileManager.getProfile(victim.getName());
