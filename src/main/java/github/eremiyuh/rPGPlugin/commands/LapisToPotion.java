@@ -30,7 +30,7 @@ public class LapisToPotion implements CommandExecutor {
         UserProfile userProfile = profileManager.getProfile(player.getName());
 
         if (args.length != 1) {
-            player.sendMessage(ChatColor.RED + "Usage: /craftpotion <amount of Lapis>. 20 potions per lapis ");
+            player.sendMessage(ChatColor.RED + "Usage: /craftpotion <amount of Lapis>. 1 potions per lapis ");
             return true;
         }
 
@@ -53,7 +53,7 @@ public class LapisToPotion implements CommandExecutor {
 
         // Deduct lapis and add to potion points
         userProfile.setLapiz(userProfile.getLapiz() - amount);
-        userProfile.setPotion(userProfile.getPotion() + amount*10);
+        userProfile.setPotion(userProfile.getPotion() + amount);
 
         player.sendMessage(ChatColor.GREEN + "Successfully converted " + amount + " lapis into potion points.");
         return true;

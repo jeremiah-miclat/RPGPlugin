@@ -1097,7 +1097,7 @@ public class DamageListener implements Listener {
 
         if (event.getCause() == EntityDamageEvent.DamageCause.THORNS && damagerProfile.getChosenClass().equalsIgnoreCase("swordsman") && damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
 
-            event.setDamage(finalDamage*.1+ event.getDamage());
+            event.setDamage(finalDamage*.3+ event.getDamage());
             return;
         }
 
@@ -1118,12 +1118,13 @@ public class DamageListener implements Listener {
             finalDamage = finalDamage * (1+(0.1*sharpnessLevel));
         }
 
-        if (!weapon.getType().toString().endsWith("_SWORD")
-                && !weapon.getType().toString().endsWith("_AXE")
-                && weapon.getType() != Material.MACE
-                && weapon.getType() != Material.TRIDENT
+        if (
+                !(weapon.getType().toString().endsWith("_SWORD") ||
+                        weapon.getType().toString().endsWith("_AXE") ||
+                        weapon.getType() == Material.MACE ||
+                        weapon.getType() == Material.TRIDENT)
         ) {
-            finalDamage *= .2;
+            finalDamage *= 0.5;
         }
 
 
@@ -1866,7 +1867,7 @@ public class DamageListener implements Listener {
             statDmg+=str*1;
             if (damagerProfile.getChosenClass().equalsIgnoreCase("swordsman")) {
                 if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 1") && (player.getInventory().getItemInMainHand().getType().toString().endsWith("_SWORD") || player.getInventory().getItemInMainHand().getType().toString().endsWith("_AXE"))) {
-                    elementalDamage += (intel * 1.2);
+                    elementalDamage += (intel * 2.4);
                 }
             }
         }
@@ -1879,21 +1880,21 @@ public class DamageListener implements Listener {
             if (damagerProfile.getChosenClass().equalsIgnoreCase("archer")) {
 
                 if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 2")) {
-                    elementalDamage += (intel*1);
+                    elementalDamage += (intel);
                 }
 
                 if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 1")) {
-                    elementalDamage += (intel*1.2);
+                    elementalDamage += (intel*1.5);
                 }
             }
         }
 
         // rocket
         if (event.getDamager().getType() == EntityType.FIREWORK_ROCKET) {
-            elementalDamage += (intel*.5);
+            elementalDamage += (intel*.7);
             //archers
             if (damagerProfile.getChosenClass().equalsIgnoreCase("rocket")) {
-                elementalDamage += (intel*.5);
+                elementalDamage += (intel*.7);
             }
         }
 
@@ -1902,9 +1903,9 @@ public class DamageListener implements Listener {
             elementalDamage += intel * 1;
             //alchemists
             if (damagerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
-                elementalDamage +=50;
+                elementalDamage +=100;
                 if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 1")) {
-                    elementalDamage += (intel*.2);
+                    elementalDamage += (intel*1.2);
                 }
 
             }
@@ -1994,7 +1995,7 @@ public class DamageListener implements Listener {
         }
 
 
-        String selectedElement = damagerProfile.getSelectedElement(); // Get the selected element (e.g., fire)
+//        String selectedElement = damagerProfile.getSelectedElement(); // Get the selected element (e.g., fire)
 
         // If the selected element is "fire", and we want to check if the target is affected by Slowness
 //        if (selectedElement.equalsIgnoreCase("fire") && event.getEntity() instanceof LivingEntity target && target.hasPotionEffect(PotionEffectType.SLOWNESS)) {
