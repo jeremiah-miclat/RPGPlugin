@@ -1751,7 +1751,7 @@ public class DamageListener implements Listener {
                     return;
                 }
 
-                double lifestealAmount = finalDamage * 0.1; // 10% lifesteal
+                double lifestealAmount = finalDamage * 0.05; // 5% lifesteal
                 double newHealth = Math.min(currentHealth + lifestealAmount, maxHealth);
                 attacker.setHealth(newHealth);
             }

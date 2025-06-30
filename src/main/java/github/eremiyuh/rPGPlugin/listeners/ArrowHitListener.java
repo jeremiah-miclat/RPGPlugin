@@ -41,7 +41,7 @@ public class ArrowHitListener implements Listener {
         }
 
         if (event.getEntity() instanceof Arrow arrow && arrow.getShooter() instanceof Player player) {
-
+            if (event.getEntity().getName().equalsIgnoreCase(player.getName())) return;
             UserProfile userProfile = profileManager.getProfile(player.getName());
             int archerInt = userProfile.getArcherClassInfo().getIntel();
             double modifier = .02;
