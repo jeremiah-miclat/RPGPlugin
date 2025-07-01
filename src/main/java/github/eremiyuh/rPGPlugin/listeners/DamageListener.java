@@ -1873,7 +1873,7 @@ public class DamageListener implements Listener {
             statDmg+=str*1;
             if (damagerProfile.getChosenClass().equalsIgnoreCase("swordsman")) {
                 if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 1") && (player.getInventory().getItemInMainHand().getType().toString().endsWith("_SWORD") || player.getInventory().getItemInMainHand().getType().toString().endsWith("_AXE"))) {
-                    elementalDamage += (intel * 3);
+                    elementalDamage += (intel * 4);
                 }
             }
         }
@@ -1886,11 +1886,11 @@ public class DamageListener implements Listener {
             if (damagerProfile.getChosenClass().equalsIgnoreCase("archer")) {
 
                 if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 2")) {
-                    elementalDamage += (intel*1.5);
+                    elementalDamage += (intel*2);
                 }
 
                 if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 1")) {
-                    elementalDamage += (intel*2);
+                    elementalDamage += (intel*3);
                 }
             }
         }
@@ -1910,6 +1910,9 @@ public class DamageListener implements Listener {
             //alchemists
             if (damagerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
                 elementalDamage +=100;
+                if (event.getEntity() instanceof Player) {
+                    elementalDamage*=.1;
+                }
                 if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 1")) {
                     elementalDamage += (intel*1.2);
                 }
