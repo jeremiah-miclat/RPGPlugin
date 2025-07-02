@@ -1911,7 +1911,7 @@ public class DamageListener implements Listener {
             if (damagerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
                 elementalDamage +=100;
                 if (event.getEntity() instanceof Player) {
-                    elementalDamage*=.1;
+                    elementalDamage*=.2;
                 }
                 if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 1")) {
                     elementalDamage += (intel*1.2);
