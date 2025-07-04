@@ -119,6 +119,11 @@ public class MonsterInitializer implements Listener {
             entity.setRemoveWhenFarAway(false);
         }
 
+        if (entity instanceof Wither wither) {
+            wither.setPersistent(true);
+            entity.setRemoveWhenFarAway(false);
+        }
+
         if (entity instanceof Evoker) {
             entity.setPersistent(true);
             entity.setRemoveWhenFarAway(false);

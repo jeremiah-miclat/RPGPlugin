@@ -168,6 +168,11 @@ public class DeadMobListener implements Listener {
                     health *=2;
                 }
 
+            if (event.getEntity() instanceof Wither)  {
+                chance *=1.2;
+                health *=2;
+            }
+
             if (event.getEntity() instanceof Ravager)  {
                 chance *=1.2;
                 health *=1.5;
