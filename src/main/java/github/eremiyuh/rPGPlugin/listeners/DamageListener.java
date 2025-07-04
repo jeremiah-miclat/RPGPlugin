@@ -381,7 +381,7 @@ public class DamageListener implements Listener {
                 if (attackerProfile != null) {
                     try {
                         handleMeleeDamage(attacker,victim,event,damagerLocation,damagedLocation,attackerProfile);
-                        if ((damaged instanceof Warden || damaged instanceof Evoker || damaged instanceof Ravager) && Math.random() < 0.1) {
+                        if ((damaged instanceof Warden || damaged instanceof Evoker || damaged instanceof Ravager || damaged instanceof Wither) && Math.random() < 0.1) {
                             ((Monster) damaged).attack(attacker);
                             Vector knockbackDirection = attacker.getLocation().toVector().subtract(damaged.getLocation().toVector()).normalize();
                             knockbackDirection.multiply(1.5);
@@ -390,7 +390,8 @@ public class DamageListener implements Listener {
 
                         }
 
-                        if ((damaged instanceof Warden || damaged instanceof Evoker || damaged instanceof Ravager) && Math.random() < 0.1) {
+                        if ((damaged instanceof Warden || damaged instanceof Evoker || damaged instanceof Ravager || damaged instanceof Wither) && Math.random() < 0.05) {
+                            ((Monster) damaged).attack(attacker);
                             damaged.teleport(attacker.getLocation().clone());
                         }
                     } catch (Exception e) {
@@ -520,7 +521,7 @@ public class DamageListener implements Listener {
                     if (attackerProfile != null) {
                       try {
                           handleLongRangeDamage(attacker,victim,event,damagerLocation,damagedLocation,attackerProfile);
-                          if ((damaged instanceof Warden || damaged instanceof Evoker || damaged instanceof Ravager) && Math.random() < 0.1) {
+                          if ((damaged instanceof Warden || damaged instanceof Evoker || damaged instanceof Ravager || damaged instanceof Wither) && Math.random() < 0.1) {
                               ((Monster) damaged).attack(attacker);
                               Vector knockbackDirection = attacker.getLocation().toVector().subtract(damaged.getLocation().toVector()).normalize();
                               knockbackDirection.multiply(1.5);
@@ -529,7 +530,8 @@ public class DamageListener implements Listener {
 
                           }
 
-                          if ((damaged instanceof Warden || damaged instanceof Evoker || damaged instanceof Ravager) && Math.random() < 0.1) {
+                          if ((damaged instanceof Warden || damaged instanceof Evoker || damaged instanceof Ravager || damaged instanceof Wither) && Math.random() < 0.05) {
+                              ((Monster) damaged).attack(attacker);
                               damaged.teleport(attacker.getLocation().clone().add(0, 2, 0));
                           }
                       } catch (Exception e) {
