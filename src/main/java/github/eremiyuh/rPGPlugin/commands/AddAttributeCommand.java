@@ -24,21 +24,26 @@ public class AddAttributeCommand implements CommandExecutor {
             return true;
         }
 
-        UserProfile userProfile = profileManager.getProfile(player.getName());
-
-        if (args.length != 2) {
-            player.sendMessage("Usage: /add <attributeName> <amount>");
+        if (args.length < 1 || args.length > 2) {
+            player.sendMessage("Usage: /add <attributeName> [amount]");
             return true;
         }
 
+        UserProfile userProfile = profileManager.getProfile(player.getName());
+
         String attribute = args[0].toLowerCase();
+        int availablePoints = userProfile.getCurrentAttributePoints();
         int points;
 
-        try {
-            points = Integer.parseInt(args[1]);
-        } catch (NumberFormatException e) {
-            player.sendMessage("The amount must be a number.");
-            return true;
+        if (args.length == 2) {
+            try {
+                points = Integer.parseInt(args[1]);
+            } catch (NumberFormatException e) {
+                player.sendMessage("The amount must be a number.");
+                return true;
+            }
+        } else {
+            points = availablePoints; // Allocate all points if amount not given
         }
 
         if (points <= 0) {
@@ -46,23 +51,23 @@ public class AddAttributeCommand implements CommandExecutor {
             return true;
         }
 
-        if (userProfile.getCurrentAttributePoints() < points) {
+        if (availablePoints < points) {
             player.sendMessage("You don't have enough attribute points to allocate.");
             return true;
         }
 
-        UserProfile profile = profileManager.getProfile(player.getName());
-
-        if (Objects.equals(profile.getChosenClass(), "default")) {
+        String currentClass = userProfile.getChosenClass();
+        if (Objects.equals(currentClass, "default")) {
             player.sendMessage("You cannot allocate points while in the default class.");
             return true;
         }
 
-        double allocatedPoints = 0;
-
-        if (profile.getChosenClass().equalsIgnoreCase("archer")) allocatedPoints = profile.getTotalArcherAllocatedPoints();
-        if (profile.getChosenClass().equalsIgnoreCase("alchemist")) allocatedPoints = profile.getTotalAlchemistAllocatedPoints();
-        if (profile.getChosenClass().equalsIgnoreCase("swordsman")) allocatedPoints = profile.getTotalSwordsmanAllocatedPoints();
+        double allocatedPoints = switch (currentClass.toLowerCase()) {
+            case "archer" -> userProfile.getTotalArcherAllocatedPoints();
+            case "alchemist" -> userProfile.getTotalAlchemistAllocatedPoints();
+            case "swordsman" -> userProfile.getTotalSwordsmanAllocatedPoints();
+            default -> 0;
+        };
 
         if (points + allocatedPoints > 10000) {
             player.sendMessage("Max attribute allocation per class reached.");
@@ -70,25 +75,14 @@ public class AddAttributeCommand implements CommandExecutor {
         }
 
         try {
-            // Check current class and update attributes
-            String currentClass = userProfile.getChosenClass();
             switch (currentClass.toLowerCase()) {
-                case "archer":
-                    userProfile.addPointsToClass(userProfile.getArcherClassInfo(), attribute, points);
-                    break;
-                case "swordsman":
-                    userProfile.addPointsToClass(userProfile.getSwordsmanClassInfo(), attribute, points);
-                    break;
-                case "alchemist":
-                    userProfile.addPointsToClass(userProfile.getAlchemistClassInfo(), attribute, points);
-                    break;
-                default:
-                    userProfile.addPointsToClass(userProfile.getDefaultClassInfo(), attribute, points);
-                    break;
+                case "archer" -> userProfile.addPointsToClass(userProfile.getArcherClassInfo(), attribute, points);
+                case "swordsman" -> userProfile.addPointsToClass(userProfile.getSwordsmanClassInfo(), attribute, points);
+                case "alchemist" -> userProfile.addPointsToClass(userProfile.getAlchemistClassInfo(), attribute, points);
+                default -> userProfile.addPointsToClass(userProfile.getDefaultClassInfo(), attribute, points);
             }
 
-            // Subtract the allocated points from the user's available pool
-            userProfile.setCurrentAttributePoints(userProfile.getCurrentAttributePoints() - points);
+            userProfile.setCurrentAttributePoints(availablePoints - points);
 
             player.sendMessage("Successfully added " + points + " points to " + attribute + " for the " + currentClass + " class.");
         } catch (IllegalArgumentException e) {
@@ -97,4 +91,5 @@ public class AddAttributeCommand implements CommandExecutor {
 
         return true;
     }
+
 }
