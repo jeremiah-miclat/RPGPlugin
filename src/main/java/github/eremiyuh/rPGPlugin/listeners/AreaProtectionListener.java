@@ -34,8 +34,8 @@ public class AreaProtectionListener implements Listener {
     private final World world;
 
 
-    private final int xx1 = 292, zz1 = -293;
-    private final int xx2 = -338, zz2 = 350;
+    private final int xx1 = -1799, zz1 = -261;
+    private final int xx2 = -1772, zz2 = -276;
 
     private final int x1 = -150, z1 = 150;
     private final int x2 = 150, z2 = -150;
@@ -84,18 +84,18 @@ public class AreaProtectionListener implements Listener {
     }
 
 
-//    @EventHandler
-//    public void onEntityLeash(PlayerLeashEntityEvent event) {
-//            Entity entity = event.getEntity();
-//        if (!entity.getWorld().getName().equals(world.getName()) && !entity.getWorld().getName().equals("world_rpg")) {
-//            return;
-//        }
-//
-//            if (isInProtectedArea(entity.getLocation().getBlockX(), entity.getLocation().getBlockZ())&& !event.getPlayer().isOp()) {
-//                event.setCancelled(true);
-//            }
-//
-//    }
+    @EventHandler
+    public void onEntityLeash(PlayerLeashEntityEvent event) {
+            Entity entity = event.getEntity();
+        if (!entity.getWorld().getName().equals(world.getName())) {
+            return;
+        }
+
+            if (isInProtectedArea(entity.getLocation().getBlockX(), entity.getLocation().getBlockZ())&& !event.getPlayer().isOp()) {
+                event.setCancelled(true);
+            }
+
+    }
 //
 //    @EventHandler
 //    public void entitySpawn(EntityPlaceEvent event) {
@@ -124,50 +124,50 @@ public class AreaProtectionListener implements Listener {
 //        }
 //    }
 //
-//    @EventHandler
-//    public void onBlockBreak(BlockBreakEvent event) {
-//        Player player = event.getPlayer();
-//        Block block = event.getBlock();
-//        if (!block.getWorld().getName().equals(world.getName()) && !block.getWorld().getName().equals("world_rpg") && !block.getWorld().getName().equals("world_nether")) {
-//            return;
-//        }
-//
-//        if (isCrop(block) && isInProtectedArea(block.getLocation().getBlockX(), block.getLocation().getBlockZ())&& !player.isOp()) {
-//            event.setCancelled(true);
-//        }
-//
-//        if (isInProtectedArea(block.getLocation().getBlockX(), block.getLocation().getBlockZ())&& !player.isOp()) {
-//                event.setCancelled(true);
-//        }
-//    }
-//
-//    private boolean isCrop(Block block) {
-//        Material type = block.getType();
-//        return type == Material.WHEAT || type == Material.CARROTS || type == Material.POTATOES
-//                || type == Material.BEETROOTS;
-//    }
-//
-//    @EventHandler
-//    public void onBlockPlace(BlockPlaceEvent event) {
-//        Player player = event.getPlayer();
-//        Block block = event.getBlock();
-//
-//
-//        if (!block.getWorld().getName().equals(world.getName()) && !block.getWorld().getName().equals("world_rpg") && !block.getWorld().getName().equals("world_nether")) {
-//            return;
-//        }
-//
-//        if (ANNOYING_BLOCKS.contains(event.getBlock().getType())) {
-//            return;
-//        }
-//
-//        if (isInProtectedArea(block.getLocation().getBlockX(), block.getLocation().getBlockZ()) && !player.isOp()) {
-//
-//
-//                event.setCancelled(true);
-//
-//        }
-//    }
+    @EventHandler
+    public void onBlockBreak(BlockBreakEvent event) {
+        Player player = event.getPlayer();
+        Block block = event.getBlock();
+        if (!block.getWorld().getName().equals(world.getName())) {
+            return;
+        }
+
+        if (isCrop(block) && isInProtectedArea(block.getLocation().getBlockX(), block.getLocation().getBlockZ())&& !player.isOp()) {
+            event.setCancelled(true);
+        }
+
+        if (isInProtectedArea(block.getLocation().getBlockX(), block.getLocation().getBlockZ())&& !player.isOp()) {
+                event.setCancelled(true);
+        }
+    }
+
+    private boolean isCrop(Block block) {
+        Material type = block.getType();
+        return type == Material.WHEAT || type == Material.CARROTS || type == Material.POTATOES
+                || type == Material.BEETROOTS;
+    }
+
+    @EventHandler
+    public void onBlockPlace(BlockPlaceEvent event) {
+        Player player = event.getPlayer();
+        Block block = event.getBlock();
+
+
+        if (!block.getWorld().getName().equals(world.getName())) {
+            return;
+        }
+
+        if (ANNOYING_BLOCKS.contains(event.getBlock().getType())) {
+            return;
+        }
+
+        if (isInProtectedArea(block.getLocation().getBlockX(), block.getLocation().getBlockZ()) && !player.isOp()) {
+
+
+                event.setCancelled(true);
+
+        }
+    }
 //
 //    @EventHandler
 //    public void onRide(EntityMountEvent event) {
@@ -187,19 +187,19 @@ public class AreaProtectionListener implements Listener {
 //        }
 //    }
 //
-//    @EventHandler
-//    public void onHangingBreakByEntity(HangingBreakByEntityEvent event) {
-//        if (!event.getEntity().getWorld().getName().equals(world.getName()) && !event.getEntity().getWorld().getName().equals("world_rpg")  && !event.getEntity().getWorld().getName().equals("world_nether")) {
-//            return;
-//        }
-//
-//        if (event.getRemover() instanceof  Player player && !player.isOp() && isInProtectedArea(event.getEntity().getLocation().getBlockX(), event.getEntity().getLocation().getBlockZ())) {
-//
-//            event.setCancelled(true);
-//
-//        }
-//
-//    }
+    @EventHandler
+    public void onHangingBreakByEntity(HangingBreakByEntityEvent event) {
+        if (!event.getEntity().getWorld().getName().equals(world.getName())) {
+            return;
+        }
+
+        if (event.getRemover() instanceof  Player player && !player.isOp() && isInProtectedArea(event.getEntity().getLocation().getBlockX(), event.getEntity().getLocation().getBlockZ())) {
+
+            event.setCancelled(true);
+
+        }
+
+    }
 //
 //    @EventHandler
 //    public void onUnlead(PlayerUnleashEntityEvent event) {
@@ -227,68 +227,68 @@ public class AreaProtectionListener implements Listener {
 //    }
 //
 //
-//    @EventHandler
-//    public void onRename(PlayerInteractAtEntityEvent event) {
-//        if (!event.getPlayer().getWorld().getName().equals(world.getName())) {
-//            return;
-//        }
-//        Player player = event.getPlayer();
-//        Entity entity = event.getRightClicked();
-//
-//        ItemStack itemInHand = player.getInventory().getItemInMainHand();
-//        if (itemInHand == null || itemInHand.getType() != Material.NAME_TAG) {
-//            return;
-//        }
-//
-//        if (!(entity instanceof Animals) && isInProtectedArea(entity.getLocation().getBlockX(), entity.getLocation().getBlockZ())) {
-//            event.setCancelled(true);
-//        }
-//
-//    }
-//
-//    @EventHandler
-//    public void onPlayerInteract(PlayerInteractEvent event) {
-//        if (!event.getPlayer().getWorld().getName().equals(world.getName()) && !event.getPlayer().getWorld().getName().equals("world_rpg")) {
-//            return;
-//        }
-//
-//        if (event.getClickedBlock()!= null && (isInProtectedArea(event.getClickedBlock().getLocation().getBlockX(), event.getClickedBlock().getLocation().getBlockZ()))) {
-//            Player player = event.getPlayer();
-//
-//            if (event.getAction() == Action.RIGHT_CLICK_BLOCK && event.getItem() != null) {
-//                Material item = event.getItem().getType();
-//                Block block = event.getClickedBlock();
-//
-//                // Allow all trapdoors, fence doors, and doors
-//                if (block != null && isTrapdoorOrFence(block.getType())) {
-//                    return; // Allow interaction, do not cancel
-//                }
-//
-//                // Prevent using flint and steel, water, lava, or empty buckets if player is not op
-//                if ((item == Material.FLINT_AND_STEEL ||
-//                        item == Material.WATER_BUCKET ||
-//                        item == Material.LAVA_BUCKET ||
-//                        item == Material.ITEM_FRAME ||
-//                        item == Material.GLOW_ITEM_FRAME ||
-//                        item == Material.BUCKET ||
-//                        item== Material.LEAD)  && !player.isOp()) {
-//                    event.setCancelled(true);
-//                }
-//
-//
-//
-//            }
-//
-//            if (event.getAction() == Action.LEFT_CLICK_BLOCK && event.getItem() != null) {
-//
-//                if ((event.getClickedBlock().getType() == Material.ITEM_FRAME || event.getClickedBlock().getType() == Material.GLOW_ITEM_FRAME) && !player.isOp()) {
-//                    event.setCancelled(true);
-//                }
-//
-//            }
-//        }
-//
-//    }
+    @EventHandler
+    public void onRename(PlayerInteractAtEntityEvent event) {
+        if (!event.getPlayer().getWorld().getName().equals(world.getName())) {
+            return;
+        }
+        Player player = event.getPlayer();
+        Entity entity = event.getRightClicked();
+
+        ItemStack itemInHand = player.getInventory().getItemInMainHand();
+        if (itemInHand == null || itemInHand.getType() != Material.NAME_TAG) {
+            return;
+        }
+
+        if (!(entity instanceof Animals) && isInProtectedArea(entity.getLocation().getBlockX(), entity.getLocation().getBlockZ())) {
+            event.setCancelled(true);
+        }
+
+    }
+
+    @EventHandler
+    public void onPlayerInteract(PlayerInteractEvent event) {
+        if (!event.getPlayer().getWorld().getName().equals(world.getName())) {
+            return;
+        }
+
+        if (event.getClickedBlock()!= null && (isInProtectedArea(event.getClickedBlock().getLocation().getBlockX(), event.getClickedBlock().getLocation().getBlockZ()))) {
+            Player player = event.getPlayer();
+
+            if (event.getAction() == Action.RIGHT_CLICK_BLOCK && event.getItem() != null) {
+                Material item = event.getItem().getType();
+                Block block = event.getClickedBlock();
+
+                // Allow all trapdoors, fence doors, and doors
+                if (block != null && isTrapdoorOrFence(block.getType())) {
+                    return; // Allow interaction, do not cancel
+                }
+
+                // Prevent using flint and steel, water, lava, or empty buckets if player is not op
+                if ((item == Material.FLINT_AND_STEEL ||
+                        item == Material.WATER_BUCKET ||
+                        item == Material.LAVA_BUCKET ||
+                        item == Material.ITEM_FRAME ||
+                        item == Material.GLOW_ITEM_FRAME ||
+                        item == Material.BUCKET ||
+                        item== Material.LEAD)  && !player.isOp()) {
+                    event.setCancelled(true);
+                }
+
+
+
+            }
+
+            if (event.getAction() == Action.LEFT_CLICK_BLOCK && event.getItem() != null) {
+
+                if ((event.getClickedBlock().getType() == Material.ITEM_FRAME || event.getClickedBlock().getType() == Material.GLOW_ITEM_FRAME) && !player.isOp()) {
+                    event.setCancelled(true);
+                }
+
+            }
+        }
+
+    }
 
     @EventHandler
     public void onSpawnEgg(PlayerInteractEvent event) {
@@ -337,15 +337,15 @@ public class AreaProtectionListener implements Listener {
         }
     }
 
-//    @EventHandler
-//    public void onLightning(LightningStrikeEvent event) {
-//        if (!event.getWorld().getName().equals(world.getName())) {
-//            return;
-//        }
-//        if (isInProtectedArea(event.getLightning().getLocation().getBlockX(),event.getLightning().getLocation().getBlockZ())) {
-//            event.setCancelled(true);
-//        }
-//    }
+    @EventHandler
+    public void onLightning(LightningStrikeEvent event) {
+        if (!event.getWorld().getName().equals(world.getName())) {
+            return;
+        }
+        if (isInProtectedArea(event.getLightning().getLocation().getBlockX(),event.getLightning().getLocation().getBlockZ())) {
+            event.setCancelled(true);
+        }
+    }
 //
 //
 //
@@ -388,95 +388,95 @@ public class AreaProtectionListener implements Listener {
 //    }
 //
 //
-//    @EventHandler
-//    public void onBucketEmpty(PlayerBucketEmptyEvent event) {
-//        if (!event.getPlayer().getWorld().getName().equals(world.getName()) && !event.getPlayer().getWorld().getName().equals("world_rpg") && !event.getPlayer().getWorld().getName().equals("world_nether")) {
-//            return;
-//        }
-//
-//        Player player = event.getPlayer();
-//        if (isInProtectedArea(event.getBlockClicked().getX(), event.getBlockClicked().getZ()) && !player.isOp()) {
-//            event.setCancelled(true);
-//        }
-//    }
-//
-//    @EventHandler
-//    public void onEntityDamage(EntityDamageEvent event) {
-//        if (!event.getEntity().getWorld().getName().equals(world.getName())
-////                && !event.getEntity().getWorld().getName().equals("world_rpg")
-//
-//        ) {
-//            return;
-//        }
-//
-//        Entity entity = event.getEntity();
-//
-//        // Only proceed if the entity is within the protected area
-//        if (isInProtectedArea(entity.getLocation().getBlockX(), entity.getLocation().getBlockZ())) {
-//
-//            // Protect non-living entities or Allays
-//            if (!(entity instanceof LivingEntity) || entity.getType() == EntityType.ALLAY || entity.getType() == EntityType.ARMOR_STAND
-//                    || entity.getType() == EntityType.ITEM_FRAME
-//                    || entity.getType() == EntityType.GLOW_ITEM_FRAME
-//                    || entity instanceof Animals
-//                    || entity instanceof Fish
-//                    || entity instanceof WanderingTrader
-//                    || entity instanceof Villager
-//            ) {
-//                if (event instanceof EntityDamageByEntityEvent) {
-//                    Entity damager = ((EntityDamageByEntityEvent) event).getDamager();
-//
-//                    if (damager instanceof Player && ((Player) damager).isOp()) {
-//                        return; // Allow OP player to damage protected entities
-//                    }
-//
-//                }
-//                // Cancel damage for protected entities if not by an OP player
-//                event.setCancelled(true);
-//            }
-//        }
-//    }
-//
-//    @EventHandler
-//    public void onBlockChange(EntityChangeBlockEvent event) {
-//        if (!event.getEntity().getWorld().getName().equals(world.getName()) && !event.getEntity().getWorld().getName().equals("world_rpg")) {
-//            return;
-//        }
-//
-//        if (event.getBlock().getType() == Material.FARMLAND && isInProtectedArea(event.getEntity().getLocation().getBlockX(), event.getEntity().getLocation().getBlockZ())) {
-//            event.setCancelled(true);
-//        }
-//
-//        if (isInProtectedArea(event.getEntity().getLocation().getBlockX(), event.getEntity().getLocation().getBlockZ())
-//                && event.getEntity() instanceof Enderman)
-//        {
-//            event.setCancelled(true);
-//        }
-//
-//
-//
-//    }
-//
-//    @EventHandler
-//    public void onEntityExplode(EntityExplodeEvent event) {
-//        if (!event.getEntity().getWorld().getName().equals(world.getName()) && !event.getEntity().getWorld().getName().equals("world_rpg") && !event.getEntity().getWorld().getName().equals("world_nether")) {
-//            return;
-//        }
-//        if (isInProtectedArea(event.getEntity().getLocation().getBlockX(), event.getEntity().getLocation().getBlockZ())) {
-//            event.blockList().clear();
-//        }
-//    }
-//
-//
-//    @EventHandler
-//    public void onEntityExplode(BlockExplodeEvent event) {
-//        if (!event.getBlock().getWorld().getName().equals(world.getName()) && !event.getBlock().getWorld().getName().equals("world_rpg") && !event.getBlock().getWorld().getName().equals("world_nether")) {
-//            return;
-//        }
-//        if (isInProtectedArea(event.getBlock().getLocation().getBlockX(), event.getBlock().getLocation().getBlockZ())) {
-//            event.blockList().clear();
-//        }
-//    }
+    @EventHandler
+    public void onBucketEmpty(PlayerBucketEmptyEvent event) {
+        if (!event.getPlayer().getWorld().getName().equals(world.getName())) {
+            return;
+        }
+
+        Player player = event.getPlayer();
+        if (isInProtectedArea(event.getBlockClicked().getX(), event.getBlockClicked().getZ()) && !player.isOp()) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onEntityDamage(EntityDamageEvent event) {
+        if (!event.getEntity().getWorld().getName().equals(world.getName())
+//                && !event.getEntity().getWorld().getName().equals("world_rpg")
+
+        ) {
+            return;
+        }
+
+        Entity entity = event.getEntity();
+
+        // Only proceed if the entity is within the protected area
+        if (isInProtectedArea(entity.getLocation().getBlockX(), entity.getLocation().getBlockZ())) {
+
+            // Protect non-living entities or Allays
+            if (!(entity instanceof LivingEntity) || entity.getType() == EntityType.ALLAY || entity.getType() == EntityType.ARMOR_STAND
+                    || entity.getType() == EntityType.ITEM_FRAME
+                    || entity.getType() == EntityType.GLOW_ITEM_FRAME
+                    || entity instanceof Animals
+                    || entity instanceof Fish
+                    || entity instanceof WanderingTrader
+                    || entity instanceof Villager
+            ) {
+                if (event instanceof EntityDamageByEntityEvent) {
+                    Entity damager = ((EntityDamageByEntityEvent) event).getDamager();
+
+                    if (damager instanceof Player && ((Player) damager).isOp()) {
+                        return; // Allow OP player to damage protected entities
+                    }
+
+                }
+                // Cancel damage for protected entities if not by an OP player
+                event.setCancelled(true);
+            }
+        }
+    }
+
+    @EventHandler
+    public void onBlockChange(EntityChangeBlockEvent event) {
+        if (!event.getEntity().getWorld().getName().equals(world.getName())) {
+            return;
+        }
+
+        if (event.getBlock().getType() == Material.FARMLAND && isInProtectedArea(event.getEntity().getLocation().getBlockX(), event.getEntity().getLocation().getBlockZ())) {
+            event.setCancelled(true);
+        }
+
+        if (isInProtectedArea(event.getEntity().getLocation().getBlockX(), event.getEntity().getLocation().getBlockZ())
+                && event.getEntity() instanceof Enderman)
+        {
+            event.setCancelled(true);
+        }
+
+
+
+    }
+
+    @EventHandler
+    public void onEntityExplode(EntityExplodeEvent event) {
+        if (!event.getEntity().getWorld().getName().equals(world.getName())) {
+            return;
+        }
+        if (isInProtectedArea(event.getEntity().getLocation().getBlockX(), event.getEntity().getLocation().getBlockZ())) {
+            event.blockList().clear();
+        }
+    }
+
+
+    @EventHandler
+    public void onEntityExplode(BlockExplodeEvent event) {
+        if (!event.getBlock().getWorld().getName().equals(world.getName())) {
+            return;
+        }
+        if (isInProtectedArea(event.getBlock().getLocation().getBlockX(), event.getBlock().getLocation().getBlockZ())) {
+            event.blockList().clear();
+        }
+    }
 //
 //    @EventHandler
 //    public void onTradeSelect(PlayerTradeEvent event) {
@@ -522,7 +522,7 @@ public class AreaProtectionListener implements Listener {
 //            World world = player.getWorld();
 //
 //            // Check if the player is in the correct world
-//            if (!world.getName().equals(this.world.getName()) && !world.getName().equals("world_rpg")) {
+//            if (!world.getName().equals(this.world.getName())) {
 //                return;
 //            }
 //
@@ -540,11 +540,11 @@ public class AreaProtectionListener implements Listener {
 //            Bukkit.getLogger().log(Level.SEVERE, "Error handling sign change event:", e);
 //        }
 //    }
-//
-//    // Helper method to check if the material is a trapdoor or fence
-//    private boolean isTrapdoorOrFence(Material material) {
-//        return material.name().endsWith("TRAPDOOR") || material.name().endsWith("FENCE") || material.name().endsWith("_DOOR");
-//    }
+
+    // Helper method to check if the material is a trapdoor or fence
+    private boolean isTrapdoorOrFence(Material material) {
+        return material.name().endsWith("TRAPDOOR") || material.name().endsWith("FENCE") || material.name().endsWith("_DOOR");
+    }
 
 
 }
