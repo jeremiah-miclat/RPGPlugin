@@ -35,7 +35,7 @@ public class AreaProtectionListener implements Listener {
     private final World world;
 
 
-    private final int xx1 = -1799, zz1 = -261;
+    private final int xx1 = -1799, zz1 = -258;
     private final int xx2 = -1772, zz2 = -276;
 
     private final int x1 = -150, z1 = 150;
