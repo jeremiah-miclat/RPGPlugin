@@ -55,6 +55,8 @@ public class CreateShopListener implements Listener {
         this.shopsManager = shopsManager;
     }
 
+    private final Map<String, Location> playerChestMap = new HashMap<>();
+
     @EventHandler
     public void onSignChange(SignChangeEvent event) {
         if (event.getPlayer().getWorld().getName().contains("resource")
@@ -576,6 +578,73 @@ public class CreateShopListener implements Listener {
             return signBlock.getRelative(org.bukkit.block.BlockFace.DOWN);
         }
         return null;
+    }
+
+    @EventHandler
+    public void onChestPlace(BlockPlaceEvent event) {
+        Block block = event.getBlockPlaced();
+
+        if (block.getType() != Material.CHEST) return;
+
+        Player player = event.getPlayer();
+        String playerName = player.getName();
+
+        // Remove metadata from previous chest, if it exists
+        if (playerChestMap.containsKey(playerName)) {
+            Location previousLocation = playerChestMap.get(playerName);
+            Block previousBlock = previousLocation.getBlock();
+
+            if (previousBlock.getType() == Material.CHEST) {
+                previousBlock.removeMetadata("owner", plugin);
+            }
+        }
+
+        // Set metadata on new chest
+        block.setMetadata("owner", new FixedMetadataValue(plugin, playerName));
+        playerChestMap.put(playerName, block.getLocation());
+
+//        player.sendMessage(ChatColor.YELLOW + "This chest is now protected while you set up your shop.");
+    }
+
+    @EventHandler
+    public void onChestBreak(BlockBreakEvent event) {
+        Block block = event.getBlock();
+
+        if (block.getType() != Material.CHEST) return;
+
+        Player player = event.getPlayer();
+
+        if (block.hasMetadata("owner")) {
+            String ownerName = block.getMetadata("owner").get(0).asString();
+
+            if (!player.getName().equals(ownerName)) {
+                event.setCancelled(true);
+                player.sendMessage(ChatColor.RED + "This is protected till next server restart");
+                return;
+            }
+
+            // If owner breaks their own chest, remove from tracking
+            playerChestMap.remove(ownerName);
+//            player.sendMessage(ChatColor.GRAY + "You broke your protected chest.");
+        }
+    }
+
+    @EventHandler
+    public void onChestOpen(PlayerInteractEvent event) {
+        if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
+
+        Block block = event.getClickedBlock();
+        if (block == null || block.getType() != Material.CHEST) return;
+
+        Player player = event.getPlayer();
+
+        if (block.hasMetadata("owner")) {
+            String ownerName = block.getMetadata("owner").get(0).asString();
+            if (!player.getName().equals(ownerName)) {
+                event.setCancelled(true);
+                player.sendMessage(ChatColor.RED + "This is protected till next server restart" );
+            }
+        }
     }
 
 }
