@@ -139,7 +139,7 @@ public class UserProfile {
 
         this.junkPoints = 0;
 
-        this.isPublic = false;
+        this.isPublic = true;
         this.activitypoints=0;
         this.builder = 0;
         this.destroyer = 0;

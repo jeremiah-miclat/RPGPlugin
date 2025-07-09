@@ -74,26 +74,22 @@ public class PlayerJoinListener implements Listener {
 
         World world = Bukkit.getWorld("world");
         assert world != null;
-        Location spawnLocation = world.getSpawnLocation();
 
-        if (profile == null) {
+        if (profile == null ) {
             // Handle new players
-            if (profile == null) {
-                event.setJoinMessage(ChatColor.GOLD + "⚜ Hail, " + ChatColor.AQUA + playerName + ChatColor.GOLD +
-                        "! Welcome to the realm for the very first time!");
-                player.sendMessage("§6[§Server§6] §7Welcome, adventurer! Your profile hath been forged.");
-                profileManager.createProfile(playerName); // Create a new profile
-            }
+            event.setJoinMessage(ChatColor.GOLD + "⚜ Hail, " + ChatColor.AQUA + playerName + ChatColor.GOLD +
+                    "! Welcome to the realm for the very first time!");
+            player.sendMessage("§6[§Server§6] §7Welcome, adventurer! Your profile hath been forged.");
+            profileManager.createProfile(playerName); // Create a new profile
 
-//            player.teleport(spawnLocation);
-//            player.sendTitle("§0§l§k⚜§r§6§lWelcome Adventurer!",
-//                    "§7Use /register <password> <password> to start your adventure",
-//                    10, 200, 20);
-//            player.spigot().sendMessage(ChatMessageType.ACTION_BAR,
-//                    new TextComponent("§c§lHeed the Call: Register to Enter!"));
+            player.sendTitle("§0§l§k⚜§r§6§lWelcome Adventurer!",
+                    "§7Use /register <password> <password> to start your adventure",
+                    10, 200, 20);
+            player.spigot().sendMessage(ChatMessageType.ACTION_BAR,
+                    new TextComponent("§c§lHeed the Call: Register to Enter!"));
 
-//            player.sendMessage("§6[§Server§6] §7Enter the command §e/register <password> <password>§7 to inscribe your credentials.");
-//            player.sendMessage("§6[§Server§6] §7Then enter the realm by using §e/login <password>§7.");
+            player.sendMessage("§6[§Server§6] §7Enter the command §e/register <password> <password>§7 to inscribe your credentials.");
+            player.sendMessage("§6[§Server§6] §7Then enter the realm by using §e/login <password>§7.");
 
 
         } else {
@@ -101,23 +97,26 @@ public class PlayerJoinListener implements Listener {
             String suggestion = suggestRandomThing();
             player.sendMessage("§6[§eServer§6] §7Welcome back adventurer! Your profile has been loaded.");
             profile.setLoggedIn(false);
-//            player.sendMessage("§6[§Server§6] §cLog in to continue your quest.");
-//            player.sendMessage("§6[§Server§6] §cEnter /login <your password>");
-//            player.sendTitle("§0§l§k⚜§r§6§lWelcome Back!",
-//                    "§7Use /login <password> to continue your journey.",
-//                    10, 100, 20);
-//            player.spigot().sendMessage(ChatMessageType.ACTION_BAR,
-//                    new TextComponent("§7Use /login <password> to proceed."));
+            player.sendMessage("§6[§SServer§6] §cLog in to continue your quest.");
+            player.sendMessage("§6[§SServer§6] §cEnter /login <your password>");
+            player.sendTitle("§0§l§k⚜§r§6§lWelcome Back!",
+                    "§7Use /login <password> to continue your journey.",
+                    10, 100, 20);
+            player.spigot().sendMessage(ChatMessageType.ACTION_BAR,
+                    new TextComponent("§7Use /login <password> to proceed."));
             event.setJoinMessage(ChatColor.DARK_GREEN + "⚔ Welcome back, " + ChatColor.AQUA + playerName +". " +
                     ChatColor.DARK_GREEN + suggestion);
         }
 
-        // Ensure the player is teleported to solid ground if necessary
-        Location playerLocation = player.getLocation();
-        Material blockType = playerLocation.clone().subtract(0, 1, 0).getBlock().getType();
-        if (blockType == Material.AIR || !isSolidBlock(blockType)) {
-//            Location groundLocation = getGroundLocation(playerLocation, player);
-//            player.teleport(groundLocation);
+        if (profile.getPassword() == null || Objects.equals(profile.getPassword(), "")) {
+            player.sendTitle("§0§l§k⚜§r§6§lWelcome Adventurer!",
+                    "§7Use /register <password> <password> to start your adventure",
+                    10, 200, 20);
+            player.spigot().sendMessage(ChatMessageType.ACTION_BAR,
+                    new TextComponent("§c§lHeed the Call: Register to Enter!"));
+
+            player.sendMessage("§6[§SServer§6] §7Enter the command §e/register <password> <password>§7 to inscribe your credentials.");
+            player.sendMessage("§6[§SServer§6] §7Then enter the realm by using §e/login <password>§7.");
         }
 
 
