@@ -134,6 +134,25 @@ public class AbyssStoreCommand implements CommandExecutor, Listener {
 
         abyssStore.setItem(6, evoSpawnEgg);
 
+        // Wither SPAWN EGG
+        ItemStack withSpawnEgg = new ItemStack(Material.WITHER_SPAWN_EGG);
+        ItemMeta withMeta = withSpawnEgg.getItemMeta();
+
+        if (withMeta != null) {
+            List<Component> lore = new ArrayList<>();
+            lore.add(Component.text("World Boss Spawn Egg").color(TextColor.color(255, 215, 0)));
+            lore.add(Component.text("Cost: 1,000 Emerald").color(TextColor.color(255, 215, 0)));
+            lore.add(Component.text("x1.5 abyss point reward").color(TextColor.color(255, 215, 0)));
+            lore.add(Component.text("Doesn't despawn").color(TextColor.color(255, 215, 0)));
+            withMeta.lore(lore);
+
+            withSpawnEgg.setItemMeta(withMeta);
+        }
+
+        abyssStore.setItem(7, withSpawnEgg);
+
+
+
         // Open the Abyss Store GUI for the player
         player.openInventory(abyssStore);
     }
@@ -216,6 +235,16 @@ public class AbyssStoreCommand implements CommandExecutor, Listener {
                 if (userProfile.getEmerald() >= 1000) {
                     userProfile.setEmerald(userProfile.getEmerald() - 1000); // Deduct Abyss Points
                     dropOrNotify(player, new ItemStack(Material.EVOKER_SPAWN_EGG), "Successfully purchased!");
+                } else {
+                    player.sendMessage(Component.text("You do not have enough emerald!").color(TextColor.color(255, 0, 0)));
+                }
+            }
+
+            //WITHER
+            if (event.getSlot() == 7 && event.getCurrentItem() != null && event.getCurrentItem().getType() == Material.WITHER_SPAWN_EGG) {
+                if (userProfile.getEmerald() >= 1000) {
+                    userProfile.setEmerald(userProfile.getEmerald() - 1000); // Deduct Abyss Points
+                    dropOrNotify(player, new ItemStack(Material.WITHER_SPAWN_EGG), "Successfully purchased!");
                 } else {
                     player.sendMessage(Component.text("You do not have enough emerald!").color(TextColor.color(255, 0, 0)));
                 }
