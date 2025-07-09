@@ -106,7 +106,11 @@ public class CreateShopListener implements Listener {
                     String itemName = firstItem.hasItemMeta() && firstItem.getItemMeta().hasDisplayName()
                             ? firstItem.getItemMeta().getDisplayName()
                             : firstItem.getType().toString();
-
+                    List<Location> targetShops = shopsManager.listPlayerShops(player.getName());
+                    if (targetShops.size()>=10) {
+                        player.sendMessage(ChatColor.RED + "Sorry, only 10 shops are allowed per player");
+                        return;
+                    }
                     shopsManager.saveShopForPlayer(
                             player.getName(), firstItem, numberOfItems, numberOfItemsBeingTraded, itemBeingTraded, chest.getLocation()
                     );
