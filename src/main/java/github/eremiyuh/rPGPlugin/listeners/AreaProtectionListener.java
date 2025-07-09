@@ -2,6 +2,7 @@ package github.eremiyuh.rPGPlugin.listeners;
 
 import github.eremiyuh.rPGPlugin.RPGPlugin;
 import io.papermc.paper.event.player.PlayerTradeEvent;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -137,6 +138,7 @@ public class AreaProtectionListener implements Listener {
         }
 
         if (isInProtectedArea(block.getLocation().getBlockX(), block.getLocation().getBlockZ())&& !player.isOp()) {
+            player.sendMessage(ChatColor.RED + "No permission");
                 event.setCancelled(true);
         }
     }
@@ -163,7 +165,7 @@ public class AreaProtectionListener implements Listener {
 
         if (isInProtectedArea(block.getLocation().getBlockX(), block.getLocation().getBlockZ()) && !player.isOp()) {
 
-
+            player.sendMessage(ChatColor.RED + "No permission");
                 event.setCancelled(true);
 
         }
@@ -515,31 +517,27 @@ public class AreaProtectionListener implements Listener {
 
 
 
-//    @EventHandler
-//    public void signChange(SignChangeEvent event) {
-//        try {
-//            Player player = event.getPlayer();
-//            World world = player.getWorld();
-//
-//            // Check if the player is in the correct world
-//            if (!world.getName().equals(this.world.getName())) {
-//                return;
-//            }
-//
-//            // Check if the player is OP or not in a protected area
-//            if (!player.isOp() && isInProtectedArea(player.getLocation().getBlockX(), player.getLocation().getBlockZ())) {
-//                // Check if the player is within the allowed coordinates
-//                if (!(player.getLocation().getBlockX() >= -15 && player.getLocation().getBlockX() <= 15 &&
-//                        player.getLocation().getBlockZ() >= -80 && player.getLocation().getBlockZ() <= -50)) {
-//                    event.setCancelled(true);
-//                    return;
-//                }
-//            }
-//        } catch (Exception e) {
-//            // Log the error for debugging
-//            Bukkit.getLogger().log(Level.SEVERE, "Error handling sign change event:", e);
-//        }
-//    }
+    @EventHandler
+    public void signChange(SignChangeEvent event) {
+        try {
+            Player player = event.getPlayer();
+            World world = player.getWorld();
+
+            // Check if the player is in the correct world
+            if (!world.getName().equals(this.world.getName())) {
+                return;
+            }
+
+            // Check if the player is OP or not in a protected area
+            if (!player.isOp() && isInProtectedArea(player.getLocation().getBlockX(), player.getLocation().getBlockZ())) {
+                player.sendMessage(ChatColor.RED + "No permission");
+                event.setCancelled(true);
+            }
+        } catch (Exception e) {
+            // Log the error for debugging
+            Bukkit.getLogger().log(Level.SEVERE, "Error handling sign change event:", e);
+        }
+    }
 
     // Helper method to check if the material is a trapdoor or fence
     private boolean isTrapdoorOrFence(Material material) {
