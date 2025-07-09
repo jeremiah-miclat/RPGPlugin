@@ -150,57 +150,77 @@ public class CreateShopListener implements Listener {
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
         Block block = event.getBlock();
+        Player player = event.getPlayer();
 
-        // Check if the broken block is a Barrel or Chest
+        // Handle sign breaking (check if attached to a chest owned by someone else)
+        if (block.getState() instanceof Sign) {
+            Block attachedBlock = getAttachedBlock(block);
+
+            if (attachedBlock != null && attachedBlock.getType() == Material.CHEST) {
+                BlockState state = attachedBlock.getState();
+                if (state instanceof Chest) {
+                    Chest chest = (Chest) state;
+                    if (chest.hasMetadata("seller")) {
+                        String ownerName = chest.getMetadata("seller").get(0).asString();
+
+                        if (!player.getName().equals(ownerName)) {
+                            event.setCancelled(true);
+                            player.sendMessage(ChatColor.RED + "You cannot break this sign. It belongs to " + ownerName);
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Handle chest breaking (same as your original)
         if (block.getType() == Material.CHEST) {
             Location blockLocation = block.getLocation();
             World world = block.getWorld();
 
-            // Check for ArmorStands above the chest/barrel within a certain vertical range
+            // Remove armor stands above the chest
             for (double yOffset = 0.25; yOffset <= 2.75; yOffset += 0.25) {
                 Location checkLocation = blockLocation.clone().add(0.5, yOffset, 0.5);
                 ArmorStand armorStand = findArmorStandAtLocation(world, checkLocation);
-
-                // If an ArmorStand is found at this location, remove it
                 if (armorStand != null) {
                     armorStand.remove();
                 }
             }
 
-
-
-            // Clear metadata from the barrel or chest
             BlockState state = block.getState();
             if (state instanceof Chest) {
                 Chest chest = (Chest) state;
+
                 if (!chest.hasMetadata("seller")) return;
 
-                String ownerName =chest.getMetadata("seller").getFirst().asString();
+                String ownerName = chest.getMetadata("seller").get(0).asString();
 
-                int shopID = getShopIDFromLocation(ownerName, blockLocation); // Implement this method to find the shop ID
+                if (!player.getName().equals(ownerName)) {
+                    event.setCancelled(true);
+                    player.sendMessage(ChatColor.RED + "You are not the owner of this shop.");
+                    return;
+                }
 
+                int shopID = getShopIDFromLocation(ownerName, blockLocation);
                 if (shopID != -1) {
                     boolean removed = shopsManager.removeShopRecord(ownerName, shopID);
                     if (removed) {
-                        event.getPlayer().sendMessage(ChatColor.GREEN + "Shop removed successfully!");
+                        player.sendMessage(ChatColor.GREEN + "Shop removed successfully!");
                     } else {
-                        event.getPlayer().sendMessage(ChatColor.RED + "Failed to remove shop!");
+                        player.sendMessage(ChatColor.RED + "Failed to remove shop!");
                     }
                 }
-//                shopsManager.removeShopForPlayer(chest.getMetadata("seller").getFirst().asString(),blockLocation);
-            }
-            if (state instanceof Chest) {
-                Chest chest = (Chest) state;
 
                 chest.removeMetadata("seller", plugin);
                 chest.removeMetadata("item", plugin);
                 chest.removeMetadata("itemAmount", plugin);
                 chest.removeMetadata("currency", plugin);
                 chest.removeMetadata("currencyAmount", plugin);
-
             }
         }
     }
+
+
 
 
     private ArmorStand findArmorStandAtLocation(World world, Location location) {
