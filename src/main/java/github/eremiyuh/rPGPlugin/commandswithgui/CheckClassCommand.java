@@ -326,14 +326,12 @@ public class CheckClassCommand implements CommandExecutor, Listener {
 
                 if (item.getType() == Material.BOOK) {
                     lore.add("Increases damage from thrown potions.");
-                    lore.add("Provides 10% bonus splash potion damage for Alchemists.");
                     lore.add("Damage stats for Skill 1 users.");
                     lore.add("Boosts potion effects, healing, and damage for Alchemists.");
                 }
 
                 if (item.getType() == Material.GOLDEN_APPLE) {
                     lore.add("Increases HP.");
-                    lore.add("2 HP per point.");
                     lore.add("Use /healthscale to rescale health to always display as 10 hearts.");
                 }
 
@@ -341,7 +339,6 @@ public class CheckClassCommand implements CommandExecutor, Listener {
                     lore.add("Main stat for increasing critical chance and critical damage.");
                     lore.add("Main stat for decreasing critical chance of players during PVP.");
                     lore.add("Requires 4,000 to 5,000 points to reach 100% critical chance vs. Mobs.");
-                    lore.add("Check the Discord server for class-specific allocation recommendations.");
                 }
 
 
