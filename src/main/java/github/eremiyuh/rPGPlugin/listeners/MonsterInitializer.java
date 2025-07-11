@@ -203,7 +203,7 @@ public class MonsterInitializer implements Listener {
         // Set extra movement speed if the attribute is available
         if (entity.getAttribute(Attribute.MOVEMENT_SPEED) != null) {
             double baseSpeed = Objects.requireNonNull(entity.getAttribute(Attribute.MOVEMENT_SPEED)).getBaseValue();
-            double newSpeed = baseSpeed * speedMultiplier; // Apply the calculated multiplier
+            double newSpeed = baseSpeed * (speedMultiplier/4); // Apply the calculated multiplier
             Objects.requireNonNull(entity.getAttribute(Attribute.MOVEMENT_SPEED)).setBaseValue(newSpeed+.02);
         }
 

@@ -532,7 +532,7 @@ public class DamageListener implements Listener {
 
                           if ((damaged instanceof Warden || damaged instanceof Evoker || damaged instanceof Ravager || damaged instanceof Wither) && Math.random() < 0.05) {
                               ((Monster) damaged).attack(attacker);
-                              damaged.teleport(attacker.getLocation().clone().add(0, 2, 0));
+                              damaged.teleport(attacker.getLocation().clone().add(0, 0, 0));
                           }
                       } catch (Exception e) {
                           throw new RuntimeException(e);
@@ -644,8 +644,10 @@ public class DamageListener implements Listener {
 
                             }
 
-                            if ((damaged instanceof Warden || damaged instanceof Evoker || damaged instanceof Ravager) && Math.random() < 0.1) {
-                                damaged.teleport(attacker.getLocation().clone().add(0, 2, 0));
+                            if ((damaged instanceof Warden || damaged instanceof Evoker || damaged instanceof Ravager) && Math.random() < 0.05) {
+                                damaged.teleport(attacker.getLocation().clone().add(0, 0, 0));
+                                ((Monster) damaged).attack(attacker);
+
                             }
                         } catch (Exception e) {
                             throw new RuntimeException(e);
@@ -742,8 +744,9 @@ public class DamageListener implements Listener {
 
                         }
 
-                        if ((damaged instanceof Warden || damaged instanceof Evoker || damaged instanceof Ravager) && Math.random() < 0.1) {
-                            damaged.teleport(attacker.getLocation().clone().add(0, 2, 0));
+                        if ((damaged instanceof Warden || damaged instanceof Evoker || damaged instanceof Ravager) && Math.random() < 0.05) {
+                            damaged.teleport(attacker.getLocation().clone().add(0, 0, 0));
+                            ((Monster) damaged).attack(attacker);
                         }
 
                     }
@@ -984,7 +987,7 @@ public class DamageListener implements Listener {
 
         if (event.getCause() == EntityDamageEvent.DamageCause.SONIC_BOOM) {
             // Notify or perform actions
-            event.setDamage(event.getDamage()*3);
+            event.setDamage(event.getDamage()*1.1);
         }
 
         if (event.getEntity() instanceof  Villager) {
