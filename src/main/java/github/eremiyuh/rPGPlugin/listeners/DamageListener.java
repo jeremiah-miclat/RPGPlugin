@@ -522,12 +522,13 @@ public class DamageListener implements Listener {
                       try {
                           handleLongRangeDamage(attacker,victim,event,damagerLocation,damagedLocation,attackerProfile);
                           if ((damaged instanceof Warden || damaged instanceof Evoker || damaged instanceof Ravager || damaged instanceof Wither) && Math.random() < 0.05) {
-                              damaged.teleport(attacker.getLocation().clone().add(0, 0, 0));
+                              Location aloc = attacker.getLocation().clone();
                               ((Monster) damaged).attack(attacker);
                               Vector knockbackDirection = attacker.getLocation().toVector().subtract(damaged.getLocation().toVector()).normalize();
                               knockbackDirection.multiply(1.5);
                               knockbackDirection.setY(0.5);
                               attacker.setVelocity(knockbackDirection);
+                              damaged.teleport(aloc.add(0, 0, 0));
 
                           }
 
@@ -633,12 +634,13 @@ public class DamageListener implements Listener {
                         try {
                             handleLongRangeDamage(attacker,victim,event,damagerLocation,damagedLocation,attackerProfile);
                             if ((damaged instanceof Warden || damaged instanceof Evoker || damaged instanceof Ravager) && Math.random() < 0.05) {
-                                damaged.teleport(attacker.getLocation().clone().add(0, 0, 0));
+                                Location aloc = attacker.getLocation().clone();
                                 ((Monster) damaged).attack(attacker);
                                 Vector knockbackDirection = attacker.getLocation().toVector().subtract(damaged.getLocation().toVector()).normalize();
                                 knockbackDirection.multiply(1.5);
                                 knockbackDirection.setY(0.5);
                                 attacker.setVelocity(knockbackDirection);
+                                damaged.teleport(aloc.add(0, 0, 0));
 
                             }
                         } catch (Exception e) {
@@ -728,12 +730,13 @@ public class DamageListener implements Listener {
                         if (attackerProfile.getChosenClass().equalsIgnoreCase("alchemist") && attacker.getName().equals(victim.getName())) {event.setCancelled(true); return;}
                         handleLongRangeDamage(attacker,victim,event,damagerLocation,damagedLocation,attackerProfile);
                         if ((damaged instanceof Warden || damaged instanceof Evoker || damaged instanceof Ravager) && Math.random() < 0.05) {
-                            damaged.teleport(attacker.getLocation().clone().add(0, 0, 0));
+                            Location aloc = attacker.getLocation().clone();
                             ((Monster) damaged).attack(attacker);
                             Vector knockbackDirection = attacker.getLocation().toVector().subtract(damaged.getLocation().toVector()).normalize();
                             knockbackDirection.multiply(1.5);
                             knockbackDirection.setY(0.5);
                             attacker.setVelocity(knockbackDirection);
+                            damaged.teleport(aloc.add(0, 0, 0));
 
 
                         }
