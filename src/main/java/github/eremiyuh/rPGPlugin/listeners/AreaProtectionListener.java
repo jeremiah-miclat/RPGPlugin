@@ -35,8 +35,8 @@ public class AreaProtectionListener implements Listener {
     private final World world;
 
 
-    private final int xx1 = -1799, zz1 = -258;
-    private final int xx2 = -1772, zz2 = -289;
+    private final int xx1 = -1903, zz1 = -125;
+    private final int xx2 = -1862, zz2 = -84;
 
     private final int x1 = -150, z1 = 150;
     private final int x2 = 150, z2 = -150;
@@ -76,7 +76,15 @@ public class AreaProtectionListener implements Listener {
         }
 
         if (isInNoSpawnArea(entity.getLocation().getBlockX(), entity.getLocation().getBlockZ())
-                && (entity.getWorld().getName().equals(world.getName()) || entity.getWorld().getName().equals("world_rpg"))) {
+                && entity.getWorld().getName().equals("world_rpg")) {
+
+            if (entity instanceof Monster || entity instanceof Phantom) {
+                event.setCancelled(true);
+            }
+        }
+
+        if (isInProtectedArea(entity.getLocation().getBlockX(), entity.getLocation().getBlockZ())
+                && entity.getWorld().getName().equals("world")) {
 
             if (entity instanceof Monster || entity instanceof Phantom) {
                 event.setCancelled(true);
