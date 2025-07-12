@@ -331,11 +331,11 @@ public class SummonVillagerListener implements Listener {
         villager.setProfession(Villager.Profession.LIBRARIAN);
         villager.setVillagerExperience(1);
         villager.setVillagerLevel(5);
-        villager.customName(Component.text("Librarian").color(TextColor.color(39,222,94)));
+        villager.customName(Component.text("Librarian").color(TextColor.color(39, 222, 94)));
 
         List<MerchantRecipe> trades = new ArrayList<>();
 
-        // Define trades
+        // --- Basic Item Trades ---
         trades.add(createTrade(Material.PAPER, 16, Material.EMERALD, 1));
         trades.add(createTrade(Material.EMERALD, 6, Material.BOOKSHELF, 1));
         trades.add(createTrade(Material.BOOK, 3, Material.EMERALD, 1));
@@ -345,52 +345,64 @@ public class SummonVillagerListener implements Listener {
         trades.add(createTrade(Material.EMERALD, 3, Material.COMPASS, 1));
         trades.add(createTrade(Material.EMERALD, 4, Material.CLOCK, 1));
         trades.add(createTrade(Material.EMERALD, 12, Material.NAME_TAG, 1));
-        trades.add(createEnchantedTradeWithBook( Material.EMERALD, 15,Material.ENCHANTED_BOOK, 1,  Enchantment.AQUA_AFFINITY, 1));
-        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 30,Material.ENCHANTED_BOOK, 1,  Enchantment.BANE_OF_ARTHROPODS, 5));
-        trades.add(createEnchantedTradeWithBook( Material.EMERALD, 30,Material.ENCHANTED_BOOK, 1,  Enchantment.BLAST_PROTECTION, 4));
-        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 15,Material.ENCHANTED_BOOK, 1,  Enchantment.CHANNELING, 1));
-        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 10,Material.ENCHANTED_BOOK, 1,  Enchantment.BINDING_CURSE, 1));
-        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 10,Material.ENCHANTED_BOOK, 1,  Enchantment.VANISHING_CURSE, 1));
-        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 20,Material.ENCHANTED_BOOK, 1,  Enchantment.DEPTH_STRIDER, 3));
-        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 30,Material.ENCHANTED_BOOK, 1,  Enchantment.DENSITY, 5));
-        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 30,Material.ENCHANTED_BOOK, 1,  Enchantment.BREACH, 4));
-        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 30,Material.ENCHANTED_BOOK, 1,  Enchantment.WIND_BURST, 3));
-        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 30,Material.ENCHANTED_BOOK, 1,  Enchantment.EFFICIENCY, 5));
-        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 25,Material.ENCHANTED_BOOK, 1,  Enchantment.FEATHER_FALLING, 4));
-        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 15,Material.ENCHANTED_BOOK, 1,  Enchantment.FIRE_ASPECT, 2));
-        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 10,Material.ENCHANTED_BOOK, 1,  Enchantment.FLAME, 1));
-        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 25,Material.ENCHANTED_BOOK, 1,  Enchantment.FIRE_PROTECTION, 4));
-        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 20,Material.ENCHANTED_BOOK, 1,  Enchantment.FORTUNE, 3));
-        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 20,Material.ENCHANTED_BOOK, 1,  Enchantment.FROST_WALKER, 2));
+
+        // --- Weapon Enchantments ---
+        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 30, Material.ENCHANTED_BOOK, 1, Enchantment.SHARPNESS, 5));
+        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 30, Material.ENCHANTED_BOOK, 1, Enchantment.SMITE, 5));
+        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 30, Material.ENCHANTED_BOOK, 1, Enchantment.BANE_OF_ARTHROPODS, 5));
+        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 15, Material.ENCHANTED_BOOK, 1, Enchantment.FIRE_ASPECT, 2));
+        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 15, Material.ENCHANTED_BOOK, 1, Enchantment.KNOCKBACK, 2));
+        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 20, Material.ENCHANTED_BOOK, 1, Enchantment.LOOTING, 3));
+        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 15, Material.ENCHANTED_BOOK, 1, Enchantment.SWEEPING_EDGE, 3));
+        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 30, Material.ENCHANTED_BOOK, 1, Enchantment.POWER, 5));
+        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 15, Material.ENCHANTED_BOOK, 1, Enchantment.PUNCH, 2));
+        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 10, Material.ENCHANTED_BOOK, 1, Enchantment.FLAME, 1));
+        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 10, Material.ENCHANTED_BOOK, 1, Enchantment.INFINITY, 1));
+
+        // --- Armor Enchantments ---
+        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 25, Material.ENCHANTED_BOOK, 1, Enchantment.PROTECTION, 4));
+        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 25, Material.ENCHANTED_BOOK, 1, Enchantment.FIRE_PROTECTION, 4));
+        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 30, Material.ENCHANTED_BOOK, 1, Enchantment.BLAST_PROTECTION, 4));
+        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 20, Material.ENCHANTED_BOOK, 1, Enchantment.PROJECTILE_PROTECTION, 4));
+        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 15, Material.ENCHANTED_BOOK, 1, Enchantment.THORNS, 3));
+        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 25, Material.ENCHANTED_BOOK, 1, Enchantment.FEATHER_FALLING, 4));
+        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 20, Material.ENCHANTED_BOOK, 1, Enchantment.DEPTH_STRIDER, 3));
+        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 15, Material.ENCHANTED_BOOK, 1, Enchantment.RESPIRATION, 3));
+        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 15, Material.ENCHANTED_BOOK, 1, Enchantment.AQUA_AFFINITY, 1));
+        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 15, Material.ENCHANTED_BOOK, 1, Enchantment.UNBREAKING, 3));
+        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 10, Material.ENCHANTED_BOOK, 1, Enchantment.BINDING_CURSE, 1));
+        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 10, Material.ENCHANTED_BOOK, 1, Enchantment.VANISHING_CURSE, 1));
+
+        // --- Tool Enchantments ---
+        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 30, Material.ENCHANTED_BOOK, 1, Enchantment.EFFICIENCY, 5));
+        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 20, Material.ENCHANTED_BOOK, 1, Enchantment.FORTUNE, 3));
+        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 10, Material.ENCHANTED_BOOK, 1, Enchantment.SILK_TOUCH, 1));
+        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 5, Material.ENCHANTED_BOOK, 1, Enchantment.MENDING, 1));
+
+        // --- Bow & Crossbow Enchantments ---
+        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 10, Material.ENCHANTED_BOOK, 1, Enchantment.MULTISHOT, 1));
+        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 15, Material.ENCHANTED_BOOK, 1, Enchantment.QUICK_CHARGE, 3));
+        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 30, Material.ENCHANTED_BOOK, 1, Enchantment.PIERCING, 4));
+
+        // --- Trident Enchantments ---
+        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 20, Material.ENCHANTED_BOOK, 1, Enchantment.LOYALTY, 3));
+        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 15, Material.ENCHANTED_BOOK, 1, Enchantment.RIPTIDE, 3));
+        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 15, Material.ENCHANTED_BOOK, 1, Enchantment.CHANNELING, 1));
         trades.add(createEnchantedTradeWithBook(Material.EMERALD, 30, Material.ENCHANTED_BOOK, 1, Enchantment.IMPALING, 5));
-        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 10,Material.ENCHANTED_BOOK, 1, Enchantment.INFINITY, 1));
-        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 15,Material.ENCHANTED_BOOK, 1, Enchantment.KNOCKBACK, 2));
-        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 20,Material.ENCHANTED_BOOK, 1, Enchantment.LOOTING, 3));
-        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 20,Material.ENCHANTED_BOOK, 1, Enchantment.LOYALTY, 3));
-        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 15,Material.ENCHANTED_BOOK, 1, Enchantment.LUCK_OF_THE_SEA, 3));
-        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 15,Material.ENCHANTED_BOOK, 1, Enchantment.LURE, 3));
-        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 5,Material.ENCHANTED_BOOK, 1, Enchantment.MENDING, 1));
-        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 10,Material.ENCHANTED_BOOK, 1, Enchantment.MULTISHOT, 1));
-        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 30,Material.ENCHANTED_BOOK, 1, Enchantment.PIERCING, 4));
-        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 30,Material.ENCHANTED_BOOK, 1, Enchantment.POWER, 5));
-        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 20,Material.ENCHANTED_BOOK, 1, Enchantment.PROJECTILE_PROTECTION, 4));
-        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 25,Material.ENCHANTED_BOOK, 1, Enchantment.PROTECTION, 4));
-        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 15,Material.ENCHANTED_BOOK, 1, Enchantment.PUNCH, 2));
-        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 15,Material.ENCHANTED_BOOK, 1, Enchantment.QUICK_CHARGE, 3));
-        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 15,Material.ENCHANTED_BOOK, 1, Enchantment.RESPIRATION, 3));
-        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 15,Material.ENCHANTED_BOOK, 1, Enchantment.RIPTIDE, 3));
-        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 30,Material.ENCHANTED_BOOK, 1, Enchantment.SHARPNESS, 5));
-        trades.add(createEnchantedTradeWithBook(Material.EMERALD_BLOCK, 64,Material.ENCHANTED_BOOK, 64, Enchantment.SHARPNESS, 6));
-        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 10,Material.ENCHANTED_BOOK, 1, Enchantment.SILK_TOUCH, 1));
-        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 30,Material.ENCHANTED_BOOK, 1, Enchantment.SMITE, 5));
-        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 15,Material.ENCHANTED_BOOK, 1, Enchantment.SWEEPING_EDGE, 3));
-        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 15,Material.ENCHANTED_BOOK, 1, Enchantment.THORNS, 3));
-        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 15,Material.ENCHANTED_BOOK, 1, Enchantment.UNBREAKING, 3));
-        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 15,Material.ENCHANTED_BOOK, 1, Enchantment.LURE, 3));
+
+        // --- Fishing Enchantments ---
+        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 15, Material.ENCHANTED_BOOK, 1, Enchantment.LURE, 3));
+        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 15, Material.ENCHANTED_BOOK, 1, Enchantment.LUCK_OF_THE_SEA, 3));
+
+        // --- Custom Enchantments ---
+        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 30, Material.ENCHANTED_BOOK, 1, Enchantment.DENSITY, 5));
+        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 30, Material.ENCHANTED_BOOK, 1, Enchantment.BREACH, 4));
+        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 30, Material.ENCHANTED_BOOK, 1, Enchantment.WIND_BURST, 3));
 
         villager.setRecipes(trades);
         villager.setAI(true);
     }
+
 
     private void setupMasonVillager(Villager villager) {
         villager.setAI(false);
