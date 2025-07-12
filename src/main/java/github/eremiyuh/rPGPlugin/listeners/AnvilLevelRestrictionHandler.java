@@ -138,6 +138,10 @@ public class AnvilLevelRestrictionHandler implements Listener {
 
     @EventHandler
     public void customEnchant(PrepareAnvilEvent event) {
+        if (event.getViewers().getFirst().isOp()) {
+            event.getView().bypassEnchantmentLevelRestriction(true);
+        }
+
         AnvilInventory anvilInventory = event.getInventory();
         ItemStack firstItem = anvilInventory.getItem(0);
         ItemStack secondItem = anvilInventory.getItem(1);
