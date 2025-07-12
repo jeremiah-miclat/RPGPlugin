@@ -71,10 +71,6 @@ public class AreaProtectionListener implements Listener {
     public void onEntitySpawn(EntitySpawnEvent event) {
         Entity entity = event.getEntity();
 
-        if (!entity.getWorld().getName().equals(world.getName()) && !entity.getWorld().getName().equals("world_rpg")) {
-            return;
-        }
-
         if (isInNoSpawnArea(entity.getLocation().getBlockX(), entity.getLocation().getBlockZ())
                 && entity.getWorld().getName().equals("world_rpg")) {
 

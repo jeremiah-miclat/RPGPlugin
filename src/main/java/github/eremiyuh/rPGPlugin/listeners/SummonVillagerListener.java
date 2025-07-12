@@ -352,7 +352,9 @@ public class SummonVillagerListener implements Listener {
         trades.add(createEnchantedTradeWithBook(Material.EMERALD, 10,Material.ENCHANTED_BOOK, 1,  Enchantment.BINDING_CURSE, 1));
         trades.add(createEnchantedTradeWithBook(Material.EMERALD, 10,Material.ENCHANTED_BOOK, 1,  Enchantment.VANISHING_CURSE, 1));
         trades.add(createEnchantedTradeWithBook(Material.EMERALD, 20,Material.ENCHANTED_BOOK, 1,  Enchantment.DEPTH_STRIDER, 3));
-        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 30,Material.ENCHANTED_BOOK, 1,  Enchantment.DENSITY, 1));
+        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 30,Material.ENCHANTED_BOOK, 1,  Enchantment.DENSITY, 5));
+        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 30,Material.ENCHANTED_BOOK, 1,  Enchantment.BREACH, 4));
+        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 30,Material.ENCHANTED_BOOK, 1,  Enchantment.WIND_BURST, 3));
         trades.add(createEnchantedTradeWithBook(Material.EMERALD, 30,Material.ENCHANTED_BOOK, 1,  Enchantment.EFFICIENCY, 5));
         trades.add(createEnchantedTradeWithBook(Material.EMERALD, 25,Material.ENCHANTED_BOOK, 1,  Enchantment.FEATHER_FALLING, 4));
         trades.add(createEnchantedTradeWithBook(Material.EMERALD, 15,Material.ENCHANTED_BOOK, 1,  Enchantment.FIRE_ASPECT, 2));
@@ -378,6 +380,7 @@ public class SummonVillagerListener implements Listener {
         trades.add(createEnchantedTradeWithBook(Material.EMERALD, 15,Material.ENCHANTED_BOOK, 1, Enchantment.RESPIRATION, 3));
         trades.add(createEnchantedTradeWithBook(Material.EMERALD, 15,Material.ENCHANTED_BOOK, 1, Enchantment.RIPTIDE, 3));
         trades.add(createEnchantedTradeWithBook(Material.EMERALD, 30,Material.ENCHANTED_BOOK, 1, Enchantment.SHARPNESS, 5));
+        trades.add(createEnchantedTradeWithBook(Material.EMERALD_BLOCK, 64,Material.ENCHANTED_BOOK, 64, Enchantment.SHARPNESS, 6));
         trades.add(createEnchantedTradeWithBook(Material.EMERALD, 10,Material.ENCHANTED_BOOK, 1, Enchantment.SILK_TOUCH, 1));
         trades.add(createEnchantedTradeWithBook(Material.EMERALD, 30,Material.ENCHANTED_BOOK, 1, Enchantment.SMITE, 5));
         trades.add(createEnchantedTradeWithBook(Material.EMERALD, 15,Material.ENCHANTED_BOOK, 1, Enchantment.SWEEPING_EDGE, 3));

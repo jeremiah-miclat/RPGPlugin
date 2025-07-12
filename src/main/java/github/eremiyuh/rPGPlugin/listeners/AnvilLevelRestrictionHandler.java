@@ -28,7 +28,6 @@ public class AnvilLevelRestrictionHandler implements Listener {
         ItemStack firstItem = anvilInventory.getItem(0);
         ItemStack secondItem = anvilInventory.getItem(1);
         ItemStack result = event.getResult();
-
         if (firstItem==null || secondItem==null) return;
 
         if (firstItem.getType() == Material.BOOK && secondItem.getType() == Material.BOOK) {
@@ -275,6 +274,9 @@ public class AnvilLevelRestrictionHandler implements Listener {
     public void onInventoryClick(InventoryClickEvent event) {
         // Check if the event happens in an anvil
         if (event.getInventory().getType() == InventoryType.ANVIL) {
+            ItemStack result = event.getCurrentItem();
+            if (result == null || result.getType() == Material.AIR) return;
+
             // Check if the result slot is clicked (usually slot 2)
             if (event.getSlot() == 2) {
                 // Get the items in the anvil
