@@ -197,13 +197,13 @@ public class MonsterInitializer implements Listener {
         setHealthIndicator(entity);
 
         // Calculate speed and jump multipliers based on maxCoord
-        double speedMultiplier = 1 + (0.000075 * maxCoord); // Continuous increase for speed
+        double speedMultiplier =  (0.000075 * maxCoord); // Continuous increase for speed
         double jumpMultiplier = 1 + (0.00015 * maxCoord);  // Continuous increase for jump
 
         // Set extra movement speed if the attribute is available
         if (entity.getAttribute(Attribute.MOVEMENT_SPEED) != null) {
             double baseSpeed = Objects.requireNonNull(entity.getAttribute(Attribute.MOVEMENT_SPEED)).getBaseValue();
-            double newSpeed = baseSpeed * (speedMultiplier/4); // Apply the calculated multiplier
+            double newSpeed = baseSpeed * (1+ (speedMultiplier/4)); // Apply the calculated multiplier
             Objects.requireNonNull(entity.getAttribute(Attribute.MOVEMENT_SPEED)).setBaseValue(newSpeed+.02);
         }
 

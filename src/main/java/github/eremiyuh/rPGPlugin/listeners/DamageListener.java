@@ -828,6 +828,9 @@ public class DamageListener implements Listener {
 //
 //                            return;
 //                        }
+                        if (mob instanceof Vex) {
+                            mobDamage = .5;
+                        }
 
                         event.setDamage(mobDamage);
 
