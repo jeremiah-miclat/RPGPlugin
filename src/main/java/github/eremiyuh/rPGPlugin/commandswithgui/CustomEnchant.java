@@ -127,6 +127,7 @@ public class CustomEnchant implements CommandExecutor, Listener {
             lore.add(Component.text("SWORD"));
             lore.add(Component.text("StatDamage%: 1").style(Style.style(TextDecoration.ITALIC, TextColor.color(171, 0, 255))));
             lore.add(Component.text("Cost: 1M activity points, 1 Nether Star"));
+            lore.add(Component.text("Description: Increases damage from stats when fighting in Abyss map"));
             BonusStatDamageMeta.lore(lore);
 
             BonusStatDamage.setItemMeta(BonusStatDamageMeta);
@@ -145,6 +146,7 @@ public class CustomEnchant implements CommandExecutor, Listener {
             lore.add(Component.text("NETHERITE"));
             lore.add(Component.text("HP%: 1").style(Style.style(TextDecoration.ITALIC, TextColor.color(0, 171, 255))));
             lore.add(Component.text("Cost: 1M activity points, 2 Heart of the Sea"));
+            lore.add(Component.text("Description: Increases hp in Abyss map"));
             HPEnchantmentMeta.lore(lore);
 
             HPEnchantment.setItemMeta(HPEnchantmentMeta);
@@ -160,6 +162,7 @@ public class CustomEnchant implements CommandExecutor, Listener {
             lore.add(Component.text("BOW"));
             lore.add(Component.text("StatDamage%: 1").style(Style.style(TextDecoration.ITALIC, TextColor.color(171, 0, 255))));
             lore.add(Component.text("Cost: 1M activity points, 1 Nether Star"));
+            lore.add(Component.text("Description: Increases damage from stats when fighting in Abyss map"));
             BonusStatDamageMeta2.lore(lore);
 
             BonusStatDamage2.setItemMeta(BonusStatDamageMeta2);
@@ -177,6 +180,7 @@ public class CustomEnchant implements CommandExecutor, Listener {
             lore.add(Component.text("BOOK"));
             lore.add(Component.text("StatDamage%: 1").style(Style.style(TextDecoration.ITALIC, TextColor.color(171, 0, 255))));
             lore.add(Component.text("Cost: 1M activity points, 1 Nether Star"));
+            lore.add(Component.text("Description: Increases damage from stats when fighting in Abyss map"));
             BonusStatDamageMeta3.lore(lore);
 
             BonusStatDamage3.setItemMeta(BonusStatDamageMeta3);

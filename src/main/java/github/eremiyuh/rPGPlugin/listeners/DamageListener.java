@@ -832,6 +832,10 @@ public class DamageListener implements Listener {
                             mobDamage = .5;
                         }
 
+                        if (mob instanceof Vindicator) {
+                            mobDamage = Math.max(3,mobDamage - 3);
+                        }
+
                         event.setDamage(mobDamage);
 
                         return;
