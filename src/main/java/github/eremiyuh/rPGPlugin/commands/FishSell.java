@@ -53,7 +53,7 @@ public class FishSell implements CommandExecutor, Listener {
         // Retrieve the user's profile and update activity points
         UserProfile userProfile = profileManager.getProfile(player.getName());
         int bonusPointsFromPassive = userProfile.getFisherman();
-        if (bonusPointsFromPassive < 1) {player.sendMessage("Level up fisherman skill to start selling fish"); return;}
+        if (bonusPointsFromPassive < 1) {player.sendMessage("Level up fisherman skill to start selling fish. /passiveskills"); return;}
         Inventory inventory = event.getInventory();
         int itemCount = 0;
         List<ItemStack> unconvertedItems = new ArrayList<>();

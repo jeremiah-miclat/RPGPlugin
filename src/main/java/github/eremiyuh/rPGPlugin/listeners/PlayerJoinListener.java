@@ -30,25 +30,22 @@ public class PlayerJoinListener implements Listener {
     private final PlayerStatBuff playerStatBuff;
 
     private final List<String> suggestions = Arrays.asList(
-            "Ready for abyss?",
-            "Team up now.",
+            "Team up now. /teaminvite",
             "Throw your junk into /junk and sell them for diamonds on /junkshop.",
             "Visit a shop now using /tpshop.",
-            "Hunt mighty bosses for useless rewards",
             "Earn Abyss Points and shop at /abyssstore.",
-            "Boost your stats using /addstat to dominate battles.",
-            "Try other maps now! /warp",
-            "Want the resource maps seed? /rwseed",
-            "May your adventures be epic and your loot plentiful!",
-            "Good luck, adventurer! The world is full of challenges and treasures awaiting you.",
-            "Step boldly into the unknown!",
-            "Gear up and dive in! May fortune favor your journey.",
-            "The abyss awaits! Strength and cunning will be your allies.",
-            "Good luck, adventurer! May you find allies, treasures, and glory.",
-            "May your swords stay sharp and your potions plentiful. Adventure awaits!",
-            "Every great story starts with a single step. Begin yours!",
-            "Welcome, hero! The legends of this server are waiting for your name to be etched into them.",
-            "Your destiny calls! May luck and skill guide you."
+            "Boost your stats using /addstat to dominate battles in abyss.",
+            "Need activity points? Buy now in /activityshop",
+            "Try custom enchants /cestore",
+            "Check out some java custom textures /cosmeticstore 3",
+            "Check out some java custom textures /cosmeticstore 2",
+            "Check out some java custom textures /cosmeticstore 1",
+            "The abyss awaits! Strength and cunning will be your allies. /warp a",
+            "Need more activity points? Update your passive skills /passiveskills",
+            "Visit Yabmat's shop. /spawn",
+            "Don't forget to claim your lands. /cc",
+            "Store some items in your vault. /vault",
+            "Catch some fish using your fishing rod then sell them for activity points. /fishsell"
     );
 
     public PlayerJoinListener(PlayerProfileManager profileManager) {
