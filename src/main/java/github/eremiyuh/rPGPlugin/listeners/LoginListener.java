@@ -56,8 +56,8 @@ public class LoginListener implements Listener {
     private boolean containsBadWord(String message) {
         String[] bannedWords = {
                 // Tagalog
-                "bobo", "tanga", "gago", "ulol", " puta ", "pakyu", "tang i","tangina","siraulo", "sira ulo","puki","puke",
-                "tits","titi","tite","burat","bembang","kantot","kantut"," pota ","bubu",
+                "bobo ", "tanga ", "gago ", "ulol ", " puta ", "pakyu", "tang i","tangina","siraulo", "sira ulo"," puki ","puke",
+                "tits","titi","tite","burat","bembang","kantot","kantut"," pota "," bubu ",
                 // English
                 "fuck", "shit", "asshole", "idiot", "bastard"," ass ","nigga"," fuk ","dick","pussy"
         };

@@ -75,7 +75,7 @@ public class PlayerJoinListener implements Listener {
         World world = Bukkit.getWorld("world");
         assert world != null;
 
-        if (profile == null ) {
+        if (profile == null || profile.getPassword() == null || Objects.equals(profile.getPassword(), "")) {
             // Handle new players
             event.setJoinMessage(ChatColor.GOLD + "⚜ Hail, " + ChatColor.AQUA + playerName + ChatColor.GOLD +
                     "! Welcome to the realm for the very first time!");
@@ -108,16 +108,16 @@ public class PlayerJoinListener implements Listener {
                     ChatColor.DARK_GREEN + suggestion);
         }
 
-        if (profile.getPassword() == null || Objects.equals(profile.getPassword(), "")) {
-            player.sendTitle("§0§l§k⚜§r§6§lWelcome Adventurer!",
-                    "§7Use /register <password> <password> to start your adventure",
-                    10, 200, 20);
-            player.spigot().sendMessage(ChatMessageType.ACTION_BAR,
-                    new TextComponent("§c§lHeed the Call: Register to Enter!"));
-
-            player.sendMessage("§6[§SServer§6] §7Enter the command §e/register <password> <password>§7 to inscribe your credentials.");
-            player.sendMessage("§6[§SServer§6] §7Then enter the realm by using §e/login <password>§7.");
-        }
+//        if (profile.getPassword() == null || Objects.equals(profile.getPassword(), "")) {
+//            player.sendTitle("§0§l§k⚜§r§6§lWelcome Adventurer!",
+//                    "§7Use /register <password> <password> to start your adventure",
+//                    10, 200, 20);
+//            player.spigot().sendMessage(ChatMessageType.ACTION_BAR,
+//                    new TextComponent("§c§lHeed the Call: Register to Enter!"));
+//
+//            player.sendMessage("§6[§SServer§6] §7Enter the command §e/register <password> <password>§7 to inscribe your credentials.");
+//            player.sendMessage("§6[§SServer§6] §7Then enter the realm by using §e/login <password>§7.");
+//        }
 
 
 
