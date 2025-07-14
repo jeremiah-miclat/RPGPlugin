@@ -104,6 +104,21 @@ public class ActivitiyShop implements CommandExecutor, Listener {
         }
         activityPointStore.setItem(4, piglinEgg);
 
+
+
+
+        // Create the activity point item
+        ItemStack activePoints = new ItemStack(Material.WOODEN_PICKAXE);
+        ItemMeta activePointsMeta = activePoints.getItemMeta();
+        if (activePointsMeta != null) {
+            activePointsMeta.customName(Component.text("1000 Activity Points"));
+            List<Component> lore = new ArrayList<>();
+            lore.add(Component.text("Cost: 1 diamond currency").color(TextColor.color(255, 215, 0)));
+            activePointsMeta.lore(lore);
+            activePoints.setItemMeta(activePointsMeta);
+        }
+        activityPointStore.setItem(8, activePoints);
+
         player.openInventory(activityPointStore);
     }
 
@@ -157,6 +172,13 @@ public class ActivitiyShop implements CommandExecutor, Listener {
                     dropOrNotify(player, new ItemStack(Material.PIGLIN_SPAWN_EGG), "Successfully purchased.");
                 } else {
                     player.sendMessage(Component.text("You do not have enough Points!").color(TextColor.color(255, 0, 0)));
+                }
+            } else if (event.getSlot() == 8 && event.getCurrentItem() != null && event.getCurrentItem().getType() == Material.WOODEN_PICKAXE) {
+                if (userProfile.getDiamond() >= 1) {
+                    userProfile.setCurrency("diamond", userProfile.getDiamond() - 1);
+                    userProfile.setCurrency("activitypoints", userProfile.getActivitypoints() + 1000);
+                } else {
+                    player.sendMessage(Component.text("You do not have enough Diamond currency! Do /convertmaterial diamond").color(TextColor.color(255, 0, 0)));
                 }
             }
         }
