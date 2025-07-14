@@ -30,8 +30,8 @@ import java.util.List;
 public class ActivityListener implements Listener {
     private final PlayerProfileManager profileManager;
     private final World world;
-    private final int x1 = -150, z1 = 150;
-    private final int x2 = 150, z2 = -150;
+    private final int x1 = -1923, z1 = -76;
+    private final int x2 = -1802, z2 = -168;
 
     public ActivityListener(PlayerProfileManager profileManager) {
         this.profileManager = profileManager;
