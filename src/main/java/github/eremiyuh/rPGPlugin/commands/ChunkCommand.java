@@ -20,8 +20,8 @@ public class ChunkCommand implements CommandExecutor {
     private final ChunkBorderBlueVisualizer chunkBorderBlueVisualizer;
     private final ChunkBorderRedVisualizer chunkBorderRedVisualizer;
 
-    private final int xx1 = -1903, zz1 = -125;
-    private final int xx2 = -1862, zz2 = -84;
+    private final int xx1 = -1923, zz1 = -76;
+    private final int xx2 = -1802, zz2 = -168;
 
     public ChunkCommand(ChunkManager chunkManager, PlayerProfileManager profileManager, ChunkBorderBlueVisualizer chunkBorderBlueVisualizer, ChunkBorderRedVisualizer chunkBorderRedVisualizer) {
         this.chunkManager = chunkManager;
@@ -103,7 +103,7 @@ public class ChunkCommand implements CommandExecutor {
                 return true;
             }
 
-            if (isInProtectedArea(player.getLocation().getBlockX(), player.getLocation().getBlockZ())) {
+            if (isInProtectedArea(player.getLocation().getBlockX(), player.getLocation().getBlockZ()) && player.getWorld().getName().equals("world")) {
                 player.sendMessage("Cannot claim chunks in this area.");
                 return true;
             }
