@@ -274,7 +274,7 @@ public class RPGPlugin extends JavaPlugin {
         Objects.requireNonNull(getCommand("passiveskills")).setExecutor(new PassiveSkills(this, profileManager));
         Objects.requireNonNull(getCommand("cosmeticstore")).setExecutor(new CosmeticStore(this, profileManager));
         Objects.requireNonNull(getCommand("viewitem")).setExecutor(new ViewItemCommand());
-        Objects.requireNonNull(getCommand("shop")).setExecutor(new ShopCommand());
+//        Objects.requireNonNull(getCommand("shop")).setExecutor(new ShopCommand());
         DamageListener damageListenerListener = new DamageListener(profileManager, effectsAbilityManager, damageAbilityManager,this);
         getServer().getPluginManager().registerEvents(damageListenerListener,this);
         getServer().getPluginManager().registerEvents(new PotionGiveListener(this,profileManager),this);
@@ -366,7 +366,7 @@ public class RPGPlugin extends JavaPlugin {
         Objects.requireNonNull(this.getCommand("enderchest")).setExecutor(new EnderChestCommand());
         Objects.requireNonNull(this.getCommand("addstat")).setExecutor(new AddAttributeCommand(profileManager));
         Objects.requireNonNull(this.getCommand("shopsavetploc")).setExecutor(new ShopTpSaveCommand(shopTpSaveManager));
-        Objects.requireNonNull(this.getCommand("tpshop")).setExecutor(new ShopTpCommand(shopsManager, shopTpSaveManager,profileManager));
+        Objects.requireNonNull(this.getCommand("shop")).setExecutor(new ShopTpCommand(shopsManager, shopTpSaveManager,profileManager));
         getServer().getPluginManager().registerEvents(new GuiListener(this), this);
         getServer().getPluginManager().registerEvents(new ActivityListener(profileManager), this);
         getServer().getPluginManager().registerEvents(new OreBreakListener(profileManager), this);

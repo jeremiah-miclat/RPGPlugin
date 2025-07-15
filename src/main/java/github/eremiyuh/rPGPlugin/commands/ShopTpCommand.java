@@ -34,14 +34,14 @@ public class ShopTpCommand implements CommandExecutor {
         }
 
         if (args.length != 1) {
-            sender.sendMessage(ChatColor.RED + "Usage: /tpshop <playerName>");
+            sender.sendMessage(ChatColor.RED + "Usage: /shop <playerName>");
             return true;
         }
 
         UserProfile profile = playerProfileManager.getProfile(player.getName());
 
         if (profile.getEnderPearl() <= 0) {
-            player.sendMessage(net.md_5.bungee.api.ChatColor.RED + "Needs an ender pearl to teleport");
+            player.sendMessage(net.md_5.bungee.api.ChatColor.RED + "Needs an ender pearl to teleport. /convertmaterial enderpearl");
             return true;
         }
 

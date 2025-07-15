@@ -956,7 +956,7 @@ public class DamageListener implements Listener {
             player.setHealth(0.1);  // minimal value, not zero
 //            player.sendMessage("on fatal. the damage was "+ event.getDamage());
             event.setDamage(0);     // prevent actual death
-            Bukkit.broadcastMessage(ChatColor.RED + player.getName() + " needs help");
+            player.chat(ChatColor.AQUA + "I'm down. I need help");
             setDownedState(player); // your custom logic
 
             // ⏳ Schedule forced death after 60 seconds
@@ -1050,7 +1050,11 @@ public class DamageListener implements Listener {
         Material blockAtFeet = damagedLocation.getBlock().getType(); // Current block (feet)
         Material blockBelow = damagedLocation.clone().subtract(0, 1, 0).getBlock().getType(); // Block below
         Material blockAbove = damagedLocation.clone().add(0, 1, 0).getBlock().getType(); // Block above
-
+        if (downedPlayers.containsKey(attacker.getUniqueId())) {
+            event.setCancelled(true);
+            attacker.sendMessage(org.bukkit.ChatColor.RED + "Can't attack");
+            return;
+        }
 
 // Check water or lava in current, below, or above blocks
 //        if (((blockAtFeet == Material.WATER || blockAtFeet == Material.LAVA) ||

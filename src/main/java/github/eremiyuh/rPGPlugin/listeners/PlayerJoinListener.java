@@ -14,6 +14,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scoreboard.Criteria;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
@@ -87,7 +88,7 @@ public class PlayerJoinListener implements Listener {
 
             player.sendMessage("§6[§Server§6] §7Enter the command §e/register <password> <password>§7 to inscribe your credentials.");
             player.sendMessage("§6[§Server§6] §7Then enter the realm by using §e/login <password>§7.");
-
+            givekit(playerName);
 
         } else {
             // Handle returning players
@@ -153,7 +154,32 @@ public class PlayerJoinListener implements Listener {
         }
     }
 
+    public void givekit(String playerName) {
+        Player player = Bukkit.getPlayer(playerName);
+        if (player == null) return;
 
+        // Chainmail Armor
+        player.getInventory().addItem(new ItemStack(Material.CHAINMAIL_HELMET));
+        player.getInventory().addItem(new ItemStack(Material.CHAINMAIL_CHESTPLATE));
+        player.getInventory().addItem(new ItemStack(Material.CHAINMAIL_LEGGINGS));
+        player.getInventory().addItem(new ItemStack(Material.CHAINMAIL_BOOTS));
+
+        // Food and Essentials
+        player.getInventory().addItem(new ItemStack(Material.GOLDEN_CARROT, 64));
+        player.getInventory().addItem(new ItemStack(Material.TOTEM_OF_UNDYING, 2));
+        player.getInventory().addItem(new ItemStack(Material.WHITE_BED, 1));
+        player.getInventory().addItem(new ItemStack(Material.OAK_PLANKS, 20));
+
+        // Tools and Weapons
+        player.getInventory().addItem(new ItemStack(Material.STONE_SWORD, 1));
+        player.getInventory().addItem(new ItemStack(Material.STONE_AXE, 1));
+
+        player.getInventory().addItem(new ItemStack(Material.VILLAGER_SPAWN_EGG, 2));
+        player.getInventory().addItem(new ItemStack(Material.ZOMBIE_SPAWN_EGG, 1));
+        player.getInventory().addItem(new ItemStack(Material.WATER_BUCKET, 1));
+        player.getInventory().addItem(new ItemStack(Material.TORCH, 64));
+
+    }
 
     private Location getGroundLocation(Location location, Player player) {
         World world = location.getWorld();

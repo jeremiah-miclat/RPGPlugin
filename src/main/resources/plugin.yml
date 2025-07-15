@@ -224,9 +224,9 @@ commands:
   shopsavetploc:
     description: saves current location to let players tp to your shop
     usage: shopsavetploc
-  tpshop:
+  shop:
     description: Teleports to a saved shop location of a player.
-    usage: /<command> <playerName>
+    usage: shop <playerName>
   pay:
     description: Pay another player a specified amount of currency.
     usage: /pay <playername> <currencyname> <amount>
@@ -281,8 +281,6 @@ commands:
     usage: /viewitem <playerName>
     permission: RPGPlugin.viewitem
     permission-default: op
-  shop:
-    description: Opens the shop by teleporting to eremiyuh's shop.
-    usage: /<command>
+
 softdepend:
   - DiscordSRV
