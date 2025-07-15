@@ -152,7 +152,7 @@ public class MonsterInitializer implements Listener {
             Objects.requireNonNull(entity.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(extraHealth+10);
             entity.setHealth(extraHealth);
 
-            Objects.requireNonNull(entity.getAttribute(Attribute.ATTACK_DAMAGE)).setBaseValue(customDamage + 2);
+            Objects.requireNonNull(entity.getAttribute(Attribute.ATTACK_DAMAGE)).setBaseValue(customDamage );
             entity.setPersistent(true);
             entity.setCustomNameVisible(true);
             entity.addPotionEffect(new PotionEffect((PotionEffectType.REGENERATION),Integer.MAX_VALUE,1,true,true));
@@ -165,7 +165,7 @@ public class MonsterInitializer implements Listener {
             setBossAttributes(entity, maxCoord, "Boss", ChatColor.RED);
             Objects.requireNonNull(entity.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(extraHealth+10);
             entity.setHealth(extraHealth);
-            Objects.requireNonNull(entity.getAttribute(Attribute.ATTACK_DAMAGE)).setBaseValue(customDamage +1);
+            Objects.requireNonNull(entity.getAttribute(Attribute.ATTACK_DAMAGE)).setBaseValue(customDamage );
 
             entity.setCustomNameVisible(true);
             return;
@@ -177,7 +177,7 @@ public class MonsterInitializer implements Listener {
             setBossAttributes(entity, maxCoord, "Leader", ChatColor.YELLOW);
             Objects.requireNonNull(entity.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(extraHealth+10);
             entity.setHealth(extraHealth);
-            Objects.requireNonNull(entity.getAttribute(Attribute.ATTACK_DAMAGE)).setBaseValue(customDamage +.5);
+            Objects.requireNonNull(entity.getAttribute(Attribute.ATTACK_DAMAGE)).setBaseValue(customDamage );
             entity.setCustomNameVisible(true);
             return;
         }
