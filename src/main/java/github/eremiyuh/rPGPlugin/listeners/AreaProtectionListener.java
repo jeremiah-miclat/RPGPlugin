@@ -301,7 +301,7 @@ public class AreaProtectionListener implements Listener {
 
         if (event.getHand() != EquipmentSlot.HAND) return; // Only check for main hand
         if (event.getItem() == null || (event.getItem().getType() != Material.WARDEN_SPAWN_EGG && event.getItem().getType() != Material.RAVAGER_SPAWN_EGG
-                && event.getItem().getType() != Material.EVOKER_SPAWN_EGG
+                && event.getItem().getType() != Material.EVOKER_SPAWN_EGG && event.getItem().getType() != Material.WITHER_SPAWN_EGG
         )) return; // Only check for spawn eggs
         if (!event.getPlayer().getWorld().getName().equals("world_rpg")) {
             event.setCancelled(true);
