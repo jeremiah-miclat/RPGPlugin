@@ -41,6 +41,9 @@ public class AreaProtectionListener implements Listener {
     private final int x1 = -150, z1 = 150;
     private final int x2 = 150, z2 = -150;
 
+    private final int xxx1 = -1928, zzz1 = -150;
+    private final int xxx2 = -1837, zzz2 = -59;
+
     private static final Set<Material> ANNOYING_BLOCKS;
 
     static {
@@ -67,6 +70,11 @@ public class AreaProtectionListener implements Listener {
                 z >= Math.min(z1, z2) && z <= Math.max(z1, z2);
     }
 
+    private boolean isInNoSpawnArea2(int x, int z) {
+        return x >= Math.min(xxx1, xxx2) && x <= Math.max(xxx1, xxx2) &&
+                z >= Math.min(zzz1, zzz2) && z <= Math.max(zzz1, zzz2);
+    }
+
     @EventHandler
     public void onEntitySpawn(EntitySpawnEvent event) {
         Entity entity = event.getEntity();
@@ -79,7 +87,7 @@ public class AreaProtectionListener implements Listener {
             }
         }
 
-        if (isInProtectedArea(entity.getLocation().getBlockX(), entity.getLocation().getBlockZ())
+        if (isInNoSpawnArea2(entity.getLocation().getBlockX(), entity.getLocation().getBlockZ())
                 && entity.getWorld().getName().equals("world")) {
 
             if (entity instanceof Monster || entity instanceof Phantom) {
