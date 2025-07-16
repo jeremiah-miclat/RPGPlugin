@@ -27,9 +27,11 @@ Elemental:     Varies by class + skill
 ✅ Critical System:
 Crit Chance:
 🗡 Swordsman: LUK × 0.0003
-🏹 Others: LUK × 0.0002
+
 🏹 Archer: + DEX × 0.0001
-🏹 Skill 3: +25% flat
+🏹 Archer + Skill 3: +25% flat
+
+Others(Default): LUK × 0.0002
 
 Crit Multiplier:
 1.5 + (LUK × 0.001)
