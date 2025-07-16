@@ -1854,6 +1854,12 @@ public class DamageListener implements Listener {
 
     // Method to apply stats to damage
     private double applyStatsToDamage(double baseDamage, UserProfile damagerProfile, Player player, EntityDamageByEntityEvent event) {
+
+        if (!damagerProfile.isLoggedIn()) {
+            event.setCancelled(true);
+            return 0;
+        }
+
         double str = 0, dex = 0, intel = 0, luk = 0, fnl=0;
 
         // Get stats based on the player's chosen class
@@ -2339,6 +2345,18 @@ public class DamageListener implements Listener {
         } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
             // Handle parsing errors or missing values
             return 0;
+        }
+    }
+
+    @EventHandler
+    public void onZombieDeath(EntityDeathEvent event) {
+        if (event.getEntity() instanceof Zombie) {
+            // 10% chance
+            if (new Random().nextInt(100) < 20) {
+                Zombie zombie = (Zombie) event.getEntity();
+                Location loc = zombie.getLocation().add(0, 0, 0);
+                zombie.getWorld().spawnEntity(loc, EntityType.SKELETON);
+            }
         }
     }
 
