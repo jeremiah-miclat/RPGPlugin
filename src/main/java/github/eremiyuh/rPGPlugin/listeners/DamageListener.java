@@ -2,6 +2,7 @@ package github.eremiyuh.rPGPlugin.listeners;
 
 import github.eremiyuh.rPGPlugin.RPGPlugin;
 import github.eremiyuh.rPGPlugin.manager.PlayerProfileManager;
+import github.eremiyuh.rPGPlugin.manager.RavagerSkillManager;
 import github.eremiyuh.rPGPlugin.methods.DamageAbilityManager;
 import github.eremiyuh.rPGPlugin.methods.EffectsAbilityManager;
 import github.eremiyuh.rPGPlugin.perms.PlayerBuffPerms;
@@ -44,16 +45,17 @@ public class DamageListener implements Listener {
     private  final DamageAbilityManager damageAbilityManager;
     private final RPGPlugin plugin;
     private final Map<UUID, BukkitTask> downedPlayers = new HashMap<>();
-
+    private final RavagerSkillManager manager;
 
     private final int x1 = -150, z1 = 150;
     private final int x2 = 90, z2 = -110;
 
-    public DamageListener(PlayerProfileManager profileManager, EffectsAbilityManager effectsAbilityManager, DamageAbilityManager damageAbilityManager, RPGPlugin plugin) {
+    public DamageListener(PlayerProfileManager profileManager, EffectsAbilityManager effectsAbilityManager, DamageAbilityManager damageAbilityManager, RPGPlugin plugin, RavagerSkillManager manager) {
         this.profileManager = profileManager;
         this.effectsAbilityManager = effectsAbilityManager;
         this. damageAbilityManager = damageAbilityManager;
         this.plugin = plugin;
+        this.manager = manager;
     }
 
     Set<UUID> rejoinDowned = new HashSet<>();
@@ -381,19 +383,37 @@ public class DamageListener implements Listener {
                 if (attackerProfile != null) {
                     try {
                         handleMeleeDamage(attacker,victim,event,damagerLocation,damagedLocation,attackerProfile);
-                        if ((damaged instanceof Warden || damaged instanceof Evoker || damaged instanceof Ravager ) && Math.random() < 0.1) {
-                            ((Monster) damaged).attack(attacker);
-                            Vector knockbackDirection = attacker.getLocation().toVector().subtract(damaged.getLocation().toVector()).normalize();
-                            knockbackDirection.multiply(1.5);
-                            knockbackDirection.setY(0.5);
-                            attacker.setVelocity(knockbackDirection);
+
+
+
+                        if ((event.getEntity() instanceof Ravager ravager)) {
+
+                            if (manager.isReflecting(ravager.getUniqueId())) {
+                                Vector knockbackDirection = attacker.getLocation().toVector().subtract(damaged.getLocation().toVector()).normalize();
+                                knockbackDirection.multiply(1.5);
+                                knockbackDirection.setY(0.5);
+                                attacker.setVelocity(knockbackDirection);
+                                attacker.damage(event.getDamage());
+                                attacker.sendMessage("§cYou were struck by " + ravager.getName() + "'s retaliation!");
+                                event.setCancelled(true);
+                            }
 
                         }
 
-                        if ((damaged instanceof Warden || damaged instanceof Evoker || damaged instanceof Ravager ) && Math.random() < 0.05) {
-                            ((Monster) damaged).attack(attacker);
-                            damaged.teleport(attacker.getLocation().clone());
-                        }
+
+//                        if ((damaged instanceof Warden || damaged instanceof Evoker || damaged instanceof Ravager ) && Math.random() < 0.1) {
+//                            ((Monster) damaged).attack(attacker);
+//                            Vector knockbackDirection = attacker.getLocation().toVector().subtract(damaged.getLocation().toVector()).normalize();
+//                            knockbackDirection.multiply(1.5);
+//                            knockbackDirection.setY(0.5);
+//                            attacker.setVelocity(knockbackDirection);
+//
+//                        }
+//
+//                        if ((damaged instanceof Warden || damaged instanceof Evoker || damaged instanceof Ravager ) && Math.random() < 0.05) {
+//                            ((Monster) damaged).attack(attacker);
+//                            damaged.teleport(attacker.getLocation().clone());
+//                        }
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
@@ -521,16 +541,29 @@ public class DamageListener implements Listener {
                     if (attackerProfile != null) {
                       try {
                           handleLongRangeDamage(attacker,victim,event,damagerLocation,damagedLocation,attackerProfile);
-                          if ((damaged instanceof Warden || damaged instanceof Evoker || damaged instanceof Ravager ) && Math.random() < 0.05) {
-                              Location aloc = attacker.getLocation().clone();
-                              ((Monster) damaged).attack(attacker);
-                              Vector knockbackDirection = attacker.getLocation().toVector().subtract(damaged.getLocation().toVector()).normalize();
-                              knockbackDirection.multiply(1.5);
-                              knockbackDirection.setY(0.5);
-                              attacker.setVelocity(knockbackDirection);
-                              damaged.teleport(aloc.add(0, 0, 0));
+                          if ((event.getEntity() instanceof Ravager ravager)) {
+
+                              if (manager.isReflecting(ravager.getUniqueId())) {
+                                  Vector knockbackDirection = attacker.getLocation().toVector().subtract(damaged.getLocation().toVector()).normalize();
+                                  knockbackDirection.multiply(1.5);
+                                  knockbackDirection.setY(0.5);
+                                  attacker.setVelocity(knockbackDirection);
+                                  attacker.damage(event.getDamage());
+                                  attacker.sendMessage("§cYou were struck by " + ravager.getName() + "'s retaliation!");
+                                  event.setCancelled(true);
+                              }
 
                           }
+//                          if ((damaged instanceof Warden || damaged instanceof Evoker || damaged instanceof Ravager ) && Math.random() < 0.05) {
+//                              Location aloc = attacker.getLocation().clone();
+//                              ((Monster) damaged).attack(attacker);
+//                              Vector knockbackDirection = attacker.getLocation().toVector().subtract(damaged.getLocation().toVector()).normalize();
+//                              knockbackDirection.multiply(1.5);
+//                              knockbackDirection.setY(0.5);
+//                              attacker.setVelocity(knockbackDirection);
+//                              damaged.teleport(aloc.add(0, 0, 0));
+//
+//                          }
 
                       } catch (Exception e) {
                           throw new RuntimeException(e);
@@ -633,16 +666,30 @@ public class DamageListener implements Listener {
                     if (attackerProfile != null) {
                         try {
                             handleLongRangeDamage(attacker,victim,event,damagerLocation,damagedLocation,attackerProfile);
-                            if ((damaged instanceof Warden || damaged instanceof Evoker || damaged instanceof Ravager) && Math.random() < 0.05) {
-                                Location aloc = attacker.getLocation().clone();
-                                ((Monster) damaged).attack(attacker);
-                                Vector knockbackDirection = attacker.getLocation().toVector().subtract(damaged.getLocation().toVector()).normalize();
-                                knockbackDirection.multiply(1.5);
-                                knockbackDirection.setY(0.5);
-                                attacker.setVelocity(knockbackDirection);
-                                damaged.teleport(aloc.add(0, 0, 0));
+
+                            if ((event.getEntity() instanceof Ravager ravager)) {
+
+                                if (manager.isReflecting(ravager.getUniqueId())) {
+                                    event.setCancelled(true);
+                                    Vector knockbackDirection = attacker.getLocation().toVector().subtract(damaged.getLocation().toVector()).normalize();
+                                    knockbackDirection.multiply(1.5);
+                                    knockbackDirection.setY(0.5);
+                                    attacker.setVelocity(knockbackDirection);
+                                    attacker.damage(event.getDamage());
+                                    attacker.sendMessage("§cYou were struck by " + ravager.getName() + "'s retaliation!");
+                                }
 
                             }
+//                            if ((damaged instanceof Warden || damaged instanceof Evoker || damaged instanceof Ravager) && Math.random() < 0.05) {
+//                                Location aloc = attacker.getLocation().clone();
+//                                ((Monster) damaged).attack(attacker);
+//                                Vector knockbackDirection = attacker.getLocation().toVector().subtract(damaged.getLocation().toVector()).normalize();
+//                                knockbackDirection.multiply(1.5);
+//                                knockbackDirection.setY(0.5);
+//                                attacker.setVelocity(knockbackDirection);
+//                                damaged.teleport(aloc.add(0, 0, 0));
+//
+//                            }
                         } catch (Exception e) {
                             throw new RuntimeException(e);
                         }
@@ -729,17 +776,32 @@ public class DamageListener implements Listener {
                     if (attackerProfile != null) {
                         if (attackerProfile.getChosenClass().equalsIgnoreCase("alchemist") && attacker.getName().equals(victim.getName())) {event.setCancelled(true); return;}
                         handleLongRangeDamage(attacker,victim,event,damagerLocation,damagedLocation,attackerProfile);
-                        if ((damaged instanceof Warden || damaged instanceof Evoker || damaged instanceof Ravager) && Math.random() < 0.05) {
-                            Location aloc = attacker.getLocation().clone();
-                            ((Monster) damaged).attack(attacker);
-                            Vector knockbackDirection = attacker.getLocation().toVector().subtract(damaged.getLocation().toVector()).normalize();
-                            knockbackDirection.multiply(1.5);
-                            knockbackDirection.setY(0.5);
-                            attacker.setVelocity(knockbackDirection);
-                            damaged.teleport(aloc.add(0, 0, 0));
 
+                        if ((event.getEntity() instanceof Ravager ravager)) {
+
+                            if (manager.isReflecting(ravager.getUniqueId())) {
+                                Vector knockbackDirection = attacker.getLocation().toVector().subtract(damaged.getLocation().toVector()).normalize();
+                                knockbackDirection.multiply(1.5);
+                                knockbackDirection.setY(0.5);
+                                attacker.setVelocity(knockbackDirection);
+                                attacker.damage(event.getDamage());
+                                attacker.sendMessage("§cYou were struck by " + ravager.getName() + "'s retaliation!");
+                                event.setCancelled(true);
+                            }
 
                         }
+
+//                        if ((damaged instanceof Warden || damaged instanceof Evoker || damaged instanceof Ravager) && Math.random() < 0.05) {
+//                            Location aloc = attacker.getLocation().clone();
+//                            ((Monster) damaged).attack(attacker);
+//                            Vector knockbackDirection = attacker.getLocation().toVector().subtract(damaged.getLocation().toVector()).normalize();
+//                            knockbackDirection.multiply(1.5);
+//                            knockbackDirection.setY(0.5);
+//                            attacker.setVelocity(knockbackDirection);
+//                            damaged.teleport(aloc.add(0, 0, 0));
+//
+//
+//                        }
 
 
                     }
@@ -939,6 +1001,8 @@ public class DamageListener implements Listener {
         // ✅ Exit early if event already cancelled by other plugin or mechanics
         if (event.isCancelled()) return;
 
+
+
         if (!(event.getEntity() instanceof Player player)) return;
 
         double currentHealth = player.getHealth();
@@ -976,6 +1040,13 @@ public class DamageListener implements Listener {
     public void onEntityTakeDamage(EntityDamageEvent event) {
         if (!Objects.requireNonNull(event.getEntity().getLocation().getWorld()).getName().equals("world_rpg") && !Objects.requireNonNull(event.getEntity().getLocation().getWorld()).getName().contains("world_labyrinth")) {
             return;
+        }
+
+        if (event.getEntity() instanceof Ravager ravager) {
+            if (manager.isFrozen(ravager.getUniqueId())) {
+                event.setCancelled(true);
+                return;
+            }
         }
 
         if (event.getEntity() instanceof LivingEntity entity) {

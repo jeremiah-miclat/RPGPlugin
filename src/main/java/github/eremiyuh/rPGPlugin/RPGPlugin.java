@@ -36,7 +36,8 @@ public class RPGPlugin extends JavaPlugin {
     private ShopsManager shopsManager;
     private ShopTpSaveManager shopTpSaveManager;
     private TpAllowManager tpAllowManager;
-
+    private RavagerSkillManager ravagerManager;
+    private EvokerSkillManager evokerSkillManager;
 
     private final String WORLD_NAME = "world_resource";
     private final String DATA_PACK_FOLDER = "datapacks";
@@ -257,7 +258,8 @@ public class RPGPlugin extends JavaPlugin {
         Objects.requireNonNull(this.getCommand("vault")).setExecutor(new VaultCommand(vaultManager));
         shopTpSaveManager = new ShopTpSaveManager(this.getDataFolder());
         tpAllowManager = new TpAllowManager(this);
-
+        ravagerManager = new RavagerSkillManager(this);
+        evokerSkillManager = new EvokerSkillManager(this);
 
 
         this.chunkManager = new ChunkManager(getDataFolder());
@@ -275,7 +277,7 @@ public class RPGPlugin extends JavaPlugin {
         Objects.requireNonNull(getCommand("cosmeticstore")).setExecutor(new CosmeticStore(this, profileManager));
         Objects.requireNonNull(getCommand("viewitem")).setExecutor(new ViewItemCommand());
 //        Objects.requireNonNull(getCommand("shop")).setExecutor(new ShopCommand());
-        DamageListener damageListenerListener = new DamageListener(profileManager, effectsAbilityManager, damageAbilityManager,this);
+        DamageListener damageListenerListener = new DamageListener(profileManager, effectsAbilityManager, damageAbilityManager,this,ravagerManager);
         getServer().getPluginManager().registerEvents(damageListenerListener,this);
         getServer().getPluginManager().registerEvents(new PotionGiveListener(this,profileManager),this);
         new OverworldBlastProtectionListener(this);
