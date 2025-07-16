@@ -956,7 +956,7 @@ public class DamageListener implements Listener {
             player.setHealth(0.1);  // minimal value, not zero
 //            player.sendMessage("on fatal. the damage was "+ event.getDamage());
             event.setDamage(0);     // prevent actual death
-            player.chat(ChatColor.AQUA + "I'm down. I need help");
+            player.chat( "I'm down. I need help");
             setDownedState(player); // your custom logic
 
             // ⏳ Schedule forced death after 60 seconds
