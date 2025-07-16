@@ -68,7 +68,7 @@ public class RavagerSkillManager {
                 for (UUID id : new HashSet<>(lastUsed.keySet())) {
                     LivingEntity entity = Bukkit.getEntity(id) instanceof LivingEntity le ? le : null;
                     if (!(entity instanceof Ravager ravager) || !ravager.isValid()) {
-                        lastUsed.remove(id);
+                        cleanup(id);
                         continue;
                     }
 
@@ -123,5 +123,11 @@ public class RavagerSkillManager {
 
     public boolean isFrozen(UUID id) {
         return frozen.contains(id);
+    }
+
+    private void cleanup(UUID id) {
+        lastUsed.remove(id);
+        activeReflect.remove(id);
+        frozen.remove(id);
     }
 }

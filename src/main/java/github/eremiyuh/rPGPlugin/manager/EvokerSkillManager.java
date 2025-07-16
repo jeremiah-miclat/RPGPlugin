@@ -36,6 +36,11 @@ public class EvokerSkillManager {
                     if (!evoker.isValid() || evoker.isDead()) continue;
 
                     UUID id = evoker.getUniqueId();
+                    if (!evoker.isValid() || evoker.isDead()) {
+                        // Clean up references to dead or invalid Evokers
+                        lastUsed.remove(id);
+                        continue;
+                    }
 
                     long last = lastUsed.getOrDefault(id, 0L);
                     long elapsed = now - last;
