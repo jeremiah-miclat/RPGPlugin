@@ -85,3 +85,63 @@ If StatDamage% = 25 → multiply damage by 1.25 at the end.
 ✅ Crit chance & multiplier scale with LUK (and a bit of DEX for Archers).
 ✅ StatDamage% is a final multiplier, only from item lore.
 
+
+
+
+
+
+💖 VITALITY & AGILITY STAT GUIDE
+🎓 All stats from your class and gear are divided by 100 before use.
+
+💖 VITALITY → MAX HEALTH
+✅ How It Works:
+Base Health: 20 HP = ❤️ 10 hearts
++10 HP per 1.0 VIT
+
+VIT comes from:
+Your class profile (divided by 100)
+Gear (divided by 100)
+
+Alchemist: Gear VIT ×1.2 bonus
+
+Final result multiplied by StatDamage% (gear bonus) = Final HP Multiplier
+
+🧮 Formula:
+Max HP = (20 + 10 × (classVIT + gearVIT)) × (1 + FinalHpMultiplier%)
+📌 Example (Swordsman):
+Class VIT: 125 → 1.25
+Gear VIT: 75 → 0.75
+Hp% from gear: 20% → 1.20x multiplier
+Max HP = (20 + 10 × (1.25 + 0.75)) × 1.20  
+       = (20 + 20) × 1.20 = 48 HP = ❤️ 24 hearts
+
+
+🏃‍♂️ AGILITY → MOVEMENT SPEED
+✅ How It Works:
+Base Speed: 0.2
++0.0001 speed per 1.0 AGI
+(1000 AGI = +0.1 speed)
+
+Alchemist: Gear AGI ×1.2
+
+Speed cap: 1.0
+
+🧮 Formula:
+Speed = min(0.2 + (classAGI + gearAGI) × 0.0001, 1.0)
+
+📌 Example (Archer):
+Class AGI: 300
+Gear AGI: 200
+Not an Alchemist
+
+Speed = 0.2 + (300 + 200) × 0.0001  
+      = 0.2 + 0.05 = 0.25
+
+⚠️ RECOMMENDED AGILITY
+➤ Max useful speed:
+Speed cap = 1.0 → max bonus = 0.8
+
+To reach 0.8 bonus speed:
+(AGI × 0.0001) = 0.8 → AGI = 8000
+🔻 AGI beyond 8000 gives no extra movement.
+💡 We recommend 2000–3000 AGI for efficiency unless you're going for a meme build.
