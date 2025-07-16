@@ -1,0 +1,87 @@
+📘 STAT SCALING & DAMAGE GUIDE (with Stat ÷ 100 explained)
+💡 All stats in this system are divided by 100 before being used in formulas.
+So if you have 125 STR, it becomes 1.25 for calculations.
+
+⚙️ How Stats Are Calculated
+How It's Used
+Base stats	Taken from your class profile, then ÷ 100
+Gear stats	Parsed from item lore (Strength: X) Also ÷ 100
+Alchemist bonus	Gets +20% more from gear stats (rounded), then ÷ 100
+
+📊 What Each Stat Does
+Stat	Role in Combat
+💪 Strength (STR)	Increases melee damage
+🏹 Dexterity (DEX)	Increases ranged/trident damage; Archer crit chance
+🧠 Intelligence (INT)	Boosts elemental skill damage
+🍀 Luck (LUK)	Increases crit chance and crit multiplier
+📈 StatDamage%	Multiplies total damage (from item lore only)
+
+🧠 Damage Formula Reference
+All stat values below are assumed to be already divided by 100!
+
+✅ Base Damage Formula:
+Melee:         STR × 4
+Bow/Trident:   DEX × 4
+Elemental:     Varies by class + skill
+
+✅ Critical System:
+Crit Chance:
+🗡 Swordsman: LUK × 0.0003
+🏹 Others: LUK × 0.0002
+🏹 Archer: + DEX × 0.0001
+🏹 Skill 3: +25% flat
+
+Crit Multiplier:
+1.5 + (LUK × 0.001)
++ (DEX × 0.00005) if Archer Skill 3
+Crit Defense:
+
+Target’s LUK × 0.0002 + item luck reduces your crit chance
+
+
+⚔️ Class Skill Scaling (After ÷100)
+
+🗡️ SWORDSMAN
+Skill 1:
+STR × 4 (melee)
+INT × 8 (elemental)
+
+🏹 ARCHER
+Skill 1:
+DEX × 4 (bow)
+INT × 6 (elemental)
+
+Skill 2:
+DEX × 4 (bow)
+INT × 4 (elemental)
+
+Skill 3:
+DEX × 4 (bow)
++25% crit chance
++DEX × 0.00005 to crit multiplier
+
+⚗️ ALCHEMIST
+Base potion throw:
+INT × 30
+
+Skill 1:
++INT × 1.2 extra if throwing a potion
+
+Bonus:
++20% to all gear stats before division
+
+📈 Final Damage Calculation
+finalDamage = (baseDamage + STR/DEX/INT skills) × (1 + StatDamage% / 100)
+Example:
+With STR = 1.25 (from 125 total), you get:
+1.25 × 4 = 5 extra melee damage
+
+If StatDamage% = 25 → multiply damage by 1.25 at the end.
+
+🔔 Summary
+✅ All stats are divided by 100 before use.
+✅ Gear stats and base stats are combined.
+✅ Alchemists get +20% from gear stats before dividing.
+✅ Crit chance & multiplier scale with LUK (and a bit of DEX for Archers).
+✅ StatDamage% is a final multiplier, only from item lore.
+
