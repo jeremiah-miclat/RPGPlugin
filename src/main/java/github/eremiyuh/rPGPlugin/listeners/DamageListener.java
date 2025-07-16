@@ -1879,10 +1879,10 @@ public class DamageListener implements Listener {
 
         // melee
         if (event.getDamager() instanceof Player) {
-            statDmg+=str*1;
+            statDmg+=str*4;
             if (damagerProfile.getChosenClass().equalsIgnoreCase("swordsman")) {
                 if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 1") && (player.getInventory().getItemInMainHand().getType().toString().endsWith("_SWORD") || player.getInventory().getItemInMainHand().getType().toString().endsWith("_AXE"))) {
-                    elementalDamage += (intel * 4);
+                    elementalDamage += (intel * 8);
                 }
             }
         }
@@ -1890,38 +1890,35 @@ public class DamageListener implements Listener {
 
         // bow
         if (event.getDamager() instanceof Arrow) {
-            statDmg+=dex*1;
+            statDmg+=dex*4;
             //archers
             if (damagerProfile.getChosenClass().equalsIgnoreCase("archer")) {
 
                 if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 2")) {
-                    elementalDamage += (intel*2);
+                    elementalDamage += (intel*4);
                 }
 
                 if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 1")) {
-                    elementalDamage += (intel*3);
+                    elementalDamage += (intel*6);
                 }
             }
         }
 
         // rocket
         if (event.getDamager().getType() == EntityType.FIREWORK_ROCKET) {
-            elementalDamage += (intel*.7);
-            //archers
-            if (damagerProfile.getChosenClass().equalsIgnoreCase("rocket")) {
-                elementalDamage += (intel*.7);
-            }
+            elementalDamage += (intel*4);
+        }
+
+        // trident
+        if (event.getDamager() instanceof Trident) {
+            statDmg += (dex*4);
         }
 
         // thrown potions
         if (event.getDamager() instanceof ThrownPotion) {
-            elementalDamage += intel * 1;
+            elementalDamage += intel * 30;
             //alchemists
             if (damagerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
-                elementalDamage +=100;
-                if (event.getEntity() instanceof Player) {
-                    elementalDamage*=.2;
-                }
                 if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 1")) {
                     elementalDamage += (intel*1.2);
                 }

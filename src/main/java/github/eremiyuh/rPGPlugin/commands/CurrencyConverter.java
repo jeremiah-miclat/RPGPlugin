@@ -50,7 +50,7 @@ public class CurrencyConverter implements CommandExecutor {
         Material currencyMaterial = currencyMaterials.get(currencyName);
 
         if (currencyMaterial == null) {
-            player.sendMessage("Invalid currency type. Available types: (diamond, gold, lapis, emerald, iron, enderpearl, copper, netherite).");
+            player.sendMessage("Invalid currency type. Available types: diamond, gold, lapis, emerald, iron, enderpearl, copper, netherite.");
             return true;
         }
 
@@ -69,28 +69,41 @@ public class CurrencyConverter implements CommandExecutor {
         UserProfile profile = profileManager.getProfile(player.getName());
         double currentBalance = profile.getCurrency(currencyName);
 
-        // Check if the player has enough balance
         if (currentBalance < amount) {
             player.sendMessage("You do not have enough " + currencyName + " to convert.");
             return true;
         }
 
-        // Create an ItemStack for the specified currency type
-        ItemStack itemStack = new ItemStack(currencyMaterial, amount);
+        // Try to add as many items as possible in stacks (max 64 per stack)
+        int remaining = amount;
+        int actuallyAdded = 0;
 
-        // Check if the player has enough empty slots
-        if (player.getInventory().firstEmpty() == -1) {
-            player.sendMessage("You do not have enough space in your inventory to convert these items. Please free up some space.");
-            return true;
+        while (remaining > 0) {
+            int stackSize = Math.min(remaining, currencyMaterial.getMaxStackSize());
+            ItemStack stack = new ItemStack(currencyMaterial, stackSize);
+
+            Map<Integer, ItemStack> notAdded = player.getInventory().addItem(stack);
+
+            if (notAdded.isEmpty()) {
+                actuallyAdded += stackSize;
+                remaining -= stackSize;
+            } else {
+                // Could not add this stack — inventory full
+                break;
+            }
         }
 
-        // Add the items to the player's inventory
-        player.getInventory().addItem(itemStack);
-        player.sendMessage("You have converted " + amount + " " + currencyName + "(s) to items!");
+        if (actuallyAdded > 0) {
+            profile.setCurrency(currencyName, currentBalance - actuallyAdded);
+            player.sendMessage("You have converted " + actuallyAdded + " " + currencyName + "(s) to items!");
+        }
 
-        // Deduct the amount from the UserProfile's balance
-        profile.setCurrency(currencyName, currentBalance - amount);
+        if (actuallyAdded < amount) {
+            int failedAmount = amount - actuallyAdded;
+            player.sendMessage("You did not have enough inventory space for " + failedAmount + " " + currencyName + "(s). They were not converted.");
+        }
 
         return true;
     }
 }
+
