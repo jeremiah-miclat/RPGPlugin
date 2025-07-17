@@ -43,7 +43,7 @@ public class RavagerSkillManager {
         frozen.add(id);
 
         ravager.setAI(false);
-        ravager.setInvulnerable(true);
+//        ravager.setInvulnerable(true);
 
         sayToNearbyPlayers(ravager, "§4" + ravager.getName() + " roars: \"COME, FEED ME YOUR WEAKNESS!\"", 60);
 
@@ -51,7 +51,7 @@ public class RavagerSkillManager {
             @Override
             public void run() {
                 ravager.setAI(true);
-                ravager.setInvulnerable(false);
+//                ravager.setInvulnerable(false);
                 activeReflect.remove(id);
                 frozen.remove(id);
                 sayToNearbyPlayers(ravager, "§7" + ravager.getName() + " ...", 60);

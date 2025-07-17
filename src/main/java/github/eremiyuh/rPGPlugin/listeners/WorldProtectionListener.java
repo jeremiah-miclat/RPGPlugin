@@ -1,8 +1,10 @@
 package github.eremiyuh.rPGPlugin.listeners;
 
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -42,13 +44,32 @@ public class WorldProtectionListener implements Listener {
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
-        if (ANNOYING_BLOCKS.contains(event.getBlock().getType())) {
-            return;
+        Block block = event.getBlock();
+        Player player = event.getPlayer();
+        World world = block.getWorld();
+        Material type = block.getType();
+
+        boolean isProtected = isInProtectedWorld(world);
+        boolean isCreative = player.getGameMode() == GameMode.CREATIVE;
+
+        // Always allow breaking annoying blocks (even in protected world)
+        if (ANNOYING_BLOCKS.contains(type)) {
+            return; // allow break
         }
 
-        if (isInProtectedWorld(event.getBlock().getWorld()) && event.getPlayer().getGameMode() != GameMode.CREATIVE) {
+        // If it's a Wither Rose in a protected world, allow breaking and spawn Wither Skeleton
+        if (isProtected && type == Material.WITHER_ROSE) {
+            Location loc = block.getLocation().add(0.5, 0, 0.5);
+            world.spawnEntity(loc, EntityType.WITHER_SKELETON);
+            return; // allow break
+        }
+
+        // In protected world, cancel everything else if not creative
+        if (isProtected && !isCreative) {
             event.setCancelled(true);
         }
+
+        // Outside protected world = allow everything
     }
 
     @EventHandler

@@ -51,7 +51,7 @@ public class PotionGiveListener implements Listener {
         long now = System.currentTimeMillis();
         if (alchemistCooldowns.containsKey(uuid)) {
             long lastUse = alchemistCooldowns.get(uuid);
-            long remaining = 5000 - (now - lastUse);
+            long remaining = 2500 - (now - lastUse);
             if (remaining > 0) {
 //                player.sendMessage(ChatColor.RED + "⏳ You must wait " + (remaining / 1000 + 1) + " more second(s).");
                 return;

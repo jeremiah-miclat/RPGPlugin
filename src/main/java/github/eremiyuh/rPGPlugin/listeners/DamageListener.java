@@ -14,6 +14,7 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
+import org.bukkit.block.Block;
 import org.bukkit.damage.DamageSource;
 import org.bukkit.damage.DamageType;
 import org.bukkit.enchantments.Enchantment;
@@ -29,6 +30,7 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -151,7 +153,9 @@ public class DamageListener implements Listener {
                         UserProfile profile = profileManager.getProfile(damager.getName());
                         if (!(profile.getTeam().equalsIgnoreCase(ownerProfile.getTeam())) && !profile.getTeam().equalsIgnoreCase("none")) return;
                         if ((profile.isPvpEnabled() && ownerProfile.isPvpEnabled())) return;
+                        damager.sendMessage("Can't Damage");
                         event.setCancelled(true);
+
                     }
                 }
 
@@ -166,6 +170,7 @@ public class DamageListener implements Listener {
                         UserProfile profile = profileManager.getProfile(shooter.getName());
                         if (!(profile.getTeam().equalsIgnoreCase(ownerProfile.getTeam())) && !profile.getTeam().equalsIgnoreCase("none")) return;
                         if ((profile.isPvpEnabled() && ownerProfile.isPvpEnabled())) return;
+                        damager.sendMessage("Can't Damage");
                         event.setCancelled(true);
                     }
                 }
@@ -395,7 +400,7 @@ public class DamageListener implements Listener {
                                 attacker.setVelocity(knockbackDirection);
                                 attacker.damage(event.getDamage());
                                 attacker.sendMessage("§cYou were struck by " + ravager.getName() + "'s retaliation!");
-                                event.setCancelled(true);
+                                event.setDamage(0);
                             }
 
                         }
@@ -550,7 +555,7 @@ public class DamageListener implements Listener {
                                   attacker.setVelocity(knockbackDirection);
                                   attacker.damage(event.getDamage());
                                   attacker.sendMessage("§cYou were struck by " + ravager.getName() + "'s retaliation!");
-                                  event.setCancelled(true);
+                                  event.setDamage(0);
                               }
 
                           }
@@ -670,13 +675,13 @@ public class DamageListener implements Listener {
                             if ((event.getEntity() instanceof Ravager ravager)) {
 
                                 if (manager.isReflecting(ravager.getUniqueId())) {
-                                    event.setCancelled(true);
                                     Vector knockbackDirection = attacker.getLocation().toVector().subtract(damaged.getLocation().toVector()).normalize();
                                     knockbackDirection.multiply(1.5);
                                     knockbackDirection.setY(0.5);
                                     attacker.setVelocity(knockbackDirection);
                                     attacker.damage(event.getDamage());
                                     attacker.sendMessage("§cYou were struck by " + ravager.getName() + "'s retaliation!");
+                                    event.setDamage(0);
                                 }
 
                             }
@@ -786,7 +791,7 @@ public class DamageListener implements Listener {
                                 attacker.setVelocity(knockbackDirection);
                                 attacker.damage(event.getDamage());
                                 attacker.sendMessage("§cYou were struck by " + ravager.getName() + "'s retaliation!");
-                                event.setCancelled(true);
+                                event.setDamage(0);
                             }
 
                         }
@@ -845,6 +850,16 @@ public class DamageListener implements Listener {
                     if (damaged instanceof Player player) {
                         UserProfile playerProfile = profileManager.getProfile(player.getName());
                         playerProfile.setDurability(Math.max(0,playerProfile.getDurability()-1));
+
+                        if (damager instanceof Spider || damager instanceof CaveSpider) {
+                            // 10% chance to apply Nausea
+                            if (new Random().nextInt(100) < 100) {
+                                player.addPotionEffect(new PotionEffect(PotionEffectType.NAUSEA, 200, 2)); // 3s
+                            }
+
+                        }
+
+
                         if (playerProfile.isBossIndicator() && playerProfile.getDurability() <= 0) {
                             player.sendMessage("Durability depleted. You will receive more damage. /sdw to turn off this warning");
                         }
@@ -921,6 +936,12 @@ public class DamageListener implements Listener {
                         customDamage*=1+(.1*sharplevel);
                     }
                     if (damaged instanceof Player player) {
+                        if (mob instanceof Wither && new Random().nextInt(100) < 10) {
+                            Location playerLoc = player.getLocation();
+                            Vector behind = playerLoc.getDirection().normalize().multiply(-1);
+                            Location spawnLoc = playerLoc.clone().add(behind).add(0.5, 0, 0.5);
+                            player.getWorld().spawnEntity(spawnLoc, EntityType.WITHER_SKELETON);
+                        }
                         UserProfile playerProfile = profileManager.getProfile(player.getName());
                         playerProfile.setDurability(Math.max(0,playerProfile.getDurability()-1));
                         if (playerProfile.isBossIndicator() && playerProfile.getDurability() <= 0) {
@@ -1044,7 +1065,7 @@ public class DamageListener implements Listener {
 
         if (event.getEntity() instanceof Ravager ravager) {
             if (manager.isFrozen(ravager.getUniqueId())) {
-                event.setCancelled(true);
+                event.setDamage(0);
                 return;
             }
         }
@@ -2348,17 +2369,6 @@ public class DamageListener implements Listener {
         }
     }
 
-    @EventHandler
-    public void onZombieDeath(EntityDeathEvent event) {
-        if (event.getEntity() instanceof Zombie) {
-            // 10% chance
-            if (new Random().nextInt(100) < 20) {
-                Zombie zombie = (Zombie) event.getEntity();
-                Location loc = zombie.getLocation().add(0, 0, 0);
-                zombie.getWorld().spawnEntity(loc, EntityType.SKELETON);
-            }
-        }
-    }
 
 }
 
