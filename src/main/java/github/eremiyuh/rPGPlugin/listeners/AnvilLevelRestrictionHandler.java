@@ -6,6 +6,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
@@ -18,6 +19,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class AnvilLevelRestrictionHandler implements Listener {
@@ -136,9 +138,32 @@ public class AnvilLevelRestrictionHandler implements Listener {
 
     }
 
+    private boolean hasBypassLore(ItemStack item) {
+        if (item == null || !item.hasItemMeta()) return false;
+
+        ItemMeta meta = item.getItemMeta();
+        if (meta == null || !meta.hasLore()) return false;
+
+        for (String line : meta.getLore()) {
+            if (line.contains("ByPassLevel")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @EventHandler
     public void customEnchant(PrepareAnvilEvent event) {
-        if (event.getViewers().getFirst().isOp()) {
+//        if (event.getViewers().getFirst().isOp()) {
+//            event.getView().bypassEnchantmentLevelRestriction(true);
+//        }
+
+        AnvilInventory inventory = event.getInventory();
+        ItemStack first = inventory.getFirstItem();
+        ItemStack second = inventory.getSecondItem();
+
+        if (hasBypassLore(first) && hasBypassLore(second)) {
+            // Allow bypassing enchantment level restriction
             event.getView().bypassEnchantmentLevelRestriction(true);
         }
 
@@ -302,6 +327,64 @@ public class AnvilLevelRestrictionHandler implements Listener {
             }
         }
     }
+
+    @EventHandler
+    public void onApplyBypassLore(InventoryClickEvent event) {
+        if (!(event.getWhoClicked() instanceof Player)) return;
+        if (!event.isLeftClick()) return; // Better compatibility (Java + Bedrock)
+        if (event.getCursor() == null || event.getCurrentItem() == null) return;
+
+        ItemStack cursor = event.getCursor();       // Dragged item (should be coal)
+        ItemStack target = event.getCurrentItem();  // Target item to receive the lore
+
+        if (cursor.getType() != Material.COAL) return;
+        if (!hasBypassLore(cursor)) return; // Optional lore check on the coal
+
+        ItemMeta targetMeta = target.getItemMeta();
+        if (targetMeta == null) return;
+
+        // Check if target has one of the allowed enchantments
+        if (!hasAllowedEnchant(target)) return;
+
+        // Check if lore already contains ByPassLevel
+        List<String> lore = targetMeta.hasLore() ? new ArrayList<>(targetMeta.getLore()) : new ArrayList<>();
+        if (lore.stream().anyMatch(l -> l.startsWith("ByPassLevel"))) return;
+
+        // Apply the lore
+        lore.add("ByPassLevel: 1");
+        targetMeta.setLore(lore);
+        target.setItemMeta(targetMeta);
+
+        // Consume the coal item
+        if (cursor.getAmount() > 1) {
+            cursor.setAmount(cursor.getAmount() - 1);
+        } else {
+            event.setCursor(null);
+        }
+
+        event.setCurrentItem(target);
+        ((Player) event.getWhoClicked()).sendMessage("§aByPassLevel applied!");
+    }
+
+    private boolean hasAllowedEnchant(ItemStack item) {
+        ItemMeta meta = item.getItemMeta();
+        if (meta == null) return false;
+
+        // If it's an enchanted book
+        if (meta instanceof EnchantmentStorageMeta) {
+            EnchantmentStorageMeta bookMeta = (EnchantmentStorageMeta) meta;
+            Map<Enchantment, Integer> stored = bookMeta.getStoredEnchants();
+            return stored.containsKey(Enchantment.SHARPNESS) ||   // Sharpness
+                    stored.containsKey(Enchantment.POWER) || // Power
+                    stored.containsKey(Enchantment.SMITE);  // Smite
+        }
+
+        // If it's a normal enchanted item
+        return item.containsEnchantment(Enchantment.SHARPNESS) ||
+                item.containsEnchantment(Enchantment.POWER) ||
+                item.containsEnchantment(Enchantment.SMITE);
+    }
+
 
 
 
