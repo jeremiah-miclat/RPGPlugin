@@ -47,18 +47,19 @@ public class PotionGiveListener implements Listener {
         ItemStack mainHandItem = player.getInventory().getItemInMainHand();
         ItemStack offHandItem = player.getInventory().getItemInOffHand();
 
-        // ✅ Cooldown check (5 seconds = 5000 ms)
+        // ✅ Cooldown check (1 sec for book, 2.5 sec otherwise)
         long now = System.currentTimeMillis();
+        long cooldown = (mainHandItem.getType() == Material.BOOK) ? 1000 : 2500;
+
         if (alchemistCooldowns.containsKey(uuid)) {
             long lastUse = alchemistCooldowns.get(uuid);
-            long remaining = 2500 - (now - lastUse);
+            long remaining = cooldown - (now - lastUse);
             if (remaining > 0) {
-//                player.sendMessage(ChatColor.RED + "⏳ You must wait " + (remaining / 1000 + 1) + " more second(s).");
                 return;
             }
         }
 
-        if (mainHandItem.getType() == Material.BOOK && offHandItem.getType() == Material.AIR) {
+        if (mainHandItem.getType() != Material.AIR && offHandItem.getType() == Material.AIR) {
             if (playerProfile.getPotion() < 1) {
                 player.sendMessage("No potions");
                 return;

@@ -1764,7 +1764,18 @@ public class DamageListener implements Listener {
 
         // Alchemist class - Check if using thrown potion
         if (damagerProfile.getChosenClass().equalsIgnoreCase("alchemist") && event.getDamager() instanceof ThrownPotion) {
-            finalDamage = finalDamage;
+            int sharpnessLevel = weapon.getEnchantmentLevel(Enchantment.SHARPNESS);
+
+            if (sharpnessLevel > 0) {
+                finalDamage = finalDamage * (1+(0.1*sharpnessLevel));
+            }
+
+            int powerLevel = weapon.getEnchantmentLevel(Enchantment.POWER);
+
+            if (powerLevel > 0) {
+                finalDamage = finalDamage * (1+0.1*powerLevel);
+            }
+
 
             effectsAbilityManager.applyAbility(damagerProfile, target, damagerLocation, damagedLocation);
 
@@ -1808,6 +1819,8 @@ public class DamageListener implements Listener {
         if (powerLevel > 0) {
             finalDamage = finalDamage * (1+0.1*powerLevel);
         }
+
+
 
         if (event.getEntity() instanceof Player player) {
             UserProfile playerProfile = profileManager.getProfile(player.getName());
