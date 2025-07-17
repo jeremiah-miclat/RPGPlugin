@@ -46,6 +46,8 @@ public class SkillListener implements Listener {
         }
 
         // Activate skill
+        event.setCancelled(true);            // Prevent sneak state from changing
+        player.setSneaking(false);           // Reset sneak animation (prevents visual crouch)
         activateAeroLeap(player);
         lastUsed.put(uuid, now); // Start cooldown
     }

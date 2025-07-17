@@ -124,7 +124,7 @@ public class AlchemistThrowPotion implements Listener {
                             }
 
                             if (effect.getType() == PotionEffectType.STRENGTH) {
-                                intensity = (intel/600);
+                                intensity = (intel/75);
                                 duration = (int) (intel/10);
 
                                 int finalDuration = baseDuration + duration + 100;
