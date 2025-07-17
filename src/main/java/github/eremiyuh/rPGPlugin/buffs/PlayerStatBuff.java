@@ -66,7 +66,7 @@ public class PlayerStatBuff {
      */
     private double calculateMaxHealth(UserProfile profile, Player player) {
         double baseHealth = 20.0;
-        double healthPerVitality = 10;
+        double healthPerVitality = 20;
 
         double[] equipStats = getEquipStats(player);
         double equipVitality = equipStats[0]/100;

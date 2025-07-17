@@ -98,7 +98,7 @@ If StatDamage% = 25 → multiply damage by 1.25 at the end.
 💖 VITALITY → MAX HEALTH
 ✅ How It Works:
 Base Health: 20 HP = ❤️ 10 hearts
-+10 HP per 1.0 VIT
++20 HP per 1.0 VIT
 
 VIT comes from:
 Your class profile (divided by 100)
