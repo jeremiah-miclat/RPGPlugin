@@ -13,6 +13,7 @@ import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
@@ -64,7 +65,29 @@ public class DeadMobListener implements Listener {
 
 
 
+    @EventHandler
+    public void onCreeperExplode(EntityExplodeEvent event) {
+        if (!event.getEntity().getWorld().getName().contains("_rpg")) return;
+        if (!(event.getEntity() instanceof Creeper)) return;
+        Location loc = event.getEntity().getLocation();
+        loc.getWorld().spawnEntity(loc, EntityType.BLAZE);
+    }
 
+    @EventHandler
+    public void entityDeathInRpg(EntityDeathEvent event) {
+        if (!event.getEntity().getWorld().getName().contains("_rpg")) return;
+
+        // Handle Zombie death
+        if (event.getEntity() instanceof Zombie) {
+            // 20% chance
+            if (new Random().nextInt(100) < 20) {
+                Zombie zombie = (Zombie) event.getEntity();
+                Location loc = zombie.getLocation();
+                zombie.getWorld().spawnEntity(loc, EntityType.SKELETON);
+            }
+        }
+
+    }
 
 
     @EventHandler
@@ -81,11 +104,11 @@ public class DeadMobListener implements Listener {
                     int bonusPoints = profile.getHunter();
                     profile.setActivitypoints(profile.getActivitypoints()+1+bonusPoints);
                     if (event.getEntity() instanceof  Warden || event.getEntity() instanceof Wither) {
-                        profile.setCurrency("activitypoints", profile.getCurrency("activitypoints") + (1000));
+                        profile.setCurrency("activitypoints", profile.getCurrency("activitypoints") + (10000));
                     }
 
                     if (event.getEntity() instanceof EnderDragon) {
-                        profile.setCurrency("activitypoints", profile.getCurrency("activitypoints") + (2000));
+                        profile.setCurrency("activitypoints", profile.getCurrency("activitypoints") + (20000));
                     }
                 }
 
@@ -94,10 +117,10 @@ public class DeadMobListener implements Listener {
                     int bonusPoints = profile.getHunter();
                     profile.setActivitypoints(profile.getActivitypoints()+1+bonusPoints);
                     if (event.getEntity() instanceof  Warden || event.getEntity() instanceof Wither) {
-                        profile.setCurrency("activitypoints", profile.getCurrency("activitypoints") + (1000));
+                        profile.setCurrency("activitypoints", profile.getCurrency("activitypoints") + (10000));
                     }
                     if (event.getEntity() instanceof EnderDragon) {
-                        profile.setCurrency("activitypoints", profile.getCurrency("activitypoints") + (2000));;
+                        profile.setCurrency("activitypoints", profile.getCurrency("activitypoints") + (20000));;
                     }
                 }
 

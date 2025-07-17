@@ -824,13 +824,7 @@ public class DamageListener implements Listener {
 
             if (event.getDamager() instanceof Monster mob) {
 
-                // Check if the entity has the fire resistance potion effect
-                if (mob instanceof Blaze && damaged instanceof LivingEntity target && target.hasPotionEffect(PotionEffectType.FIRE_RESISTANCE)) {
 
-                    target.removePotionEffect(PotionEffectType.FIRE_RESISTANCE);
-
-                    if (target instanceof Player) target.sendMessage("Your fire resistance effect has been removed by Blaze.");
-                }
 
                    ItemStack weapon =  mob.getEquipment().getItemInMainHand();
 
@@ -851,12 +845,32 @@ public class DamageListener implements Listener {
                         UserProfile playerProfile = profileManager.getProfile(player.getName());
                         playerProfile.setDurability(Math.max(0,playerProfile.getDurability()-1));
 
-                        if (damager instanceof Spider || damager instanceof CaveSpider) {
+                        if (damager instanceof Spider) {
                             // 10% chance to apply Nausea
-                            if (new Random().nextInt(100) < 100) {
+                            if (new Random().nextInt(100) < 10) {
                                 player.addPotionEffect(new PotionEffect(PotionEffectType.NAUSEA, 200, 2)); // 3s
                             }
 
+                        }
+
+                        if (mob instanceof Blaze) {
+                            LivingEntity target = (LivingEntity) damaged;
+                            if (player.hasPotionEffect(PotionEffectType.FIRE_RESISTANCE)) {
+
+                                player.removePotionEffect(PotionEffectType.FIRE_RESISTANCE);
+
+                                if (player instanceof Player)
+                                    player.sendMessage("Your fire resistance effect has been removed by Blaze.");
+                            }
+                        }
+
+                        if (mob instanceof Zombie) {
+                            Player target = (Player) damaged;
+                            if (new Random().nextInt(100) < 10) {
+
+                                player.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 200, 2));
+
+                            }
                         }
 
 
@@ -910,7 +924,14 @@ public class DamageListener implements Listener {
                         }
 
                         if (mob instanceof Vindicator) {
-                            mobDamage = Math.max(3,mobDamage - 3);
+                            mobDamage = 1;
+                            if (new Random().nextInt(100) < 20){
+                                playerProfile.setDurability(Math.max(0,playerProfile.getDurability()-1000));
+                                String displayName = mob.getCustomName() != null ? mob.getCustomName() : ChatColor.GRAY + "Vindicator";
+                                player.sendMessage(displayName + ChatColor.RED + ": " + getVindicatorRandomInsult());
+                                player.sendMessage(ChatColor.RED + "Vindicator reduced your durability by 1000");
+                            }
+
                         }
 
                         event.setDamage(mobDamage);
@@ -942,6 +963,25 @@ public class DamageListener implements Listener {
                             Location spawnLoc = playerLoc.clone().add(behind).add(0.5, 0, 0.5);
                             player.getWorld().spawnEntity(spawnLoc, EntityType.WITHER_SKELETON);
                         }
+
+                        if (mob instanceof Skeleton && new Random().nextInt(100) < 10) {
+                            Skeleton skeleton = (Skeleton) mob;
+
+                            // Get the direction the skeleton is facing
+                            Vector knockbackDirection = skeleton.getLocation().getDirection().normalize().multiply(3.5); // Horizontal speed
+                            knockbackDirection.setY(0.5); // Optional upward force
+
+                            // Apply velocity to knock the player away in the direction the skeleton is facing
+                            player.setVelocity(knockbackDirection);
+
+                            // Get custom name with formatting
+                            String displayName = skeleton.getCustomName() != null ? skeleton.getCustomName() : ChatColor.GRAY + "Skeleton";
+
+                            // Send a random insult
+                            player.sendMessage(displayName + ChatColor.RED + ": " + getSkeletonRandomInsult());
+                        }
+
+
                         UserProfile playerProfile = profileManager.getProfile(player.getName());
                         playerProfile.setDurability(Math.max(0,playerProfile.getDurability()-1));
                         if (playerProfile.isBossIndicator() && playerProfile.getDurability() <= 0) {
@@ -1007,6 +1047,32 @@ public class DamageListener implements Listener {
 
 
 
+    }
+
+    private String getSkeletonRandomInsult() {
+        String[] insults = {
+                "You're not even worth my arrows!",
+                "I've seen zombies with more brains!",
+                "Go back to the noob cave!",
+                "You're one hit away from respawn!"
+        };
+        return insults[new Random().nextInt(insults.length)];
+    }
+
+    private String getVindicatorRandomInsult() {
+        String[] insults = {
+                "I'll split you like firewood!",
+                "This axe has your name on it.",
+                "You call *that* armor?",
+                "Your screams will echo in the mansion!",
+                "You're softer than a slime block!",
+                "Did you forget your sword at home?",
+                "One swing is all it takes...",
+                "Is that fear I smell?",
+                "You should’ve stayed in creative mode!",
+                "Even an Illusioner could beat you blind!"
+        };
+        return insults[new Random().nextInt(insults.length)];
     }
 
     private boolean hasTotem(Player player) {
