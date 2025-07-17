@@ -456,18 +456,18 @@ public class DamageListener implements Listener {
                     Location loc2 = attacker.getLocation();
 
                     // Check if the world name contains "Labyrinth" and coordinates match
-                    if (loc2.getWorld().getName().contains("labyrinth")) {
-                        int x = loc2.getBlockX();
-                        int z = loc2.getBlockZ();
-
-
-                        // Check if the coordinates are within the specified range
-                        if (x >= -23 && x <= -17 && z >= -38 && z <= -34) {
-                            // Cancel the damage
-                            event.setCancelled(true);
-                            return;
-                        }
-                    }
+//                    if (loc2.getWorld().getName().contains("labyrinth")) {
+//                        int x = loc2.getBlockX();
+//                        int z = loc2.getBlockZ();
+//
+//
+//                        // Check if the coordinates are within the specified range
+//                        if (x >= -23 && x <= -17 && z >= -38 && z <= -34) {
+//                            // Cancel the damage
+//                            event.setCancelled(true);
+//                            return;
+//                        }
+//                    }
 
                     if (damaged instanceof Player damagedPlayer) {
 
@@ -919,9 +919,9 @@ public class DamageListener implements Listener {
 //
 //                            return;
 //                        }
-                        if (mob instanceof Vex) {
-                            mobDamage = .5;
-                        }
+//                        if (mob instanceof Vex) {
+//                            mobDamage = .5;
+//                        }
 
                         if (mob instanceof Vindicator) {
                             mobDamage = 1;

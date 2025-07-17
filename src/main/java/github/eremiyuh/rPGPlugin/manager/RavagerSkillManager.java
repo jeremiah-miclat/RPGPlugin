@@ -1,7 +1,6 @@
 package github.eremiyuh.rPGPlugin.manager;
 
-import org.bukkit.Bukkit;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Ravager;
@@ -54,7 +53,38 @@ public class RavagerSkillManager {
 //                ravager.setInvulnerable(false);
                 activeReflect.remove(id);
                 frozen.remove(id);
-                sayToNearbyPlayers(ravager, "§7" + ravager.getName() + " ...", 60);
+                sayToNearbyPlayers(ravager, "§7" + ravager.getName() + " Fly foo!", 60);
+
+
+                Location ravagerLocXZ = ravager.getLocation().clone();
+                ravagerLocXZ.setY(0); // Ignore vertical difference
+
+                for (Player player : ravager.getWorld().getPlayers()) {
+                    Location playerLocXZ = player.getLocation().clone();
+                    playerLocXZ.setY(0); // Ignore vertical difference
+
+                    if (ravagerLocXZ.distanceSquared(playerLocXZ) <= 60 * 60) {
+                        // Toss logic here
+
+                        // Upward launch
+                        player.damage(1);
+                        player.setVelocity(player.getVelocity().setY(2.2));
+
+                        // Sound
+                        player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1f, 1f);
+
+
+                        player.getWorld().spawnParticle(
+                                Particle.EXPLOSION,
+                                player.getLocation().add(0, 1, 0), // position
+                                30,                                // count (more = denser effect)
+                                0.5, 1, 0.5,                       // offsetX, offsetY, offsetZ (spread area)
+                                0.1                                // extra (speed or size depending on particle)
+                        );
+
+                    }
+                }
+
             }
         }.runTaskLater(plugin, 20L * 5); // 5 seconds
     }

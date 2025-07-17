@@ -9,6 +9,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
+import org.bukkit.event.entity.EntitySpellCastEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -218,6 +219,15 @@ public class MonsterInitializer implements Listener {
         if (entity.getAttribute(Attribute.SAFE_FALL_DISTANCE) != null) {
             double baseSafeFallDistance = Objects.requireNonNull(entity.getAttribute(Attribute.SAFE_FALL_DISTANCE)).getBaseValue();
             Objects.requireNonNull(entity.getAttribute(Attribute.SAFE_FALL_DISTANCE)).setBaseValue(baseSafeFallDistance * jumpMultiplier + 1);
+        }
+    }
+
+    @EventHandler
+    public void onEvokerSpell(EntitySpellCastEvent event) {
+        if (event.getEntity() instanceof Evoker evoker && evoker.getWorld().getName().contains("rpg"))  {
+            if (event.getSpell() == Spellcaster.Spell.SUMMON_VEX) {
+                event.setCancelled(true); // Cancel only Vex summon
+            }
         }
     }
 

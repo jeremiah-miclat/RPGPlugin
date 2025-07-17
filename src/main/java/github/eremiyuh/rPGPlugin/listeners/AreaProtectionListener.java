@@ -75,6 +75,8 @@ public class AreaProtectionListener implements Listener {
                 z >= Math.min(zzz1, zzz2) && z <= Math.max(zzz1, zzz2);
     }
 
+
+
     @EventHandler
     public void onEntitySpawn(EntitySpawnEvent event) {
         Entity entity = event.getEntity();
