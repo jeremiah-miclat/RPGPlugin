@@ -51,11 +51,11 @@ INT × 8 (elemental)
 🏹 ARCHER
 Skill 1:
 DEX × 4 (bow)
-INT × 6 (elemental)
+INT × 8 (elemental)
 
 Skill 2:
 DEX × 4 (bow)
-INT × 4 (elemental)
+INT × 6 (elemental)
 
 Skill 3:
 DEX × 4 (bow)
@@ -64,10 +64,13 @@ DEX × 4 (bow)
 
 ⚗️ ALCHEMIST
 Base potion throw:
-INT × 30
+Against Players:
+INT × 3
+Against Mobs:
+INT x 10
 
 Skill 1:
-+INT × 1.2 extra if throwing a potion
++ 20% Damage from INT
 
 Bonus:
 +20% to all gear stats before division
