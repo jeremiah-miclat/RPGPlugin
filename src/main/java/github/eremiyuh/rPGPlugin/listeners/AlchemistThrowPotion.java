@@ -285,7 +285,7 @@ public class AlchemistThrowPotion implements Listener {
 
                         boolean isPositiveEffect = HEAL_EFFECTS.contains(effect.getType());
 
-                        int intensity = (int) (intel / 400);
+                        int intensity = (int) (intel / 100);
                         intensity *= 5;
 
 
