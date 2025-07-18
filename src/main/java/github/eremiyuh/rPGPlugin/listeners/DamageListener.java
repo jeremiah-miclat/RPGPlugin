@@ -2093,7 +2093,11 @@ public class DamageListener implements Listener {
 
         // thrown potions
         if (event.getDamager() instanceof ThrownPotion) {
-            elementalDamage += intel * 30;
+            if (event.getEntity() instanceof Player) {
+                elementalDamage += intel * 6;
+            } else {
+                elementalDamage += intel * 30;
+            }
             //alchemists
             if (damagerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
                 if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 1")) {
