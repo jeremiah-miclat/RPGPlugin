@@ -16,38 +16,40 @@ public class ChangePassCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        // Check if sender has admin privileges
-        if (!(sender.isOp())) {
-            sender.sendMessage("You do not have permission to use this command.");
+
+        if (!(sender instanceof Player)) {
+            sender.sendMessage("Only players can change their password.");
             return true;
         }
 
-        if (!sender.getName().equals("Eremiyuh")) {
-            sender.sendMessage("You do not have permission to use this command.");
-            return true;
-        }
+        Player player = (Player) sender;
 
-        // Check if the correct arguments are provided
+        // Require 2 arguments: /changepass <newpassword> <newpassword>
         if (args.length < 2) {
-            sender.sendMessage("Usage: /changepass <playername> <newpassword>");
+            player.sendMessage("Usage: /changepass <newpassword> <newpassword>");
             return false;
         }
 
-        String playerName = args[0];
-        String newPassword = args[1];
+        String newPassword = args[0];
+        String confirmPassword = args[1];
 
-        // Retrieve the player's profile
-        UserProfile profile = profileManager.getProfile(playerName);
-        if (profile == null) {
-            sender.sendMessage("Player not found or does not have a profile.");
+        if (!newPassword.equals(confirmPassword)) {
+            player.sendMessage("Passwords do not match. Try again.");
             return true;
         }
 
-        // Update password and save profile
-        profile.setPassword(newPassword);
-        profileManager.saveProfile(playerName);
+        // Get the profile for the player
+        UserProfile profile = profileManager.getProfile(player.getName());
+        if (profile == null) {
+            player.sendMessage("Your profile could not be found.");
+            return true;
+        }
 
-        sender.sendMessage("Password for " + playerName + " has been successfully updated.");
+        // Set and save the new password
+        profile.setPassword(newPassword);
+        profileManager.saveProfile(player.getName());
+
+        player.sendMessage("Your password has been successfully updated.");
         return true;
     }
 }

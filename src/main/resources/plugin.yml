@@ -190,8 +190,6 @@ commands:
   changepassword:
     description: "Admin command to change a player's password."
     usage: "/changepassword <playername> <newpassword>"
-    permission: RPGPlugin.changepass
-    permission-default: op
   tm:
     description: Initiate a trade with another player
     usage: /tm <playername> <offeredmaterialname> <amount> <wantedmaterialname> <amount>
