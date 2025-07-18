@@ -81,6 +81,8 @@ public class FlyCommand implements CommandExecutor {
                 }.runTaskTimer(plugin, 1200L, 1200L); // 1200 ticks = 60 seconds
             } else {
                 player.sendMessage("You do not have enough diamonds to enable fly mode.");
+                player.sendMessage("Convert diamonds in your inventory to currency.");
+                player.sendMessage("Enter /convertmaterial diamond");
             }
         }
         return true;
