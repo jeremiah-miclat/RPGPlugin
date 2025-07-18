@@ -96,7 +96,6 @@ public class EvokerSkillManager {
 
         // Push players in XZ radius
         for (Player player : evoker.getWorld().getPlayers()) {
-            player.damage(1);
             Location playerLoc = player.getLocation().clone();
             Location evokerLoc = center.clone();
             playerLoc.setY(0);
@@ -106,7 +105,7 @@ public class EvokerSkillManager {
                 @NotNull Vector push = player.getLocation().toVector().subtract(center.toVector()).normalize().multiply(2);
                 push.setY(1.0); // Add upward knockback
                 player.setVelocity(push);
-
+                player.damage(1);
                 player.sendMessage("§a" + evoker.getName() + ": \"Shinra Tensei!\"");
             }
         }
