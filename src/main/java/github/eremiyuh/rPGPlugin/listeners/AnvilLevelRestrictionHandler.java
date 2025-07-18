@@ -266,8 +266,8 @@ public class AnvilLevelRestrictionHandler implements Listener {
                     try {
                         String[] parts = loreLine.split(":");
                         int currentValue = Integer.parseInt(parts[1].trim());
-                        if ((loreLine.contains("OresHunter") && currentValue == 300) || loreLine.contains("StatDamage%") && currentValue > 299
-                                || loreLine.contains("HP%") && currentValue > 199
+                        if ((loreLine.contains("OresHunter") && currentValue == 100) || loreLine.contains("StatDamage%") && currentValue > 100
+                                || loreLine.contains("HP%") && currentValue > 100
                         ) {
                             return;
                         }
