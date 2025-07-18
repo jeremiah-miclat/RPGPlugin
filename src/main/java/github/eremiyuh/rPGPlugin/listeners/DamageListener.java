@@ -2076,7 +2076,7 @@ public class DamageListener implements Listener {
                 }
 
                 if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 1")) {
-                    elementalDamage += (intel*6);
+                    elementalDamage += (intel*8);
                 }
             }
         }
@@ -2094,14 +2094,14 @@ public class DamageListener implements Listener {
         // thrown potions
         if (event.getDamager() instanceof ThrownPotion) {
             if (event.getEntity() instanceof Player) {
-                elementalDamage += intel * 6;
+                elementalDamage += intel * 3;
             } else {
-                elementalDamage += intel * 30;
+                elementalDamage += intel * 10;
             }
             //alchemists
             if (damagerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
                 if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 1")) {
-                    elementalDamage += (intel*1.2);
+                    elementalDamage *=1.2;
                 }
 
             }

@@ -427,7 +427,6 @@ public class ItemUtils {
         if (meta != null) {
             meta.displayName(Component.text("Kalam0n's Pickaxe").color(TextColor.color(255,0,0)));
 
-
             meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
             meta.setEnchantmentGlintOverride(false);
 
