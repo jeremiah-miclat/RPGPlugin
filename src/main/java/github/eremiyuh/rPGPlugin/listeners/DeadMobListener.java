@@ -388,17 +388,18 @@ public class DeadMobListener implements Listener {
             if (isEquipable(drop.getType())) {
                 continue; // Skip equipable items
             }
+
             int originalAmount = drop.getAmount();
-            int multipliedAmount = originalAmount * dropMultiplier/100;
+            int multipliedAmount = originalAmount * dropMultiplier / 100;
             if (multipliedAmount < 1) multipliedAmount = 1;
-            ItemStack newDrop = new ItemStack(drop.getType(), multipliedAmount);
+
+            int randomizedAmount = 1 + random.nextInt(multipliedAmount); // random between 1 and multipliedAmount
+            ItemStack newDrop = new ItemStack(drop.getType(), randomizedAmount);
 
             if (player.getInventory().firstEmpty() != -1) {
-                // If there is space in the inventory, add the item
                 player.getInventory().addItem(newDrop);
             } else {
-                // Inventory is full, 1 in 10 chance to send a message
-                if (random.nextInt(10) == 0) { // Generates a number between 0 and 9
+                if (random.nextInt(10) == 0) {
                     player.sendMessage(ChatColor.RED + "You don't have enough inventory space to receive drops.");
                 }
             }
@@ -418,6 +419,8 @@ public class DeadMobListener implements Listener {
                 material.name().contains("CROSSBOW") ||
                 material.name().contains("BOW") ||
                 material.name().contains("SHIELD") ||
+                material.name().contains("UNDYING") ||
+                material.name().contains("SCULK") ||
                 material.name().contains("SADDLE");
     }
 
