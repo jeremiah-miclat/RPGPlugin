@@ -1801,9 +1801,9 @@ public class DamageListener implements Listener {
 
             if (!arrow.hasMetadata("WeaknessArrowBarrage") && !arrow.hasMetadata("FireArrowBarrage") && !arrow.hasMetadata("FreezeArrowBarrage")) {
                 double archerDex = damagerProfile.getArcherClassInfo().getDex();
-                double baseChance = 0.10; // 10% base chance
-                double dexModifier = .00004; // 0.004 per Dexterity
-                double totalChance = Math.min(.5,baseChance + (archerDex * dexModifier));
+                double baseChance = 0.30; // 10% base chance
+                double dexModifier = 0.00007;
+                double totalChance = Math.min(1.0, baseChance + (archerDex * dexModifier));
 
 // Generate a random value between 0.0 and 1.0
                 if (Math.random() < totalChance) {

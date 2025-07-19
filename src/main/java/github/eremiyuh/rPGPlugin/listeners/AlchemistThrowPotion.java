@@ -238,45 +238,7 @@ public class AlchemistThrowPotion implements Listener {
                     }, 1L);
                 }
 
-//            if (throwerProfile != null && "alchemist".equalsIgnoreCase(throwerProfile.getChosenClass())&& throwerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
-//                double intel = throwerProfile.getAlchemistClassInfo() != null ? throwerProfile.getAlchemistClassInfo().getIntel() : 0;
-//
-//                for (PotionEffect effect : event.getPotion().getEffects()) {
-//                    int baseIntensity = effect.getAmplifier();
-//                    int baseDuration = effect.getDuration();
-//
-//                    boolean isPositiveEffect = HEAL_EFFECTS.contains(effect.getType());
-//
-//
-//                    int intensity = 0;
-//                    int duration = 0;
-//
-//                    // Calculate intensity and duration adjustments based on effect type
-//                    if (isPositiveEffect) {
-//                        intensity = (int) (intel * 0.005);
-//                        duration = Math.min(INTENSITY_CAP, (int) (intel * 0.002));
-//                    }
-//                    // Apply the effect to targets
-//                    for (LivingEntity target : event.getAffectedEntities()) {
-//                        if (!(target instanceof Player player)) continue;
-//                        UserProfile playerProfile = profileManager.getProfile(player.getName());
-//                        if (isPositiveEffect && player.getName().equals(thrower.getName())) {
-//                            // Adjust intensity and duration and apply the effect to the target
-//                            int finalIntensity = baseIntensity * (1 + intensity); // Adjusted intensity
-//                            int finalDuration = baseDuration * (1 + duration);    // Adjusted duration
-//                            target.addPotionEffect(new PotionEffect(effect.getType(), finalDuration, finalIntensity, true, true));
-//                        }
-//
-//                        if (!(target instanceof Monster) && isPositiveEffect && playerProfile != null && !playerProfile.getTeam().equals("none") && playerProfile.getTeam().equalsIgnoreCase(thrower.getName())) {
-//                            int finalIntensity = baseIntensity * (1 + intensity); // Adjusted intensity
-//                            int finalDuration = baseDuration * (1 + duration);    // Adjusted duration
-//                            target.addPotionEffect(new PotionEffect(effect.getType(), finalDuration, finalIntensity, true, true));
-//                        }
-//
-//                    }
-//                }
-//
-//            }
+
                 if (throwerProfile != null && "alchemist".equalsIgnoreCase(throwerProfile.getChosenClass()) && throwerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
                     double intel = throwerProfile.getAlchemistClassInfo() != null ? throwerProfile.getAlchemistClassInfo().getIntel() : 0;
 

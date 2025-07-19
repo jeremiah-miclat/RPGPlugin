@@ -15,14 +15,17 @@ public class DamageAbilityManager {
     private final PlayerAbilityPerms abilityPerms;
     private final DamageAbilities playerAbility;
 
-    // Map abilities with UserProfile, taking four parameters including damage
+    // Ability mapping
     private final Map<Predicate<UserProfile>, DamConsumer<UserProfile, Location, LivingEntity, Double>> abilityActions;
+
+    // Cooldown tracking (5 seconds per player name)
+    private final Map<String, Long> cooldowns = new HashMap<>();
+    private static final long COOLDOWN_MILLIS = 5000;
 
     public DamageAbilityManager(RPGPlugin plugin) {
         this.abilityPerms = new PlayerAbilityPerms();
         this.playerAbility = new DamageAbilities(plugin);
 
-        // Initialize the ability action map with UserProfile
         abilityActions = new HashMap<>();
         abilityActions.put(
                 profile -> abilityPerms.canSummonFireArrowBarrage(profile),
@@ -32,29 +35,37 @@ public class DamageAbilityManager {
                 profile -> abilityPerms.canSummonFreezeArrowBarrage(profile),
                 (profile, location, target, damage) -> playerAbility.summonFreezeArrowBarrage(profile, location, target, damage)
         );
-
         abilityActions.put(
                 profile -> abilityPerms.canSummonWeaknessArrowBarrage(profile),
                 (profile, location, target, damage) -> playerAbility.summonNauseaArrowBarrage(profile, location, target, damage)
         );
-
     }
 
-    // Apply ability based on the profile's abilities and victim's location
     public void applyDamageAbility(UserProfile attackerProfile, LivingEntity victim, Location attackerLoc, Location victimLoc, double damage) {
-        for (Map.Entry<Predicate<UserProfile>, DamConsumer<UserProfile, Location, LivingEntity, Double>> entry : abilityActions.entrySet()) {
-            Predicate<UserProfile> checkAbility = entry.getKey();
-            DamConsumer<UserProfile, Location, LivingEntity, Double> applyEffect = entry.getValue();
+        if (attackerProfile == null || attackerProfile.getPlayerName() == null) return;
 
-            // Apply effect based on profile
-            if (checkAbility.test(attackerProfile)) {
-                applyEffect.accept(attackerProfile, victimLoc, victim, damage);
+        String name = attackerProfile.getPlayerName();
+        long now = System.currentTimeMillis();
+
+        // Check cooldown
+        if (cooldowns.containsKey(name)) {
+            long lastUsed = cooldowns.get(name);
+            if (now - lastUsed < COOLDOWN_MILLIS) {
+                return; // still on cooldown
+            }
+        }
+
+        // Not on cooldown, apply first matching ability
+        for (Map.Entry<Predicate<UserProfile>, DamConsumer<UserProfile, Location, LivingEntity, Double>> entry : abilityActions.entrySet()) {
+            if (entry.getKey().test(attackerProfile)) {
+                entry.getValue().accept(attackerProfile, victimLoc, victim, damage);
+                cooldowns.put(name, now); // apply cooldown
+                break; // trigger only one ability
             }
         }
     }
 }
 
-// QuadConsumer is a functional interface for methods that take 4 parameters
 @FunctionalInterface
 interface DamConsumer<T, U, V, W> {
     void accept(T t, U u, V v, W w);

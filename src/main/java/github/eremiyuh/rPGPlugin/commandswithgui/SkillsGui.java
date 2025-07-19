@@ -59,10 +59,10 @@ public class SkillsGui implements CommandExecutor, Listener {
         // Set up skills based on the player's chosen class
         switch (profile.getChosenClass().toLowerCase()) {
             case "swordsman":
-                addSkillsToGui(gui, "Swordsman", "Int-based damage", "10% Lifesteal", "+50% Damage Reduction & Return Damage of 10% Str when using thorns");
+                addSkillsToGui(gui, "Swordsman", "Int-based damage", "10% Lifesteal", "Counter Helix: +50% Damage Reduction & Return Damage of 30% of your normal attack when using thorns");
                 break;
             case "archer":
-                addSkillsToGui(gui, "Archer", "Int-based damage", "Balanced Dex & Int Build", "Bonus Crit Chance");
+                addSkillsToGui(gui, "Archer", "High Int-based damage. Single Target", "Arrow Shower. Dex for Chance & Int for Damage.", "Bonus Crit Chance");
                 break;
             case "alchemist":
                 addSkillsToGui(gui, "Alchemist", "Instant Damage Potion", "Random Buff/Debuff", "Healing Potion");
