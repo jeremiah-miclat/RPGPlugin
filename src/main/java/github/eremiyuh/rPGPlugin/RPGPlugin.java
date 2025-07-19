@@ -315,7 +315,7 @@ public class RPGPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new ArmorEquipListener(), this);
         getServer().getPluginManager().registerEvents(new SkillListener(),this);
         getServer().getPluginManager().registerEvents(new HungerListener(profileManager),this);
-
+        getServer().getPluginManager().registerEvents(new SignCoordListener(),this);
 
 
         // Register the command executor
