@@ -112,6 +112,7 @@ public class TabListCustomizer {
         }
 
         int level = Math.max(1, points / 100);
+        profile.setLevel(level);
 
         return " - " + profileClass + " Lvl "
                 + level;

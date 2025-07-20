@@ -85,6 +85,7 @@ public class UserProfile {
     private int crafter;
     private int trader;
 
+    private int level;
     //constructor
     public UserProfile(String playerName) {
         this.playerID = UUID.randomUUID(); // Generate a unique ID for the player
@@ -147,6 +148,7 @@ public class UserProfile {
         this.hunter = 0;
         this.crafter = 0;
         this.trader = 0;
+        this.level=0;
 
     }
 
@@ -169,7 +171,13 @@ public class UserProfile {
         this.chosenClass = chosenClass;
     }
 
+    public int getLevel() {
+        return level;
+    }
 
+    public void setLevel(int level) {
+        this.level = level;
+    }
 
     public int getCurrentAttributePoints() {
         return currentAttributePoints;

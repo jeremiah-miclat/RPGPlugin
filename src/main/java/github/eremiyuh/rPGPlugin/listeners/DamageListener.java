@@ -133,7 +133,7 @@ public class DamageListener implements Listener {
             Entity damaged = event.getEntity();
             // Get the damager (the entity dealing the damage)
             Entity damager = event.getDamager();
-            if (event.getDamager() instanceof Player player && player.getAllowFlight()) {
+            if (event.getDamager() instanceof Player player && (player.getAllowFlight() || player.isFlying())) {
                 player.sendMessage("damaged cancelled. Disable fly mode");
                 event.setCancelled(true);
                 return;
@@ -1143,9 +1143,19 @@ public class DamageListener implements Listener {
             entity.setNoDamageTicks(0);
         }
 
-        if (event.getCause() == EntityDamageEvent.DamageCause.SONIC_BOOM) {
-            // Notify or perform actions
-            event.setDamage(event.getDamage()*1.1);
+        if (event.getCause() == EntityDamageEvent.DamageCause.SONIC_BOOM
+                && event.getEntity() instanceof LivingEntity
+                && event.getDamageSource() instanceof Warden warden) {
+
+            // Reuse the modified attack damage from the initialized Warden
+            double modifiedDamage = Objects.requireNonNull(
+                    warden.getAttribute(Attribute.ATTACK_DAMAGE)
+            ).getValue();
+
+            double boostedDamage = modifiedDamage * 1.2;
+
+            // Apply it as the Sonic Boom damage
+            event.setDamage(boostedDamage);
         }
 
         if (event.getEntity() instanceof  Villager) {
@@ -1155,31 +1165,13 @@ public class DamageListener implements Listener {
 
         Location loc = event.getEntity().getLocation();
 
-        if (loc.getWorld().getName().contains("labyrinth")) {
-            int x = loc.getBlockX();
-            int z = loc.getBlockZ();
 
-
-            // Check if the coordinates are within the specified range
-            if ((x >= -23 && x <= -6 && z >= -38 && z <= -34) && event.getEntity() instanceof Monster) {
-                // Cancel the damage
-                event.setCancelled(true);
-                return;
-            }
-
-            // Check if the coordinates are within the specified range
-            if ((x >= -23 && x <= -17 && z >= -38 && z <= -34) && event.getEntity() instanceof Player) {
-                // Cancel the damage
-                event.setCancelled(true);
-                return;
-            }
-        }
 
         if (!(event.getEntity() instanceof LivingEntity) && !(event.getEntity() instanceof  Monster)) {
             return;
         }
 
-        if (event.getDamageSource().getCausingEntity() instanceof Player player1 && player1.getAllowFlight()) {
+        if (event.getDamageSource().getCausingEntity() instanceof Player player1 && (player1.getAllowFlight() || player1.isFlying())) {
             player1.sendMessage("damaged cancelled. Disable fly mode");
             event.setCancelled(true);
             return;

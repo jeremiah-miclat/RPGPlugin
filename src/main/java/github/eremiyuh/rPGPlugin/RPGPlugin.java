@@ -374,7 +374,7 @@ public class RPGPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new GuiListener(this), this);
         getServer().getPluginManager().registerEvents(new ActivityListener(profileManager), this);
         getServer().getPluginManager().registerEvents(new OreBreakListener(profileManager), this);
-
+        getServer().getPluginManager().registerEvents(new MonsterZoneWarningListener(profileManager), this);
 //        vaultManager.loadVaults();
         //auth
         getCommand("register").setExecutor(new RegisterCommand(this,profileManager));

@@ -121,9 +121,14 @@ public class ChunkCommand implements CommandExecutor {
 
             switch (args[0].toLowerCase()) {
                 case "claim":
-                    if (chunkHasOwnedChunkNearby(chunk, player)) {
+//                    if (chunkHasOwnedChunkNearby(chunk, player)) {
+//                        chunkHasOwnedChunkNearbyVisualizer(chunk, player);
+//                        player.sendMessage("There's a nearby owned chunk.");
+//                        break;
+//                    }
+                    if (ownedChunk != null) {
+                        player.sendMessage("This land is already claimed.");
                         chunkHasOwnedChunkNearbyVisualizer(chunk, player);
-                        player.sendMessage("There's a nearby owned chunk.");
                         break;
                     }
                     if (userClaimPoints > 1) {

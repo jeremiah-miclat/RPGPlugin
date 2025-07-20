@@ -65,7 +65,7 @@ public class PlayerProfileManager {
         config.set("playerID", profile.getPlayerID().toString());
         config.set("playerName", profile.getPlayerName());
         config.set("chosenClass", profile.getChosenClass());
-
+        config.set("level", profile.getLevel());
         config.set("currentAttributePoints", profile.getCurrentAttributePoints());
         config.set("totalAllocatedPoints", profile.getTotalAllocatedPoints());
 
@@ -229,7 +229,7 @@ public class PlayerProfileManager {
 
         //claim points
         profile.setClaimPoints(config.getDouble("claimPoints",10));
-
+        profile.setLevel(config.getInt("level",0));
         //potion
         profile.setPotion(config.getDouble("potion",100));
 
