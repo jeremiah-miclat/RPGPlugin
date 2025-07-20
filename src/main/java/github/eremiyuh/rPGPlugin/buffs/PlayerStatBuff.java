@@ -30,7 +30,12 @@ public class PlayerStatBuff {
     private double[] getEquipStats(Player player) {
         double equipVitality = 0;
         double equipAgility = 0;
+        double equipStrength = 0;
+        double equipDexterity = 0;
+        double equipIntelligence = 0;
+        double equipLuck = 0;
         double equipFinalHpMultiplier = 0;
+        double equipStatDmgMultiplier = 0;
 
         ItemStack[] equipment = {
                 player.getInventory().getHelmet(),
@@ -46,103 +51,145 @@ public class PlayerStatBuff {
                 ItemMeta meta = item.getItemMeta();
                 if (meta != null && meta.hasLore()) {
                     for (String lore : Objects.requireNonNull(meta.getLore())) {
-                        if (lore.startsWith("Vitality: ")) {
-                            equipVitality += parseLoreValue(lore);
-                        } else if (lore.startsWith("Agility: ")) {
-                            equipAgility += parseLoreValue(lore);
-                        } else if (lore.contains("HP%: ")) {
-
-                            equipFinalHpMultiplier += parseLoreValue(lore);
-                        }
+                        if (lore.startsWith("Vitality: ")) equipVitality += parseLoreValue(lore);
+                        else if (lore.startsWith("Agility: ")) equipAgility += parseLoreValue(lore);
+                        else if (lore.startsWith("Strength: ")) equipStrength += parseLoreValue(lore);
+                        else if (lore.startsWith("Dexterity: ")) equipDexterity += parseLoreValue(lore);
+                        else if (lore.startsWith("Intelligence: ")) equipIntelligence += parseLoreValue(lore);
+                        else if (lore.startsWith("Luck: ")) equipLuck += parseLoreValue(lore);
+                        else if (lore.contains("HP%: ")) equipFinalHpMultiplier += parseLoreValue(lore);
+                        else if (lore.contains("StatDamage%: ")) equipStatDmgMultiplier += parseLoreValue(lore);
                     }
                 }
             }
         }
-        return new double[]{equipVitality, equipAgility, equipFinalHpMultiplier};
+
+        return new double[]{
+                equipVitality,
+                equipAgility,
+                equipStrength,
+                equipDexterity,
+                equipIntelligence,
+                equipLuck,
+                equipFinalHpMultiplier,
+                equipStatDmgMultiplier
+        };
     }
+
 
     /**
      * Calculates max health based on the player's Vitality attribute.
      */
-    private double calculateMaxHealth(UserProfile profile, Player player) {
+    private double calculateMaxHealth(UserProfile profile) {
         double baseHealth = 20.0;
-        double healthPerVitality = 20;
+        double healthPerVitality = 20.0;
 
-        double[] equipStats = getEquipStats(player);
-        double equipVitality = equipStats[0]/100;
-        double finalHpMultiplier = 1 + (equipStats[2]*.01);
+        double vitality = (double) profile.getTempVit() / 100.0;
+        double hpMultiplier = 1.0 + (profile.getHpMultiplier() * 0.01);
 
-        // Calculate base health based on class and vitality
-        double classVitality = switch (profile.getChosenClass().toLowerCase()) {
-            case "archer" -> (double) profile.getArcherClassInfo().getVit() /100;
-            case "swordsman" -> (double) profile.getSwordsmanClassInfo().getVit() /100;
-            case "alchemist" -> (double) profile.getAlchemistClassInfo().getVit() /100;
-            default -> (double) profile.getDefaultClassInfo().getVit() /100;
-        };
-        if (profile.getChosenClass().equalsIgnoreCase("alchemist")) {
-            equipVitality*=1.2;
-        }
-        return (baseHealth + (healthPerVitality * (classVitality + equipVitality)))*finalHpMultiplier;
+        return (baseHealth + (healthPerVitality * vitality)) * hpMultiplier;
     }
+
+
 
     /**
      * Calculates movement speed based on the player's Agility attribute.
      */
-    private double calculateSpeed(UserProfile profile, Player player) {
+    private double calculateSpeed(UserProfile profile) {
         double baseSpeed = 0.2;
-        double maxAgilityBonus = 1;
         double speedPerAgility = 0.0001;
+        double maxAgilityBonus = 1.0;
 
-        double[] equipStats = getEquipStats(player);
-        double equipAgility = equipStats[1];
+        double agility = profile.getTempAgi();
+        double agilityBonus = speedPerAgility * agility;
 
-        // Calculate agility-based bonus speed based on class and agility
-        double classAgility = switch (profile.getChosenClass().toLowerCase()) {
-            case "archer" -> profile.getArcherClassInfo().getAgi();
-            case "swordsman" -> profile.getSwordsmanClassInfo().getAgi();
-            case "alchemist" -> profile.getAlchemistClassInfo().getAgi();
-            default -> profile.getDefaultClassInfo().getAgi();
-        };
-
-        if (profile.getChosenClass().equalsIgnoreCase("alchemist")) {
-            equipAgility*=1.2;
-        }
-
-        double agilityBonus = speedPerAgility * (classAgility + equipAgility);
         agilityBonus = Math.min(agilityBonus, maxAgilityBonus);
-        return Math.min(baseSpeed + agilityBonus, 1);
+        return Math.min(baseSpeed + agilityBonus, 1.0);
     }
+
 
     /**
      * Updates the player's max health and movement speed based on RPG attributes.
      */
     public void updatePlayerStatsToRPG(Player player) {
-
-
         try {
             UserProfile profile = profileManager.getProfile(player.getName());
             if (profile == null) return;
 
-            // Set max health based on vitality
-            AttributeInstance maxHealthAttr = player.getAttribute(Attribute.MAX_HEALTH);
-            assert maxHealthAttr != null;
-            double newMaxHealth = calculateMaxHealth(profile, player);
-            maxHealthAttr.setBaseValue(newMaxHealth);
-            player.setHealth(Math.min(player.getHealth(), newMaxHealth)); // Prevent health from exceeding max
+            profile.resetTemporaryStats(); // Clear temp stats
 
-            // Set walk speed based on agility
-            double newSpeed = calculateSpeed(profile, player);
-            if (newSpeed >= 1) {
-                TextComponent speedWarning = Component.text("You have reached max ms from agi. Agi max: 8000").color(TextColor.color(255,0,0));
+            double[] equipStats = getEquipStats(player); // [vit, agi, str, dex, int, luk, hpMult, statMult]
+
+            double classStr = 0, classDex = 0, classInt = 0, classLuk = 0, classVit = 0, classAgi = 0;
+            String chosenClass = profile.getChosenClass().toLowerCase();
+
+            switch (chosenClass) {
+                case "archer" -> {
+                    classStr = profile.getArcherClassInfo().getStr();
+                    classDex = profile.getArcherClassInfo().getDex();
+                    classInt = profile.getArcherClassInfo().getIntel();
+                    classLuk = profile.getArcherClassInfo().getLuk();
+                    classVit = profile.getArcherClassInfo().getVit();
+                    classAgi = profile.getArcherClassInfo().getAgi();
+                }
+                case "swordsman" -> {
+                    classStr = profile.getSwordsmanClassInfo().getStr();
+                    classDex = profile.getSwordsmanClassInfo().getDex();
+                    classInt = profile.getSwordsmanClassInfo().getIntel();
+                    classLuk = profile.getSwordsmanClassInfo().getLuk();
+                    classVit = profile.getSwordsmanClassInfo().getVit();
+                    classAgi = profile.getSwordsmanClassInfo().getAgi();
+                }
+                case "alchemist" -> {
+                    classStr = profile.getAlchemistClassInfo().getStr();
+                    classDex = profile.getAlchemistClassInfo().getDex();
+                    classInt = profile.getAlchemistClassInfo().getIntel();
+                    classLuk = profile.getAlchemistClassInfo().getLuk();
+                    classVit = profile.getAlchemistClassInfo().getVit();
+                    classAgi = profile.getAlchemistClassInfo().getAgi();
+
+                    // Bonus agility and vitality for alchemist gear
+                    equipStats[0] *= 1.2; // vit
+                    equipStats[1] *= 1.2; // agi
+                }
+            }
+
+            // Set final stats (class + gear) as temporary stats
+            profile.setTempStr((int) (classStr + equipStats[2]));
+            profile.setTempDex((int) (classDex + equipStats[3]));
+            profile.setTempIntel((int) (classInt + equipStats[4]));
+            profile.setTempLuk((int) (classLuk + equipStats[5]));
+            profile.setTempVit((int) (classVit + equipStats[0]));
+            profile.setTempAgi((int) (classAgi + equipStats[1]));
+
+            // Update multipliers
+            profile.setHpMultiplier((int) equipStats[6]);
+            profile.setStatDmgMultiplier((int) equipStats[7]);
+
+            // Update player health
+            AttributeInstance maxHealthAttr = player.getAttribute(Attribute.MAX_HEALTH);
+            if (maxHealthAttr != null) {
+                double newMaxHealth = calculateMaxHealth(profile);
+                maxHealthAttr.setBaseValue(newMaxHealth);
+                player.setHealth(Math.min(player.getHealth(), newMaxHealth));
+            }
+
+            // Update movement speed
+            double newSpeed = calculateSpeed(profile);
+            player.setWalkSpeed((float) Math.min(newSpeed, 1.0f));
+
+            // Warn if speed is capped
+            if (newSpeed >= 1.0) {
+                TextComponent speedWarning = Component.text("You have reached max ms from agi. Agi max: 8000")
+                        .color(TextColor.color(255, 0, 0));
                 player.sendMessage(speedWarning);
             }
 
-            player.setWalkSpeed((float) Math.min(newSpeed, 1.0f));
-        }  catch (Exception e) {
-            // Handle exceptions gracefully, log the error, etc.
-            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace(); // Log any errors
         }
     }
+
 
     /**
      * Resets player's stats to Minecraft's vanilla defaults.

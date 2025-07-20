@@ -241,6 +241,9 @@ public class CheckClassCommand implements CommandExecutor, Listener {
         lore.add("§7Intelligence: " + getAttributeValue(profile, "intelligence"));
         lore.add("§7Vitality: " + getAttributeValue(profile, "vitality"));
         lore.add("§7Luck: " + getAttributeValue(profile, "luck"));
+        lore.add("§7MaxHP: " + (calculateMaxHealth(profile)));
+        lore.add("§7HP%: " + profile.getHpMultiplier());
+        lore.add("§7StatDmg%: " + profile.getStatDmgMultiplier());
 
         // Add remaining points, total allocated points for chosen class, and overall allocated points
         lore.add("§eRemaining Points: " + profile.getCurrentAttributePoints());
@@ -276,6 +279,16 @@ public class CheckClassCommand implements CommandExecutor, Listener {
             default:
                 return 0;
         }
+    }
+
+    private double calculateMaxHealth(UserProfile profile) {
+        double baseHealth = 20.0;
+        double healthPerVitality = 20.0;
+
+        double vitality = (double) profile.getTempVit() / 100.0;
+        double hpMultiplier = 1.0 + (profile.getHpMultiplier() * 0.01);
+
+        return (baseHealth + (healthPerVitality * vitality)) * hpMultiplier;
     }
 
 

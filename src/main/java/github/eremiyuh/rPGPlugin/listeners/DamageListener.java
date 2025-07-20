@@ -1954,93 +1954,11 @@ public class DamageListener implements Listener {
 
         double str = 0, dex = 0, intel = 0, luk = 0, fnl=0;
 
-        // Get stats based on the player's chosen class
-        if (damagerProfile.getChosenClass().equalsIgnoreCase("archer")) {
-            str = (double) damagerProfile.getArcherClassInfo().getStr() /100;
-            dex = (double) damagerProfile.getArcherClassInfo().getDex() /100;
-            intel = (double) damagerProfile.getArcherClassInfo().getIntel() /100;
-            luk = damagerProfile.getArcherClassInfo().getLuk();
-        } else if (damagerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
-            str = (double) damagerProfile.getAlchemistClassInfo().getStr() /100;
-            dex = (double) damagerProfile.getAlchemistClassInfo().getDex() /100;
-            intel = (double) damagerProfile.getAlchemistClassInfo().getIntel() /100;
-            luk = damagerProfile.getAlchemistClassInfo().getLuk();
-        }
-        else if (damagerProfile.getChosenClass().equalsIgnoreCase("swordsman")) {
-            str = (double) damagerProfile.getSwordsmanClassInfo().getStr() /100;
-            dex = (double) damagerProfile.getSwordsmanClassInfo().getDex() /100;
-            intel = (double) damagerProfile.getSwordsmanClassInfo().getIntel() /100;
-            luk = damagerProfile.getSwordsmanClassInfo().getLuk();
-        }
-
-
-
-        // Apply additional stats from item lore
-        ItemStack[] equipment = {
-                player.getInventory().getHelmet(),
-                player.getInventory().getChestplate(),
-                player.getInventory().getLeggings(),
-                player.getInventory().getBoots(),
-                player.getInventory().getItemInMainHand(),
-                player.getInventory().getItemInOffHand()
-        };
-
-
-
-        for (ItemStack item : equipment) {
-            if (item != null && item.hasItemMeta()) {
-                ItemMeta meta = item.getItemMeta();
-                if (meta != null && meta.hasLore()) {
-                    for (String lore : Objects.requireNonNull(meta.getLore())) {
-                        if (lore.startsWith("Strength: ")) {
-
-                            if (damagerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
-                                str += ((double) (Math.round(1.2 * parseLoreValue(lore))) /100);
-                            }
-                            else {
-                                str += ((double) parseLoreValue(lore) /100);
-                            }
-
-
-                        }
-                        else if (lore.startsWith("Dexterity: ")) {
-                            if (damagerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
-                                dex += ((double) (Math.round(1.2 * parseLoreValue(lore))) /100);
-                            }
-                            else {
-                                dex += ((double) parseLoreValue(lore) /100);
-                            }
-                        }
-                        else if (lore.startsWith("Intelligence: ")) {
-                            if (damagerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
-                                intel += ((double) (Math.round(1.2 * parseLoreValue(lore))) /100);
-                            }
-                            else {
-                                intel += ((double) parseLoreValue(lore) /100);
-                            }
-                        }
-                        else if (lore.startsWith("Luck: ")) {
-                            if (damagerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
-                                luk += (Math.round(1.2*parseLoreValue(lore)));
-                            }
-                            else {
-                                luk += parseLoreValue(lore);
-                            }
-                        }
-                        else if (lore.contains("StatDamage%: ")) {
-                            if (damagerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
-                                fnl += (Math.round(1.2*parseLoreValue(lore)));
-                            }
-                            else {
-                                fnl += parseLoreValue(lore);
-                            }
-                        }
-
-
-                    }
-                }
-            }
-        }
+        str += (double) damagerProfile.getTempStr() /100;
+        dex += (double) damagerProfile.getTempDex() /100;
+        intel += (double) damagerProfile.getTempIntel() /100;
+        luk += damagerProfile.getTempLuk();
+        fnl += damagerProfile.getStatDmgMultiplier();
 
         // Damage calculation based on class stats
         double statDmg = 0;

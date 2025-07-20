@@ -86,6 +86,21 @@ public class UserProfile {
     private int trader;
 
     private int level;
+
+
+
+    private int hpMultiplier;
+    private int statDmgMultiplier;
+
+    private int tempStr;
+    private int tempAgi;
+    private int tempVit;
+    private int tempDex;
+    private int tempIntel;
+    private int tempLuk;
+
+
+
     //constructor
     public UserProfile(String playerName) {
         this.playerID = UUID.randomUUID(); // Generate a unique ID for the player
@@ -150,6 +165,15 @@ public class UserProfile {
         this.trader = 0;
         this.level=0;
 
+        this.hpMultiplier = 1;
+        this.statDmgMultiplier = 1;
+        this.tempStr = 0;
+        this.tempAgi = 0;
+        this.tempVit = 0;
+        this.tempDex = 0;
+        this.tempIntel = 0;
+        this.tempLuk = 0;
+
     }
 
     // Getters and setters
@@ -177,6 +201,82 @@ public class UserProfile {
 
     public void setLevel(int level) {
         this.level = level;
+    }
+
+
+    public int getHpMultiplier() {
+        return hpMultiplier;
+    }
+
+    public void setHpMultiplier(int hpMultiplier) {
+        this.hpMultiplier = hpMultiplier;
+    }
+
+    public int getStatDmgMultiplier() {
+        return statDmgMultiplier;
+    }
+
+    public void setStatDmgMultiplier(int statDmgMultiplier) {
+        this.statDmgMultiplier = statDmgMultiplier;
+    }
+
+    public int getTempStr() {
+        return tempStr;
+    }
+
+    public void setTempStr(int tempStr) {
+        this.tempStr = tempStr;
+    }
+
+    public int getTempAgi() {
+        return tempAgi;
+    }
+
+    public void setTempAgi(int tempAgi) {
+        this.tempAgi = tempAgi;
+    }
+
+    public int getTempVit() {
+        return tempVit;
+    }
+
+    public void setTempVit(int tempVit) {
+        this.tempVit = tempVit;
+    }
+
+    public int getTempDex() {
+        return tempDex;
+    }
+
+    public void setTempDex(int tempDex) {
+        this.tempDex = tempDex;
+    }
+
+    public int getTempIntel() {
+        return tempIntel;
+    }
+
+    public void setTempIntel(int tempIntel) {
+        this.tempIntel = tempIntel;
+    }
+
+    public int getTempLuk() {
+        return tempLuk;
+    }
+
+    public void setTempLuk(int tempLuk) {
+        this.tempLuk = tempLuk;
+    }
+
+    public void resetTemporaryStats() {
+        this.tempStr = 0;
+        this.tempAgi = 0;
+        this.tempVit = 0;
+        this.tempDex = 0;
+        this.tempIntel = 0;
+        this.tempLuk = 0;
+        this.hpMultiplier = 1;
+        this.statDmgMultiplier = 1;
     }
 
     public int getCurrentAttributePoints() {

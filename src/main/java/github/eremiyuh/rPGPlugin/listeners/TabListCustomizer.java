@@ -74,7 +74,7 @@ public class TabListCustomizer {
 
         for (Player player : onlinePlayers) {
             TextComponent rank = Component.text(getPlayerRank(player));  // Get the player's rank
-            TextComponent health = Component.text("HP: " + (int) player.getHealth());  // Get player's health as a string
+            TextComponent health = Component.text(" HP: " + (int) player.getHealth());  // Get player's health as a string
             TextComponent world = Component.text(player.getWorld().toString());
 
 
@@ -94,29 +94,28 @@ public class TabListCustomizer {
      */
     private String getPlayerRank(Player player) {
         UserProfile profile = profileManager.getProfile(player.getName());
+        if (profile == null || profile.getChosenClass() == null) return "";
+
         String profileClass = profile.getChosenClass();
-        int points = 0;
 
-        switch (profileClass.toLowerCase()) {
-            case "alchemist":
-                points = profile.getTotalAlchemistAllocatedPoints();
-                break;
-            case "archer":
-                points = profile.getTotalArcherAllocatedPoints();
-                break;
-            case "swordsman":
-                points = profile.getTotalSwordsmanAllocatedPoints();
-                break;
-            default:
-                break;
-        }
+        int totalStats = profile.getTempStr()
+                + profile.getTempDex()
+                + profile.getTempIntel()
+                + profile.getTempLuk()
+                + profile.getTempVit()
+                + profile.getTempAgi();
 
-        int level = Math.max(1, points / 100);
+        int level = Math.max(1, totalStats / 100);
         profile.setLevel(level);
 
-        return " - " + profileClass + " Lvl "
-                + level;
+        int hpPercent = (int) (profile.getHpMultiplier() * 100);        // e.g. 1.25 → 125%
+        int statDmgPercent = (int) (profile.getStatDmgMultiplier() * 100); // e.g. 1.10 → 110%
+
+        String capitalizedClass = profileClass.substring(0, 1).toUpperCase() + profileClass.substring(1);
+
+        return String.format(" - %s Lvl %d |", capitalizedClass, level, hpPercent, statDmgPercent);
     }
+
 
     /**
      * Formats the player name with colors based on their rank and health.
@@ -144,7 +143,7 @@ public class TabListCustomizer {
                 .append(Component.text(player.getName()).color(color))
                 .append(Component.text(rank.content()).color(color))
 
-//                .append(health)
+                .append(health)
                 .build();
     }
 }
