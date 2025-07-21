@@ -67,7 +67,7 @@ public class RavagerSkillManager {
                         // Toss logic here
 
                         // Upward launch
-                        player.damage(1);
+                        player.damage(20);
                         player.setVelocity(player.getVelocity().setY(2.2));
 
                         // Sound

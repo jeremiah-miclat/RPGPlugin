@@ -49,28 +49,43 @@ public class BossDropItem {
         return null; // Shouldn't reach here if drop chances are set correctly
     }
 
-    public void addLoreWithBossLevel(ItemStack item, int bossLevel, boolean isWorldBoss) {
+    public void addLoreWithBossLevel(ItemStack item, int bossLevel, int playerLevel, boolean isWorldBoss) {
         if (item == null) return;
 
         ItemMeta meta = item.getItemMeta();
         if (meta == null) return;
 
-        // Select a random attribute
+        // --- Reward Multiplier Logic Based on Level Gap ---
+        int levelDiff = bossLevel - playerLevel;
+        double rewardMultiplier;
+        if (Math.abs(levelDiff) > 30) {
+            rewardMultiplier = 0.1;
+        } else if (Math.abs(levelDiff) > 12) {
+            rewardMultiplier = 0.5;
+        } else if (Math.abs(levelDiff) > 10) {
+            rewardMultiplier = 0.8;
+        } else {
+            rewardMultiplier = 1.0;
+        }
+
+        // --- Select a random attribute ---
         String selectedAttribute = attributes.get(random.nextInt(attributes.size()));
 
-        int attributeValue = Math.max(1, Math.floorDiv(bossLevel, 10));
+        int baseAttributeValue = Math.max(1, bossLevel / 10);
+        if (isWorldBoss) baseAttributeValue *= 5;
 
-        if (isWorldBoss) attributeValue *=5;
+        // --- Apply scaling based on reward multiplier ---
+        int scaledValue = Math.max(1, (int) (baseAttributeValue * rewardMultiplier));
 
-        int randomStatValue = 1 + (int) (Math.random() * attributeValue);
+        int randomStatValue = 1 + random.nextInt(scaledValue); // Random from 1 to scaledValue
 
-        // Set the lore with the format "Attribute: Boss Level"
+        // --- Set lore ---
         List<String> lore = new ArrayList<>();
         lore.add(selectedAttribute + ": " + randomStatValue);
         meta.setLore(lore);
-
         item.setItemMeta(meta);
     }
+
 
 }
 

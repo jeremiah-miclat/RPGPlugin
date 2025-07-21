@@ -20,7 +20,7 @@ public class MonsterZoneWarningListener implements Listener {
 
     // Stores last warning time to prevent spam
     private final HashMap<UUID, Long> lastWarningTime = new HashMap<>();
-    private final long cooldownMillis = 10 * 1000; // 30 seconds
+    private final long cooldownMillis = 10 * 1000; // 10 seconds
 
     public MonsterZoneWarningListener(PlayerProfileManager profileManager) {
         this.profileManager = profileManager;
@@ -28,8 +28,9 @@ public class MonsterZoneWarningListener implements Listener {
 
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event) {
-        Player player = event.getPlayer();
 
+        Player player = event.getPlayer();
+        if (!player.getWorld().getName().contains("_rpg")) return;
         // Only react to horizontal movement
         if (event.getFrom().getBlockX() == event.getTo().getBlockX() &&
                 event.getFrom().getBlockZ() == event.getTo().getBlockZ()) {
@@ -72,7 +73,7 @@ public class MonsterZoneWarningListener implements Listener {
         } else if (levelDiff > 10) {
             player.sendMessage(ChatColor.YELLOW + "Caution: These monsters are slightly stronger. Drop rewards will be slightly reduced.");
         } else if (playerLevel - monsterLevel > 30) {
-            player.sendMessage(ChatColor.RED + "These monsters are far too weak. No drop rewards will be given.");
+            player.sendMessage(ChatColor.RED + "These monsters are far too weak. Drop rewards will be greatly reduced.");
         } else if (playerLevel - monsterLevel > 12) {
             player.sendMessage(ChatColor.RED + "Warning: These monsters are significantly below your level. Drop rewards will be heavily reduced.");
         } else if (playerLevel - monsterLevel > 10) {

@@ -105,7 +105,7 @@ public class EvokerSkillManager {
                 @NotNull Vector push = player.getLocation().toVector().subtract(center.toVector()).normalize().multiply(2);
                 push.setY(1.0); // Add upward knockback
                 player.setVelocity(push);
-                player.damage(1);
+                player.damage(10);
                 player.sendMessage("§a" + evoker.getName() + ": \"Shinra Tensei!\"");
             }
         }

@@ -341,11 +341,12 @@ public class DamageListener implements Listener {
                         return;
                     }
 
-                    int attackerTotalPoints = (int) (attackerProfile.getTotalAllocatedPoints() + getTotalStatsFromEquipment(attacker, attackerProfile.getChosenClass()));
-                    int damagedTotalPoints = (int) (damagedProfile.getTotalAllocatedPoints()+ getTotalStatsFromEquipment(damagedPlayer, damagedProfile.getChosenClass()));
+                    int attackerLevel = attackerProfile.getLevel();
+                    int damagedLevel = damagedProfile.getLevel();
 
-                    // Check if the difference between the total points is greater than 1000
-                    if (Math.abs(attackerTotalPoints - damagedTotalPoints) > 1000) {
+
+                    // Check if the difference between the total points is greater than 10
+                    if (Math.abs(attackerLevel - damagedLevel) > 10) {
                         event.setCancelled(true);
                         return;
                     }
@@ -489,11 +490,12 @@ public class DamageListener implements Listener {
                         }
 
 
-                        int attackerTotalPoints = (int) (attackerProfile.getTotalAllocatedPoints() + getTotalStatsFromEquipment(attacker, attackerProfile.getChosenClass()));
-                        int damagedTotalPoints = (int) (damagedProfile.getTotalAllocatedPoints()+ getTotalStatsFromEquipment(damagedPlayer, damagedProfile.getChosenClass()));
+                        int attackerLevel = attackerProfile.getLevel();
+                        int damagedLevel = damagedProfile.getLevel();
 
-                        // Check if the difference between the total points is greater than 1000
-                        if (Math.abs(attackerTotalPoints - damagedTotalPoints) > 1000) {
+
+                        // Check if the difference between the total points is greater than 10
+                        if (Math.abs(attackerLevel - damagedLevel) > 10) {
                             event.setCancelled(true);
                             return;
                         }
@@ -614,11 +616,12 @@ public class DamageListener implements Listener {
                         }
 
 
-                        int attackerTotalPoints = (int) (attackerProfile.getTotalAllocatedPoints() + getTotalStatsFromEquipment(attacker, attackerProfile.getChosenClass()));
-                        int damagedTotalPoints = (int) (damagedProfile.getTotalAllocatedPoints()+ getTotalStatsFromEquipment(damagedPlayer, damagedProfile.getChosenClass()));
+                        int attackerLevel = attackerProfile.getLevel();
+                        int damagedLevel = damagedProfile.getLevel();
 
-                        // Check if the difference between the total points is greater than 1000
-                        if (Math.abs(attackerTotalPoints - damagedTotalPoints) > 1000) {
+
+                        // Check if the difference between the total points is greater than 10
+                        if (Math.abs(attackerLevel - damagedLevel) > 10) {
                             event.setCancelled(true);
                             return;
                         }
@@ -731,11 +734,12 @@ public class DamageListener implements Listener {
                             return;
                         }
 
-                        int attackerTotalPoints = (int) (attackerProfile.getTotalAllocatedPoints() + getTotalStatsFromEquipment(attacker, attackerProfile.getChosenClass()));
-                        int damagedTotalPoints = (int) (damagedProfile.getTotalAllocatedPoints()+ getTotalStatsFromEquipment(damagedPlayer, damagedProfile.getChosenClass()));
+                        int attackerLevel = attackerProfile.getLevel();
+                        int damagedLevel = damagedProfile.getLevel();
 
-                        // Check if the difference between the total points is greater than 1000
-                        if (Math.abs(attackerTotalPoints - damagedTotalPoints) > 1000) {
+
+                        // Check if the difference between the total points is greater than 10
+                        if (Math.abs(attackerLevel - damagedLevel) > 10) {
                             event.setCancelled(true);
                             return;
                         }

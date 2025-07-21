@@ -166,6 +166,25 @@ public class PlayerStatBuff {
             profile.setHpMultiplier((int) equipStats[6]);
             profile.setStatDmgMultiplier((int) equipStats[7]);
 
+            double totalStats = 0;
+
+// Sum the first 6 normally
+            for (int i = 0; i < 6; i++) {
+                totalStats += equipStats[i];
+            }
+
+// Multiply the last two by 10 before adding
+            totalStats += equipStats[6] * 10;
+            totalStats += equipStats[7] * 10;
+
+// Divide the total by 100
+            double level = totalStats / 100;
+            int flooredLevel = (int) level; // or use Math.floor(level) if you're being explicit
+            int finalLevel = Math.max(1, flooredLevel); // ensures minimum is 1
+            profile.setLevel(finalLevel);
+
+
+
             // Update player health
             AttributeInstance maxHealthAttr = player.getAttribute(Attribute.MAX_HEALTH);
             if (maxHealthAttr != null) {
@@ -195,6 +214,7 @@ public class PlayerStatBuff {
      * Resets player's stats to Minecraft's vanilla defaults.
      */
     public void updatePlayerStatsToNormal(Player player) {
+        updatePlayerStatsToRPG(player);
         player.setWalkSpeed(0.2f); // Vanilla walk speed
 
         AttributeInstance maxHealthAttr = player.getAttribute(Attribute.MAX_HEALTH);

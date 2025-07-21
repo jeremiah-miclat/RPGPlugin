@@ -208,26 +208,43 @@ public class AlchemistThrowPotion implements Listener {
                                         targetPlayer.removePotionEffect(effect.getType());
                                         target.addPotionEffect(new PotionEffect((PotionEffectType.REGENERATION),200,0,true,true));
                                     }
-                                    if ((!targetProfile.isPvpEnabled() || !throwerProfile.isPvpEnabled()) && (!throwerProfile.getTeam().equals(targetProfile.getTeam()) ||
-                                                    throwerProfile.getTeam().equalsIgnoreCase("none")
-                                            )) {
+
+                                    int attackerLevel = throwerProfile.getLevel();
+                                    int damagedLevel = targetProfile.getLevel();
+
+                                    if ((Math.abs(attackerLevel - damagedLevel) > 10) &&
+                                            (!throwerProfile.getTeam().equals(targetProfile.getTeam()) ||
+                                                    throwerProfile.getTeam().equalsIgnoreCase("none"))) {
+
                                         targetPlayer.removePotionEffect(effect.getType());
-                                        target.addPotionEffect(new PotionEffect((PotionEffectType.REGENERATION),200,0,true,true));
+                                        target.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 200, 0, true, true));
                                     }
                                 }
-                                if (target instanceof Player targetPlayer && isPositiveEffect && !throwerProfile.getTeam().equals("none")
-                                ) {
+                                if (target instanceof Player targetPlayer && isPositiveEffect && !throwerProfile.getTeam().equals("none")) {
                                     UserProfile targetProfile = profileManager.getProfile(targetPlayer.getName());
+                                    int attackerLevel = throwerProfile.getLevel();
+                                    int damagedLevel = targetProfile.getLevel();
+
+                                    // Only affect players from a different team
                                     if (!throwerProfile.getTeam().equals(targetProfile.getTeam())) {
                                         targetPlayer.removePotionEffect(effect.getType());
-                                        if (targetProfile.isPvpEnabled() && throwerProfile.isPvpEnabled()) target.addPotionEffect(new PotionEffect((PotionEffectType.NAUSEA),200+(int)(intel/10),1,true,true));
 
+                                        // If level difference is NOT greater than 10, apply nausea
+                                        if (Math.abs(attackerLevel - damagedLevel) <= 10) {
+                                            target.addPotionEffect(new PotionEffect(
+                                                    PotionEffectType.NAUSEA,
+                                                    200 + (int)(intel / 10),
+                                                    1,
+                                                    true,
+                                                    true
+                                            ));
+                                        }
                                     }
                                 }
 
                                 if (target instanceof Monster monster && isPositiveEffect ) {
                                     monster.removePotionEffect(effect.getType());
-                                    target.addPotionEffect(new PotionEffect((PotionEffectType.POISON),(100+(int)((intel/100)*10)),4,true,true));
+//                                    target.addPotionEffect(new PotionEffect((PotionEffectType.POISON),(100+(int)((intel/100)*10)),4,true,true));
                                 }
 
 

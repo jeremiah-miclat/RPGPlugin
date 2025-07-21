@@ -224,9 +224,7 @@ public class DeadMobListener implements Listener {
                         }
                     }
 
-                    if (isWorldBoss) {
-                        BossKillMessages.broadcastBossKill(killer.getName(), customName);
-                    }
+
                     for (Player player : nearbyPlayers) {
                         UserProfile playerProfile = profileManager.getProfile(player.getName());
                         applyRewards(player, playerProfile, health*3, chance+.3, dropMultiplier,level);
@@ -242,7 +240,7 @@ public class DeadMobListener implements Listener {
                             // Clone the item to ensure each player gets a separate instance
                             ItemStack itemToDrop = dropItem.getItem().clone();
                             // Add lore based on the boss level
-                            dropItem.addLoreWithBossLevel(itemToDrop, bosslvl, isWorldBoss);
+                            dropItem.addLoreWithBossLevel(itemToDrop, bosslvl, playerProfile.getLevel(),isWorldBoss);
                             player.sendMessage("You received a boss reward for killing " + customName);
                             if (player.getInventory().firstEmpty() != -1) {
                                 // If there is space in the inventory, add the item
@@ -258,7 +256,14 @@ public class DeadMobListener implements Listener {
                 }
                     event.getDrops().clear();
                     event.setDroppedExp(0);
-
+                                        if (isWorldBoss) {
+                        try {
+                            BossKillMessages.broadcastBossKill(killer.getName(), customName);
+                        } catch (Exception e) {
+                            Bukkit.getLogger().warning("[BossKill] Failed to broadcast kill: " + e.getMessage());
+                            // Continue execution silently
+                        }
+                    }
                     return;
                 }
 
@@ -310,44 +315,38 @@ public class DeadMobListener implements Listener {
                 event.getDrops().clear();
                 event.setDroppedExp(0);
 
+
         }
     }
 
     private void applyRewards(Player player, UserProfile profile, double healthForExp, double chanceForEquipLoreAndDias, int rewardCount, int monsterLevel) {
         int playerLevel = profile.getLevel();
-        double rewardMultiplier = 1.0;
+        int levelDiff = monsterLevel - playerLevel;
 
-
-        // --- Reward Scaling ---
-        if (monsterLevel <= 10) {
-            rewardMultiplier = 1.0;
-        } else if (monsterLevel <= 20) {
+        // Reward scaling based on level difference
+        double rewardMultiplier;
+        if (levelDiff > 30 || playerLevel - monsterLevel > 30) {
+            rewardMultiplier = 0.1;
+        } else if (levelDiff > 12 || playerLevel - monsterLevel > 12) {
             rewardMultiplier = 0.5;
-
-        } else if (playerLevel < 21) {
-            rewardMultiplier = 0.0;
-
+        } else if (levelDiff > 10 || playerLevel - monsterLevel > 10) {
+            rewardMultiplier = 0.8;
         } else {
-            int levelDiff = monsterLevel - playerLevel;
-            if (levelDiff <= 10) {
-                rewardMultiplier = 1.0;
-            } else if (levelDiff <= 12) {
-                rewardMultiplier = 0.8;
-
-            } else if (levelDiff <= 30) {
-                rewardMultiplier = 0.5;
-
-            } else {
-                rewardMultiplier = 0.0;
-
-            }
+            rewardMultiplier = 1.0;
         }
 
-        // --- EXP ---
-        int expGained = (int) (healthForExp * 0.2 * rewardMultiplier);
-        if (expGained > 0) player.giveExp(expGained);
+        // Notify player if rewards are reduced
+        if (rewardMultiplier < 1.0) {
+            player.sendMessage(ChatColor.RED + "⚠ Rewards reduced due to level gap.");
+        }
 
-        // --- Abyss Points ---
+        // --- EXP Reward ---
+        int expGained = (int) (healthForExp * 0.2 * rewardMultiplier);
+        if (expGained > 0) {
+            player.giveExp(expGained);
+        }
+
+        // --- Abyss Points Reward ---
         int baseMin = (int) (healthForExp / 12);
         int baseMax = (int) (healthForExp / 10);
         int rawAbyss = baseMin + (int) (Math.random() * (baseMax - baseMin));
@@ -355,7 +354,7 @@ public class DeadMobListener implements Listener {
 
         if (finalAbyss >= 1) {
             profile.setAbysspoints(profile.getAbysspoints() + finalAbyss);
-            player.sendMessage(ChatColor.AQUA + "You have gained " + finalAbyss + " Abyss Points!");
+            player.sendMessage(ChatColor.AQUA + "You gained " + finalAbyss + " Abyss Points!");
         }
 
         // --- Lore Reward ---
@@ -366,40 +365,39 @@ public class DeadMobListener implements Listener {
         // --- Ore Reward ---
         if (random.nextDouble() < chanceForEquipLoreAndDias) {
             OreType randomOre = OreType.values()[random.nextInt(OreType.values().length)];
-            int rawAmount = 10 + (int) (Math.random() * ((double) rewardCount / 100));
-            int scaledAmount = (int) (rawAmount * rewardMultiplier);
+            int baseAmount = 10 + (int) (Math.random() * ((double) rewardCount / 100));
+            int scaledAmount = (int) (baseAmount * rewardMultiplier);
             int finalAmount = Math.min(scaledAmount, 300);
 
             if (finalAmount >= 1) {
                 switch (randomOre) {
-                    case DIAMOND:
+                    case DIAMOND -> {
                         profile.setDiamond(profile.getDiamond() + finalAmount);
                         player.sendMessage(ChatColor.GREEN + "You received " + finalAmount + " Diamond(s)!");
-                        break;
-                    case EMERALD:
+                    }
+                    case EMERALD -> {
                         profile.setEmerald(profile.getEmerald() + finalAmount);
                         player.sendMessage(ChatColor.GREEN + "You received " + finalAmount + " Emerald(s)!");
-                        break;
-                    case GOLD:
+                    }
+                    case GOLD -> {
                         profile.setGold(profile.getGold() + finalAmount);
                         player.sendMessage(ChatColor.GREEN + "You received " + finalAmount + " Gold Ingot(s)!");
-                        break;
-                    case IRON:
+                    }
+                    case IRON -> {
                         profile.setIron(profile.getIron() + finalAmount);
                         player.sendMessage(ChatColor.GREEN + "You received " + finalAmount + " Iron Ingot(s)!");
-                        break;
-                    case LAPIS:
+                    }
+                    case LAPIS -> {
                         profile.setLapiz(profile.getLapiz() + finalAmount);
                         player.sendMessage(ChatColor.GREEN + "You received " + finalAmount + " Lapis Lazuli(s)!");
-                        break;
-                    case COPPER:
+                    }
+                    case COPPER -> {
                         profile.setCopper(profile.getCopper() + finalAmount);
                         player.sendMessage(ChatColor.GREEN + "You received " + finalAmount + " Copper Ingot(s)!");
-                        break;
+                    }
                 }
             }
         }
-
     }
 
 
@@ -416,59 +414,54 @@ public class DeadMobListener implements Listener {
     private void distributeDrops(Player player, EntityDeathEvent event, int dropMultiplier, int monsterLevel) {
         Random random = new Random();
         UserProfile profile = profileManager.getProfile(player.getName());
+        if (profile == null) return;
+
         int playerLevel = profile.getLevel();
         int levelDiff = monsterLevel - playerLevel;
 
-        double rewardMultiplier = 1.0;
-
-
-        // --- Reward Scaling Based on Level Difference ---
-        if (monsterLevel <= 10) {
-            rewardMultiplier = 1.0;
-        } else if (monsterLevel <= 20) {
-            rewardMultiplier = 0.5;
-
+        // --- Reward Multiplier Logic ---
+        double rewardMultiplier;
+        if (Math.abs(levelDiff) > 30) {
+            rewardMultiplier = 0.1; // No drops if monster too weak or too strong
+        } else if (Math.abs(levelDiff) > 12) {
+            rewardMultiplier = 0.5; // Heavily reduced drops
+        } else if (Math.abs(levelDiff) > 10) {
+            rewardMultiplier = 0.8; // Slightly reduced
         } else {
-            if (levelDiff <= 10) {
-                rewardMultiplier = 1.0;
-            } else if (levelDiff <= 12) {
-                rewardMultiplier = 0.8;
+            rewardMultiplier = 1.0; // Full rewards
+        }
 
-            } else if (levelDiff <= 30) {
-                rewardMultiplier = 0.5;
-
-            } else {
-                rewardMultiplier = 0.0;
-
-            }
+        if (rewardMultiplier < 1.0) {
+            player.sendMessage(ChatColor.YELLOW + "Drop rewards reduced due to level gap.");
         }
 
         boolean receivedDrops = false;
 
-        // --- Process Drops ---
+        // --- Process Valid Drops ---
         for (ItemStack drop : event.getDrops()) {
             if (isEquipable(drop.getType())) continue;
 
-            int originalAmount = drop.getAmount();
-            int multipliedAmount = (int) (originalAmount * dropMultiplier / 100.0 * rewardMultiplier);
+            int baseAmount = drop.getAmount();
+            int scaledAmount = (int) (baseAmount * (dropMultiplier / 100.0) * rewardMultiplier);
 
-            if (multipliedAmount < 1) continue;
+            if (scaledAmount < 1) continue;
 
-            int randomizedAmount = 1 + random.nextInt(multipliedAmount); // [1, multipliedAmount]
+            int randomizedAmount = 1 + random.nextInt(scaledAmount); // [1, scaledAmount]
             ItemStack newDrop = new ItemStack(drop.getType(), randomizedAmount);
 
             if (player.getInventory().firstEmpty() != -1) {
                 player.getInventory().addItem(newDrop);
                 receivedDrops = true;
             } else {
+                // 10% chance to notify about full inventory
                 if (random.nextInt(10) == 0) {
                     player.sendMessage(ChatColor.RED + "Inventory full! Some drops were lost.");
                 }
             }
         }
 
-    }
 
+    }
 
 
 

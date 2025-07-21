@@ -97,23 +97,9 @@ public class TabListCustomizer {
         if (profile == null || profile.getChosenClass() == null) return "";
 
         String profileClass = profile.getChosenClass();
-
-        int totalStats = profile.getTempStr()
-                + profile.getTempDex()
-                + profile.getTempIntel()
-                + profile.getTempLuk()
-                + profile.getTempVit()
-                + profile.getTempAgi();
-
-        int level = Math.max(1, totalStats / 100);
-        profile.setLevel(level);
-
-        int hpPercent = (int) (profile.getHpMultiplier() * 100);        // e.g. 1.25 → 125%
-        int statDmgPercent = (int) (profile.getStatDmgMultiplier() * 100); // e.g. 1.10 → 110%
-
         String capitalizedClass = profileClass.substring(0, 1).toUpperCase() + profileClass.substring(1);
 
-        return String.format(" - %s Lvl %d |", capitalizedClass, level, hpPercent, statDmgPercent);
+        return String.format(" - %s Lvl %d |", capitalizedClass, profile.getLevel());
     }
 
 

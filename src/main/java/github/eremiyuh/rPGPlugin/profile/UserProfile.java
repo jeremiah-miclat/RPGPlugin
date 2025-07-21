@@ -165,8 +165,8 @@ public class UserProfile {
         this.trader = 0;
         this.level=0;
 
-        this.hpMultiplier = 1;
-        this.statDmgMultiplier = 1;
+        this.hpMultiplier = 0;
+        this.statDmgMultiplier = 0;
         this.tempStr = 0;
         this.tempAgi = 0;
         this.tempVit = 0;
