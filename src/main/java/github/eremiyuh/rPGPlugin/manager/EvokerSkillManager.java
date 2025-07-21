@@ -2,9 +2,7 @@ package github.eremiyuh.rPGPlugin.manager;
 
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
-import org.bukkit.entity.Evoker;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
@@ -19,7 +17,7 @@ public class EvokerSkillManager {
     private final Set<UUID> boasted = new HashSet<>(); // Tracks boasted Evokers
     private final long cooldown = 10_000;
     private final String targetWorld = "world_rpg";
-
+    List<LivingEntity> spawnedVindicators = new ArrayList<>();
 
     public EvokerSkillManager(JavaPlugin plugin) {
         this.plugin = plugin;
@@ -56,6 +54,10 @@ public class EvokerSkillManager {
                         boasted.add(id); // Mark as boasted this cycle
                     }
                 }
+
+
+
+
             }
         }.runTaskTimer(plugin, 20L, 20L); // every second
     }
@@ -109,6 +111,44 @@ public class EvokerSkillManager {
                 player.sendMessage("§a" + evoker.getName() + ": \"Shinra Tensei!\"");
             }
         }
+
+
+
+
+        // 🔥 Summon 4 Vindicators in front of the Ravager
+        Location ravagerLoc = evoker.getLocation();
+        Vector forward = ravagerLoc.getDirection().setY(0).normalize();
+        Vector right = new Vector(-forward.getZ(), 0, forward.getX());
+        World world = evoker.getWorld();
+
+// Base spawn location 3 blocks in front of the Ravager
+        Location base = ravagerLoc.clone().add(forward.clone().multiply(3));
+
+        for (int i = -1; i <= 2; i++) {
+            Vector offset = right.clone().multiply(i); // spreads them left/right
+            Location spawnLoc = base.clone().add(offset);
+
+            // Set Y to ground level + 1
+            spawnLoc.setY(world.getHighestBlockYAt(spawnLoc) + 1);
+
+            Vindicator vindicator = (Vindicator) world.spawnEntity(spawnLoc, EntityType.VINDICATOR);
+            vindicator.setCustomNameVisible(true);
+            vindicator.setPersistent(true);
+            vindicator.setRemoveWhenFarAway(false);
+            vindicator.setCanPickupItems(false);
+            spawnedVindicators.add(vindicator);
+        }
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                for (LivingEntity entity : spawnedVindicators) {
+                    if (!entity.isDead()) {
+                        entity.remove();
+                    }
+                }
+            }
+        }.runTaskLater(plugin, 6L * 20);
+
     }
 
     private void sendBoast(Evoker evoker) {

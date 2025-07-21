@@ -1,9 +1,7 @@
 package github.eremiyuh.rPGPlugin.manager;
 
 import org.bukkit.*;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Ravager;
+import org.bukkit.entity.*;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 

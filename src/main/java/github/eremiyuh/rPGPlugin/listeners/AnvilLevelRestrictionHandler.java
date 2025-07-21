@@ -1,5 +1,6 @@
 package github.eremiyuh.rPGPlugin.listeners;
 
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
@@ -57,7 +58,7 @@ public class AnvilLevelRestrictionHandler implements Listener {
                 event.setResult(resultItem);
 
                 // Optional: Set the level cost of the anvil operation
-                anvilInventory.setRepairCost(30); // Example: 5 levels
+                anvilInventory.setRepairCost(10); // Example: 5 levels
             }
             return;
         }
@@ -69,7 +70,7 @@ public class AnvilLevelRestrictionHandler implements Listener {
                 anvilInventory.setMaximumRepairCost(10000);
 
                 if (firstItem.getItemMeta().hasLore() || firstItem.getItemMeta().hasItemModel()) {
-                    anvilInventory.setRepairCost(30);
+                    anvilInventory.setRepairCost(10);
                 }
 
                 if (result != null) {
@@ -306,22 +307,34 @@ public class AnvilLevelRestrictionHandler implements Listener {
             ItemStack result = event.getCurrentItem();
             if (result == null || result.getType() == Material.AIR) return;
 
-            // Check if the result slot is clicked (usually slot 2)
+            // Check if the result slot is clicked (slot 2 is the output slot in an anvil)
             if (event.getSlot() == 2) {
-                // Get the items in the anvil
                 ItemStack firstItem = event.getInventory().getItem(0);
                 ItemStack secondItem = event.getInventory().getItem(1);
 
-                // If the result is picked up, consume the second item
-                if (firstItem != null && secondItem != null) {
+                // Cancel if first item has lore "Cosmetic"
+                if (firstItem != null && firstItem.hasItemMeta()) {
+                    ItemMeta firstMeta = firstItem.getItemMeta();
+                    if (firstMeta.hasLore()) {
+                        List<String> firstLore = firstMeta.getLore();
+                        for (String line : firstLore) {
+                            if (line.contains("Cosmetic")) {
+                                event.getWhoClicked().sendMessage(ChatColor.RED + "⚠ Cosmetic items cannot be modified or upgraded.");
+                                event.getInventory().close();
+                                event.setCancelled(true);
+                                return;
+                            }
+                        }
+                    }
+                }
+
+                // If the result is picked up, consume one second item (e.g., a template or catalyst)
+                if (firstItem != null && secondItem != null && secondItem.hasItemMeta()) {
                     ItemMeta secondMeta = secondItem.getItemMeta();
                     List<String> secondLore = secondMeta.getLore();
 
-                    // Check if lore contains "Cosmetic" to ensure it was involved in the crafting
-                    if (secondLore != null ) {
-                        // Decrease the amount of the second item only when the result is picked up
+                    if (secondLore != null) {
                         secondItem.setAmount(secondItem.getAmount() - 1);
-
                     }
                 }
             }

@@ -2,6 +2,7 @@ package github.eremiyuh.rPGPlugin.listeners;
 
 import github.eremiyuh.rPGPlugin.RPGPlugin;
 import net.kyori.adventure.text.TextComponent;
+import org.apache.commons.lang3.text.WordUtils;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.*;
@@ -71,6 +72,12 @@ public class MonsterInitializer implements Listener {
         if (event.getEntity() instanceof Monster monster) {
             monster.setNoDamageTicks(0);
             initializeExtraAttributes(monster);
+
+        }
+
+        if (event.getEntity() instanceof Villager villager) {
+            Objects.requireNonNull(villager.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(1000);
+            villager.setHealth(1000);
 
         }
     }

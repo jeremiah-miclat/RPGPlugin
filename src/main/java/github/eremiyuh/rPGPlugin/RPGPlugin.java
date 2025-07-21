@@ -13,6 +13,7 @@ import github.eremiyuh.rPGPlugin.methods.DamageAbilityManager;
 import github.eremiyuh.rPGPlugin.methods.EffectsAbilityManager;
 import org.bukkit.*;
 import org.bukkit.block.Biome;
+import org.bukkit.block.Block;
 import org.bukkit.entity.*;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffectType;
@@ -41,7 +42,7 @@ public class RPGPlugin extends JavaPlugin {
     private WardenSkillManager wardenSkillManager;
     private final String WORLD_NAME = "world_resource";
     private final String DATA_PACK_FOLDER = "datapacks";
-
+    private DamageListener damageListener;
     @Override
     public void onEnable() {
 
@@ -49,6 +50,14 @@ public class RPGPlugin extends JavaPlugin {
         loadResources();
         // Add a delay (e.g., 5 seconds) before allowing logins
         getServer().getScheduler().runTaskLater(this, () -> serverLoaded = true, 60); // 100 ticks = 5 seconds
+
+        Bukkit.getScheduler().runTaskTimer(this, () -> {
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                if (isStandingOnSolidBlock(player)) {
+                    damageListener.updateLastGrounded(player);
+                }
+            }
+        }, 0L, 10L);
 
     }
 
@@ -277,8 +286,8 @@ public class RPGPlugin extends JavaPlugin {
         Objects.requireNonNull(getCommand("cosmeticstore")).setExecutor(new CosmeticStore(this, profileManager));
         Objects.requireNonNull(getCommand("viewitem")).setExecutor(new ViewItemCommand());
 //        Objects.requireNonNull(getCommand("shop")).setExecutor(new ShopCommand());
-        DamageListener damageListenerListener = new DamageListener(profileManager, effectsAbilityManager, damageAbilityManager,this,ravagerManager);
-        getServer().getPluginManager().registerEvents(damageListenerListener,this);
+        damageListener = new DamageListener(profileManager, effectsAbilityManager, damageAbilityManager,this,ravagerManager);
+        getServer().getPluginManager().registerEvents(damageListener,this);
         getServer().getPluginManager().registerEvents(new PotionGiveListener(this,profileManager),this);
         new OverworldBlastProtectionListener(this);
         new ArrowHitListener((this),profileManager);
@@ -478,6 +487,11 @@ public class RPGPlugin extends JavaPlugin {
     }
 
 
+    private boolean isStandingOnSolidBlock(Player player) {
+        Location below = player.getLocation().clone().subtract(0, 0.1, 0);
+        Block block = below.getBlock();
+        return block.getType().isSolid() && block.getType() != Material.AIR;
+    }
 
 
 }
