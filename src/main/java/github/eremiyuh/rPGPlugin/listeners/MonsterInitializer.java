@@ -52,7 +52,7 @@ public class MonsterInitializer implements Listener {
         if (!world.equals("world_rpg")) {
             return;
         }
-
+        event.getEntity().setCanPickupItems(false);
 
 //        if (!isPlayerOnSameYLevel(event.getLocation())) {
 //            event.setCancelled(true);
@@ -76,8 +76,8 @@ public class MonsterInitializer implements Listener {
         }
 
         if (event.getEntity() instanceof Villager villager) {
-            Objects.requireNonNull(villager.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(1000);
-            villager.setHealth(1000);
+            Objects.requireNonNull(villager.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(10000);
+            villager.setHealth(10000);
 
         }
     }
@@ -151,7 +151,7 @@ public class MonsterInitializer implements Listener {
         double customMaxHealth =entity.getHealth() + lvl+20;
 
 
-        double extraHealth = lvl+50+entity.getHealth();
+        double extraHealth = lvl*5+entity.getHealth();
 
         double customDamage = lvl*.05 + Objects.requireNonNull(entity.getAttribute(Attribute.ATTACK_DAMAGE)).getValue() + 2;
 
@@ -194,7 +194,7 @@ public class MonsterInitializer implements Listener {
         }
 
         // If neither of the boss conditions are met, set standard attributes
-        Objects.requireNonNull(entity.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(extraHealth+10);
+        Objects.requireNonNull(entity.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(extraHealth);
         entity.setHealth(extraHealth);
         Objects.requireNonNull(entity.getAttribute(Attribute.ATTACK_DAMAGE)).setBaseValue(customDamage);
     }

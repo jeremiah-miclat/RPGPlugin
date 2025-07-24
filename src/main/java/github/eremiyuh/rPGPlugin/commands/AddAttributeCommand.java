@@ -25,7 +25,10 @@ public class AddAttributeCommand implements CommandExecutor {
         }
 
         if (args.length < 1 || args.length > 2) {
-            player.sendMessage("Usage: /add <attributeName> [amount]");
+            player.sendMessage("Usage: /addstat <attributeName> [amount](leave amount as <blank> to add all remaining points)");
+            player.sendMessage("Valid attributes are: str, agi, dex, intel, vit, luk.");
+            player.sendMessage("Example to add all remaining points to Strength: /addstat str");
+            player.sendMessage("Example to add 100 points to Strength: /addstat str 100");
             return true;
         }
 

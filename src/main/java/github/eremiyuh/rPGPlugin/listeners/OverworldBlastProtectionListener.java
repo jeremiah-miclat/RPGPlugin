@@ -12,7 +12,7 @@ import java.util.Objects;
 
 public class OverworldBlastProtectionListener implements Listener {
 
-    private static final int SEA_LEVEL = 63; // Default sea level in Minecraft is at y=63
+    private static final int SEA_LEVEL = 40; // Default sea level in Minecraft is at y=63
 
     public OverworldBlastProtectionListener(RPGPlugin plugin) {
         Bukkit.getPluginManager().registerEvents(this, plugin);

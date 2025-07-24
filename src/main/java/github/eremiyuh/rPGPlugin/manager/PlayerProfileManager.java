@@ -223,8 +223,8 @@ public class PlayerProfileManager {
         profile.setJunkPoints(config.getInt("junkpoints",0));
 
         profile.setCurrency("enderpearl", config.getInt("enderpearl", 50));
-        profile.setStamina(config.getInt("stamina", 100));
-        profile.setDurability(config.getInt("durability", 100));
+        profile.setStamina(config.getInt("stamina", 100000));
+        profile.setDurability(config.getInt("durability", 1000));
         profile.setAbysspoints(config.getDouble("abysspoints",0));
 
         //claim points

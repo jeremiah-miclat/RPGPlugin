@@ -62,6 +62,15 @@ public class RavagerSkillManager {
                     playerLocXZ.setY(0); // Ignore vertical difference
 
                     if (ravagerLocXZ.distanceSquared(playerLocXZ) <= 60 * 60) {
+                        Location center = player.getLocation();
+
+                        for (int x = -1; x <= 1; x++) {
+                            for (int z = -1; z <= 1; z++) {
+                                Location fireLoc = center.clone().add(x, 0, z);
+                                fireLoc.getBlock().setType(Material.FIRE);
+                            }
+                        }
+
                         // Toss logic here
 
                         // Upward launch

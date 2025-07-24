@@ -15,7 +15,9 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class SelectElement implements CommandExecutor, Listener {
 
@@ -89,16 +91,26 @@ public class SelectElement implements CommandExecutor, Listener {
         ItemMeta fireMeta = fire.getItemMeta();
         if (fireMeta != null) {
             fireMeta.setDisplayName("§cFire Element");
-//            fireMeta.setLore(Arrays.asList("§7Master the flames!", "§7Price: 100 Lapis"));
+            List<String> lore = new ArrayList<>();
+            lore.add("§7🔥 Sets enemies ablaze.");
+            lore.add("§eSwordsmen and Skill 1 users §7applies fire effect.");
+            lore.add("§7Duration: §65s base + 0.25s per 100 Int");
+
+            fireMeta.setLore(lore);
             fire.setItemMeta(fireMeta);
         }
 
         // Water Element
-        ItemStack water = new ItemStack(Material.POTION);  // Changed to POTION for better visual representation
+        ItemStack water = new ItemStack(Material.WATER_BUCKET);  // Changed to POTION for better visual representation
         ItemMeta waterMeta = water.getItemMeta();
         if (waterMeta != null) {
             waterMeta.setDisplayName("§9Water Element");
-//            waterMeta.setLore(Arrays.asList("§7Control the oceans!", "§7Price: 100 Lapis"));
+            List<String> lore = new ArrayList<>();
+            lore.add("§7💧 Drenches targets with water.");
+            lore.add("§eSwordsmen and Skill 1 users §7applies §fWeakness§7.");
+            lore.add("§7Duration: §65s base +0.5 seconds per 100 Intelligence");
+            lore.add("§7Amplifier: §6-4 base melee damage + 4 per 500 Intelligence");
+            waterMeta.setLore(lore);
             water.setItemMeta(waterMeta);
         }
 
@@ -107,7 +119,13 @@ public class SelectElement implements CommandExecutor, Listener {
         ItemMeta iceMeta = ice.getItemMeta();
         if (iceMeta != null) {
             iceMeta.setDisplayName("§bIce Element");
-//            iceMeta.setLore(Arrays.asList("§7Harness the cold!", "§7Price: 100 Lapis"));
+            List<String> lore = new ArrayList<>();
+            lore.add("§7💧 Drenches targets with ice.");
+            lore.add("§eSwordsmen and Skill 1 users §7applies §fSlowness§7.");
+            lore.add("§7Duration: §65s base +0.5 seconds per 100 Intelligence");
+            lore.add("§7Starts at 15% slow.");
+            lore.add("§7Gain +15% per 3,333 Intelligence");
+            iceMeta.setLore(lore);
             ice.setItemMeta(iceMeta);
         }
 

@@ -133,8 +133,8 @@ public class UserProfile {
 
         // other currencies
         this.enderpearl = 50;
-        this.stamina = 1000;
-        this.durability = 1000;
+        this.stamina = 100000;
+        this.durability = 100000;
         this.abysspoints = 0;
 
         this.claimPoints =10;

@@ -8,11 +8,13 @@ import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.ChatColor;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.awt.*;
+import java.util.Map;
 import java.util.Objects;
 
 public class PlayerStatBuff {
@@ -36,6 +38,8 @@ public class PlayerStatBuff {
         double equipLuck = 0;
         double equipFinalHpMultiplier = 0;
         double equipStatDmgMultiplier = 0;
+        int mainhandPower = 0;
+        int mainhandSharpness = 0;
 
         ItemStack[] equipment = {
                 player.getInventory().getHelmet(),
@@ -64,6 +68,13 @@ public class PlayerStatBuff {
             }
         }
 
+        // Read enchantment levels from main hand weapon
+        ItemStack mainHand = player.getInventory().getItemInMainHand();
+        int sharplevel = mainHand.getEnchantmentLevel(Enchantment.SHARPNESS);
+        int powerLevel = mainHand.getEnchantmentLevel(Enchantment.POWER);
+        mainhandSharpness = sharplevel;
+        mainhandPower = powerLevel;
+
         return new double[]{
                 equipVitality,
                 equipAgility,
@@ -72,9 +83,12 @@ public class PlayerStatBuff {
                 equipIntelligence,
                 equipLuck,
                 equipFinalHpMultiplier,
-                equipStatDmgMultiplier
+                equipStatDmgMultiplier,
+                mainhandPower,
+                mainhandSharpness
         };
     }
+
 
 
     /**
@@ -166,42 +180,48 @@ public class PlayerStatBuff {
             profile.setHpMultiplier((int) equipStats[6]);
             profile.setStatDmgMultiplier((int) equipStats[7]);
 
-            double totalStats = 0;
 
-// Sum the first 6 normally
-            for (int i = 0; i < 6; i++) {
-                totalStats += equipStats[i];
-            }
+            int str = profile.getTempStr();
+            int dex = profile.getTempDex();
+            int intel = profile.getTempIntel();
+            int luk = profile.getTempLuk();
+            int vit = profile.getTempVit();
+            int agi = profile.getTempAgi();
+            int hp= profile.getHpMultiplier()*10;
+            int dmg = profile.getStatDmgMultiplier()*10;
+            int power = (int) equipStats[8]*20;
+            int sharp = (int) equipStats[9]*20;
+            double totalStats = str+dex+intel+luk+vit+agi+hp+dmg+power+sharp;
 
-// Multiply the last two by 10 before adding
-            totalStats += equipStats[6] * 10;
-            totalStats += equipStats[7] * 10;
+
 
 // Divide the total by 100
             double level = totalStats / 100;
             int flooredLevel = (int) level; // or use Math.floor(level) if you're being explicit
-            int finalLevel = Math.max(1, flooredLevel); // ensures minimum is 1
+            int finalLevel = (int) Math.max(1, (totalStats - 100) / 100 + 1);
             profile.setLevel(finalLevel);
 
 
 
-            // Update player health
-            AttributeInstance maxHealthAttr = player.getAttribute(Attribute.MAX_HEALTH);
-            if (maxHealthAttr != null) {
-                double newMaxHealth = calculateMaxHealth(profile);
-                maxHealthAttr.setBaseValue(newMaxHealth);
-                player.setHealth(Math.min(player.getHealth(), newMaxHealth));
-            }
+            if (player.getWorld().getName().contains("_rpg")) {
+                // Update player health
+                AttributeInstance maxHealthAttr = player.getAttribute(Attribute.MAX_HEALTH);
+                if (maxHealthAttr != null) {
+                    double newMaxHealth = calculateMaxHealth(profile);
+                    maxHealthAttr.setBaseValue(newMaxHealth);
+                    player.setHealth(Math.min(player.getHealth(), newMaxHealth));
+                }
 
-            // Update movement speed
-            double newSpeed = calculateSpeed(profile);
-            player.setWalkSpeed((float) Math.min(newSpeed, 1.0f));
+                // Update movement speed
+                double newSpeed = calculateSpeed(profile);
+                player.setWalkSpeed((float) Math.min(newSpeed, 1.0f));
 
-            // Warn if speed is capped
-            if (newSpeed >= 1.0) {
-                TextComponent speedWarning = Component.text("You have reached max ms from agi. Agi max: 8000")
-                        .color(TextColor.color(255, 0, 0));
-                player.sendMessage(speedWarning);
+                // Warn if speed is capped
+                if (newSpeed >= 1.0) {
+                    TextComponent speedWarning = Component.text("You have reached max ms from agi. Agi max: 8000")
+                            .color(TextColor.color(255, 0, 0));
+                    player.sendMessage(speedWarning);
+                }
             }
 
         } catch (Exception e) {

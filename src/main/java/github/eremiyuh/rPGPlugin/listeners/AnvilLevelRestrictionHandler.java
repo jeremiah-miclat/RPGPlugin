@@ -1,6 +1,7 @@
 package github.eremiyuh.rPGPlugin.listeners;
 
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
@@ -72,7 +73,6 @@ public class AnvilLevelRestrictionHandler implements Listener {
                 if (firstItem.getItemMeta().hasLore() || firstItem.getItemMeta().hasItemModel()) {
                     anvilInventory.setRepairCost(10);
                 }
-
                 if (result != null) {
                     // Adjust meta or lore of the result if necessary
                     ItemMeta meta = result.getItemMeta();
@@ -81,11 +81,12 @@ public class AnvilLevelRestrictionHandler implements Listener {
                     }
 
                 }
+
             }
         }
 
 
-        if (secondItem != null && secondItem.hasItemMeta() && secondItem.getItemMeta().hasLore()) {
+        if (secondItem != null && secondItem.hasItemMeta()) {
             if (firstItem.getType() == secondItem.getType()) {
 
 
@@ -94,11 +95,7 @@ public class AnvilLevelRestrictionHandler implements Listener {
             List<String> secondLore = secondMeta.getLore();
 
             // Debugging: Check if lore contains "Cosmetic"
-            if (secondLore != null) {
-                System.out.println("Second item lore found: " + secondLore);
-                if (secondLore.contains("Cosmetic")) {
-                    System.out.println("Second item contains 'Cosmetic' lore.");
-
+                if (secondMeta.hasItemModel()) {
                     // Create a modified version of the result item
                     ItemStack cosmeticResult = firstItem.clone(); // Clone the first item
                     if (cosmeticResult != null) {
@@ -116,13 +113,9 @@ public class AnvilLevelRestrictionHandler implements Listener {
                             resultMeta.setEquippable(equippableComponent);
 
                             resultMeta.setEnchantmentGlintOverride(false);
-
-                            if (secondMeta.hasDisplayName()) {
-                                String displayName = secondMeta.getDisplayName();
-                                System.out.println("Setting display name to: " + displayName);
-                                resultMeta.setDisplayName(displayName); // Apply the name from the second item
-                            }
-
+                            String displayName = secondMeta.getItemName();
+                            System.out.println("Setting display name to: " + displayName);
+                            resultMeta.setDisplayName(displayName);
                             cosmeticResult.setItemMeta(resultMeta);
 
                             // Update the anvil result
@@ -131,7 +124,7 @@ public class AnvilLevelRestrictionHandler implements Listener {
                         }
                     }
                 }
-            }
+
             }
         }
 
@@ -163,9 +156,34 @@ public class AnvilLevelRestrictionHandler implements Listener {
         ItemStack first = inventory.getFirstItem();
         ItemStack second = inventory.getSecondItem();
 
+        if (first == null || second ==null) {
+            return;
+        }
+
+
         if (hasBypassLore(first) && hasBypassLore(second)) {
             // Allow bypassing enchantment level restriction
             event.getView().bypassEnchantmentLevelRestriction(true);
+        }
+
+        if (first.getType() == Material.CROSSBOW && second.getType() == Material.ENCHANTED_BOOK) {
+            ItemMeta crossbowMeta = first.getItemMeta();
+            EnchantmentStorageMeta bookMeta = (EnchantmentStorageMeta) second.getItemMeta();
+
+            if (bookMeta != null && bookMeta.hasStoredEnchant(Enchantment.POWER)) {
+                int powerLevel = bookMeta.getStoredEnchantLevel(Enchantment.POWER);
+
+                // Clone the crossbow and its meta
+                ItemStack result = first.clone();
+                ItemMeta resultMeta = result.getItemMeta();
+
+                if (resultMeta != null) {
+                    resultMeta.addEnchant(Enchantment.POWER, powerLevel, true); // 'true' makes it unsafe
+                    result.setItemMeta(resultMeta);
+                }
+                event.getView().setRepairCost(10);
+                event.setResult(result);
+            }
         }
 
         AnvilInventory anvilInventory = event.getInventory();
@@ -319,7 +337,7 @@ public class AnvilLevelRestrictionHandler implements Listener {
                         List<String> firstLore = firstMeta.getLore();
                         for (String line : firstLore) {
                             if (line.contains("Cosmetic")) {
-                                event.getWhoClicked().sendMessage(ChatColor.RED + "⚠ Cosmetic items cannot be modified or upgraded.");
+                                event.getWhoClicked().sendMessage(ChatColor.RED + "⚠ Cosmetic items cannot be modified or upgraded. Do not retry, exp will not be refunded");
                                 event.getInventory().close();
                                 event.setCancelled(true);
                                 return;

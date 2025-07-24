@@ -15,6 +15,7 @@ import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.damage.DamageSource;
 import org.bukkit.damage.DamageType;
 import org.bukkit.enchantments.Enchantment;
@@ -2123,7 +2124,7 @@ public class DamageListener implements Listener {
 
         }
 
-        if (hasBeenAirborneTooLong(player, 3000) && !isStandingOnSolidBlock(player)) {
+        if (hasBeenAirborneTooLong(player, 5000) && !isStandingOnSolidBlock(player)) {
             player.sendMessage("§e⚠ Damage is reduced because you have been in the air, on water, or on lava for too long.");
             calculatedDamage *= 0.1; // reduce to 10%
         }
@@ -2378,7 +2379,6 @@ public class DamageListener implements Listener {
 
     private boolean isSupportedGround(Material type) {
         String name = type.name();
-
         return name.endsWith("SLAB")
                 || name.endsWith("STAIRS")
                 || name.endsWith("FENCE")
@@ -2386,20 +2386,17 @@ public class DamageListener implements Listener {
                 || name.endsWith("CARPET")
                 || name.endsWith("PRESSURE_PLATE")
                 || name.endsWith("SNOW")
-                || name.endsWith("PANE") // like glass pane
+                || name.endsWith("PANE")
                 || name.endsWith("CAULDRON")
                 || name.endsWith("SCAFFOLDING");
     }
 
     private boolean isStandingOnSolidBlock(Player player) {
-        Location loc = player.getLocation().subtract(0, 0.1, 0); // Slightly below feet
-        Block blockBelow = loc.getBlock();
+        Block blockBelow = player.getLocation().getBlock().getRelative(BlockFace.DOWN);
         Material type = blockBelow.getType();
 
-        // Fully solid block
         if (type.isSolid()) return true;
 
-        // Check for supported partial blocks
         return isSupportedGround(type);
     }
 

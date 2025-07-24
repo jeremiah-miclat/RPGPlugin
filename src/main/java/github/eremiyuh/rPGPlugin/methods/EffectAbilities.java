@@ -41,13 +41,10 @@ public class EffectAbilities {
 
     // Method to burn target
     public void burnTarget(UserProfile profile, Location location, LivingEntity target) {
-        int userInt = 0;
+        int userInt = profile.getTempIntel();
         String userClass = profile.getChosenClass();
 
-        if (userClass.equalsIgnoreCase("archer")) userInt= profile.getArcherClassInfo().getIntel()/100;
-        if (userClass.equalsIgnoreCase("alchemist")) userInt= profile.getAlchemistClassInfo().getIntel()/20;
-        if (userClass.equalsIgnoreCase("swordsman")) userInt= profile.getSwordsmanClassInfo().getIntel()/100;
-        if (userClass.equalsIgnoreCase("rocket")) userInt= profile.getArcherClassInfo().getIntel()/100;
+
 
         // Check if the entity has the fire resistance potion effect
         if (target.hasPotionEffect(PotionEffectType.FIRE_RESISTANCE)) {
@@ -84,36 +81,27 @@ public class EffectAbilities {
 
     // Method to freeze target
     public void freezeTarget(UserProfile profile, Location location, LivingEntity target) {
-        int slownessDuration = 100; // Longer freeze if ice buff
+        int baseDuration = 100;
+        int userInt = profile.getTempIntel();
 
-        int userInt = 0;
-        String userClass = profile.getChosenClass();
+        int duration = baseDuration + (userInt / 10); // 5s + 0.5s per 100 Int
+        int amplifier = (int) ((userInt / 10000.0) * 3); // Scales to 3 at 10,000 Int = Slowness IV
 
-        if (userClass.equalsIgnoreCase("archer")) userInt= profile.getArcherClassInfo().getIntel()/20;
-        if (userClass.equalsIgnoreCase("alchemist")) userInt= profile.getAlchemistClassInfo().getIntel()/15;
-        if (userClass.equalsIgnoreCase("swordsman")) userInt= profile.getSwordsmanClassInfo().getIntel()/20;
-        if (userClass.equalsIgnoreCase("rocket")) userInt= profile.getArcherClassInfo().getIntel()/20;
-
-
-        target.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, slownessDuration+ (userInt/10), 0));
-
+        target.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, duration, amplifier));
         target.getWorld().spawnParticle(Particle.SNOWFLAKE, target.getLocation(), 10, 0.5, .5, 0.5);
     }
 
     // Method to apply nausea effect
     public void applyNausea(UserProfile profile, Location sourceLocation, LivingEntity target) {
-        int userInt = 0;
+        int userInt = profile.getTempIntel();
         String userClass = profile.getChosenClass();
 
-        if (userClass.equalsIgnoreCase("archer")) userInt= profile.getArcherClassInfo().getIntel()/20;
-        if (userClass.equalsIgnoreCase("alchemist")) userInt= profile.getAlchemistClassInfo().getIntel()/15;
-        if (userClass.equalsIgnoreCase("swordsman")) userInt= profile.getSwordsmanClassInfo().getIntel()/20;
-        if (userClass.equalsIgnoreCase("rocket")) userInt= profile.getArcherClassInfo().getIntel()/20;
+
         int weaknessDuration = 100+ (userInt/10); // Duration of the nausea effect in ticks (5 seconds)
 
         Location targetLocation = target.getLocation();
         World world = target.getWorld();
-        target.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, weaknessDuration, 0));
+        target.addPotionEffect(new PotionEffect(PotionEffectType.NAUSEA, weaknessDuration, 0));
 
         for (int i = 0; i < 50; i++) {
             double xOffset = (Math.random() - 0.5) * 1.5;
@@ -151,19 +139,16 @@ public class EffectAbilities {
 
 
 
-        int userInt = 0;
+        int userInt = profile.getTempIntel();
         String userClass = profile.getChosenClass();
 
-        if (userClass.equalsIgnoreCase("archer")) userInt= profile.getArcherClassInfo().getIntel()/20;
-        if (userClass.equalsIgnoreCase("alchemist")) userInt= profile.getAlchemistClassInfo().getIntel()/15;
-        if (userClass.equalsIgnoreCase("swordsman")) userInt= profile.getSwordsmanClassInfo().getIntel()/20;
-        if (userClass.equalsIgnoreCase("rocket")) userInt= profile.getArcherClassInfo().getIntel()/20;
+
         int weaknessDuration = 100+ (userInt/10); // Duration of the nausea effect in ticks (5 seconds)
 
 
         Location targetLocation = target.getLocation();
         World world = target.getWorld();
-        target.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, weaknessDuration, 0));
+        target.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, weaknessDuration, Math.max(1,userInt/500)));
 
         for (int i = 0; i < 50; i++) {
             double xOffset = (Math.random() - 0.5) * 1.5;

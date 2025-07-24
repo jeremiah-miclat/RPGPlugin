@@ -8,6 +8,7 @@ import github.eremiyuh.rPGPlugin.profile.UserProfile;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -15,6 +16,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scoreboard.Criteria;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
@@ -89,6 +91,14 @@ public class PlayerJoinListener implements Listener {
             player.sendMessage("§6[§Server§6] §7Enter the command §e/register <password> <password>§7 to inscribe your credentials.");
             player.sendMessage("§6[§Server§6] §7Then enter the realm by using §e/login <password>§7.");
             givekit(playerName);
+            World customWorld = Bukkit.getWorld("world_rpg");
+
+            if (customWorld != null) {
+                Location spawnLoc = customWorld.getSpawnLocation(); // Set your spawn coords
+                player.teleport(spawnLoc);
+            } else {
+                player.sendMessage(ChatColor.RED + "Custom world not found!");
+            }
 
         } else {
             // Handle returning players
@@ -158,11 +168,25 @@ public class PlayerJoinListener implements Listener {
         Player player = Bukkit.getPlayer(playerName);
         if (player == null) return;
 
-        // Chainmail Armor
-        player.getInventory().addItem(new ItemStack(Material.CHAINMAIL_HELMET));
-        player.getInventory().addItem(new ItemStack(Material.CHAINMAIL_CHESTPLATE));
-        player.getInventory().addItem(new ItemStack(Material.CHAINMAIL_LEGGINGS));
-        player.getInventory().addItem(new ItemStack(Material.CHAINMAIL_BOOTS));
+        // Check if the player's inventory already contains a diamond helmet
+        boolean hasDiamondHelmet = false;
+        for (ItemStack item : player.getInventory().getContents()) {
+            if (item != null && item.getType() == Material.DIAMOND_HELMET) {
+                hasDiamondHelmet = true;
+                break;
+            }
+        }
+
+        if (hasDiamondHelmet) {
+            player.sendMessage(ChatColor.YELLOW + "You already have the kit.");
+            return;
+        }
+
+        // Diamond Armor with Protection IV
+        player.getInventory().addItem(createEnchantedItem(Material.DIAMOND_HELMET, Enchantment.PROTECTION, 4));
+        player.getInventory().addItem(createEnchantedItem(Material.DIAMOND_CHESTPLATE, Enchantment.PROTECTION, 4));
+        player.getInventory().addItem(createEnchantedItem(Material.DIAMOND_LEGGINGS, Enchantment.PROTECTION, 4));
+        player.getInventory().addItem(createEnchantedItem(Material.DIAMOND_BOOTS, Enchantment.PROTECTION, 4));
 
         // Food and Essentials
         player.getInventory().addItem(new ItemStack(Material.GOLDEN_CARROT, 64));
@@ -171,15 +195,28 @@ public class PlayerJoinListener implements Listener {
         player.getInventory().addItem(new ItemStack(Material.OAK_PLANKS, 20));
 
         // Tools and Weapons
-        player.getInventory().addItem(new ItemStack(Material.STONE_SWORD, 1));
+        player.getInventory().addItem(new ItemStack(Material.DIAMOND_SWORD, 1));
         player.getInventory().addItem(new ItemStack(Material.STONE_AXE, 1));
 
         player.getInventory().addItem(new ItemStack(Material.VILLAGER_SPAWN_EGG, 2));
         player.getInventory().addItem(new ItemStack(Material.ZOMBIE_SPAWN_EGG, 1));
         player.getInventory().addItem(new ItemStack(Material.WATER_BUCKET, 1));
         player.getInventory().addItem(new ItemStack(Material.TORCH, 64));
-
     }
+
+
+
+    // Helper method to create enchanted items
+    private ItemStack createEnchantedItem(Material material, Enchantment enchantment, int level) {
+        ItemStack item = new ItemStack(material);
+        ItemMeta meta = item.getItemMeta();
+        if (meta != null) {
+            meta.addEnchant(enchantment, level, true);
+            item.setItemMeta(meta);
+        }
+        return item;
+    }
+
 
     private Location getGroundLocation(Location location, Player player) {
         World world = location.getWorld();

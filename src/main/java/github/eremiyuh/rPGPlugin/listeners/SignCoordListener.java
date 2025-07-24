@@ -31,7 +31,7 @@ public class SignCoordListener implements Listener {
             }
         }
 
-        if (nonEmptyLine == null) return; // All lines are empty
+        if (nonEmptyLine == null) return;
 
         // Validate coordinates (expect 3 space-separated integers)
         String[] parts = nonEmptyLine.split(" ");
@@ -39,46 +39,58 @@ public class SignCoordListener implements Listener {
 
         try {
             int x = Integer.parseInt(parts[0]);
-            int y = Integer.parseInt(parts[1]);
+            int y = Integer.parseInt(parts[1]); // still parsed, but unused
             int z = Integer.parseInt(parts[2]);
 
-            // Check Y range
-            int minY = world.getMinHeight();
-            int maxY = world.getMaxHeight();
-            if (y < minY || y >= maxY) {
-                player.sendMessage("§cY-coordinate must be between " + minY + " and " + (maxY - 1));
-                return;
-            }
-
-            Location target = new Location(world, x + 0.5, y, z + 0.5);
-
-            // Check against world border
+            // World border check
             WorldBorder border = world.getWorldBorder();
             Location borderCenter = border.getCenter();
             double radius = border.getSize() / 2.0;
-            double dx = Math.abs(target.getX() - borderCenter.getX());
-            double dz = Math.abs(target.getZ() - borderCenter.getZ());
+            double dx = Math.abs(x + 0.5 - borderCenter.getX());
+            double dz = Math.abs(z + 0.5 - borderCenter.getZ());
             if (dx > radius || dz > radius) {
                 player.sendMessage("§cCannot teleport: location is outside world border.");
                 return;
             }
 
-            // Check if the chunk is loaded
-            if (!world.isChunkGenerated(target.getBlockX() >> 4, target.getBlockZ() >> 4)) {
+            // Check if chunk is generated
+            int chunkX = x >> 4;
+            int chunkZ = z >> 4;
+            if (!world.isChunkGenerated(chunkX, chunkZ)) {
                 player.sendMessage("§cCannot teleport: Unexplored destination.");
                 return;
             }
 
-            // Sound & particles at origin
+            // Search downward from world max height
+            int maxY = world.getMaxHeight();
+            int minY = world.getMinHeight();
+            Location target = null;
+
+            for (int ySearch = maxY - 1; ySearch > minY; ySearch--) {
+                Block airBlock = world.getBlockAt(x, ySearch, z);
+                Block belowBlock = world.getBlockAt(x, ySearch - 1, z);
+
+                if (airBlock.getType() == Material.AIR && belowBlock.getType() != Material.AIR) {
+                    target = new Location(world, x + 0.5, ySearch, z + 0.5);
+                    break;
+                }
+            }
+
+            if (target == null) {
+                player.sendMessage("§cNo valid air-above-ground location found.");
+                return;
+            }
+
+            // Teleport effect: origin
             Location origin = player.getLocation();
             world.spawnParticle(Particle.PORTAL, origin, 100, 0.5, 1, 0.5, 0.1);
             world.playSound(origin, Sound.ENTITY_ENDERMAN_TELEPORT, 1.0f, 1.0f);
 
             // Teleport
             player.teleport(target);
-            player.sendMessage("§aTeleported to §f(" + x + ", " + y + ", " + z + ")");
+            player.sendMessage("§aTeleported to §f(" + x + ", " + target.getBlockY() + ", " + z + ")");
 
-            // Sound & particles at destination
+            // Teleport effect: destination
             world.spawnParticle(Particle.PORTAL, target, 100, 0.5, 1, 0.5, 0.1);
             world.playSound(target, Sound.ENTITY_ENDERMAN_TELEPORT, 1.0f, 1.2f);
 

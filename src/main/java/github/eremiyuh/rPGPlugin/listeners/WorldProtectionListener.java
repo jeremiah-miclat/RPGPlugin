@@ -1,9 +1,6 @@
 package github.eremiyuh.rPGPlugin.listeners;
 
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -46,6 +43,7 @@ public class WorldProtectionListener implements Listener {
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
+
         Block block = event.getBlock();
         Player player = event.getPlayer();
         World world = block.getWorld();
@@ -68,6 +66,7 @@ public class WorldProtectionListener implements Listener {
 
         // In protected world, cancel everything else if not creative
         if (isProtected && !isCreative) {
+            player.sendMessage(ChatColor.RED + "This is a combat only map. Building/Breaking blocks is not allowed");
             event.setCancelled(true);
         }
 
@@ -77,6 +76,8 @@ public class WorldProtectionListener implements Listener {
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
         if (isInProtectedWorld(event.getBlock().getWorld()) && event.getPlayer().getGameMode() != GameMode.CREATIVE) {
+
+            event.getPlayer().sendMessage(ChatColor.RED + "This is a combat only map. Building/Breaking blocks is not allowed");
             event.setCancelled(true);
         }
     }
