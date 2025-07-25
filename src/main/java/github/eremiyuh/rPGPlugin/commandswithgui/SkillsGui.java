@@ -62,7 +62,7 @@ public class SkillsGui implements CommandExecutor, Listener {
                 addSkillsToGui(gui, "Swordsman", "Int-based damage", "10% Lifesteal", "Counter Helix: +50% Damage Reduction & Return Damage of 30% of your normal attack when using thorns");
                 break;
             case "archer":
-                addSkillsToGui(gui, "Archer", "High Int-based damage. Single Target", "Arrow Shower. Dex for Chance & Int for Damage.", "Bonus Crit Chance");
+                addSkillsToGui(gui, "Archer", "High Int-based damage. Single Target", "Arrow Shower. Dex for Chance & Int for Damage.", "Bonus Crit Chance. Crossbow heals 5% of damage dealt (5% lifesteal effect)");
                 break;
             case "alchemist":
                 addSkillsToGui(gui, "Alchemist", "Instant Damage Potion", "Random Buff/Debuff", "Healing Potion");
