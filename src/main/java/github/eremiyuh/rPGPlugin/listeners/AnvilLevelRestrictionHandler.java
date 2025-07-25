@@ -165,11 +165,31 @@ public class AnvilLevelRestrictionHandler implements Listener {
 
         if (first.getType() == Material.CROSSBOW && second.getType() == Material.ENCHANTED_BOOK) {
             ItemMeta crossbowMeta = first.getItemMeta();
+
             EnchantmentStorageMeta bookMeta = (EnchantmentStorageMeta) second.getItemMeta();
+
+
+            if (crossbowMeta != null && crossbowMeta.hasEnchant(Enchantment.POWER) && (bookMeta != null && bookMeta.hasStoredEnchant(Enchantment.POWER))) {
+                int currentPower = crossbowMeta.getEnchantLevel(Enchantment.POWER);
+                int powerLevel = bookMeta.getStoredEnchantLevel(Enchantment.POWER);
+                if (powerLevel >=  currentPower) {
+                    ItemStack result = first.clone();
+                    ItemMeta resultMeta = result.getItemMeta();
+                    if (powerLevel == currentPower) {
+                        powerLevel += 1;
+                    }
+                    if (resultMeta != null) {
+                        resultMeta.addEnchant(Enchantment.POWER, powerLevel, true); // 'true' makes it unsafe
+                        result.setItemMeta(resultMeta);
+                    }
+                    event.getView().setRepairCost(10);
+                    event.setResult(result);
+                    return; // This stops everything below — BUT NOT ABOVE
+                }
+            }
 
             if (bookMeta != null && bookMeta.hasStoredEnchant(Enchantment.POWER)) {
                 int powerLevel = bookMeta.getStoredEnchantLevel(Enchantment.POWER);
-
                 // Clone the crossbow and its meta
                 ItemStack result = first.clone();
                 ItemMeta resultMeta = result.getItemMeta();
