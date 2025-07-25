@@ -91,6 +91,13 @@ public class PlayerProfileManager {
         config.set("team", profile.getTeam());
         config.set("teammembers", profile.getTeamMembers());
 
+        //vaults
+        config.set("vault1Players", profile.getVault1Players());
+        config.set("vault2Players", profile.getVault2Players());
+        config.set("vault3Players", profile.getVault3Players());
+        config.set("vault4Players", profile.getVault4Players());
+        config.set("vault5Players", profile.getVault5Players());
+
         //pvp
         config.set("pvpEnabled",profile.isPvpEnabled());
 
@@ -243,6 +250,13 @@ public class PlayerProfileManager {
         }
         profile.setTeamMembers(teamMembers);
 
+        //vaults
+        profile.setVault1Players(safeGetList(config, "vault1Players"));
+        profile.setVault2Players(safeGetList(config, "vault2Players"));
+        profile.setVault3Players(safeGetList(config, "vault3Players"));
+        profile.setVault4Players(safeGetList(config, "vault4Players"));
+        profile.setVault5Players(safeGetList(config, "vault5Players"));
+
         //home
         int maxHomes = config.getInt("maxHomes", 5); // Default to 5 if not present
         profile.setMaxHomes(maxHomes);
@@ -330,5 +344,9 @@ public class PlayerProfileManager {
         playerProfiles.remove(playerName);
     }
 
+    private List<String> safeGetList(ConfigurationSection config, String key) {
+        List<String> list = config.getStringList(key);
+        return list.isEmpty() ? new ArrayList<>() : list;
+    }
 
 }

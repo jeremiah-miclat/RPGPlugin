@@ -48,6 +48,12 @@ public class UserProfile {
     private List<String> teamInvites;
     private List<String> teamMembers = new ArrayList<>();
 
+    //vaults
+    private List<String> vault1Players = new ArrayList<>();
+    private List<String> vault2Players = new ArrayList<>();
+    private List<String> vault3Players = new ArrayList<>();
+    private List<String> vault4Players = new ArrayList<>();
+    private List<String> vault5Players = new ArrayList<>();
 
     private double potion;
 
@@ -178,6 +184,11 @@ public class UserProfile {
         this.tempLuk = 0;
 
         this.shareVault = false;
+        this.vault1Players = getVault1Players();
+        this.vault2Players =getVault2Players();
+        this.vault3Players =getVault3Players();
+        this.vault4Players =getVault4Players();
+        this.vault5Players =getVault5Players();
     }
 
     // Getters and setters
@@ -638,6 +649,46 @@ public class UserProfile {
 
     public void setCopper(double copper) {
         this.copper = copper;
+    }
+
+    public List<String> getVault1Players() {
+        return vault1Players;
+    }
+
+    public void setVault1Players(List<String> vault1Players) {
+        this.vault1Players = vault1Players;
+    }
+
+    public List<String> getVault2Players() {
+        return vault2Players;
+    }
+
+    public void setVault2Players(List<String> vault2Players) {
+        this.vault2Players = vault2Players;
+    }
+
+    public List<String> getVault3Players() {
+        return vault3Players;
+    }
+
+    public void setVault3Players(List<String> vault3Players) {
+        this.vault3Players = vault3Players;
+    }
+
+    public List<String> getVault4Players() {
+        return vault4Players;
+    }
+
+    public void setVault4Players(List<String> vault4Players) {
+        this.vault4Players = vault4Players;
+    }
+
+    public List<String> getVault5Players() {
+        return vault5Players;
+    }
+
+    public void setVault5Players(List<String> vault5Players) {
+        this.vault5Players = vault5Players;
     }
 
     // Inner class to hold class-specific attributes

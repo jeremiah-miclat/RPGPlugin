@@ -251,6 +251,12 @@ commands:
   shareVault:
     description: Toggle vault sharing with team.
     usage: /shareVault
+  playerVault:
+    description: Open other player's vault.
+    usage: /playerVault <playerName> <vault#>
+  vaultAccess:
+    description: Manage who can access your personal vaults
+    usage: /vaultAccess <add|remove|list> <vaultNumber> [playerName]
   buyhomeslot:
     description: buy /sethome slots
     usage: /buyhomeslot <number>
