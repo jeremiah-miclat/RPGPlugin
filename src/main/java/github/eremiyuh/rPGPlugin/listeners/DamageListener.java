@@ -931,7 +931,7 @@ public class DamageListener implements Listener {
 
                         if (mob instanceof Vindicator) {
                             mobDamage = 1;
-                            if (new Random().nextInt(100) < 20){
+                            if (new Random().nextInt(100) < 5){
                                 playerProfile.setDurability(Math.max(0,playerProfile.getDurability()-1000));
                                 String displayName = mob.getCustomName() != null ? mob.getCustomName() : ChatColor.GRAY + "Vindicator";
                                 player.sendMessage(displayName + ChatColor.RED + ": " + getVindicatorRandomInsult());
@@ -1877,13 +1877,13 @@ public class DamageListener implements Listener {
                 } else if (distance <= 2) {
                     finalDamage *= 0.1;
                 } else if (distance <= 3) {
-                    finalDamage *= 0.2;
-                } else if (distance <= 4) {
-                    finalDamage *= 0.3;
-                } else if (distance <= 5) {
                     finalDamage *= 0.4;
+                } else if (distance <= 4) {
+                    finalDamage *= 0.7;
+                } else if (distance <= 5) {
+                    finalDamage *= 0.7;
                 } else if (distance <= 6) {
-                    finalDamage *= 0.5;
+                    finalDamage *= 0.7;
                 } else if (distance <= 7) {
                     finalDamage *= 0.7;
                 } else if (distance <= 8) {

@@ -53,7 +53,7 @@ public class WardenSkillManager {
 
     private void activateSkill(Warden warden) {
         Location center = warden.getLocation();
-        double radius = 30;
+        double radius = 10;
 
         // Visual and audio effect at Warden location (all players may hear this based on sound radius)
         center.getWorld().playSound(center, Sound.ENTITY_WARDEN_ROAR, 2f, 1f);

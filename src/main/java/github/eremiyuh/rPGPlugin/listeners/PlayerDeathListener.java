@@ -59,19 +59,19 @@ public class PlayerDeathListener implements Listener {
             profile.setStamina(newStamina < 1 ? 0 : newStamina);
 
 
-            int abyssPoints = (int) profile.getAbysspoints();
-            int newAbyssPoints = (int) Math.floor(abyssPoints * 0.90);
-            profile.setAbysspoints(newAbyssPoints < 1 ? 0 : newAbyssPoints);
-            String msgToPlayer = "You lost 50% of your durability and stamina, and 10% of your abyss points.";
-            player.sendMessage(Component.text(msgToPlayer).color(TextColor.color(255, 0, 0)));
-
-            if (player.getKiller() != null) {
-                Player killer = player.getKiller();
-                UserProfile killerProfile = profileManager.getProfile(killer.getName());
-                killerProfile.setAbysspoints(killerProfile.getAbysspoints() + (abyssPoints * .10));
-                String messageToKiller = "You killed " + player.getName() + ". Received " + (int) (abyssPoints * .10) + " abyss points.";
-                killer.sendMessage(Component.text(messageToKiller).color(TextColor.color(124, 252, 0)));
-            }
+//            int abyssPoints = (int) profile.getAbysspoints();
+//            int newAbyssPoints = (int) Math.floor(abyssPoints * 0.90);
+//            profile.setAbysspoints(newAbyssPoints < 1 ? 0 : newAbyssPoints);
+//            String msgToPlayer = "You lost 50% of your durability and stamina, and 10% of your abyss points.";
+//            player.sendMessage(Component.text(msgToPlayer).color(TextColor.color(255, 0, 0)));
+//
+//            if (player.getKiller() != null) {
+//                Player killer = player.getKiller();
+//                UserProfile killerProfile = profileManager.getProfile(killer.getName());
+//                killerProfile.setAbysspoints(killerProfile.getAbysspoints() + (abyssPoints * .10));
+//                String messageToKiller = "You killed " + player.getName() + ". Received " + (int) (abyssPoints * .10) + " abyss points.";
+//                killer.sendMessage(Component.text(messageToKiller).color(TextColor.color(124, 252, 0)));
+//            }
 
             player.teleport(Objects.requireNonNull(Bukkit.getWorld("world")).getSpawnLocation());
 

@@ -39,6 +39,16 @@ public class AbyssHealItemListener implements Listener {
                     itemInHand.setAmount(newAmount);
                 } else {
                     player.getInventory().setItemInMainHand(null); // Remove the item entirely
+                    return;
+                }
+            }
+            ItemStack itemInOffHand = player.getInventory().getItemInOffHand();
+            if (itemInOffHand.isSimilar(item)) {
+                int newAmount = itemInOffHand.getAmount() - 1;
+                if (newAmount > 0) {
+                    itemInOffHand.setAmount(newAmount);
+                } else {
+                    player.getInventory().setItemInOffHand(null); // Remove the item entirely
                 }
             }
         }

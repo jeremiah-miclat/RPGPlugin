@@ -235,12 +235,12 @@ public class CheckClassCommand implements CommandExecutor, Listener {
         // Add class name and attribute values
         lore.add("§ePlayer Class: " + profile.getChosenClass() + " Lvl " + profile.getLevel());
         lore.add("§7Attributes:");
-        lore.add("§7Strength: " + getAttributeValue(profile, "strength"));
-        lore.add("§7Agility: " + getAttributeValue(profile, "agility"));
-        lore.add("§7Dexterity: " + getAttributeValue(profile, "dexterity"));
-        lore.add("§7Intelligence: " + getAttributeValue(profile, "intelligence"));
-        lore.add("§7Vitality: " + getAttributeValue(profile, "vitality"));
-        lore.add("§7Luck: " + getAttributeValue(profile, "luck"));
+        lore.add("§7Strength: " + profile.getTempStr());
+        lore.add("§7Agility: " + profile.getTempAgi());
+        lore.add("§7Dexterity: " + profile.getTempDex());
+        lore.add("§7Intelligence: " + profile.getTempIntel());
+        lore.add("§7Vitality: " + profile.getTempVit());
+        lore.add("§7Luck: " + profile.getTempLuk());
         lore.add("§7MaxHP: " + (calculateMaxHealth(profile)));
         lore.add("§7HP%: " + profile.getHpMultiplier());
         lore.add("§7StatDmg%: " + profile.getStatDmgMultiplier());

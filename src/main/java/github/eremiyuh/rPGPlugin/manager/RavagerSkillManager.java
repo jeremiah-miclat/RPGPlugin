@@ -51,7 +51,7 @@ public class RavagerSkillManager {
 //                ravager.setInvulnerable(false);
                 activeReflect.remove(id);
                 frozen.remove(id);
-                sayToNearbyPlayers(ravager, "§7" + ravager.getName() + " Fly foo!", 60);
+                sayToNearbyPlayers(ravager, "§7" + ravager.getName() + " Fly foo!", 30);
 
 
                 Location ravagerLocXZ = ravager.getLocation().clone();
@@ -61,7 +61,7 @@ public class RavagerSkillManager {
                     Location playerLocXZ = player.getLocation().clone();
                     playerLocXZ.setY(0); // Ignore vertical difference
 
-                    if (ravagerLocXZ.distanceSquared(playerLocXZ) <= 60 * 60) {
+                    if (ravagerLocXZ.distanceSquared(playerLocXZ) <= 30 * 30) {
                         Location center = player.getLocation();
 
                         for (int x = -1; x <= 1; x++) {
@@ -74,7 +74,12 @@ public class RavagerSkillManager {
                         // Toss logic here
 
                         // Upward launch
-                        player.damage(20);
+                        double maxCoord = Math.max(Math.abs(ravagerLocXZ.getX()), Math.abs(ravagerLocXZ.getZ()));
+
+// Every 100 units = 5 damage
+                        int damage = (int) (maxCoord / 100.0);
+
+                        player.damage(damage);
                         player.setVelocity(player.getVelocity().setY(2.2));
 
                         // Sound

@@ -87,7 +87,7 @@ public class EvokerSkillManager {
 
     private void activateSkill(Evoker evoker) {
         Location center = evoker.getLocation();
-        double radius = 60;
+        double radius = 30;
 
         // Sound and particle effects
         center.getWorld().playSound(center, Sound.ENTITY_GENERIC_EXPLODE, 2f, 1f);
@@ -107,7 +107,9 @@ public class EvokerSkillManager {
                 @NotNull Vector push = player.getLocation().toVector().subtract(center.toVector()).normalize().multiply(2);
                 push.setY(1.0); // Add upward knockback
                 player.setVelocity(push);
-                player.damage(10);
+                double maxCoord = Math.max(Math.abs(evokerLoc.getX()), Math.abs(evokerLoc.getZ()));
+                int damage = (int) (maxCoord / 100.0);
+                player.damage(damage);
                 player.sendMessage("§a" + evoker.getName() + ": \"Shinra Tensei!\"");
             }
         }

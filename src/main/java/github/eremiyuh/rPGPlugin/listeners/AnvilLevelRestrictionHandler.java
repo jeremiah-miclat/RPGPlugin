@@ -1,14 +1,12 @@
 package github.eremiyuh.rPGPlugin.listeners;
 
 import net.md_5.bungee.api.ChatColor;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
@@ -22,7 +20,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 public class AnvilLevelRestrictionHandler implements Listener {
 
@@ -179,6 +176,21 @@ public class AnvilLevelRestrictionHandler implements Listener {
 
                 if (resultMeta != null) {
                     resultMeta.addEnchant(Enchantment.POWER, powerLevel, true); // 'true' makes it unsafe
+                    result.setItemMeta(resultMeta);
+                }
+                event.getView().setRepairCost(10);
+                event.setResult(result);
+            }
+
+            if (bookMeta != null && bookMeta.hasStoredEnchant(Enchantment.INFINITY)) {
+                int infinityLevel = bookMeta.getStoredEnchantLevel(Enchantment.INFINITY);
+
+                // Clone the crossbow and its meta
+                ItemStack result = first.clone();
+                ItemMeta resultMeta = result.getItemMeta();
+
+                if (resultMeta != null) {
+                    resultMeta.addEnchant(Enchantment.INFINITY, infinityLevel, true); // 'true' makes it unsafe
                     result.setItemMeta(resultMeta);
                 }
                 event.getView().setRepairCost(10);

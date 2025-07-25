@@ -165,6 +165,8 @@ public class PlayerStatBuff {
                     // Bonus agility and vitality for alchemist gear
                     equipStats[0] *= 1.2; // vit
                     equipStats[1] *= 1.2; // agi
+                    equipStats[6] *= 1.2;
+                    equipStats[7] *= 1.2;
                 }
             }
 
@@ -199,7 +201,9 @@ public class PlayerStatBuff {
             double level = totalStats / 100;
             int flooredLevel = (int) level; // or use Math.floor(level) if you're being explicit
             int finalLevel = (int) Math.max(1, (totalStats - 100) / 100 + 1);
-            profile.setLevel(finalLevel);
+            if (finalLevel>profile.getLevel()) {
+                profile.setLevel(finalLevel);
+            }
 
 
 
