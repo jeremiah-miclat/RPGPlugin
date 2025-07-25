@@ -23,17 +23,17 @@ public class VaultCloseListener implements Listener {
         String title = event.getView().getTitle(); // or getView().getTitle() depending on the API version
         Player player = (Player) event.getPlayer();
 
-        if (title.startsWith("Vault ")) {
-            try {
-                // Extract the vault number from the title
-                int vaultNumber = Integer.parseInt(title.replace("Vault ", "").trim());
-
-                // Save the player's vault
-                vaultManager.saveVault(player, vaultNumber);
-                player.sendMessage("Your vault has been saved!");
-            } catch (NumberFormatException e) {
-                Bukkit.getLogger().warning("Failed to parse vault number from inventory title: " + title);
-            }
-        }
+//        if (title.startsWith(player.getName() + "'s ")) {
+//            try {
+//                // Extract the vault number from the title
+//                int vaultNumber = Integer.parseInt(title.replace("Vault ", "").trim());
+//
+//                // Save the player's vault
+//                vaultManager.saveVault(player.getName(), vaultNumber);
+//                player.sendMessage("Your vault has been saved!");
+//            } catch (NumberFormatException e) {
+//                Bukkit.getLogger().warning("Failed to parse vault number from inventory title: " + title);
+//            }
+//        }
     }
 }

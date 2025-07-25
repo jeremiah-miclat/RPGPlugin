@@ -206,6 +206,10 @@ commands:
     description: Opens a vault for the player.
     usage: /vault <number>
     notes: "Currently offer 5 vaults"
+  teamVault:
+    description: Opens team leaders vault.
+    usage: /vault <number>
+    notes: "Currently offer 5 vaults"
   enderchest:
     description: Opens ender chest.
     usage: /enderchest
@@ -244,6 +248,9 @@ commands:
   showprofile:
     description: Toggle profile visibility to other players.
     usage: /showprofile
+  shareVault:
+    description: Toggle vault sharing with team.
+    usage: /shareVault
   buyhomeslot:
     description: buy /sethome slots
     usage: /buyhomeslot <number>

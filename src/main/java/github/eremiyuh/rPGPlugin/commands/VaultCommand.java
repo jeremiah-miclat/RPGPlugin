@@ -33,7 +33,7 @@ public class VaultCommand implements CommandExecutor {
 
             // Check if the vault number is within the valid range
             if (vaultNumber >= 1 && vaultNumber <= vaultManager.getMaxVaults()) {
-                vaultManager.openVault(player, vaultNumber);
+                vaultManager.openVault(player, vaultNumber, player.getName());
                 player.sendMessage("Opening vault " + vaultNumber + "...");
             } else {
                 player.sendMessage("Vault number must be between 1 and " + vaultManager.getMaxVaults() + ".");

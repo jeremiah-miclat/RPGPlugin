@@ -584,7 +584,8 @@ public class CreateShopListener implements Listener {
     public void onChestPlace(BlockPlaceEvent event) {
         Block block = event.getBlockPlaced();
 
-        if (block.getType() != Material.CHEST) return;
+        if (!(block.getType() == Material.CHEST || block.getType().name().contains("SHULKER_BOX"))) return;
+
 
         Player player = event.getPlayer();
         String playerName = player.getName();
@@ -594,7 +595,7 @@ public class CreateShopListener implements Listener {
             Location previousLocation = playerChestMap.get(playerName);
             Block previousBlock = previousLocation.getBlock();
 
-            if (previousBlock.getType() == Material.CHEST) {
+            if (previousBlock.getType() == Material.CHEST || block.getType().name().contains("SHULKER_BOX")) {
                 previousBlock.removeMetadata("owner", plugin);
             }
         }
@@ -610,7 +611,7 @@ public class CreateShopListener implements Listener {
     public void onChestBreak(BlockBreakEvent event) {
         Block block = event.getBlock();
 
-        if (block.getType() != Material.CHEST) return;
+        if (!(block.getType() == Material.CHEST || block.getType().name().contains("SHULKER_BOX"))) return;
 
         Player player = event.getPlayer();
 
@@ -634,8 +635,8 @@ public class CreateShopListener implements Listener {
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
 
         Block block = event.getClickedBlock();
-        if (block == null || block.getType() != Material.CHEST) return;
-
+        if (block == null) return;
+        if (!(block.getType() == Material.CHEST || block.getType().name().contains("SHULKER_BOX"))) return;
         Player player = event.getPlayer();
 
         if (block.hasMetadata("owner")) {

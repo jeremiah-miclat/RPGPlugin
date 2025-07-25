@@ -99,6 +99,9 @@ public class UserProfile {
     private int tempIntel;
     private int tempLuk;
 
+    //team vault
+    private boolean shareVault;
+
 
 
     //constructor
@@ -174,6 +177,7 @@ public class UserProfile {
         this.tempIntel = 0;
         this.tempLuk = 0;
 
+        this.shareVault = false;
     }
 
     // Getters and setters
@@ -937,6 +941,14 @@ public class UserProfile {
 
     public void setTrader(int trader) {
         this.trader = trader;
+    }
+
+    public boolean isShareVault() {
+        return shareVault;
+    }
+
+    public void setShareVault(boolean shareVault) {
+        this.shareVault = shareVault;
     }
 
 }

@@ -75,6 +75,7 @@ public class RPGPlugin extends JavaPlugin {
             player.removePotionEffect(PotionEffectType.WITHER);
             player.removePotionEffect(PotionEffectType.WEAKNESS);
             player.removePotionEffect(PotionEffectType.BLINDNESS);
+            player.closeInventory();
         }
 
 
@@ -265,6 +266,8 @@ public class RPGPlugin extends JavaPlugin {
         profileManager.resetLoginStatus();
         vaultManager = new VaultManager(this, this.getDataFolder());
         Objects.requireNonNull(this.getCommand("vault")).setExecutor(new VaultCommand(vaultManager));
+        Objects.requireNonNull(this.getCommand("teamVault")).setExecutor(new TeamVaultCommand(vaultManager,profileManager));
+        Objects.requireNonNull(this.getCommand("shareVault")).setExecutor(new ShareVault(profileManager));
         shopTpSaveManager = new ShopTpSaveManager(this.getDataFolder());
         tpAllowManager = new TpAllowManager(this);
         ravagerManager = new RavagerSkillManager(this);

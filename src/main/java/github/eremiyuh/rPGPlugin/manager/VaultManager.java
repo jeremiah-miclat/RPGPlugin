@@ -2,6 +2,7 @@ package github.eremiyuh.rPGPlugin.manager;
 
 import github.eremiyuh.rPGPlugin.RPGPlugin;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -35,19 +36,18 @@ public class VaultManager {
     }
 
     // Open a vault for a player
-    public void openVault(Player player, int vaultNumber) {
+    public void openVault(Player player, int vaultNumber, String ownerName) {
         if (vaultNumber < 1 || vaultNumber > maxVaults) {
             player.sendMessage("Vault number must be between 1 and " + maxVaults);
             return;
         }
 
-        String playerName = player.getName();
-        Map<Integer, Inventory> vaults = playerVaults.computeIfAbsent(playerName, k -> new HashMap<>());
+        Map<Integer, Inventory> vaults = playerVaults.computeIfAbsent(ownerName, k -> new HashMap<>());
 
         // Check if the vault is already loaded
         if (!vaults.containsKey(vaultNumber)) {
             // Asynchronously load the vault to avoid blocking the server
-            loadVaultAsync(playerName, vaultNumber).thenAccept(vault -> {
+            loadVaultAsync(ownerName, vaultNumber).thenAccept(vault -> {
                 Bukkit.getScheduler().runTask(plugin, () -> {
                     vaults.put(vaultNumber, vault);
                     player.openInventory(vault);
@@ -61,8 +61,9 @@ public class VaultManager {
     // Asynchronous vault loading
     private CompletableFuture<Inventory> loadVaultAsync(String playerName, int vaultNumber) {
         return CompletableFuture.supplyAsync(() -> {
-            Inventory vault = Bukkit.createInventory(null, 27, "Vault " + vaultNumber); // Default 27 slots
+
             File playerVaultFile = new File(pluginDataFolder, playerName + "_vaults.yml");
+            Inventory vault = Bukkit.createInventory(null, 27, playerName+"'s"+" Vault " + vaultNumber);
             if (playerVaultFile.exists()) {
                 FileConfiguration vaultData = YamlConfiguration.loadConfiguration(playerVaultFile);
                 String path = "vault" + vaultNumber;
@@ -80,8 +81,7 @@ public class VaultManager {
     }
 
     // Save vault when player disconnects
-    public void saveAllVaultsForPlayer(Player player) {
-        String playerName = player.getName();
+    public void saveAllVaultsForPlayer(String playerName) {
         Map<Integer, Inventory> vaults = playerVaults.get(playerName);
 
         if (vaults != null) {
@@ -99,8 +99,8 @@ public class VaultManager {
 
     // Save all vaults on server shutdown
     public void saveAllVaults() {
-        for (String playerName : playerVaults.keySet()) {
-            saveAllVaultsForPlayer(Bukkit.getPlayer(playerName));
+        for (String playerName : new HashSet<>(playerVaults.keySet())) {
+            saveAllVaultsForPlayer(playerName);
         }
     }
 
@@ -120,8 +120,7 @@ public class VaultManager {
         }
     }
 
-    public void saveVault(Player player, int vaultNumber) {
-        String playerName = player.getName();
+    public void saveVault(String playerName, int vaultNumber) {
         Map<Integer, Inventory> vaults = playerVaults.get(playerName);
 
         if (vaults == null || !vaults.containsKey(vaultNumber)) {

@@ -151,9 +151,14 @@ public class AreaProtectionListener implements Listener {
             event.setCancelled(true);
         }
 
-        if (isInProtectedArea(block.getLocation().getBlockX(), block.getLocation().getBlockZ())&& !player.isOp()) {
-            player.sendMessage(ChatColor.RED + "No permission");
+        if (isInProtectedArea(block.getX(), block.getZ()) && !player.isOp()) {
+            Material type = block.getType();
+
+            // Allow breaking Shulker Boxes
+            if (!type.name().endsWith("SHULKER_BOX")) {
+                player.sendMessage(ChatColor.RED + "No permission to break blocks here.");
                 event.setCancelled(true);
+            }
         }
     }
 
@@ -167,21 +172,24 @@ public class AreaProtectionListener implements Listener {
     public void onBlockPlace(BlockPlaceEvent event) {
         Player player = event.getPlayer();
         Block block = event.getBlock();
-
+        Location loc = block.getLocation();
 
         if (!block.getWorld().getName().equals(world.getName())) {
             return;
         }
 
-        if (ANNOYING_BLOCKS.contains(event.getBlock().getType())) {
-            return;
-        }
 
-        if (isInProtectedArea(block.getLocation().getBlockX(), block.getLocation().getBlockZ()) && !player.isOp()) {
+        if (isInProtectedArea(loc.getBlockX(), loc.getBlockZ()) && !player.isOp()) {
+            Block below = loc.clone().subtract(0, 1, 0).getBlock();
+            Material placedType = block.getType();
 
-            player.sendMessage(ChatColor.RED + "No permission");
+            boolean isPlacingOnEndStone = below.getType() == Material.END_STONE;
+            boolean isShulkerBox = placedType.name().endsWith("SHULKER_BOX"); // handles all colors
+
+            if (!(isPlacingOnEndStone && isShulkerBox)) {
+                player.sendMessage(ChatColor.RED + "You can only place shulker boxes on End Stone here.");
                 event.setCancelled(true);
-
+            }
         }
     }
 //

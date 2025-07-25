@@ -26,11 +26,12 @@ public class PlayerQuitListener implements Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
+        player.closeInventory();
         String playerName = event.getPlayer().getName();
         UserProfile playerProfile = profileManager.getProfile(playerName);
         playerProfile.setLoggedIn(false);
         profileManager.removeProfileOnLogout(playerName);
-        vaultManager.saveAllVaultsForPlayer(player);
+        vaultManager.saveAllVaultsForPlayer(playerName);
 
         // Customize the quit message
         String quitMessage = generateColoredQuitMessage(playerName);

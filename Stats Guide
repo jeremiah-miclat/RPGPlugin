@@ -1,52 +1,63 @@
-📘 STAT SCALING & DAMAGE GUIDE (with Stat ÷ 100 explained)
-💡 All stats in this system are divided by 100 before being used in formulas.
-So if you have 125 STR, it becomes 1.25 for calculations.
+📘 STAT SCALING & DAMAGE GUIDE
+💡 Important Note:
+Only STR, DEX, INT, and VIT are divided by 100 when used in calculations.
+LUK, AGI, and StatDamage% are used directly (not divided by 100).
 
 ⚙️ How Stats Are Calculated
-How It's Used
-Base stats	Taken from your class profile, then ÷ 100
-Gear stats	Parsed from item lore (Strength: X) Also ÷ 100
-Alchemist bonus	Gets +20% more from gear stats (rounded), then ÷ 100
+Source	How It's Used
+Base stats	Taken from your class profile. STR/DEX/INT/VIT are ÷ 100.
+Gear stats	Parsed from item lore (e.g. “Strength: X”). STR/DEX/INT/VIT are ÷ 100.
+Alchemist	Gets +20% more from gear stats (before ÷ 100).
 
 📊 What Each Stat Does
 Stat	Role in Combat
-💪 Strength (STR)	Increases melee damage
-🏹 Dexterity (DEX)	Increases ranged/trident damage; Archer crit chance
-🧠 Intelligence (INT)	Boosts elemental skill damage
-🍀 Luck (LUK)	Increases crit chance and crit multiplier
-📈 StatDamage%	Multiplies total damage (from item lore only)
+💪 STR	Boosts melee damage. (÷100 before used)
+🏹 DEX	Boosts bow/trident damage and archer crit chance. (÷100 before used)
+🧠 INT	Increases elemental skill damage. (÷100 before used)
+💖 VIT	Increases max health. (÷100 before used)
+🍀 LUK	Increases crit chance and crit multiplier. (✅ Used as-is)
+🏃 AGI	Increases movement speed. (✅ Used as-is)
+📈 StatDamage%	Final damage multiplier from gear. (✅ Used as-is)
 
-🧠 Damage Formula Reference
-All stat values below are assumed to be already divided by 100!
+🧠 DAMAGE FORMULAS
+🔹 All STR, DEX, and INT values below are assumed already divided by 100.
 
-✅ Base Damage Formula:
-Melee:         STR × 4
-Bow/Trident:   DEX × 4
-Elemental:     Varies by class + skill
+✅ Basic Damage:
+Melee: STR × 4
+Bow/Trident: DEX × 4
 
-✅ Critical System:
+Elemental: Class + Skill-based
+
+================================================================================================
+
+✅ Critical System
+
 Crit Chance:
-🗡 Swordsman: LUK × 0.0003
-
-🏹 Archer: + DEX × 0.0001
-🏹 Archer + Skill 3: +25% flat
-
-Others(Default): LUK × 0.0002
+Class/Type	Formula
+🗡 Swordsman	LUK × 0.0003
+🏹 Archer	LUK × 0.0003 + DEX × 0.0001
+🏹 Archer + Skill 3	+25% flat on top of above
+❔ Others	LUK × 0.0002
 
 Crit Multiplier:
 1.5 + (LUK × 0.001)
-+ (DEX × 0.00005) if Archer Skill 3
-Crit Defense:
 
-Target’s LUK × 0.0002 + item luck reduces your crit chance
+If Archer + Skill 3: + DEX × 0.00005
+
+Crit Defense (target):
+Reduces your crit chance:
+Target LUK × 0.0002 + item-based luck resistance
 
 
-⚔️ Class Skill Scaling (After ÷100)
+=================================================================
+⚔️ CLASS SKILL SCALING
+(Again, STR/DEX/INT in formulas below are assumed ÷ 100)
 
 🗡️ SWORDSMAN
 Skill 1:
 STR × 4 (melee)
 INT × 8 (elemental)
+
 
 🏹 ARCHER
 Skill 1:
@@ -54,99 +65,63 @@ DEX × 4 (bow)
 INT × 8 (elemental)
 
 Skill 2:
-DEX × 4 (bow)
-INT × 6 (elemental)
+DEX × 4
+INT × 6
 
 Skill 3:
-DEX × 4 (bow)
+DEX × 4
 +25% crit chance
 +DEX × 0.00005 to crit multiplier
 
 ⚗️ ALCHEMIST
-Base potion throw:
-Against Players:
-INT × 3
-Against Mobs:
-INT x 10
+Potion Throw
+INT × 3 vs players
+INT × 10 vs mobs
 
-Skill 1:
-+ 20% Damage from INT
-
+Skill 1: +20% damage from INT
 Bonus:
-+20% to all gear stats before division
++20% to all gear stats before division (STR/DEX/INT/VIT/AGI)
 
-📈 Final Damage Calculation
-finalDamage = (baseDamage + STR/DEX/INT skills) × (1 + StatDamage% / 100)
-Example:
-With STR = 1.25 (from 125 total), you get:
-1.25 × 4 = 5 extra melee damage
+=====================================================================
 
-If StatDamage% = 25 → multiply damage by 1.25 at the end.
+📈 FINAL DAMAGE CALCULATION
 
-🔔 Summary
-✅ All stats are divided by 100 before use.
-✅ Gear stats and base stats are combined.
-✅ Alchemists get +20% from gear stats before dividing.
-✅ Crit chance & multiplier scale with LUK (and a bit of DEX for Archers).
-✅ StatDamage% is a final multiplier, only from item lore.
+finalDamage = (baseDamage + skillBonus) × (1 + StatDamage% / 100)
 
+📌 Example (Melee):
+STR = 125 → 1.25
+Melee Bonus: 1.25 × 4 = 5
+StatDamage% = 25 → multiply final by 1.25
+➜ finalDamage = (base + 5) × 1.25
 
-
-
-
-
-💖 VITALITY & AGILITY STAT GUIDE
-🎓 All stats from your class and gear are divided by 100 before use.
-
-💖 VITALITY → MAX HEALTH
-✅ How It Works:
-Base Health: 20 HP = ❤️ 10 hearts
-+20 HP per 1.0 VIT
-
-VIT comes from:
-Your class profile (divided by 100)
-Gear (divided by 100)
-
-Alchemist: Gear VIT ×1.2 bonus
-
-Final result multiplied by StatDamage% (gear bonus) = Final HP Multiplier
-
-🧮 Formula:
+💖 VITALITY & HEALTH GUIDE
+✅ Max HP Formula:
 Max HP = (20 + 10 × (classVIT + gearVIT)) × (1 + FinalHpMultiplier%)
-📌 Example (Swordsman):
-Class VIT: 125 → 1.25
-Gear VIT: 75 → 0.75
-Hp% from gear: 20% → 1.20x multiplier
-Max HP = (20 + 10 × (1.25 + 0.75)) × 1.20  
-       = (20 + 20) × 1.20 = 48 HP = ❤️ 24 hearts
+Base Health = 20 HP (10 hearts)
++10 HP per 1.0 VIT
 
+Alchemist: Gear VIT × 1.2 before division
+📌 Example:
+Class VIT = 125 → 1.25
+Gear VIT = 75 → 0.75
+Hp% = 20% → ×1.20
+➜ (20 + 10 × (1.25 + 0.75)) × 1.2 = 48 HP = ❤️ 24 hearts
 
-🏃‍♂️ AGILITY → MOVEMENT SPEED
-✅ How It Works:
-Base Speed: 0.2
-+0.0001 speed per 1.0 AGI
-(1000 AGI = +0.1 speed)
-
-Alchemist: Gear AGI ×1.2
-
-Speed cap: 1.0
-
-🧮 Formula:
+🏃‍♂️ AGILITY & SPEED GUIDE
+✅ Speed Formula:
 Speed = min(0.2 + (classAGI + gearAGI) × 0.0001, 1.0)
+AGI is not divided
+Base speed = 0.2
++0.0001 speed per AGI point
+Max speed = 1.0
 
-📌 Example (Archer):
-Class AGI: 300
-Gear AGI: 200
-Not an Alchemist
+Alchemist: Gear AGI × 1.2 before applying
+📌 Example:
+Class AGI = 300
+Gear AGI = 200
+➜ Speed = 0.2 + 500 × 0.0001 = 0.25
 
-Speed = 0.2 + (300 + 200) × 0.0001  
-      = 0.2 + 0.05 = 0.25
+⚠️ Recommended AGI
+8000 AGI = speed cap (0.8 bonus)
+Recommended: 2000–3000 AGI unless you're going full-speed build
 
-⚠️ RECOMMENDED AGILITY
-➤ Max useful speed:
-Speed cap = 1.0 → max bonus = 0.8
-
-To reach 0.8 bonus speed:
-(AGI × 0.0001) = 0.8 → AGI = 8000
-🔻 AGI beyond 8000 gives no extra movement.
-💡 We recommend 2000–3000 AGI for efficiency unless you're going for a meme build.

@@ -145,6 +145,9 @@ public class PlayerProfileManager {
 
         config.set("isPublic",profile.getIsPublic());
 
+        // team vault
+        config.set("shareVault",profile.isShareVault());
+
         Map<String, Location> homes = profile.getHomes();
         for (Map.Entry<String, Location> homeEntry : homes.entrySet()) {
             String homeName = homeEntry.getKey();
@@ -209,7 +212,6 @@ public class PlayerProfileManager {
 
         //pvp
         profile.setPvpEnabled(config.getBoolean("pvpEnabled",false));
-
 
         //currencies
         profile.setCurrency("diamond", config.getDouble("diamond", 0));
@@ -276,6 +278,8 @@ public class PlayerProfileManager {
         profile.setHunter(config.getInt("hunter",0));
         profile.setCrafter(config.getInt("crafter",0));
         profile.setTrader(config.getInt("trader",0));
+
+        profile.setShareVault(config.getBoolean("shareVault",false));
 
         playerProfiles.put(playerName, profile);
     }
