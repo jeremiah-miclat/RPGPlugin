@@ -1139,7 +1139,6 @@ public class DamageListener implements Listener {
         }
 
 
-        Location loc = event.getEntity().getLocation();
 
 
 
@@ -1154,11 +1153,17 @@ public class DamageListener implements Listener {
         }
 
 
+
+
         double damage = event.getDamage();
         // Create floating text using an ArmorStand
-        if (!event.isCancelled())
-        {
-            spawnFloatingHologram(event.getEntity().getLocation(), ((int) event.getFinalDamage())+"", event.getEntity().getWorld(), "#65fe08");
+        if (!event.isCancelled()) {
+            Entity entity = event.getEntity();
+            Location loc = entity.getLocation();
+            World world = entity.getWorld();
+            String color = (entity instanceof Player) ? "#ff0004" : "#AA00FF";
+
+            spawnFloatingHologram(loc, (Math.max((int) event.getFinalDamage(),1)) + "", world, color);
         }
         // Update the health indicator
 
@@ -1166,7 +1171,52 @@ public class DamageListener implements Listener {
 
 
         resetHealthIndicator((LivingEntity) event.getEntity(), damage);
+        if (event.getDamageSource().getCausingEntity() instanceof Player damager) {
+            double finalDamage = event.getFinalDamage();
+            UserProfile damagerProfile = profileManager.getProfile(damager.getName());
+            try {
+                if (damagerProfile == null || damager.isDead()) {
+                    System.err.println("Attacker or damagerProfile is null.");
+                    return;
+                }
 
+                if (damagerProfile.getLs()>0) {
+
+                    AttributeInstance maxHealthAttribute = damager.getAttribute(Attribute.MAX_HEALTH);
+                    if (maxHealthAttribute == null) {
+                        System.err.println("Attacker does not have the GENERIC_MAX_HEALTH attribute.");
+                        return;
+                    }
+
+                    double maxHealth = maxHealthAttribute.getValue();
+                    double currentHealth = damager.getHealth();
+                    if (currentHealth <= 0) {
+                        System.err.println("Attacker is dead or has invalid health.");
+                        return;
+                    }
+
+                    if (finalDamage <= 0) {
+                        System.err.println("Final damage is non-positive, no lifesteal will be applied.");
+                        return;
+                    }
+//                    double lifestealAmount = finalDamage * damagerProfile.getLs();
+//                    double newHealth = Math.min(currentHealth + lifestealAmount, maxHealth);
+//                    damager.setHealth(newHealth);
+//                    spawnFloatingHologram(damager.getLocation(), ((int) lifestealAmount+""), damager.getWorld(), "#65fe08");
+                    double lifestealAmount = finalDamage * damagerProfile.getLs();
+                    double healAmount = Math.min(lifestealAmount, maxHealth - currentHealth);
+
+                    if (healAmount >= 1.0) {
+                        damager.setHealth(currentHealth + healAmount);
+                        spawnFloatingHologram(damager.getLocation(), Math.max(1,(int) healAmount) + "", damager.getWorld(), "#65fe08");
+                    }
+                }
+            } catch (Exception e) {
+                System.err.println("An error occurred in the lifesteal logic.");
+                e.printStackTrace();
+            }
+
+        }
 
     }
 
@@ -1331,40 +1381,6 @@ public class DamageListener implements Listener {
             finalDamage = 0.1f;
         } else {
             finalDamage *= attackCooldown;
-        }
-
-        try {
-            if (attacker == null || damagerProfile == null) {
-                System.err.println("Attacker or damagerProfile is null.");
-                return;
-            }
-
-            if (damagerProfile.getLs()>0) {
-
-                AttributeInstance maxHealthAttribute = attacker.getAttribute(Attribute.MAX_HEALTH);
-                if (maxHealthAttribute == null) {
-                    System.err.println("Attacker does not have the GENERIC_MAX_HEALTH attribute.");
-                    return;
-                }
-
-                double maxHealth = maxHealthAttribute.getValue();
-                double currentHealth = attacker.getHealth();
-                if (currentHealth <= 0) {
-                    System.err.println("Attacker is dead or has invalid health.");
-                    return;
-                }
-
-                if (finalDamage <= 0) {
-                    System.err.println("Final damage is non-positive, no lifesteal will be applied.");
-                    return;
-                }
-                double lifestealAmount = finalDamage * damagerProfile.getLs();
-                double newHealth = Math.min(currentHealth + lifestealAmount, maxHealth);
-                attacker.setHealth(newHealth);
-            }
-        } catch (Exception e) {
-            System.err.println("An error occurred in the lifesteal logic.");
-            e.printStackTrace();
         }
 
 
@@ -1880,37 +1896,37 @@ public class DamageListener implements Listener {
         }
 
 
-        try {
-
-            if (damagerProfile.getLs()>0
-            ) {
-
-                AttributeInstance maxHealthAttribute = attacker.getAttribute(Attribute.MAX_HEALTH);
-                if (maxHealthAttribute == null) {
-                    System.err.println("Attacker does not have the GENERIC_MAX_HEALTH attribute.");
-                    return;
-                }
-
-                double maxHealth = maxHealthAttribute.getValue();
-                double currentHealth = attacker.getHealth();
-                if (currentHealth <= 0) {
-                    System.err.println("Attacker is dead or has invalid health.");
-                    return;
-                }
-
-                if (finalDamage <= 0) {
-                    System.err.println("Final damage is non-positive, no lifesteal will be applied.");
-                    return;
-                }
-
-                double lifestealAmount = finalDamage * damagerProfile.getLs(); // 5% lifesteal
-                double newHealth = Math.min(currentHealth + lifestealAmount, maxHealth);
-                attacker.setHealth(newHealth);
-            }
-        } catch (Exception e) {
-            System.err.println("An error occurred in the lifesteal logic.");
-            e.printStackTrace();
-        }
+//        try {
+//
+//            if (damagerProfile.getLs()>0
+//            ) {
+//
+//                AttributeInstance maxHealthAttribute = attacker.getAttribute(Attribute.MAX_HEALTH);
+//                if (maxHealthAttribute == null) {
+//                    System.err.println("Attacker does not have the GENERIC_MAX_HEALTH attribute.");
+//                    return;
+//                }
+//
+//                double maxHealth = maxHealthAttribute.getValue();
+//                double currentHealth = attacker.getHealth();
+//                if (currentHealth <= 0) {
+//                    System.err.println("Attacker is dead or has invalid health.");
+//                    return;
+//                }
+//
+//                if (finalDamage <= 0) {
+//                    System.err.println("Final damage is non-positive, no lifesteal will be applied.");
+//                    return;
+//                }
+//
+//                double lifestealAmount = finalDamage * damagerProfile.getLs(); // 5% lifesteal
+//                double newHealth = Math.min(currentHealth + lifestealAmount, maxHealth);
+//                attacker.setHealth(newHealth);
+//            }
+//        } catch (Exception e) {
+//            System.err.println("An error occurred in the lifesteal logic.");
+//            e.printStackTrace();
+//        }
 
         event.setDamage(finalDamage);
     }
@@ -2168,6 +2184,7 @@ public class DamageListener implements Listener {
         armorStand.setInvisible(true);
         armorStand.setGravity(false);
         armorStand.setInvulnerable(true);
+        armorStand.setPersistent(false);
         armorStand.setMarker(true);
 
         moveHologramUpwards(armorStand);
