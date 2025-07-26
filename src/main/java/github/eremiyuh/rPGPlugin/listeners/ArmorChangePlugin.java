@@ -84,77 +84,58 @@ public class ArmorChangePlugin  implements Listener {
         new BukkitRunnable() {
             @Override
             public void run() {
-                if (worldName.equals("world_rpg") || worldName.contains("world_labyrinth")) {
-                    try {
-                        if (player.getHealth() <= 0) return;
-                        playerStatBuff.updatePlayerStatsToRPG(player);
+                if (player.getHealth() <= 0) return;
 
+                try {
+                    if (worldName.equals("world_rpg") || worldName.contains("world_labyrinth")) {
                         UserProfile profile = profileManager.getProfile(player.getName());
-
                         ItemStack item = player.getInventory().getItemInMainHand();
 
-                        if (item.getType() == Material.AIR) {
-                            return;
+                        if (item.getType() != Material.AIR && item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
+                            String displayName = item.getItemMeta().getDisplayName();
+
+                            if (displayName.contains("S1") || displayName.toLowerCase().contains("skill 1")) {
+                                profile.setSelectedSkill("Skill 1");
+                                player.sendMessage("Switched to Skill 1");
+                            }
+
+                            if (displayName.contains("S2") || displayName.toLowerCase().contains("skill 2")) {
+                                profile.setSelectedSkill("Skill 2");
+                                player.sendMessage("Switched to Skill 2");
+                            }
+
+                            if (displayName.contains("S3") || displayName.toLowerCase().contains("skill 3")) {
+                                profile.setSelectedSkill("Skill 3");
+                                player.sendMessage("Switched to Skill 3");
+                            }
+
+                            if (displayName.toLowerCase().contains("fire")) {
+                                profile.setSelectedElement("fire");
+                                player.sendMessage("Switched to fire element");
+                            }
+
+                            if (displayName.toLowerCase().contains("ice")) {
+                                profile.setSelectedElement("ice");
+                                player.sendMessage("Switched to ice element");
+                            }
+
+                            if (displayName.toLowerCase().contains("water")) {
+                                profile.setSelectedElement("water");
+                                player.sendMessage("Switched to water element");
+                            }
                         }
 
-                        if (!item.hasItemMeta() && !item.getItemMeta().hasDisplayName()) {
-                            return;
-                        }
+                        // ✅ Always update RPG stats, even if no skill/element is changed
+                        playerStatBuff.updatePlayerStatsToRPG(player);
 
-                        ItemMeta itemMeta = item.getItemMeta();
-                        if (itemMeta == null) return;
-                        String displayName = itemMeta.getDisplayName();
-
-                        if (displayName.contains("S1") || displayName.contains("Skill 1") || displayName.contains("skill 1")) {
-                            profile.setSelectedSkill("Skill 1");
-                            player.sendMessage("Switched to Skill 1");
-                        }
-
-                        if (displayName.contains("S2") || displayName.contains("Skill 2") || displayName.contains("skill 2")) {
-                            profile.setSelectedSkill("Skill 2");
-                            player.sendMessage("Switched to Skill 2");
-
-                        }
-
-                        if (displayName.contains("S3") || displayName.contains("Skill 3") || displayName.contains("skill 3")) {
-                            profile.setSelectedSkill("Skill 3");
-                            player.sendMessage("Switched to Skill 3");
-                        }
-
-                        if (displayName.contains("Fire") || displayName.contains("fire") || displayName.contains("FIRE")) {
-                            profile.setSelectedElement("fire");
-                            player.sendMessage("Switched to fire element");
-                        }
-
-                        if (displayName.contains("Ice") || displayName.contains("ice") || displayName.contains("ICE")) {
-                            profile.setSelectedElement("ice");
-                            player.sendMessage("Switched to ice element");
-
-                        }
-
-                        if (displayName.contains("Water") || displayName.contains("water") || displayName.contains("WATER")) {
-                            profile.setSelectedElement("water");
-                            player.sendMessage("Switched to water element");
-                        }
-
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-
-                } else {
-                    try {
-                        if (player.getHealth() <= 0) return;
+                    } else {
                         playerStatBuff.updatePlayerStatsToNormal(player);
-
-                    } catch (Exception e) {
-                        e.printStackTrace();
                     }
-
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
         }.runTaskLater(plugin, 1);
-
-
-
     }
+
 }

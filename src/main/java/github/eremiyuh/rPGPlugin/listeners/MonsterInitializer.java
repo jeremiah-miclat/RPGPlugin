@@ -10,6 +10,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
+import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.event.entity.EntitySpellCastEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
@@ -44,6 +45,22 @@ public class MonsterInitializer implements Listener {
         event.setCancelled(true);
     }
 
+    @EventHandler
+    public void armorStandSpawn(EntitySpawnEvent event) {
+        String world = Objects.requireNonNull(event.getLocation().getWorld()).getName();
+
+        if (!world.equals("world_rpg")) {
+            return;
+        }
+        if (!(event.getEntity() instanceof ArmorStand)) {
+            return;
+        }
+
+        if (event.getEntity() instanceof  ArmorStand armorStand) {
+            armorStand.setInvisible(true);
+        }
+
+    }
 
     @EventHandler
     public void onCreatureSpawn(CreatureSpawnEvent event) {
@@ -163,7 +180,7 @@ public class MonsterInitializer implements Listener {
             Objects.requireNonNull(entity.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(extraHealth+10);
             entity.setHealth(extraHealth);
 
-            Objects.requireNonNull(entity.getAttribute(Attribute.ATTACK_DAMAGE)).setBaseValue(customDamage );
+            Objects.requireNonNull(entity.getAttribute(Attribute.ATTACK_DAMAGE)).setBaseValue(customDamage+(lvl*.95) );
             entity.setPersistent(true);
             entity.setCustomNameVisible(true);
             entity.addPotionEffect(new PotionEffect((PotionEffectType.REGENERATION),Integer.MAX_VALUE,1,true,true));
@@ -176,7 +193,7 @@ public class MonsterInitializer implements Listener {
             setBossAttributes(entity, maxCoord, "Boss", ChatColor.RED);
             Objects.requireNonNull(entity.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(extraHealth+10);
             entity.setHealth(extraHealth);
-            Objects.requireNonNull(entity.getAttribute(Attribute.ATTACK_DAMAGE)).setBaseValue(customDamage );
+            Objects.requireNonNull(entity.getAttribute(Attribute.ATTACK_DAMAGE)).setBaseValue(customDamage+(lvl*.45));
 
             entity.setCustomNameVisible(true);
             return;

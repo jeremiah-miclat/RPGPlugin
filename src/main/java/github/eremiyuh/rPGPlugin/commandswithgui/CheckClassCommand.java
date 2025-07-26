@@ -18,6 +18,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
+import java.text.DecimalFormat;
 import java.util.*;
 
 public class CheckClassCommand implements CommandExecutor, Listener {
@@ -195,8 +196,13 @@ public class CheckClassCommand implements CommandExecutor, Listener {
             combatLore.add("§eAbyss Point: " + (int) (profile.getAbysspoints()));
             combatLore.add("§ePotion: §7" + profile.getPotion());
             combatLore.add("§eActivity Points: §7" + (int) profile.getCurrency("activitypoints"));
-
-
+            combatLore.add("§eClaimPoints: " + profile.getClaimPoints());
+            if (!profile.getTeam().equalsIgnoreCase("none") && !profile.getTeam().equalsIgnoreCase(profile.getPlayerName())) {
+                UserProfile teamOwnerProfile = profileManager.getProfile(profile.getTeam());
+                combatLore.add("§eTeamMates: " + teamOwnerProfile.getTeamMembers());
+            } else{
+                combatLore.add("§eTeamMates: " + profile.getTeamMembers());
+            }
 
             combatMeta.setLore(combatLore);
 
@@ -244,6 +250,11 @@ public class CheckClassCommand implements CommandExecutor, Listener {
         lore.add("§7MaxHP: " + (calculateMaxHealth(profile)));
         lore.add("§7HP%: " + profile.getHpMultiplier());
         lore.add("§7StatDmg%: " + profile.getStatDmgMultiplier());
+        DecimalFormat df = new DecimalFormat("#.##");
+
+        lore.add("§7Crit%: " + df.format(profile.getCrit() * 100) + "%");
+        lore.add("§7CritDmg%: " + df.format(profile.getCritDmg() * 100) + "%");
+        lore.add("§7Lifesteal%: " + df.format(profile.getLs() * 100) + "%");
 
         // Add remaining points, total allocated points for chosen class, and overall allocated points
         lore.add("§eRemaining Points: " + profile.getCurrentAttributePoints());
@@ -253,17 +264,8 @@ public class CheckClassCommand implements CommandExecutor, Listener {
         lore.add("§eSkill: " + profile.getSelectedSkill());
 //        lore.add("§eRace: " + profile.getSelectedRace());
         lore.add("§eTeam: " + profile.getTeam());
-
-        if (!profile.getTeam().equalsIgnoreCase("none") && !profile.getTeam().equalsIgnoreCase(profile.getPlayerName())) {
-            UserProfile teamOwnerProfile = profileManager.getProfile(profile.getTeam());
-            lore.add("§eTeamMates: " + teamOwnerProfile.getTeamMembers());
-        } else{
-            lore.add("§eTeamMates: " + profile.getTeamMembers());
-        }
-
-
         lore.add("§ePVP: " + profile.isPvpEnabled());
-        lore.add("§eClaimPoints: " + profile.getClaimPoints());
+
         // Set the lore to the skull meta
         skullMeta.setLore(lore);
     }

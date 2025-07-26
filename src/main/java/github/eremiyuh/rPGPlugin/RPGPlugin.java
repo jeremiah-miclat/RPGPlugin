@@ -266,10 +266,8 @@ public class RPGPlugin extends JavaPlugin {
         profileManager.resetLoginStatus();
         vaultManager = new VaultManager(this, this.getDataFolder());
         Objects.requireNonNull(this.getCommand("vault")).setExecutor(new VaultCommand(vaultManager));
-        Objects.requireNonNull(this.getCommand("v")).setExecutor(new VaultCommand(vaultManager));
         Objects.requireNonNull(this.getCommand("teamVault")).setExecutor(new TeamVaultCommand(vaultManager,profileManager));
         Objects.requireNonNull(this.getCommand("playerVault")).setExecutor(new PlayerVaultCommand(vaultManager,profileManager));
-        Objects.requireNonNull(this.getCommand("pv")).setExecutor(new PlayerVaultCommand(vaultManager,profileManager));
         Objects.requireNonNull(this.getCommand("vaultAccess")).setExecutor(new VaultAccessCommand(profileManager));
         Objects.requireNonNull(this.getCommand("shareVault")).setExecutor(new ShareVault(profileManager));
         shopTpSaveManager = new ShopTpSaveManager(this.getDataFolder());

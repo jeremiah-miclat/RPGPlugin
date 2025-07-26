@@ -375,17 +375,7 @@ public class DamageListener implements Listener {
 
                 UserProfile attackerProfile = profileManager.getProfile(attacker.getName());
 
-                if (event.getCause() == EntityDamageEvent.DamageCause.THORNS && !attackerProfile.getChosenClass().equalsIgnoreCase("swordsman")) {
 
-                    event.setCancelled(true);
-                    return;
-                }
-
-                if (event.getCause() == EntityDamageEvent.DamageCause.THORNS && !attackerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
-
-                    event.setCancelled(true);
-                    return;
-                }
 
 
                 if (attackerProfile != null) {
@@ -408,20 +398,6 @@ public class DamageListener implements Listener {
 
                         }
 
-
-//                        if ((damaged instanceof Warden || damaged instanceof Evoker || damaged instanceof Ravager ) && Math.random() < 0.1) {
-//                            ((Monster) damaged).attack(attacker);
-//                            Vector knockbackDirection = attacker.getLocation().toVector().subtract(damaged.getLocation().toVector()).normalize();
-//                            knockbackDirection.multiply(1.5);
-//                            knockbackDirection.setY(0.5);
-//                            attacker.setVelocity(knockbackDirection);
-//
-//                        }
-//
-//                        if ((damaged instanceof Warden || damaged instanceof Evoker || damaged instanceof Ravager ) && Math.random() < 0.05) {
-//                            ((Monster) damaged).attack(attacker);
-//                            damaged.teleport(attacker.getLocation().clone());
-//                        }
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
@@ -1146,12 +1122,6 @@ public class DamageListener implements Listener {
             }
         }
 
-        if (event.getEntity() instanceof LivingEntity entity) {
-            if (entity instanceof Monster monster) {
-                monster.setInvulnerable(false);
-            }
-            entity.setNoDamageTicks(0);
-        }
 
         if (event.getCause() == EntityDamageEvent.DamageCause.SONIC_BOOM
                 && event.getEntity() instanceof LivingEntity
@@ -1184,16 +1154,15 @@ public class DamageListener implements Listener {
         }
 
 
-        if (event.getCause() == EntityDamageEvent.DamageCause.LAVA) {
-            event.setCancelled(true);
-            return;
-        }
-
         double damage = event.getDamage();
         // Create floating text using an ArmorStand
-//        spawnFloatingHologram(event.getEntity().getLocation(), ((int) damage)+"", event.getEntity().getWorld(), net.md_5.bungee.api.ChatColor.RED);
-
+        if (!event.isCancelled())
+        {
+            spawnFloatingHologram(event.getEntity().getLocation(), ((int) event.getFinalDamage())+"", event.getEntity().getWorld(), "#65fe08");
+        }
         // Update the health indicator
+
+
 
 
         resetHealthIndicator((LivingEntity) event.getEntity(), damage);
@@ -1210,6 +1179,14 @@ public class DamageListener implements Listener {
             event.setCancelled(true);
             attacker.sendMessage(org.bukkit.ChatColor.RED + "Can't attack");
             return;
+        }
+
+        if (event.getCause() == EntityDamageEvent.DamageCause.THORNS) {
+            if (!damagerProfile.getChosenClass().equalsIgnoreCase("swordsman") ||
+                    !damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
+                event.setCancelled(true);
+                return;
+            }
         }
 
 // Check water or lava in current, below, or above blocks
@@ -1260,16 +1237,11 @@ public class DamageListener implements Listener {
         double finalDamage = applyExtraHealthAndDamage(target, damageWithStats, attacker);
 
 
-        if (event.getCause() == EntityDamageEvent.DamageCause.THORNS && damagerProfile.getChosenClass().equalsIgnoreCase("swordsman") && damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
-
-            event.setDamage(finalDamage*.3+ event.getDamage());
-            return;
-        }
 
 
 
         // Swordsman-specific ability if holding a sword
-        if (damagerProfile.getChosenClass().equalsIgnoreCase("swordsman") && (weapon.getType().toString().endsWith("_SWORD") || weapon.getType().toString().endsWith("_AXE"))) {
+        if (event.getCause() != EntityDamageEvent.DamageCause.THORNS && (damagerProfile.getChosenClass().equalsIgnoreCase("swordsman") && (weapon.getType().toString().endsWith("_SWORD") || weapon.getType().toString().endsWith("_AXE")))) {
 
             effectsAbilityManager.applyAbility(damagerProfile, target, damagerLocation, damagedLocation);
             if (target instanceof Monster mob && (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 2") || damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 3"))) {
@@ -1312,14 +1284,17 @@ public class DamageListener implements Listener {
 
 
 
-        if (event.getEntity() instanceof Player player) {
-            finalDamage /=1.5;
-        }
+//        if (event.getEntity() instanceof Player player) {
+//            finalDamage /=1.5;
+//        }
 
 
         if (event.getEntity() instanceof Player victim) {
             UserProfile victimProfile = profileManager.getProfile(victim.getName());
             if (victimProfile==null) return;
+            if (victimProfile.getChosenClass().equalsIgnoreCase("swordsman") && !victimProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
+                finalDamage= finalDamage*.8;
+            }
             if (damagerProfile.getSelectedElement().equalsIgnoreCase("fire")) {finalDamage=finalDamage*1.1;}
             if (damagerProfile.getSelectedElement().equalsIgnoreCase("fire") && victimProfile.getSelectedElement().equalsIgnoreCase("ice")) {
                 finalDamage=finalDamage*1.1;
@@ -1344,12 +1319,19 @@ public class DamageListener implements Listener {
             }
         }
 
+        if (event.getCause() == EntityDamageEvent.DamageCause.THORNS && damagerProfile.getChosenClass().equalsIgnoreCase("swordsman") && damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
+            event.setDamage(finalDamage*.3+ event.getDamage());
+            return;
+        }
 
-        // Attack cooldown mechanic (charge multiplier)
+
         float attackCooldown = attacker.getAttackCooldown();
 
-        // Apply cooldown scaling to the final damage
-        finalDamage *= attackCooldown;
+        if (attackCooldown < 0.5f) {
+            finalDamage = 0.1f;
+        } else {
+            finalDamage *= attackCooldown;
+        }
 
         try {
             if (attacker == null || damagerProfile == null) {
@@ -1357,8 +1339,7 @@ public class DamageListener implements Listener {
                 return;
             }
 
-            if (PlayerBuffPerms.canLifeSteal(damagerProfile)
-                    && (attacker.getInventory().getItemInMainHand().getType().toString().endsWith("_SWORD") || attacker.getInventory().getItemInMainHand().getType().toString().endsWith("_AXE"))) {
+            if (damagerProfile.getLs()>0) {
 
                 AttributeInstance maxHealthAttribute = attacker.getAttribute(Attribute.MAX_HEALTH);
                 if (maxHealthAttribute == null) {
@@ -1377,8 +1358,7 @@ public class DamageListener implements Listener {
                     System.err.println("Final damage is non-positive, no lifesteal will be applied.");
                     return;
                 }
-
-                double lifestealAmount = finalDamage * 0.1; // 10% lifesteal
+                double lifestealAmount = finalDamage * damagerProfile.getLs();
                 double newHealth = Math.min(currentHealth + lifestealAmount, maxHealth);
                 attacker.setHealth(newHealth);
             }
@@ -1386,7 +1366,6 @@ public class DamageListener implements Listener {
             System.err.println("An error occurred in the lifesteal logic.");
             e.printStackTrace();
         }
-
 
 
         event.setDamage(finalDamage
@@ -1841,9 +1820,6 @@ public class DamageListener implements Listener {
             if (victimProfile.getChosenClass().equalsIgnoreCase("swordsman") && !victimProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
                 finalDamage= finalDamage*.8;
             }
-            if (victimProfile.getChosenClass().equalsIgnoreCase("swordsman") && victimProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
-                finalDamage= finalDamage*.3;
-            }
             if (damagerProfile.getSelectedElement().equalsIgnoreCase("fire") && victimProfile.getSelectedElement().equalsIgnoreCase("ice")) {
                 finalDamage=finalDamage*1.2;
             }
@@ -1906,9 +1882,7 @@ public class DamageListener implements Listener {
 
         try {
 
-            if (attacker.getInventory().getItemInMainHand().getType() == Material.CROSSBOW && damagerProfile.getChosenClass().equalsIgnoreCase("archer")
-
-            && damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")
+            if (damagerProfile.getLs()>0
             ) {
 
                 AttributeInstance maxHealthAttribute = attacker.getAttribute(Attribute.MAX_HEALTH);
@@ -1929,7 +1903,7 @@ public class DamageListener implements Listener {
                     return;
                 }
 
-                double lifestealAmount = finalDamage * 0.05; // 5% lifesteal
+                double lifestealAmount = finalDamage * damagerProfile.getLs(); // 5% lifesteal
                 double newHealth = Math.min(currentHealth + lifestealAmount, maxHealth);
                 attacker.setHealth(newHealth);
             }
@@ -2026,37 +2000,16 @@ public class DamageListener implements Listener {
         double calculatedDamage = baseDamage + statDmg + elementalDamage;
 
         // Critical Hit System
-        double critChance = 0;
-        if (damagerProfile.getChosenClass().equalsIgnoreCase("swordsman")){
-            critChance += (luk * 0.0003);
-        }
-        else {
-            critChance += (luk * 0.0002);
-        }
-        if (damagerProfile.getChosenClass().equalsIgnoreCase("archer")){
-            critChance += (dex * 0.0001);
-        }
-        double critDmgMultiplier = 1.5 + (luk * 0.001);
-        if (damagerProfile.getChosenClass().equalsIgnoreCase("archer") && damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")){
-            critChance += 0.25;
-            critDmgMultiplier += dex*0.00005;
-        }
+        double critChance = damagerProfile.getCrit();
+        double critDmgMultiplier = damagerProfile.getCritDmg();
+
 
         if (event.getEntity() instanceof Player player1) {
             UserProfile player1Profile = profileManager.getProfile(player1.getName());
-            int p1Luk=0;
+            int p1Luk=player1Profile.getTempLuk();
 
-            if (player1Profile.getChosenClass().equalsIgnoreCase("swordsman")) {
-                p1Luk = player1Profile.getSwordsmanClassInfo().getLuk();
-            }
-            if (player1Profile.getChosenClass().equalsIgnoreCase("archer")) {
-                p1Luk = player1Profile.getArcherClassInfo().getLuk();
-            }
-            if (player1Profile.getChosenClass().equalsIgnoreCase("alchemist")) {
-                p1Luk = player1Profile.getAlchemistClassInfo().getLuk();
-            }
 
-            critChance -= (Math.max(0,p1Luk*0.0002)) + getTotalLuckFromEquipment(player1, player1Profile.getChosenClass());
+            critChance -= (Math.max(0,p1Luk*0.0002));
 
         }
 
@@ -2203,26 +2156,33 @@ public class DamageListener implements Listener {
     }
 
     // Method to spawn the floating hologram above the monster
-    private void spawnFloatingHologram(Location location, String text, World world,
-                                       ChatColor color) {
-        // Create the ArmorStand at the given location
+    private void spawnFloatingHologram(Location location, String text, World world, String hexColor) {
         ArmorStand armorStand = (ArmorStand) world.spawnEntity(location.clone().add(0, 1, 0), EntityType.ARMOR_STAND);
 
-        String coloredText = color + text;
+        // Convert hex color to Minecraft §x§R§R§G§G§B§B format
+        String coloredText = applyHexColor(hexColor, text);
 
-        // Set up the hologram text
-        armorStand.setCustomName(ChatColor.translateAlternateColorCodes('&', coloredText));
+        armorStand.setCustomName(coloredText);
         armorStand.setCustomNameVisible(true);
 
-        // Make the ArmorStand invisible and disable its gravity to simulate a floating text
         armorStand.setInvisible(true);
         armorStand.setGravity(false);
         armorStand.setInvulnerable(true);
-        armorStand.setMarker(true); // Small size and no hitbox
+        armorStand.setMarker(true);
 
-        // Create a task to move the hologram upwards
         moveHologramUpwards(armorStand);
     }
+
+    private String applyHexColor(String hex, String message) {
+        if (!hex.startsWith("#") || hex.length() != 7) return message;
+
+        StringBuilder colorBuilder = new StringBuilder("§x");
+        for (char c : hex.substring(1).toCharArray()) {
+            colorBuilder.append('§').append(c);
+        }
+        return colorBuilder + message;
+    }
+
 
     // Method to move the hologram upwards
     private void moveHologramUpwards(ArmorStand armorStand) {

@@ -6,6 +6,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.enchantments.Enchantment;
@@ -205,7 +206,9 @@ public class PlayerStatBuff {
                 profile.setLevel(finalLevel);
             }
 
-
+            profile.setLs(lifeStealPercent(chosenClass,profile.getSelectedSkill(),player));
+            profile.setCrit(critChance(chosenClass,luk,dex, profile.getSelectedSkill()));
+            profile.setCritDmg(getCritMultiplier(chosenClass,luk,dex, profile.getSelectedSkill()));
 
             if (player.getWorld().getName().contains("_rpg")) {
                 // Update player health
@@ -269,4 +272,83 @@ public class PlayerStatBuff {
             return 0;
         }
     }
+
+    public boolean isHoldingValidMeleeWeapon(Player player) {
+        ItemStack mainHand = player.getInventory().getItemInMainHand();
+        if (mainHand.getType() == Material.AIR) return false;
+
+        String typeName = mainHand.getType().name();
+        return typeName.endsWith("_SWORD") || typeName.endsWith("_AXE") || typeName.equals("TRIDENT") || typeName.equals("MACE");
+    }
+
+    public boolean isHoldingValidRangedWeapon(Player player) {
+        ItemStack mainHand = player.getInventory().getItemInMainHand();
+        if (mainHand.getType() == Material.AIR) return false;
+
+        Material type = mainHand.getType();
+
+        return type == Material.BOW
+                || type == Material.CROSSBOW
+                || type == Material.TRIDENT;
+    }
+
+    public boolean isValidLifestealWeaponM(Player player) {
+        ItemStack mainHand = player.getInventory().getItemInMainHand();
+        if (mainHand.getType() == Material.AIR) return false;
+
+        String typeName = mainHand.getType().name();
+        return typeName.endsWith("_SWORD");
+    }
+
+    public boolean isValidLifestealWeaponL(Player player) {
+        ItemStack mainHand = player.getInventory().getItemInMainHand();
+        if (mainHand.getType() == Material.AIR) return false;
+
+        String typeName = mainHand.getType().name();
+        return mainHand.getType() == Material.CROSSBOW;
+    }
+
+    public double lifeStealPercent(String chosenClass, String chosenSkill, Player player) {
+        if (chosenClass.equalsIgnoreCase("swordsman")
+                && chosenSkill.equalsIgnoreCase("skill 2")
+                && isValidLifestealWeaponM(player)
+        ) {return .1;}
+        if (chosenClass.equalsIgnoreCase("archer")
+                && chosenSkill.equalsIgnoreCase("skill 3")
+                && isValidLifestealWeaponL(player)
+        ) {return .05;}
+        return 0;
+    }
+
+    public double critChance(String chosenClass, int luk, int dex, String chosenSkill) {
+        double baseChance;
+
+        switch (chosenClass.toLowerCase()) {
+            case "swordsman":
+                baseChance = luk * 0.0003;
+                break;
+            case "archer":
+                baseChance = (luk * 0.0003) + (dex * 0.0001);
+                if (chosenSkill.equalsIgnoreCase("skill 3")) {
+                    baseChance += 0.25; // +25% flat
+                }
+                break;
+            default:
+                baseChance = luk * 0.0002;
+                break;
+        }
+
+        return baseChance;
+    }
+
+    public double getCritMultiplier(String classType, double luk, double dex, String chosenSkill) {
+        double multiplier = 1.5 + (luk * 0.001);
+
+        if (classType.equalsIgnoreCase("archer") && chosenSkill.equalsIgnoreCase("skill 3")) {
+            multiplier += dex * 0.00005;
+        }
+
+        return multiplier;
+    }
+
 }

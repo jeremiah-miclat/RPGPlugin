@@ -105,6 +105,10 @@ public class UserProfile {
     private int tempIntel;
     private int tempLuk;
 
+    private double crit;
+    private double critDmg;
+    private double ls;
+
     //team vault
     private boolean shareVault;
 
@@ -112,6 +116,9 @@ public class UserProfile {
 
     //constructor
     public UserProfile(String playerName) {
+        this.crit = 0;
+        this.critDmg = 1.5;
+        this.ls = 0;
         this.playerID = UUID.randomUUID(); // Generate a unique ID for the player
         this.playerName = playerName;
         this.chosenClass = "default"; // Default class upon joining
@@ -1001,5 +1008,30 @@ public class UserProfile {
     public void setShareVault(boolean shareVault) {
         this.shareVault = shareVault;
     }
+
+    public double getCrit() {
+        return crit;
+    }
+
+    public void setCrit(double crit) {
+        this.crit = crit;
+    }
+
+    public double getCritDmg() {
+        return critDmg;
+    }
+
+    public void setCritDmg(double critDmg) {
+        this.critDmg = critDmg;
+    }
+
+    public double getLs() {
+        return ls;
+    }
+
+    public void setLs(double ls) {
+        this.ls = ls;
+    }
+
 
 }
