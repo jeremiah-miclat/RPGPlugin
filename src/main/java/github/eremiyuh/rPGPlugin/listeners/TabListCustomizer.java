@@ -11,12 +11,16 @@ import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-public class TabListCustomizer {
+public class TabListCustomizer implements Listener {
 
     private final RPGPlugin plugin;
     private final PlayerProfileManager profileManager;
@@ -38,7 +42,11 @@ public class TabListCustomizer {
     }
 
     private void updateTabList() {
-        List<Player> onlinePlayers = new ArrayList<>(Bukkit.getOnlinePlayers());
+        List<Player> onlinePlayers = new ArrayList<>(
+                Bukkit.getOnlinePlayers().stream()
+                        .filter(p -> !isHiddenPlayer(p.getName()))
+                        .toList()
+        );
         int onlinePlayersCount = Bukkit.getOnlinePlayers().size();
         // Recalculate memory usage
         long totalMemory = Runtime.getRuntime().totalMemory() / (1024 * 1024); // in MB
@@ -68,6 +76,10 @@ public class TabListCustomizer {
 
         // Set the header and footer for all players once
         for (Player player : onlinePlayers) {
+//            if (!player.equals(Bukkit.getPlayer("Cseph"))) {
+//                player.hidePlayer(plugin, Objects.requireNonNull(Bukkit.getPlayer("Cseph"))); // hide from everyone else
+//                player.hidePlayer(plugin, Objects.requireNonNull(Bukkit.getPlayer("Cseph"))); // optional: hide others from him
+//            }
             player.sendPlayerListHeaderAndFooter(header, footer);
         }
 
@@ -80,8 +92,6 @@ public class TabListCustomizer {
 
 
             Component formattedName = formatPlayerName(player, rank, health, world);
-
-
             player.playerListName(formattedName);
         }
     }
@@ -131,5 +141,29 @@ public class TabListCustomizer {
 
                 .append(health)
                 .build();
+    }
+    private boolean isHiddenPlayer(String name) {
+        return name.equalsIgnoreCase("Cseph");
+    }
+
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        Player joining = event.getPlayer();
+        if (isHiddenPlayer(joining.getName())) {
+            event.setJoinMessage(null); // suppress join message
+
+            for (Player other : Bukkit.getOnlinePlayers()) {
+                if (!other.equals(joining)) {
+                    other.hidePlayer(plugin, joining); // hide from everyone else
+                }
+            }
+        }
+        else {
+            for (Player other : Bukkit.getOnlinePlayers()) {
+                if (isHiddenPlayer(other.getName())) {
+                    joining.hidePlayer(plugin, other); // hide Cseph from the new player
+                }
+            }
+        }
     }
 }

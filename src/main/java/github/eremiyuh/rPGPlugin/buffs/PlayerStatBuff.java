@@ -137,7 +137,7 @@ public class PlayerStatBuff {
 
             double classStr = 0, classDex = 0, classInt = 0, classLuk = 0, classVit = 0, classAgi = 0;
             String chosenClass = profile.getChosenClass().toLowerCase();
-
+            String chosenTrait = profile.getAbyssTrait();
             switch (chosenClass) {
                 case "archer" -> {
                     classStr = profile.getArcherClassInfo().getStr();
@@ -206,15 +206,19 @@ public class PlayerStatBuff {
                 profile.setLevel(finalLevel);
             }
 
-            profile.setLs(lifeStealPercent(chosenClass,profile.getSelectedSkill(),player));
-            profile.setCrit(critChance(chosenClass,luk,dex, profile.getSelectedSkill()));
-            profile.setCritDmg(getCritMultiplier(chosenClass,luk,dex, profile.getSelectedSkill()));
+            profile.setLs(lifeStealPercent(chosenClass,profile.getSelectedSkill(),player,chosenTrait));
+            profile.setCrit(critChance(chosenClass,luk,dex, profile.getSelectedSkill(),chosenTrait));
+            profile.setCritDmg(getCritMultiplier(chosenClass,luk,dex, profile.getSelectedSkill(),chosenTrait));
 
             if (player.getWorld().getName().contains("_rpg")) {
                 // Update player health
                 AttributeInstance maxHealthAttr = player.getAttribute(Attribute.MAX_HEALTH);
                 if (maxHealthAttr != null) {
                     double newMaxHealth = calculateMaxHealth(profile);
+                    if (chosenTrait.equalsIgnoreCase("Bloodlust")) newMaxHealth*=.9;
+                    else if (chosenTrait.equalsIgnoreCase("Fortress")) {
+                        newMaxHealth*=2;
+                    }
                     maxHealthAttr.setBaseValue(newMaxHealth);
                     player.setHealth(Math.min(player.getHealth(), newMaxHealth));
                 }
@@ -308,19 +312,21 @@ public class PlayerStatBuff {
         return mainHand.getType() == Material.CROSSBOW;
     }
 
-    public double lifeStealPercent(String chosenClass, String chosenSkill, Player player) {
+    public double lifeStealPercent(String chosenClass, String chosenSkill, Player player, String chosenTrait) {
+        double lifeSteal = 0;
+        if (chosenTrait.equalsIgnoreCase("Bloodlust")) {lifeSteal+=.05;}
         if (chosenClass.equalsIgnoreCase("swordsman")
                 && chosenSkill.equalsIgnoreCase("skill 2")
                 && isValidLifestealWeaponM(player)
-        ) {return .1;}
+        ) {lifeSteal += .1;}
         if (chosenClass.equalsIgnoreCase("archer")
                 && chosenSkill.equalsIgnoreCase("skill 3")
                 && isValidLifestealWeaponL(player)
-        ) {return .05;}
-        return 0;
+        ) {lifeSteal += .05;}
+        return lifeSteal;
     }
 
-    public double critChance(String chosenClass, int luk, int dex, String chosenSkill) {
+    public double critChance(String chosenClass, int luk, int dex, String chosenSkill, String chosenTrait) {
         double baseChance;
 
         switch (chosenClass.toLowerCase()) {
@@ -337,17 +343,17 @@ public class PlayerStatBuff {
                 baseChance = luk * 0.0002;
                 break;
         }
-
+        if (chosenTrait.equalsIgnoreCase("Gamble")) baseChance-=0.25;
         return baseChance;
     }
 
-    public double getCritMultiplier(String classType, double luk, double dex, String chosenSkill) {
+    public double getCritMultiplier(String classType, double luk, double dex, String chosenSkill, String chosenTrait) {
         double multiplier = 1.5 + (luk * 0.001);
 
         if (classType.equalsIgnoreCase("archer") && chosenSkill.equalsIgnoreCase("skill 3")) {
             multiplier += dex * 0.00005;
         }
-
+        if (chosenTrait.equalsIgnoreCase("Gamble")) multiplier+=0.25;
         return multiplier;
     }
 

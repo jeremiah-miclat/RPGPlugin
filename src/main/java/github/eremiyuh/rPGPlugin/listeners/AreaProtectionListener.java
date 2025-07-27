@@ -319,7 +319,7 @@ public class AreaProtectionListener implements Listener {
 
         if (event.getHand() != EquipmentSlot.HAND) return; // Only check for main hand
         if (event.getItem() == null || (event.getItem().getType() != Material.WARDEN_SPAWN_EGG && event.getItem().getType() != Material.RAVAGER_SPAWN_EGG
-                && event.getItem().getType() != Material.EVOKER_SPAWN_EGG && event.getItem().getType() != Material.WITHER_SPAWN_EGG
+                && event.getItem().getType() != Material.EVOKER_SPAWN_EGG && event.getItem().getType() != Material.WITHER_SPAWN_EGG && event.getItem().getType() != Material.VILLAGER_SPAWN_EGG
         )) return; // Only check for spawn eggs
         if (!event.getPlayer().getWorld().getName().equals("world_rpg")) {
             event.setCancelled(true);
@@ -334,6 +334,12 @@ public class AreaProtectionListener implements Listener {
         }
 
         Location location = Objects.requireNonNull(event.getClickedBlock()).getLocation();
+
+        if (location.getY() <= 56) {
+            event.setCancelled(true);
+            player.sendMessage("§cNot enough space above to spawn!");
+            return;
+        }
 
         // Check for air 3 blocks above
         for (int i = 1; i <= 3; i++) {

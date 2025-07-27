@@ -21,6 +21,12 @@ commands:
     description: "Select an elemental affinity."
     usage: "/<command> <fire|water|ice>"
     notes: "In pvp, fire > ice > water > fire, fire gets 10% final damage dealt, ice slows, water weakens"
+  selectabysstrait:
+    description: "Select a trait that only works abyss."
+    usage: "/<command>"
+  sat:
+    description: "Select a trait that only works abyss."
+    usage: "/<command>"
 
   selectskill:
     description: Open the skill selection GUI

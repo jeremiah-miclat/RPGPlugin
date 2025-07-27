@@ -82,8 +82,8 @@ public class PlayerProfileManager {
 
         // Save elemental choice
         config.set("selectedElement", profile.getSelectedElement());
-
-
+        //abyss trait
+        config.set("abyssTrait",profile.getAbyssTrait());
         // Save skill choice
         config.set("selectedSkill",profile.getSelectedSkill());
 
@@ -213,6 +213,8 @@ public class PlayerProfileManager {
 
         // Load elemental choice
         profile.setSelectedElement(config.getString("selectedElement", "none"));
+        //abyss trait
+        profile.setAbyssTrait(config.getString("abyssTrait", "none"));
 
         // Load skill choice
         profile.setSelectedSkill(config.getString("selectedSkill", "default"));

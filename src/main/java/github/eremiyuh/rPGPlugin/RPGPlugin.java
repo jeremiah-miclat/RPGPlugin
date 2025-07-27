@@ -324,6 +324,7 @@ public class RPGPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new PayBlackSmithCommand(profileManager), this);
         getServer().getPluginManager().registerEvents(new ConvertFoodCommand(profileManager), this);
         getServer().getPluginManager().registerEvents(new SelectElement(profileManager), this);
+        getServer().getPluginManager().registerEvents(new SelectAbyssTrait(profileManager), this);
         getServer().getPluginManager().registerEvents(new SkillPaperListener(profileManager), this);
         getServer().getPluginManager().registerEvents(new AnvilLevelRestrictionHandler(), this);
         getServer().getPluginManager().registerEvents(new ArmorEquipListener(), this);
@@ -336,6 +337,8 @@ public class RPGPlugin extends JavaPlugin {
         Objects.requireNonNull(this.getCommand("status")).setExecutor(new CheckClassCommand(profileManager));
         Objects.requireNonNull(getCommand("convertabysspoints")).setExecutor(new ConvertLevelsCommand(profileManager));
         Objects.requireNonNull(getCommand("selectelement")).setExecutor(new SelectElement(profileManager));
+        Objects.requireNonNull(getCommand("selectabysstrait")).setExecutor(new SelectAbyssTrait(profileManager));
+        Objects.requireNonNull(getCommand("sat")).setExecutor(new SelectAbyssTrait(profileManager));
         Objects.requireNonNull(getCommand("selectskill")).setExecutor(new SkillsGui(this,profileManager));
         Objects.requireNonNull(getCommand("teamcreate")).setExecutor(new CreateTeamCommand(profileManager));
         Objects.requireNonNull(getCommand("teaminvite")).setExecutor(new TeamInviteCommand(profileManager));
@@ -415,7 +418,7 @@ public class RPGPlugin extends JavaPlugin {
         loadWorld("world_rpg",-91,75,-91, 0,0,-1,-1,-1,18000,GameRule.DO_DAYLIGHT_CYCLE,false, World.Environment.NORMAL, null);
 //        loadWorld("world_labyrinth",-23,312,-35, 270,0,0,0,100,18000,null,false, World.Environment.NORMAL,Biome.NETHER_WASTES);
 //        loadWorld("world_labyrinth2",-19,251,-36,270,0,0,0,100,18000,null,false, World.Environment.NETHER,Biome.NETHER_WASTES);
-        new TabListCustomizer(this, profileManager);
+        getServer().getPluginManager().registerEvents(new TabListCustomizer(this, profileManager), this);
 
         Objects.requireNonNull(getCommand("junk")).setExecutor(new JunkCommand(profileManager));
         getServer().getPluginManager().registerEvents(new JunkCommand(profileManager), this);

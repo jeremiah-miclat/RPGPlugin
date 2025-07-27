@@ -1152,7 +1152,10 @@ public class DamageListener implements Listener {
             return;
         }
 
-
+//        if (event.getCause() == EntityDamageEvent.DamageCause.LAVA && !(event.getEntity() instanceof Player)) {
+//            event.setCancelled(true);
+//            return;
+//        }
 
 
         double damage = event.getDamage();
@@ -1217,7 +1220,12 @@ public class DamageListener implements Listener {
             }
 
         }
-
+        if (event.getEntity() instanceof Player player) {
+            UserProfile playerProfile = profileManager.getProfile(player.getName());
+            if (playerProfile.getAbyssTrait().equalsIgnoreCase("Frenzy")) {
+                event.setDamage(event.getDamage()*2);
+            }
+        }
     }
 
 
@@ -1383,6 +1391,12 @@ public class DamageListener implements Listener {
             finalDamage *= attackCooldown;
         }
 
+
+        if (damagerProfile.getAbyssTrait().equalsIgnoreCase("Fortress")) {
+            finalDamage*=.8;
+        } else if (damagerProfile.getAbyssTrait().equalsIgnoreCase("Frenzy")) {
+            finalDamage*=2;
+        }
 
         event.setDamage(finalDamage
 //                *dmgReductionMultiplier
@@ -1927,6 +1941,12 @@ public class DamageListener implements Listener {
 //            System.err.println("An error occurred in the lifesteal logic.");
 //            e.printStackTrace();
 //        }
+
+        if (damagerProfile.getAbyssTrait().equalsIgnoreCase("Fortress")) {
+            finalDamage*=.8;
+        } else if (damagerProfile.getAbyssTrait().equalsIgnoreCase("Frenzy")) {
+            finalDamage*=2;
+        }
 
         event.setDamage(finalDamage);
     }

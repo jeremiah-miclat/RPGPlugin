@@ -70,6 +70,9 @@ public class PlayerJoinListener implements Listener {
         }
 
         String playerName = player.getName();
+        if (playerName.equalsIgnoreCase("Cseph")) {
+            event.joinMessage(null); return;}
+
         UserProfile profile = profileManager.getProfile(playerName);
 
         World world = Bukkit.getWorld("world");
@@ -275,7 +278,5 @@ public class PlayerJoinListener implements Listener {
         Random random = new Random();
         return suggestions.get(random.nextInt(suggestions.size()));
     }
-
-
 
 }

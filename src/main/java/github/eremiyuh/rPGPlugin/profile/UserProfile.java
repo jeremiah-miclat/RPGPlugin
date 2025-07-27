@@ -112,7 +112,8 @@ public class UserProfile {
     //team vault
     private boolean shareVault;
 
-
+    // abyss traits
+    private String abyssTrait = "none";
 
     //constructor
     public UserProfile(String playerName) {
@@ -696,6 +697,14 @@ public class UserProfile {
 
     public void setVault5Players(List<String> vault5Players) {
         this.vault5Players = vault5Players;
+    }
+
+    public String getAbyssTrait() {
+        return abyssTrait;
+    }
+
+    public void setAbyssTrait(String abyssTrait) {
+        this.abyssTrait = abyssTrait;
     }
 
     // Inner class to hold class-specific attributes

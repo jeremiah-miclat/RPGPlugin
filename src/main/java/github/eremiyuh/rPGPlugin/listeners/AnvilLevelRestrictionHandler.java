@@ -1,6 +1,7 @@
 package github.eremiyuh.rPGPlugin.listeners;
 
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
@@ -145,9 +146,6 @@ public class AnvilLevelRestrictionHandler implements Listener {
 
     @EventHandler
     public void customEnchant(PrepareAnvilEvent event) {
-//        if (event.getViewers().getFirst().isOp()) {
-//            event.getView().bypassEnchantmentLevelRestriction(true);
-//        }
 
         AnvilInventory inventory = event.getInventory();
         ItemStack first = inventory.getFirstItem();
@@ -159,9 +157,50 @@ public class AnvilLevelRestrictionHandler implements Listener {
 
 
         if (hasBypassLore(first) && hasBypassLore(second)) {
-            // Allow bypassing enchantment level restriction
-            event.getView().bypassEnchantmentLevelRestriction(true);
+            boolean exceedsCap = false;
+
+            // Check normal enchantments on first item
+            for (Map.Entry<Enchantment, Integer> entry : first.getEnchantments().entrySet()) {
+                if (entry.getValue() >= 20) {
+                    exceedsCap = true;
+                    event.getView().bypassEnchantmentLevelRestriction(false);
+                    event.setResult(ItemStack.of(Material.AIR));
+                    Bukkit.getLogger().info("[Anvil] Bypass blocked: First item has " + entry.getKey().getKey().getKey() + " level " + entry.getValue());
+                    break;
+                }
+            }
+
+            if (!exceedsCap) {
+                // Handle second item
+                if (second.getType() == Material.ENCHANTED_BOOK && second.getItemMeta() instanceof EnchantmentStorageMeta storageMeta) {
+                    for (Map.Entry<Enchantment, Integer> entry : storageMeta.getStoredEnchants().entrySet()) {
+                        if (entry.getValue() >= 20) {
+                            exceedsCap = true;
+                            event.getView().bypassEnchantmentLevelRestriction(false);
+                            event.setResult(ItemStack.of(Material.AIR));
+                            Bukkit.getLogger().info("[Anvil] Bypass blocked: Enchanted book has " + entry.getKey().getKey().getKey() + " level " + entry.getValue());
+                            break;
+                        }
+                    }
+                } else {
+                    for (Map.Entry<Enchantment, Integer> entry : second.getEnchantments().entrySet()) {
+                        if (entry.getValue() >= 20) {
+                            exceedsCap = true;
+                            event.getView().bypassEnchantmentLevelRestriction(false);
+                            event.setResult(ItemStack.of(Material.AIR));
+                            Bukkit.getLogger().info("[Anvil] Bypass blocked: Second item has " + entry.getKey().getKey().getKey() + " level " + entry.getValue());
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (!exceedsCap) {
+                Bukkit.getLogger().info("[Anvil] Bypass allowed: No enchantment exceeds level 20.");
+                event.getView().bypassEnchantmentLevelRestriction(true);
+            }
         }
+
 
         if (first.getType() == Material.CROSSBOW && second.getType() == Material.ENCHANTED_BOOK) {
             ItemMeta crossbowMeta = first.getItemMeta();
