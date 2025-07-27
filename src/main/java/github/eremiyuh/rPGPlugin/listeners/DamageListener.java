@@ -811,7 +811,7 @@ public class DamageListener implements Listener {
                    ItemStack weapon =  mob.getEquipment().getItemInMainHand();
 
 
-                    double mobDamage = 1+Objects.requireNonNull(mob.getAttribute(Attribute.ATTACK_DAMAGE)).getValue();
+                    double mobDamage = Objects.requireNonNull(mob.getAttribute(Attribute.ATTACK_DAMAGE)).getValue();
 
 
 
@@ -866,7 +866,7 @@ public class DamageListener implements Listener {
 
 //
                             if (playerProfile.getChosenClass().equalsIgnoreCase("swordsman") && playerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
-                                mobDamage *= .3;
+                                mobDamage *= .5;
                             }
                             if (playerProfile.getChosenClass().equalsIgnoreCase("swordsman") && !playerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
                                 mobDamage *= .8;
@@ -930,7 +930,7 @@ public class DamageListener implements Listener {
             if (event.getDamager() instanceof Projectile projectile) {
                 // Check for custom damage metadata
                 if (projectile.getShooter() instanceof Monster mob) {
-                    double customDamage = 1+Objects.requireNonNull(mob.getAttribute(Attribute.ATTACK_DAMAGE)).getBaseValue();
+                    double customDamage = Objects.requireNonNull(mob.getAttribute(Attribute.ATTACK_DAMAGE)).getBaseValue();
                     customDamage += event.getDamage();
                     ItemStack weapon =  mob.getEquipment().getItemInMainHand();
                     int sharplevel = weapon.getEnchantmentLevel(Enchantment.POWER);
@@ -976,7 +976,7 @@ public class DamageListener implements Listener {
 //                                customDamage *= 1.2;
 //                            }
                             if (playerProfile.getChosenClass().equalsIgnoreCase("swordsman") && playerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
-                                customDamage *= .3;
+                                customDamage *= .5;
                             }
                             if (playerProfile.getChosenClass().equalsIgnoreCase("swordsman") && !playerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
                                 customDamage *= .8;
@@ -1008,7 +1008,7 @@ public class DamageListener implements Listener {
 //                                customDamage *= 1.2;
 //                            }
                             if (playerProfile.getChosenClass().equalsIgnoreCase("swordsman") && playerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
-                                customDamage *= .3;
+                                customDamage *= .5;
                             }
                             if (playerProfile.getChosenClass().equalsIgnoreCase("swordsman") && !playerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
                                 customDamage *= .8;
@@ -1826,6 +1826,9 @@ public class DamageListener implements Listener {
             if (playerProfile.getChosenClass().equalsIgnoreCase("swordsman") && playerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
                 finalDamage *= .5;
             }
+            if (playerProfile.getChosenClass().equalsIgnoreCase("swordsman") && !playerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
+                finalDamage= finalDamage*.8;
+            }
         }
 
 
@@ -1833,9 +1836,6 @@ public class DamageListener implements Listener {
             UserProfile victimProfile = profileManager.getProfile(victim.getName());
             if (victimProfile==null) return;
             if (damagerProfile.getSelectedElement().equalsIgnoreCase("fire")) {finalDamage=finalDamage*1.1;}
-            if (victimProfile.getChosenClass().equalsIgnoreCase("swordsman") && !victimProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
-                finalDamage= finalDamage*.8;
-            }
             if (damagerProfile.getSelectedElement().equalsIgnoreCase("fire") && victimProfile.getSelectedElement().equalsIgnoreCase("ice")) {
                 finalDamage=finalDamage*1.2;
             }
@@ -2180,13 +2180,6 @@ public class DamageListener implements Listener {
 
         armorStand.setCustomName(coloredText);
         armorStand.setCustomNameVisible(true);
-
-        armorStand.setInvisible(true);
-        armorStand.setGravity(false);
-        armorStand.setInvulnerable(true);
-        armorStand.setPersistent(false);
-        armorStand.setMarker(true);
-
         moveHologramUpwards(armorStand);
     }
 

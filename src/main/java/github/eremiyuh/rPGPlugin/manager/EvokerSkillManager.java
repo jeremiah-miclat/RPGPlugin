@@ -104,6 +104,7 @@ public class EvokerSkillManager {
             evokerLoc.setY(0);
 
             if (playerLoc.distanceSquared(evokerLoc) <= radius * radius) {
+//                evoker.attack(player);
                 @NotNull Vector push = player.getLocation().toVector().subtract(center.toVector()).normalize().multiply(2);
                 push.setY(1.0); // Add upward knockback
                 player.setVelocity(push);

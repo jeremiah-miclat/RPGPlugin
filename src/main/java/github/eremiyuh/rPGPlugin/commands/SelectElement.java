@@ -169,7 +169,7 @@ public class SelectElement implements CommandExecutor, Listener {
             case FIRE_CHARGE:
                 element = "fire";
                 break;
-            case POTION:  // Adjust the type check if you use a different material for water
+            case WATER_BUCKET:  // Adjust the type check if you use a different material for water
                 element = "water";
                 break;
             case PACKED_ICE:

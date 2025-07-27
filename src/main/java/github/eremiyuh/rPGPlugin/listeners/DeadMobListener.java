@@ -232,25 +232,29 @@ public class DeadMobListener implements Listener {
 
                         if (bosslvl > 9 && isWorldBoss) {
 
+                            int dropCount = 2 + ((bosslvl - 1) / 50);
 
+                            for (int i = 0; i < dropCount; i++) {
+                                BossDropItem dropItem = isBoss ? BossDropItem.getRandomBossDropItem(regularBossDrops)
+                                        : BossDropItem.getRandomBossDropItem(worldBossDrops);
 
-                        BossDropItem dropItem = isBoss ? BossDropItem.getRandomBossDropItem(regularBossDrops) : BossDropItem.getRandomBossDropItem(worldBossDrops);
+                                if (dropItem != null) {
+                                    ItemStack itemToDrop = dropItem.getItem().clone();
+                                    dropItem.addLoreWithBossLevel(itemToDrop, bosslvl, playerProfile.getLevel(), isWorldBoss);
 
-                        if (dropItem != null) {
-                            // Clone the item to ensure each player gets a separate instance
-                            ItemStack itemToDrop = dropItem.getItem().clone();
-                            // Add lore based on the boss level
-                            dropItem.addLoreWithBossLevel(itemToDrop, bosslvl, playerProfile.getLevel(),isWorldBoss);
-                            player.sendMessage("You received a boss reward for killing " + customName);
-                            if (player.getInventory().firstEmpty() != -1) {
-                                // If there is space in the inventory, add the item
-                                player.getInventory().addItem(itemToDrop);
-                            } else {
-                                // If the inventory is full, drop the item in the world
-                                player.getWorld().dropItem(player.getLocation(), itemToDrop);
-                                player.sendMessage("Your inventory was full, so the item has been dropped on the ground.");
+                                    player.sendMessage("You received a boss reward for killing " + customName);
+
+                                    if (player.getInventory().firstEmpty() != -1) {
+                                        player.getInventory().addItem(itemToDrop);
+                                    } else {
+                                        player.getWorld().dropItem(player.getLocation(), itemToDrop);
+                                        player.sendMessage("Your inventory was full, so the item has been dropped on the ground.");
+                                    }
+                                }
                             }
-                        }
+
+
+
                         }
 
                 }

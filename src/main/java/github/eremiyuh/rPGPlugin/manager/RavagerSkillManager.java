@@ -70,7 +70,7 @@ public class RavagerSkillManager {
                                 fireLoc.getBlock().setType(Material.FIRE);
                             }
                         }
-
+//                        ravager.attack(player);
                         // Toss logic here
 
                         // Upward launch
@@ -78,8 +78,8 @@ public class RavagerSkillManager {
 
 // Every 100 units = 5 damage
                         int damage = (int) (maxCoord / 100.0);
-
                         player.damage(damage);
+
                         player.setVelocity(player.getVelocity().setY(2.2));
 
                         // Sound
