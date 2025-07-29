@@ -31,6 +31,12 @@ public class AnvilLevelRestrictionHandler implements Listener {
         ItemStack secondItem = anvilInventory.getItem(1);
         ItemStack result = event.getResult();
         if (firstItem==null || secondItem==null) return;
+        if (hasBypassLore(firstItem) && hasBypassLore(secondItem)) {
+            if (secondItem.getType() != Material.ENCHANTED_BOOK) {
+                anvilInventory.setResult(ItemStack.of(Material.AIR)); // Clear the result
+                return;
+            }
+        }
 
         if (firstItem.getType() == Material.BOOK && secondItem.getType() == Material.BOOK) {
             ItemMeta secondMeta = secondItem.getItemMeta();
@@ -154,6 +160,14 @@ public class AnvilLevelRestrictionHandler implements Listener {
         if (first == null || second ==null) {
             return;
         }
+
+        if (hasBypassLore(first) && hasBypassLore(second)) {
+            if (second.getType() != Material.ENCHANTED_BOOK) {
+                inventory.setResult(ItemStack.of(Material.AIR)); // Clear the result
+                return;
+            }
+        }
+
 
 
         if (hasBypassLore(first) && hasBypassLore(second)) {
@@ -400,7 +414,14 @@ public class AnvilLevelRestrictionHandler implements Listener {
             if (event.getSlot() == 2) {
                 ItemStack firstItem = event.getInventory().getItem(0);
                 ItemStack secondItem = event.getInventory().getItem(1);
-
+                if (hasBypassLore(firstItem) && hasBypassLore(secondItem)) {
+                    if (secondItem.getType() != Material.ENCHANTED_BOOK) {
+                        event.getInventory().getViewers().getFirst().sendMessage(ChatColor.RED + "Not allowed, exp not refunded");
+                        event.setCancelled(true);
+                        event.getInventory().close();
+                        return;
+                    }
+                }
                 // Cancel if first item has lore "Cosmetic"
                 if (firstItem != null && firstItem.hasItemMeta()) {
                     ItemMeta firstMeta = firstItem.getItemMeta();

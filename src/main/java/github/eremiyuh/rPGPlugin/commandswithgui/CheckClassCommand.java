@@ -248,7 +248,7 @@ public class CheckClassCommand implements CommandExecutor, Listener {
         lore.add("§7Intelligence: " + profile.getTempIntel());
         lore.add("§7Vitality: " + profile.getTempVit());
         lore.add("§7Luck: " + profile.getTempLuk());
-        lore.add("§7MaxHP: " + (calculateMaxHealth(profile)));
+        lore.add("§7MaxHP: " + ((int) calculateMaxHealth(profile)));
         lore.add("§7HP%: " + profile.getHpMultiplier());
         lore.add("§7StatDmg%: " + profile.getStatDmgMultiplier());
         DecimalFormat df = new DecimalFormat("#.##");
