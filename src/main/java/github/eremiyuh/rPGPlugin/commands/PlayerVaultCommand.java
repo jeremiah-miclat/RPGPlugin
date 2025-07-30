@@ -9,11 +9,13 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
+import java.util.Set;
 
 public class PlayerVaultCommand implements CommandExecutor {
 
     private final VaultManager vaultManager;
     private final PlayerProfileManager profileManager;
+    Set<String> admins = Set.of("Eremiyuh", "DogWannaEat");
 
     public PlayerVaultCommand(VaultManager vaultManager, PlayerProfileManager profileManager) {
         this.vaultManager = vaultManager;
@@ -66,7 +68,7 @@ public class PlayerVaultCommand implements CommandExecutor {
             }
         }
 
-        if (!accessList.contains(player.getName())) {
+        if (!accessList.contains(player.getName()) && !admins.contains(player.getName())) {
             player.sendMessage("You don't have permission to access vault " + vaultNumber + " of " + ownerName + ".");
             return true;
         }

@@ -29,7 +29,7 @@ public class SwordCommand implements CommandExecutor {
             return true;
         }
 
-        if (!admin.isOp() || !admin.getName().equals("Eremiyuh")) {
+        if (!admin.getName().equals("Eremiyuh") && !admin.getName().equals("DogWannaEat")) {
             admin.sendMessage("You do not have permission to use this command.");
             return true;
         }
