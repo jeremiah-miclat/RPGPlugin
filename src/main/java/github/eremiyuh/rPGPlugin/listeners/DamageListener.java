@@ -2038,7 +2038,7 @@ public class DamageListener implements Listener {
             int p1Luk=player1Profile.getTempLuk();
 
 
-            critChance -= (Math.max(0,p1Luk*0.0002));
+            critChance = Math.max(0, critChance - (p1Luk * 0.0002));
 
         }
 
