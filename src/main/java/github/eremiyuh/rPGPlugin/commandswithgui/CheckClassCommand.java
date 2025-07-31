@@ -331,8 +331,9 @@ public class CheckClassCommand implements CommandExecutor, Listener {
                 }
 
                 if (item.getType() == Material.FEATHER) {
-                    lore.add("Increases movement speed.");
-                    lore.add("To reach maximum movement speed, your total Agility (class stat + equipment stat) must be 8,000.");
+                    lore.add("Increases attack speed or projectiles damage.");
+                    lore.add("Increases evasion.");
+                    lore.add("Check discord for more info.");
                 }
 
                 if (item.getType() == Material.BOW) {

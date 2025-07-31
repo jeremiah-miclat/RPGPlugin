@@ -1209,10 +1209,10 @@ public class DamageListener implements Listener {
             double evadeChance;
             double agiPerLevel = agility / lvl;
 
-            if (agiPerLevel < 100.0) {
-                evadeChance = (agiPerLevel / 100.0) * 80.0;
-            } else if (agiPerLevel < 200.0) {
-                double bonus = ((agiPerLevel - 100.0) / 100.0) * 20.0; // 20% bonus scaling
+            if (agiPerLevel < 50.0) {
+                evadeChance = (agiPerLevel / 50.0) * 80.0;
+            } else if (agiPerLevel < 100.0) {
+                double bonus = ((agiPerLevel - 50.0) / 50.0) * 20.0; // 20% from 50 to 100
                 evadeChance = 80.0 + bonus;
             } else {
                 evadeChance = 100.0;
