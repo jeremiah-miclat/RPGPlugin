@@ -30,23 +30,29 @@ Elemental: Class + Skill-based
 
 ================================================================================================
 
-✅ Critical System
+✅ Critical Hit System
 
-Crit Chance:
-Class/Type	Formula
-🗡 Swordsman	LUK × 0.0003
-🏹 Archer	LUK × 0.0003 + DEX × 0.0001
-🏹 Archer + Skill 3	+25% flat on top of above
-❔ Others	LUK × 0.0002
+🎯 Crit Chance (based on stats and class)
+Class/Type	Crit Chance Formula
+🗡 Swordsman	+0.03% per LUK
+🏹 Archer	+0.03% per LUK and +0.01% per DEX
+🏹 Archer + Skill 3	Above + flat +25% bonus
+❔ Others	+0.02% per LUK
 
-Crit Multiplier:
-1.5 + (LUK × 0.001)
+💥 Crit Damage Multiplier
 
-If Archer + Skill 3: + DEX × 0.00005
+Starts at 1.5x
+Gains +0.1x every 100 LUK
+If Archer + Skill 3: gains extra +0.05x every 100 DEX
 
-Crit Defense (target):
+🛡 Crit Resistance (PVP Enemy Defense)
+
 Reduces your crit chance:
-Target LUK × 0.0002 + item-based luck resistance
+-0.02% per enemy LUK + any crit resistance from items
+📌 Example:
+You (Archer): 200 LUK, 100 DEX → 200×0.03% + 100×0.01% = 7%
+With Skill 3: 7% + 25% = 32% total
+Enemy has 100 LUK → -2% = Final Crit Chance: 30%
 
 
 =================================================================
