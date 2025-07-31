@@ -16,7 +16,7 @@ Stat	Role in Combat
 🧠 INT	Increases elemental skill damage. (÷100 before used)
 💖 VIT	Increases max health. (÷100 before used)
 🍀 LUK	Increases crit chance and crit multiplier. (✅ Used as-is)
-🏃 AGI	Increases movement speed. (✅ Used as-is)
+🏃 AGI	Increases melee attack speed, projectile damage, and Evasion Chance. (✅ Used as-is)
 📈 StatDamage%	Final damage multiplier from gear. (✅ Used as-is)
 
 🧠 DAMAGE FORMULAS
@@ -108,21 +108,14 @@ Gear VIT = 75 → 0.75
 Hp% = 20% → ×1.20
 ➜ (20 + 10 × (1.25 + 0.75)) × 1.2 = 48 HP = ❤️ 24 hearts
 
-🏃‍♂️ AGILITY & SPEED GUIDE
+🏃‍♂️ AGILITY
 ✅ Speed Formula:
-Speed = min(0.2 + (classAGI + gearAGI) × 0.0001, 1.0)
 AGI is not divided
-Base speed = 0.2
-+0.0001 speed per AGI point
-Max speed = 1.0
-
 Alchemist: Gear AGI × 1.2 before applying
-📌 Example:
-Class AGI = 300
-Gear AGI = 200
-➜ Speed = 0.2 + 500 × 0.0001 = 0.25
 
-⚠️ Recommended AGI
-8000 AGI = speed cap (0.8 bonus)
-Recommended: 2000–3000 AGI unless you're going full-speed build
+Every 1000 gives 10% bonus attackspeed
+Every 1000 gives 10% bonus final projectile damage
+Every 20 agility = 0.1% evade chance
+10,000 agility = 50% evade chance
+Cap at 50% max
 

@@ -825,7 +825,7 @@ public class DamageListener implements Listener {
 
                     if (damaged instanceof Player player) {
                         UserProfile playerProfile = profileManager.getProfile(player.getName());
-                        playerProfile.setDurability(Math.max(0,playerProfile.getDurability()-1));
+
 
                         if (damager instanceof Spider) {
                             // 10% chance to apply Nausea
@@ -856,22 +856,10 @@ public class DamageListener implements Listener {
                         }
 
 
-                        if (playerProfile.isBossIndicator() && playerProfile.getDurability() <= 0) {
-                            player.sendMessage("Durability depleted. You will receive more damage. /sdw to turn off this warning");
-                        }
                         mobDamage *= playerProfile.getDurability() == 0 ? 2 : 1;
 
 
-                        if (event.getEntity() instanceof Player) {
 
-//
-                            if (playerProfile.getChosenClass().equalsIgnoreCase("swordsman") && playerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
-                                mobDamage *= .5;
-                            }
-                            if (playerProfile.getChosenClass().equalsIgnoreCase("swordsman") && !playerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
-                                mobDamage *= .8;
-                            }
-                        }
 
                         if (mob instanceof Creeper) {
                             event.setDamage((mobDamage+event.getDamage()));
@@ -965,22 +953,14 @@ public class DamageListener implements Listener {
 
 
                         UserProfile playerProfile = profileManager.getProfile(player.getName());
-                        playerProfile.setDurability(Math.max(0,playerProfile.getDurability()-1));
-                        if (playerProfile.isBossIndicator() && playerProfile.getDurability() <= 0) {
-                            player.sendMessage("Durability depleted. You will receive more damage. /sdw to turn off this warning");
-                        }
+
                         customDamage *= playerProfile.getDurability() == 0 ? 2 : 1;
 
 
 //                            if (playerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
 //                                customDamage *= 1.2;
 //                            }
-                            if (playerProfile.getChosenClass().equalsIgnoreCase("swordsman") && playerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
-                                customDamage *= .5;
-                            }
-                            if (playerProfile.getChosenClass().equalsIgnoreCase("swordsman") && !playerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
-                                customDamage *= .8;
-                            }
+
 
                         event.setDamage(customDamage);
 
@@ -997,22 +977,11 @@ public class DamageListener implements Listener {
                     customDamage+=event.getDamage();
                     if (damaged instanceof Player player) {
                         UserProfile playerProfile = profileManager.getProfile(player.getName());
-                        playerProfile.setDurability(Math.max(0,playerProfile.getDurability()-1));
-                        if (playerProfile.isBossIndicator() && playerProfile.getDurability() <= 0) {
-                            player.sendMessage("Durability depleted. You will receive more damage. /sdw to turn off this warning");
-                        }
-                        customDamage *= playerProfile.getDurability() == 0 ? 2 : 1;
-                        customDamage*=.3;
 
-//                            if (playerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
-//                                customDamage *= 1.2;
-//                            }
-                            if (playerProfile.getChosenClass().equalsIgnoreCase("swordsman") && playerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
-                                customDamage *= .5;
-                            }
-                            if (playerProfile.getChosenClass().equalsIgnoreCase("swordsman") && !playerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
-                                customDamage *= .8;
-                            }
+                        customDamage *= playerProfile.getDurability() == 0 ? 2 : 1;
+
+
+
 
                         event.setDamage(customDamage);
 
@@ -1175,8 +1144,8 @@ public class DamageListener implements Listener {
 
         resetHealthIndicator((LivingEntity) event.getEntity(), damage);
         if (event.getDamageSource().getCausingEntity() instanceof Player damager) {
-            double finalDamage = event.getFinalDamage();
             UserProfile damagerProfile = profileManager.getProfile(damager.getName());
+            double finalDamage = event.getFinalDamage();
             try {
                 if (damagerProfile == null || damager.isDead()) {
                     System.err.println("Attacker or damagerProfile is null.");
@@ -1220,12 +1189,51 @@ public class DamageListener implements Listener {
             }
 
         }
-        if (event.getEntity() instanceof Player player) {
+        if (event.getEntity() instanceof Player player && event.getDamageSource().getCausingEntity() instanceof LivingEntity entity) {
             UserProfile playerProfile = profileManager.getProfile(player.getName());
+            playerProfile.setDurability(Math.max(0,playerProfile.getDurability()-1));
+            if (playerProfile.isBossIndicator() && playerProfile.getDurability() <= 0) {
+                player.sendMessage("Durability depleted. You will receive more damage. /sdw to turn off this warning");
+            }
+            double agility = playerProfile.getTempAgi();
+            int lvl = 1; // Default to level 1
+
+            // Determine attacking entity's level
+            if (entity instanceof Monster monster) {
+                // Monster level based on highest absolute coordinate / 100
+                Location loc = monster.getLocation();
+                double maxCoord = Math.max(Math.max(Math.abs(loc.getX()), Math.abs(loc.getY())), Math.abs(loc.getZ()));
+                lvl = Math.max((int) (maxCoord / 100), 1);
+            }
+
+            double evadeChance;
+            double agiPerLevel = agility / lvl;
+
+            if (agiPerLevel < 100.0) {
+                evadeChance = (agiPerLevel / 100.0) * 80.0;
+            } else if (agiPerLevel < 200.0) {
+                double bonus = ((agiPerLevel - 100.0) / 100.0) * 20.0; // 20% bonus scaling
+                evadeChance = 80.0 + bonus;
+            } else {
+                evadeChance = 100.0;
+            }
+
+            if (Math.random() * 100 < evadeChance) {
+                // Evade successful
+                event.setCancelled(true);
+
+                spawnFloatingHologram(player.getLocation(), "Evade", player.getWorld(), "#ff0004");
+                player.getWorld().spawnParticle(Particle.SWEEP_ATTACK, player.getLocation().add(0, 1, 0), 3);
+                player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 0.6f, 1.2f);
+                return;
+            }
+
+            // Apply Frenzy trait bonus
             if (playerProfile.getAbyssTrait().equalsIgnoreCase("Frenzy")) {
-                event.setDamage(event.getDamage()*2);
+                event.setDamage(event.getDamage() * 2);
             }
         }
+
     }
 
 
@@ -1328,15 +1336,9 @@ public class DamageListener implements Listener {
             UserProfile playerProfile = profileManager.getProfile(player.getName());
 
 
-            playerProfile.setDurability(Math.max(0,playerProfile.getDurability()-1));
-            if (playerProfile.isBossIndicator() && playerProfile.getDurability() <= 0) {
-                player.sendMessage("Durability depleted. You will receive more damage. /sdw to turn off this warning");
-            }
+
             finalDamage *= playerProfile.getDurability() == 0 ? 2 : 1;
 
-            if (playerProfile.getChosenClass().equalsIgnoreCase("swordsman") && playerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
-                finalDamage *= .5;
-            }
 
         }
 
@@ -1350,9 +1352,6 @@ public class DamageListener implements Listener {
         if (event.getEntity() instanceof Player victim) {
             UserProfile victimProfile = profileManager.getProfile(victim.getName());
             if (victimProfile==null) return;
-            if (victimProfile.getChosenClass().equalsIgnoreCase("swordsman") && !victimProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
-                finalDamage= finalDamage*.8;
-            }
             if (damagerProfile.getSelectedElement().equalsIgnoreCase("fire")) {finalDamage=finalDamage*1.1;}
             if (damagerProfile.getSelectedElement().equalsIgnoreCase("fire") && victimProfile.getSelectedElement().equalsIgnoreCase("ice")) {
                 finalDamage=finalDamage*1.1;
@@ -1378,18 +1377,18 @@ public class DamageListener implements Listener {
         }
 
         if (event.getCause() == EntityDamageEvent.DamageCause.THORNS && damagerProfile.getChosenClass().equalsIgnoreCase("swordsman") && damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
-            event.setDamage(finalDamage*.3+ event.getDamage());
+            event.setDamage(finalDamage*.3);
             return;
         }
 
 
         float attackCooldown = attacker.getAttackCooldown();
 
-        if (attackCooldown < 0.5f) {
-            finalDamage = 0.1f;
-        } else {
+//        if (attackCooldown < 0.5f) {
+//            finalDamage = 0.1f;
+//        } else {
             finalDamage *= attackCooldown;
-        }
+//        }
 
 
         if (damagerProfile.getAbyssTrait().equalsIgnoreCase("Fortress")) {
@@ -1832,17 +1831,7 @@ public class DamageListener implements Listener {
         if (event.getEntity() instanceof Player player) {
             UserProfile playerProfile = profileManager.getProfile(player.getName());
 
-            playerProfile.setDurability(Math.max(0,playerProfile.getDurability()-1));
-            if (playerProfile.isBossIndicator() && playerProfile.getDurability() <= 0) {
-                player.sendMessage("Durability depleted. You will receive more damage. /sdw to turn off this warning");
-            }
             finalDamage *= playerProfile.getDurability() == 0 ? 2 : 1;
-            if (playerProfile.getChosenClass().equalsIgnoreCase("swordsman") && playerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
-                finalDamage *= .5;
-            }
-            if (playerProfile.getChosenClass().equalsIgnoreCase("swordsman") && !playerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
-                finalDamage= finalDamage*.8;
-            }
         }
 
 
@@ -1946,6 +1935,10 @@ public class DamageListener implements Listener {
             finalDamage*=.8;
         } else if (damagerProfile.getAbyssTrait().equalsIgnoreCase("Frenzy")) {
             finalDamage*=2;
+        }
+        String chosenClass = damagerProfile.getChosenClass();
+        if (chosenClass.equalsIgnoreCase("alchemist") || chosenClass.equalsIgnoreCase("archer")) {
+            finalDamage *= 1 + (damagerProfile.getTempAgi() / 1000.0 * 0.1);
         }
 
         event.setDamage(finalDamage);
@@ -2051,6 +2044,25 @@ public class DamageListener implements Listener {
 
         boolean isCrit = Math.random() < critChance;
 
+// Evasion system (PvP only, and only applies if it's NOT a crit)
+        if (!isCrit && event.getEntity() instanceof Player defender) {
+            UserProfile defenderProfile = profileManager.getProfile(defender.getName());
+            double attackerDex = damagerProfile.getTempDex();
+            double defenderAgi = defenderProfile.getTempAgi();
+
+            double evadeChance = 50.0 + ((defenderAgi - attackerDex) * 0.25);
+            evadeChance = Math.max(5.0, Math.min(evadeChance, 95.0));
+
+            if (Math.random() * 100 < evadeChance) {
+                // Evade successful
+                event.setCancelled(true);
+                spawnFloatingHologram(defender.getLocation(), "Evade", defender.getWorld(), "#ff0004");
+                defender.getWorld().spawnParticle(Particle.SWEEP_ATTACK, defender.getLocation().add(0, 1, 0), 3);
+                defender.getWorld().playSound(defender.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 0.6f, 1.2f);
+                return 0; // damage is negated due to evasion
+            }
+        }
+
         if (isCrit) {
             calculatedDamage *= critDmgMultiplier;
             player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_ATTACK_CRIT, 1.0f, 1.0f);
@@ -2086,14 +2098,7 @@ public class DamageListener implements Listener {
             damagerProfile.setStamina(damagerProfile.getStamina() - 1);
         }
 
-        if (damagerProfile.getDurability() <= 0) {
-            damagerProfile.setDurability(0);
-            if (damagerProfile.isBossIndicator()) {
-                player.sendMessage("Durability depleted. You will take more damage. /sdw to turn off this warning");
-            }
-        } else {
-            damagerProfile.setDurability(damagerProfile.getDurability() - 1);
-        }
+
 
 
 //        String selectedElement = damagerProfile.getSelectedElement(); // Get the selected element (e.g., fire)

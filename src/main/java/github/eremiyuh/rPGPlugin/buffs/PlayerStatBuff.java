@@ -122,6 +122,21 @@ public class PlayerStatBuff {
         return Math.min(baseSpeed + agilityBonus, 1.0);
     }
 
+    private double calculateBonusAttackSpeed(UserProfile profile) {
+        double agility = profile.getTempAgi();
+        return (agility / 1000.0) * 0.10; // +10% per 1000 Agility
+    }
+
+    public void applyAttackSpeedBonus(Player player, UserProfile profile) {
+        AttributeInstance attr = player.getAttribute(Attribute.ATTACK_SPEED);
+        if (attr == null) return;
+
+        double currentSpeed = attr.getDefaultValue(); // Includes base + modifiers
+        double bonusMultiplier = 1.0 + calculateBonusAttackSpeed(profile);
+
+        attr.setBaseValue(currentSpeed * bonusMultiplier);
+    }
+
 
     /**
      * Updates the player's max health and movement speed based on RPG attributes.
@@ -223,16 +238,18 @@ public class PlayerStatBuff {
                     player.setHealth(Math.min(player.getHealth(), newMaxHealth));
                 }
 
-                // Update movement speed
-                double newSpeed = calculateSpeed(profile);
-                player.setWalkSpeed((float) Math.min(newSpeed, 1.0f));
+                applyAttackSpeedBonus(player,profile);
 
-                // Warn if speed is capped
-                if (newSpeed >= 1.0) {
-                    TextComponent speedWarning = Component.text("You have reached max ms from agi. Agi max: 8000")
-                            .color(TextColor.color(255, 0, 0));
-                    player.sendMessage(speedWarning);
-                }
+//                // Update movement speed
+//                double newSpeed = calculateSpeed(profile);
+//                player.setWalkSpeed((float) Math.min(newSpeed, 1.0f));
+//
+//                // Warn if speed is capped
+//                if (newSpeed >= 1.0) {
+//                    TextComponent speedWarning = Component.text("You have reached max ms from agi. Agi max: 8000")
+//                            .color(TextColor.color(255, 0, 0));
+//                    player.sendMessage(speedWarning);
+//                }
             }
 
         } catch (Exception e) {
@@ -246,7 +263,10 @@ public class PlayerStatBuff {
      */
     public void updatePlayerStatsToNormal(Player player) {
         updatePlayerStatsToRPG(player);
-        player.setWalkSpeed(0.2f); // Vanilla walk speed
+//        player.setWalkSpeed(0.2f); // Vanilla walk speed
+        AttributeInstance attr = player.getAttribute(Attribute.ATTACK_SPEED);
+        assert attr != null;
+        attr.setBaseValue(attr.getDefaultValue());
 
         AttributeInstance maxHealthAttr = player.getAttribute(Attribute.MAX_HEALTH);
         assert maxHealthAttr != null;
