@@ -340,8 +340,8 @@ public class DeadMobListener implements Listener {
         }
 
         // Notify player if rewards are reduced
-        if (rewardMultiplier < 1.0) {
-            player.sendMessage(ChatColor.RED + "⚠ Rewards reduced due to level gap.");
+        if (rewardMultiplier < 1.0 && profile.isBossIndicator()) {
+            player.sendMessage(ChatColor.RED + "⚠ Rewards reduced due to level gap. /sdw to turn off this warning");
         }
 
         // --- EXP Reward ---
@@ -435,9 +435,9 @@ public class DeadMobListener implements Listener {
             rewardMultiplier = 1.0; // Full rewards
         }
 
-        if (rewardMultiplier < 1.0) {
-            player.sendMessage(ChatColor.YELLOW + "Drop rewards reduced due to level gap.");
-        }
+//        if (rewardMultiplier < 1.0) {
+//            player.sendMessage(ChatColor.YELLOW + "Drop rewards reduced due to level gap.");
+//        }
 
         boolean receivedDrops = false;
 

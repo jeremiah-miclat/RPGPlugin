@@ -41,6 +41,8 @@ public class MonsterZoneWarningListener implements Listener {
         UserProfile profile = profileManager.getProfile(player.getName());
         if (profile == null) return;
 
+        if (!profile.isBossIndicator()) return;
+
         int playerLevel = profile.getLevel();
 
         // Determine monster level from horizontal coordinates

@@ -321,8 +321,11 @@ public class AreaProtectionListener implements Listener {
         if (event.getItem() == null || (event.getItem().getType() != Material.WARDEN_SPAWN_EGG && event.getItem().getType() != Material.RAVAGER_SPAWN_EGG
                 && event.getItem().getType() != Material.EVOKER_SPAWN_EGG && event.getItem().getType() != Material.WITHER_SPAWN_EGG && event.getItem().getType() != Material.VILLAGER_SPAWN_EGG
         )) return; // Only check for spawn eggs
-        if (!event.getPlayer().getWorld().getName().equals("world_rpg")) {
+        if (!event.getPlayer().isOp() && isInProtectedArea(Objects.requireNonNull(event.getClickedBlock()).getLocation().getBlockX(), event.getClickedBlock().getLocation().getBlockZ())) {
             event.setCancelled(true);
+            return;}
+        if (!event.getPlayer().getWorld().getName().equals("world_rpg")) {
+//            event.setCancelled(true);
             return;
         }
         Player player = event.getPlayer();
