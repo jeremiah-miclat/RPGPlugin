@@ -85,66 +85,60 @@ public class CheckClassCommand implements CommandExecutor, Listener {
     private void openClassInfoGUI(Player player, UserProfile profile) {
         Inventory gui = Bukkit.createInventory(null, 27, "Your Class Info");
 
-        // Create player's head item to represent their class
+        // Player head (center top)
         ItemStack playerHead = createPlayerHead(player, profile);
         gui.setItem(4, playerHead);
 
-        // Create a single currency icon to show all player's currencies
+        // === CURRENCY ICON ===
         ItemStack currencyIcon = new ItemStack(Material.DIAMOND);
         ItemMeta currencyMeta = currencyIcon.getItemMeta();
 
         if (currencyMeta != null) {
             currencyMeta.setDisplayName("§eCurrencies");
 
-            // Set lore to show each currency balance with color coding
             List<String> currencyLore = new ArrayList<>();
-            currencyLore.add("§bDiamonds: §7" + (int) profile.getCurrency("diamond"));
-            currencyLore.add("§aEmeralds: §7" + (int) profile.getCurrency("emerald"));
-            currencyLore.add("§fIron: §7" + (int) profile.getCurrency("iron"));
-            currencyLore.add("§cCopper: §7" + (int) profile.getCurrency("copper"));
-            currencyLore.add("§9Lapis: §7" + (int) profile.getCurrency("lapis"));
-            currencyLore.add("§6Gold: §7" + (int) profile.getCurrency("gold"));
-            currencyLore.add("§dNetherite: §7" +  (int)profile.getCurrency("netherite"));
+            currencyLore.add("§bDiamonds: §7" + formatNumber(profile.getCurrency("diamond")));
+            currencyLore.add("§aEmeralds: §7" + formatNumber(profile.getCurrency("emerald")));
+            currencyLore.add("§fIron: §7" + formatNumber(profile.getCurrency("iron")));
+            currencyLore.add("§cCopper: §7" + formatNumber(profile.getCurrency("copper")));
+            currencyLore.add("§9Lapis: §7" + formatNumber(profile.getCurrency("lapis")));
+            currencyLore.add("§6Gold: §7" + formatNumber(profile.getCurrency("gold")));
+            currencyLore.add("§dNetherite: §7" + formatNumber(profile.getCurrency("netherite")));
 
             currencyMeta.setLore(currencyLore);
-
             currencyIcon.setItemMeta(currencyMeta);
         }
 
-        // Place the single currency item in the GUI
         gui.setItem(6, currencyIcon);
 
-        // Add attribute point items to the GUI
-        createAttributePointItems(gui, player, profile);
-
-        // Create a single combat icon to show all player's currencies
+        // === COMBAT / STATUS ICON ===
         ItemStack combatIcon = new ItemStack(Material.BOOK);
         ItemMeta combatMeta = combatIcon.getItemMeta();
 
         if (combatMeta != null) {
-            combatMeta.setDisplayName("§eSTATUS: ");
+            combatMeta.setDisplayName("§eSTATUS:");
 
-            // Set lore to show each currency balance with color coding
             List<String> combatLore = new ArrayList<>();
-            combatLore.add("§eStamina: §7" + profile.getStamina());
-            combatLore.add("§eDurability: §7" + profile.getDurability());
-            combatLore.add("§eEnder Pearls: §7" + profile.getEnderPearl());
-            combatLore.add("§eAbyss Points: " + (int) (profile.getAbysspoints()));
-            combatLore.add("§ePotion: §7" + profile.getPotion());
-            combatLore.add("§eActivity Points: §7" + (int) profile.getCurrency("activitypoints"));
-
-
+            combatLore.add("§eStamina: §7" + formatNumber(profile.getStamina()));
+            combatLore.add("§eDurability: §7" + formatNumber(profile.getDurability()));
+            combatLore.add("§eEnder Pearls: §7" + formatNumber(profile.getEnderPearl()));
+            combatLore.add("§eAbyss Points: §7" + formatNumber(profile.getAbysspoints()));
+            combatLore.add("§ePotion: §7" + formatNumber(profile.getPotion()));
+            combatLore.add("§eActivity Points: §7" + formatNumber(profile.getCurrency("activitypoints")));
 
             combatMeta.setLore(combatLore);
-
             combatIcon.setItemMeta(combatMeta);
         }
 
         gui.setItem(2, combatIcon);
 
-        // Open the GUI for the player
+        // Attribute points (handled by external method)
+        createAttributePointItems(gui, player, profile);
+
+        // Show the GUI
         player.openInventory(gui);
     }
+
 
     private void openOthersInfoGUI(Player player, UserProfile profile, Player viewedPlayer) {
         Inventory gui = Bukkit.createInventory(null, 27, "Player Class Info");
@@ -153,67 +147,89 @@ public class CheckClassCommand implements CommandExecutor, Listener {
         ItemStack playerHead = createPlayerHead(viewedPlayer, profile);
         gui.setItem(4, playerHead);
 
-        // Create a single currency icon to show all player's currencies
+        // === CURRENCY ICON ===
         ItemStack currencyIcon = new ItemStack(Material.DIAMOND);
         ItemMeta currencyMeta = currencyIcon.getItemMeta();
 
         if (currencyMeta != null) {
             currencyMeta.setDisplayName("§eCurrencies");
 
-            // Set lore to show each currency balance with color coding
             List<String> currencyLore = new ArrayList<>();
-            currencyLore.add("§bDiamonds: §7" + (int) profile.getCurrency("diamond"));
-            currencyLore.add("§aEmeralds: §7" + (int) profile.getCurrency("emerald"));
-            currencyLore.add("§fIron: §7" + (int) profile.getCurrency("iron"));
-            currencyLore.add("§cCopper: §7" + (int) profile.getCurrency("copper"));
-            currencyLore.add("§9Lapis: §7" + (int) profile.getCurrency("lapis"));
-            currencyLore.add("§6Gold: §7" + (int) profile.getCurrency("gold"));
-            currencyLore.add("§dNetherite: §7" +  (int)profile.getCurrency("netherite"));
+            currencyLore.add("§bDiamonds: §7" + formatNumber(profile.getCurrency("diamond")));
+            currencyLore.add("§aEmeralds: §7" + formatNumber(profile.getCurrency("emerald")));
+            currencyLore.add("§fIron: §7" + formatNumber(profile.getCurrency("iron")));
+            currencyLore.add("§cCopper: §7" + formatNumber(profile.getCurrency("copper")));
+            currencyLore.add("§9Lapis: §7" + formatNumber(profile.getCurrency("lapis")));
+            currencyLore.add("§6Gold: §7" + formatNumber(profile.getCurrency("gold")));
+            currencyLore.add("§dNetherite: §7" + formatNumber(profile.getCurrency("netherite")));
 
             currencyMeta.setLore(currencyLore);
-
             currencyIcon.setItemMeta(currencyMeta);
         }
 
-        // Place the single currency item in the GUI
         gui.setItem(6, currencyIcon);
 
-        // Add attribute point items to the GUI
-//        createAttributePointItems(gui, player, profile);
-
-        // Create a single combat icon to show all player's currencies
+        // === COMBAT/STATUS ICON ===
         ItemStack combatIcon = new ItemStack(Material.BOOK);
         ItemMeta combatMeta = combatIcon.getItemMeta();
 
         if (combatMeta != null) {
-            combatMeta.setDisplayName("§eSTATUS: ");
+            combatMeta.setDisplayName("§eSTATUS:");
 
-            // Set lore to show each currency balance with color coding
             List<String> combatLore = new ArrayList<>();
-            combatLore.add("§eStamina: §7" + profile.getStamina());
-            combatLore.add("§eDurability: §7" + profile.getDurability());
-            combatLore.add("§eEnder Pearl: §7" + profile.getEnderPearl());
-            combatLore.add("§eAbyss Point: " + (int) (profile.getAbysspoints()));
-            combatLore.add("§ePotion: §7" + profile.getPotion());
-            combatLore.add("§eActivity Points: §7" + (int) profile.getCurrency("activitypoints"));
-            combatLore.add("§eClaimPoints: " + profile.getClaimPoints());
+            combatLore.add("§eStamina: §7" + formatNumber(profile.getStamina()));
+            combatLore.add("§eDurability: §7" + formatNumber(profile.getDurability()));
+            combatLore.add("§eEnder Pearl: §7" + formatNumber(profile.getEnderPearl()));
+            combatLore.add("§eAbyss Point: §7" + formatNumber(profile.getAbysspoints()));
+            combatLore.add("§ePotion: §7" + formatNumber(profile.getPotion()));
+            combatLore.add("§eActivity Points: §7" + formatNumber(profile.getCurrency("activitypoints")));
+            combatLore.add("§eClaimPoints: §7" + formatNumber(profile.getClaimPoints()));
+
             if (!profile.getTeam().equalsIgnoreCase("none") && !profile.getTeam().equalsIgnoreCase(profile.getPlayerName())) {
                 UserProfile teamOwnerProfile = profileManager.getProfile(profile.getTeam());
                 combatLore.add("§eTeamMates: " + teamOwnerProfile.getTeamMembers());
-            } else{
+            } else {
                 combatLore.add("§eTeamMates: " + profile.getTeamMembers());
             }
 
             combatMeta.setLore(combatLore);
-
             combatIcon.setItemMeta(combatMeta);
         }
 
         gui.setItem(2, combatIcon);
 
-        // Open the GUI for the player
+        // Open the GUI
         player.openInventory(gui);
     }
+
+    private String formatNumber(double number) {
+        String suffix;
+        double value;
+
+        if (number >= 1_000_000_000_000.0) {
+            value = number / 1_000_000_000_000.0;
+            suffix = "T";
+        } else if (number >= 1_000_000_000.0) {
+            value = number / 1_000_000_000.0;
+            suffix = "B";
+        } else if (number >= 1_000_000.0) {
+            value = number / 1_000_000.0;
+            suffix = "M";
+        } else {
+            // No formatting needed under 1000
+            return (number == Math.floor(number)) ? String.format("%.0f", number) : String.format("%.2f", number);
+        }
+
+        // Remove trailing .00 if it's a whole number
+        if (value == Math.floor(value)) {
+            return String.format("%.0f%s", value, suffix);
+        } else {
+            return String.format("%.2f%s", value, suffix);
+        }
+    }
+
+
+
 
 
     private ItemStack createPlayerHead(Player player, UserProfile profile) {
@@ -252,10 +268,13 @@ public class CheckClassCommand implements CommandExecutor, Listener {
         lore.add("§7HP%: " + profile.getHpMultiplier());
         lore.add("§7StatDmg%: " + profile.getStatDmgMultiplier());
         DecimalFormat df = new DecimalFormat("#.##");
-
+        lore.add("§7Melee Dmg from stats: " + (int)profile.getMeleeDmg() );
+        lore.add("§7Longrange Dmg from stats: " + (int) profile.getLongDmg() );
+        lore.add("§7Splashpotion Dmg from stats: " + (int) profile.getSplashDmg());
         lore.add("§7Crit%: " + df.format(profile.getCrit() * 100) + "%");
         lore.add("§7CritDmg%: " + df.format(profile.getCritDmg() * 100) + "%");
         lore.add("§7Lifesteal%: " + df.format(profile.getLs() * 100) + "%");
+        lore.add("§7Evasion%(Same level mob): " + df.format(profile.getTempAgi()/profile.getLevel()) + "%");
 
         // Add remaining points, total allocated points for chosen class, and overall allocated points
         lore.add("§eRemaining Points: " + profile.getCurrentAttributePoints());

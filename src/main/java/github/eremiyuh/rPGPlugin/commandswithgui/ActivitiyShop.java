@@ -104,7 +104,15 @@ public class ActivitiyShop implements CommandExecutor, Listener {
         }
         activityPointStore.setItem(4, piglinEgg);
 
-
+        ItemStack rabbitEgg = new ItemStack(Material.RABBIT_SPAWN_EGG);
+        ItemMeta rabbitEggMeta = rabbitEgg.getItemMeta();
+        if (rabbitEggMeta != null) {
+            List<Component> lore = new ArrayList<>();
+            lore.add(Component.text("Cost: 10,000 Active Points").color(TextColor.color(255, 215, 0)));
+            rabbitEggMeta.lore(lore);
+            rabbitEgg.setItemMeta(rabbitEggMeta);
+        }
+        activityPointStore.setItem(5, rabbitEgg);
 
 
         // Create the activity point item
@@ -173,7 +181,20 @@ public class ActivitiyShop implements CommandExecutor, Listener {
                 } else {
                     player.sendMessage(Component.text("You do not have enough Points!").color(TextColor.color(255, 0, 0)));
                 }
-            } else if (event.getSlot() == 8 && event.getCurrentItem() != null && event.getCurrentItem().getType() == Material.WOODEN_PICKAXE) {
+
+            }
+
+            else if (event.getSlot() == 5 && event.getCurrentItem() != null && event.getCurrentItem().getType() == Material.RABBIT_SPAWN_EGG) {
+                if (userProfile.getActivitypoints() >= 10000) {
+                    userProfile.setCurrency("activitypoints", userProfile.getActivitypoints() - 10000);
+                    dropOrNotify(player, new ItemStack(Material.RABBIT_SPAWN_EGG), "Successfully purchased.");
+                } else {
+                    player.sendMessage(Component.text("You do not have enough Points!").color(TextColor.color(255, 0, 0)));
+                }
+            }
+
+
+            else if (event.getSlot() == 8 && event.getCurrentItem() != null && event.getCurrentItem().getType() == Material.WOODEN_PICKAXE) {
                 if (userProfile.getDiamond() >= 1) {
                     userProfile.setCurrency("diamond", userProfile.getDiamond() - 1);
                     userProfile.setCurrency("activitypoints", userProfile.getActivitypoints() + 1000);

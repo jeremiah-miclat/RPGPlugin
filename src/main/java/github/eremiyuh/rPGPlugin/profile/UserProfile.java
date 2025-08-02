@@ -115,6 +115,10 @@ public class UserProfile {
     // abyss traits
     private String abyssTrait = "none";
 
+    private double meleeDmg = 0;
+    private double longDmg = 0;
+    private double splashDmg = 0;
+
     //constructor
     public UserProfile(String playerName) {
         this.crit = 0;
@@ -705,6 +709,30 @@ public class UserProfile {
 
     public void setAbyssTrait(String abyssTrait) {
         this.abyssTrait = abyssTrait;
+    }
+
+    public double getMeleeDmg() {
+        return meleeDmg;
+    }
+
+    public void setMeleeDmg(double meleeDmg) {
+        this.meleeDmg = meleeDmg;
+    }
+
+    public double getLongDmg() {
+        return longDmg;
+    }
+
+    public void setLongDmg(double longDmg) {
+        this.longDmg = longDmg;
+    }
+
+    public double getSplashDmg() {
+        return splashDmg;
+    }
+
+    public void setSplashDmg(double splashDmg) {
+        this.splashDmg = splashDmg;
     }
 
     // Inner class to hold class-specific attributes

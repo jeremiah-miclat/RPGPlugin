@@ -124,7 +124,7 @@ public class PlayerStatBuff {
 
     private double calculateBonusAttackSpeed(UserProfile profile) {
         double agility = profile.getTempAgi();
-        return (agility / 1000.0) * 0.10; // +10% per 1000 Agility
+        return (agility / 500) * 0.10; // +10% per 500 Agility
     }
 
     public void applyAttackSpeedBonus(Player player, UserProfile profile) {
@@ -152,6 +152,7 @@ public class PlayerStatBuff {
 
             double classStr = 0, classDex = 0, classInt = 0, classLuk = 0, classVit = 0, classAgi = 0;
             String chosenClass = profile.getChosenClass().toLowerCase();
+            String selectedSkill = profile.getSelectedSkill();
             String chosenTrait = profile.getAbyssTrait();
             switch (chosenClass) {
                 case "archer" -> {
@@ -225,6 +226,52 @@ public class PlayerStatBuff {
             profile.setCrit(critChance(chosenClass,luk,dex, profile.getSelectedSkill(),chosenTrait));
             profile.setCritDmg(getCritMultiplier(chosenClass,luk,dex, profile.getSelectedSkill(),chosenTrait));
 
+            double meleeDmg = 0;
+            double longDmg=0;
+            double splashDmg= (double) intel /100*30;
+
+            if (isHoldingValidMeleeWeapon(player)) {
+                meleeDmg+=((double) str /100)*4;
+                if (selectedSkill.contains("1") && chosenClass.contains("sword")) {
+                    meleeDmg+=((double) intel /100)*8;
+                }
+                meleeDmg*=dmgMultiplierFromCE(profile);
+                meleeDmg*=dmgMultiplierFromEnchant(player);
+            }
+
+            if (isHoldingValidRangedWeapon(player)) {
+                longDmg+=((double) dex /100)*4;
+                if (chosenClass.contains("archer")) {
+                    if(selectedSkill.contains("1")) longDmg+=((double) intel /100)*8;
+                    else if (selectedSkill.contains("2")) longDmg+=((double) intel /100)*6;
+                }
+                longDmg*=dmgMultiplierFromCE(profile);
+                longDmg*=dmgMultiplierFromEnchant(player);
+                longDmg*=dmgMultiplierFromAgi(profile);
+            }
+
+            if (chosenClass.contains("alche")) {
+                splashDmg*=dmgMultiplierFromCE(profile);
+                splashDmg*=dmgMultiplierFromEnchant(player);
+                splashDmg*=dmgMultiplierFromAgi(profile);
+                if (selectedSkill.contains("1")) splashDmg*=1.2;
+            }
+
+            if (profile.getAbyssTrait().equalsIgnoreCase("Fortress")) {
+                meleeDmg *=.8;
+                longDmg*=.8;
+                splashDmg*=.8;
+            } else if (profile.getAbyssTrait().equalsIgnoreCase("Frenzy")) {
+                meleeDmg *=2;
+                longDmg*=2;
+                splashDmg*=2;
+            }
+
+            profile.setMeleeDmg(meleeDmg);
+            profile.setLongDmg(longDmg);
+            profile.setSplashDmg(splashDmg);
+
+
             if (player.getWorld().getName().contains("_rpg")) {
                 // Update player health
                 AttributeInstance maxHealthAttr = player.getAttribute(Attribute.MAX_HEALTH);
@@ -240,16 +287,6 @@ public class PlayerStatBuff {
 
                 applyAttackSpeedBonus(player,profile);
 
-//                // Update movement speed
-//                double newSpeed = calculateSpeed(profile);
-//                player.setWalkSpeed((float) Math.min(newSpeed, 1.0f));
-//
-//                // Warn if speed is capped
-//                if (newSpeed >= 1.0) {
-//                    TextComponent speedWarning = Component.text("You have reached max ms from agi. Agi max: 8000")
-//                            .color(TextColor.color(255, 0, 0));
-//                    player.sendMessage(speedWarning);
-//                }
             }
 
         } catch (Exception e) {
@@ -374,6 +411,36 @@ public class PlayerStatBuff {
             multiplier += dex * 0.00005;
         }
         if (chosenTrait.equalsIgnoreCase("Gamble")) multiplier+=0.25;
+        return multiplier;
+    }
+
+    public double dmgMultiplierFromEnchant(Player player) {
+        double multiplier = 1;
+
+        ItemStack weapon = player.getEquipment().getItemInMainHand();
+
+        int sharplevel = weapon.getEnchantmentLevel(Enchantment.SHARPNESS);
+        int powerlevel  = weapon.getEnchantmentLevel(Enchantment.POWER);
+        multiplier += Math.max(sharplevel*.1,powerlevel*.1);
+
+        return multiplier;
+    }
+
+    public double dmgMultiplierFromCE(UserProfile profile) {
+        double multiplier = 1;
+
+        double statDmg = profile.getStatDmgMultiplier();
+        multiplier+=statDmg*.01;
+
+        return multiplier;
+    }
+
+    public double dmgMultiplierFromAgi(UserProfile profile) {
+        double multiplier = 1;
+
+        double agi = profile.getTempAgi();
+        multiplier+=agi/ 500.0 * 0.1;
+
         return multiplier;
     }
 

@@ -49,6 +49,7 @@ public class DamageListener implements Listener {
     private final RPGPlugin plugin;
     private final Map<UUID, BukkitTask> downedPlayers = new HashMap<>();
     private final RavagerSkillManager manager;
+    private final Map<UUID, Long> lastDamageTime = new HashMap<>();
 
     private final int x1 = -150, z1 = 150;
     private final int x2 = 90, z2 = -110;
@@ -434,19 +435,7 @@ public class DamageListener implements Listener {
                 if (projectile instanceof Arrow && shooter instanceof Player attacker) {
                     Location loc2 = attacker.getLocation();
 
-                    // Check if the world name contains "Labyrinth" and coordinates match
-//                    if (loc2.getWorld().getName().contains("labyrinth")) {
-//                        int x = loc2.getBlockX();
-//                        int z = loc2.getBlockZ();
-//
-//
-//                        // Check if the coordinates are within the specified range
-//                        if (x >= -23 && x <= -17 && z >= -38 && z <= -34) {
-//                            // Cancel the damage
-//                            event.setCancelled(true);
-//                            return;
-//                        }
-//                    }
+
 
                     if (damaged instanceof Player damagedPlayer) {
 
@@ -525,7 +514,7 @@ public class DamageListener implements Listener {
                     }
                     if (attackerProfile != null) {
                       try {
-                          handleLongRangeDamage(attacker,victim,event,damagerLocation,damagedLocation,attackerProfile);
+                          handleLongRangeDamage(attacker,victim,event,damagerLocation,damagedLocation,attackerProfile,attackerProfile.getLongDmg());
                           if ((event.getEntity() instanceof Ravager ravager)) {
 
                               if (manager.isReflecting(ravager.getUniqueId())) {
@@ -539,16 +528,7 @@ public class DamageListener implements Listener {
                               }
 
                           }
-//                          if ((damaged instanceof Warden || damaged instanceof Evoker || damaged instanceof Ravager ) && Math.random() < 0.05) {
-//                              Location aloc = attacker.getLocation().clone();
-//                              ((Monster) damaged).attack(attacker);
-//                              Vector knockbackDirection = attacker.getLocation().toVector().subtract(damaged.getLocation().toVector()).normalize();
-//                              knockbackDirection.multiply(1.5);
-//                              knockbackDirection.setY(0.5);
-//                              attacker.setVelocity(knockbackDirection);
-//                              damaged.teleport(aloc.add(0, 0, 0));
-//
-//                          }
+
 
                       } catch (Exception e) {
                           throw new RuntimeException(e);
@@ -556,149 +536,13 @@ public class DamageListener implements Listener {
                     }
                 }
 
-                if (projectile.getType() == EntityType.FIREWORK_ROCKET) {
-                    Firework firework = (Firework) event.getDamager();
-                    Entity fireworkShooter = (Entity) firework.getShooter();
-                    if (!(fireworkShooter instanceof Player attacker)) return;
-                    Location loc2 = attacker.getLocation();
-
-                    // Check if the world name contains "Labyrinth" and coordinates match
-                    if (loc2.getWorld().getName().contains("labyrinth")) {
-                        int x = loc2.getBlockX();
-                        int z = loc2.getBlockZ();
 
 
-                        // Check if the coordinates are within the specified range
-                        if (x >= -23 && x <= -17 && z >= -38 && z <= -34) {
-                            // Cancel the damage
-                            event.setCancelled(true);
-                            return;
-                        }
-                    }
-
-                    if (damaged instanceof Player damagedPlayer) {
-
-                        UserProfile attackerProfile = profileManager.getProfile(attacker.getName());
-                        UserProfile damagedProfile = profileManager.getProfile(damagedPlayer.getName());
-
-                        if (damagedPlayer.getName().equalsIgnoreCase(attackerProfile.getPlayerName())) {
-                            event.setCancelled(true);
-                            return;
-                        }
-
-                        if (attackerProfile == null || damagedProfile == null) {
-                            attacker.sendMessage("Your profile or target's profile can not be found. contact developer to fix files");
-                            damaged.sendMessage("Your profile or dude's profile can not be found. contact developer to fix files");
-                            event.setCancelled(true);
-                            return;
-                        }
-
-
-                        int attackerLevel = attackerProfile.getLevel();
-                        int damagedLevel = damagedProfile.getLevel();
-
-
-                        // Check if the difference between the total points is greater than 10
-                        if (Math.abs(attackerLevel - damagedLevel) > 10) {
-                            event.setCancelled(true);
-                            return;
-                        }
-
-//                        assert attackerProfile != null;
-//                        if (!attackerProfile.isPvpEnabled()) {
-//                            event.setCancelled(true);
-//                            return;
-//                        }
-//
-//                        assert damagedProfile != null;
-//                        if (!damagedProfile.isPvpEnabled()) {
-//                            event.setCancelled(true);
-//                            return;
-//                        }
-
-                        if (!Objects.equals(damagedProfile.getTeam(), "none") && Objects.equals(damagedProfile.getTeam(), attackerProfile.getTeam())) {
-                            event.setCancelled(true);
-                            return;
-                        }
-
-
-
-                    }
-
-
-
-
-                    UserProfile attackerProfile = profileManager.getProfile(attacker.getName());
-
-
-
-                    if (victim instanceof Monster && !(victim.hasMetadata("attackerList"))) {
-
-                        List<String> attackerList = new ArrayList<>();
-                        victim.setMetadata("attackerList", new FixedMetadataValue(plugin, attackerList));
-
-                    }
-
-                    if (victim.hasMetadata("attackerList")) {
-                        List<String> attackerList = (List<String>) victim.getMetadata("attackerList").get(0).value();
-
-                        String attackerName = attacker.getName();
-                        assert attackerList != null;
-                        if (!attackerList.contains(attackerName)) {
-                            attackerList.add(attackerName);
-                            victim.setMetadata("attackerList", new FixedMetadataValue(plugin, attackerList)); // Update metadata
-                        }
-                    }
-                    if (attackerProfile != null) {
-                        try {
-                            handleLongRangeDamage(attacker,victim,event,damagerLocation,damagedLocation,attackerProfile);
-
-                            if ((event.getEntity() instanceof Ravager ravager)) {
-
-                                if (manager.isReflecting(ravager.getUniqueId())) {
-                                    Vector knockbackDirection = attacker.getLocation().toVector().subtract(damaged.getLocation().toVector()).normalize();
-                                    knockbackDirection.multiply(1.5);
-                                    knockbackDirection.setY(0.5);
-                                    attacker.setVelocity(knockbackDirection);
-                                    attacker.damage(event.getDamage());
-                                    attacker.sendMessage("§cYou were struck by " + ravager.getName() + "'s retaliation!");
-                                    event.setDamage(0);
-                                }
-
-                            }
-//                            if ((damaged instanceof Warden || damaged instanceof Evoker || damaged instanceof Ravager) && Math.random() < 0.05) {
-//                                Location aloc = attacker.getLocation().clone();
-//                                ((Monster) damaged).attack(attacker);
-//                                Vector knockbackDirection = attacker.getLocation().toVector().subtract(damaged.getLocation().toVector()).normalize();
-//                                knockbackDirection.multiply(1.5);
-//                                knockbackDirection.setY(0.5);
-//                                attacker.setVelocity(knockbackDirection);
-//                                damaged.teleport(aloc.add(0, 0, 0));
-//
-//                            }
-                        } catch (Exception e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-                }
 
                 if (projectile instanceof ThrownPotion && projectile.getShooter() instanceof Player attacker ) {
 
-                    Location loc2 = attacker.getLocation();
-
-                    // Check if the world name contains "Labyrinth" and coordinates match
-                    if (loc2.getWorld().getName().contains("labyrinth")) {
-                        int x = loc2.getBlockX();
-                        int z = loc2.getBlockZ();
 
 
-                        // Check if the coordinates are within the specified range
-                        if (x >= -23 && x <= -17 && z >= -38 && z <= -34) {
-                            // Cancel the damage
-                            event.setCancelled(true);
-                            return;
-                        }
-                    }
 
                     if (damaged instanceof Player damagedPlayer) {
 
@@ -762,7 +606,7 @@ public class DamageListener implements Listener {
                     }
                     if (attackerProfile != null) {
                         if (attackerProfile.getChosenClass().equalsIgnoreCase("alchemist") && attacker.getName().equals(victim.getName())) {event.setCancelled(true); return;}
-                        handleLongRangeDamage(attacker,victim,event,damagerLocation,damagedLocation,attackerProfile);
+                        handleLongRangeDamage(attacker,victim,event,damagerLocation,damagedLocation,attackerProfile, attackerProfile.getSplashDmg());
 
                         if ((event.getEntity() instanceof Ravager ravager)) {
 
@@ -827,33 +671,6 @@ public class DamageListener implements Listener {
                         UserProfile playerProfile = profileManager.getProfile(player.getName());
 
 
-                        if (damager instanceof Spider) {
-                            // 10% chance to apply Nausea
-                            if (new Random().nextInt(100) < 10) {
-                                player.addPotionEffect(new PotionEffect(PotionEffectType.NAUSEA, 200, 2)); // 3s
-                            }
-
-                        }
-
-                        if (mob instanceof Blaze) {
-                            LivingEntity target = (LivingEntity) damaged;
-                            if (player.hasPotionEffect(PotionEffectType.FIRE_RESISTANCE)) {
-
-                                player.removePotionEffect(PotionEffectType.FIRE_RESISTANCE);
-
-                                if (player instanceof Player)
-                                    player.sendMessage("Your fire resistance effect has been removed by Blaze.");
-                            }
-                        }
-
-                        if (mob instanceof Zombie) {
-                            Player target = (Player) damaged;
-                            if (new Random().nextInt(100) < 10) {
-
-                                player.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 200, 2));
-
-                            }
-                        }
 
 
                         mobDamage *= playerProfile.getDurability() == 0 ? 2 : 1;
@@ -893,16 +710,7 @@ public class DamageListener implements Listener {
 //                            mobDamage = .5;
 //                        }
 
-                        if (mob instanceof Vindicator) {
-                            mobDamage = 1;
-                            if (new Random().nextInt(100) < 5){
-                                playerProfile.setDurability(Math.max(0,playerProfile.getDurability()-1000));
-                                String displayName = mob.getCustomName() != null ? mob.getCustomName() : ChatColor.GRAY + "Vindicator";
-                                player.sendMessage(displayName + ChatColor.RED + ": " + getVindicatorRandomInsult());
-                                player.sendMessage(ChatColor.RED + "Vindicator reduced your durability by 1000");
-                            }
 
-                        }
 
                         event.setDamage(mobDamage);
 
@@ -934,22 +742,7 @@ public class DamageListener implements Listener {
                             player.getWorld().spawnEntity(spawnLoc, EntityType.WITHER_SKELETON);
                         }
 
-                        if (mob instanceof Skeleton && new Random().nextInt(100) < 10) {
-                            Skeleton skeleton = (Skeleton) mob;
 
-                            // Get the direction the skeleton is facing
-                            Vector knockbackDirection = skeleton.getLocation().getDirection().normalize().multiply(3.5); // Horizontal speed
-                            knockbackDirection.setY(0.5); // Optional upward force
-
-                            // Apply velocity to knock the player away in the direction the skeleton is facing
-                            player.setVelocity(knockbackDirection);
-
-                            // Get custom name with formatting
-                            String displayName = skeleton.getCustomName() != null ? skeleton.getCustomName() : ChatColor.GRAY + "Skeleton";
-
-                            // Send a random insult
-                            player.sendMessage(displayName + ChatColor.RED + ": " + getSkeletonRandomInsult());
-                        }
 
 
                         UserProfile playerProfile = profileManager.getProfile(player.getName());
@@ -1040,6 +833,7 @@ public class DamageListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onFatalDamage(EntityDamageEvent event) {
+
         // ✅ Exit early if event already cancelled by other plugin or mechanics
         if (event.isCancelled()) return;
 
@@ -1080,6 +874,22 @@ public class DamageListener implements Listener {
 
     @EventHandler (priority = EventPriority.HIGH)
     public void onEntityTakeDamage(EntityDamageEvent event) {
+        if (event.getEntity() instanceof Player player && !player.getWorld().getName().contains("_rpg")) {
+            long now = System.currentTimeMillis();
+            UUID uuid = player.getUniqueId();
+
+            // If last damage was less than 1 second ago, cancel this damage
+            if (lastDamageTime.containsKey(uuid)) {
+                long lastTime = lastDamageTime.get(uuid);
+                if (now - lastTime < 1000) { // 1000 ms = 1 second
+                    event.setCancelled(true);
+                    return;
+                }
+            }
+
+            lastDamageTime.put(uuid, now);
+        }
+
         if (!Objects.requireNonNull(event.getEntity().getLocation().getWorld()).getName().equals("world_rpg") && !Objects.requireNonNull(event.getEntity().getLocation().getWorld()).getName().contains("world_labyrinth")) {
             return;
         }
@@ -1121,29 +931,15 @@ public class DamageListener implements Listener {
             return;
         }
 
-//        if (event.getCause() == EntityDamageEvent.DamageCause.LAVA && !(event.getEntity() instanceof Player)) {
-//            event.setCancelled(true);
-//            return;
-//        }
-
 
         double damage = event.getDamage();
-        // Create floating text using an ArmorStand
-        if (!event.isCancelled()) {
-            Entity entity = event.getEntity();
-            Location loc = entity.getLocation();
-            World world = entity.getWorld();
-            String color = (entity instanceof Player) ? "#ff0004" : "#AA00FF";
 
-            spawnFloatingHologram(loc, (Math.max((int) event.getFinalDamage(),1)) + "", world, color);
-        }
-        // Update the health indicator
 
 
 
 
         resetHealthIndicator((LivingEntity) event.getEntity(), damage);
-        if (event.getDamageSource().getCausingEntity() instanceof Player damager) {
+        if (event.getDamageSource().getCausingEntity() instanceof Player damager && !event.isCancelled()) {
             UserProfile damagerProfile = profileManager.getProfile(damager.getName());
             double finalDamage = event.getFinalDamage();
             try {
@@ -1189,7 +985,7 @@ public class DamageListener implements Listener {
             }
 
         }
-        if (event.getEntity() instanceof Player player && event.getDamageSource().getCausingEntity() instanceof LivingEntity entity) {
+        if (event.getEntity() instanceof Player player && event.getDamageSource().getCausingEntity() instanceof Monster monster) {
             UserProfile playerProfile = profileManager.getProfile(player.getName());
             playerProfile.setDurability(Math.max(0,playerProfile.getDurability()-1));
             if (playerProfile.isBossIndicator() && playerProfile.getDurability() <= 0) {
@@ -1198,21 +994,22 @@ public class DamageListener implements Listener {
             double agility = playerProfile.getTempAgi();
             int lvl = 1; // Default to level 1
 
-            // Determine attacking entity's level
-            if (entity instanceof Monster monster) {
-                // Monster level based on highest absolute coordinate / 100
-                Location loc = monster.getLocation();
-                double maxCoord = Math.max(Math.max(Math.abs(loc.getX()), Math.abs(loc.getY())), Math.abs(loc.getZ()));
-                lvl = Math.max((int) (maxCoord / 100), 1);
+            String name = monster.getName(); // Or monster.getCustomName() if set that way
+            java.util.regex.Matcher matcher = java.util.regex.Pattern.compile("Lvl\\s*(\\d+)").matcher(name);
+            if (matcher.find()) {
+                lvl = Integer.parseInt(matcher.group(1));
+            } else {
+                lvl = 1; // fallback if no level is found in name
             }
+
 
             double evadeChance;
             double agiPerLevel = agility / lvl;
 
-            if (agiPerLevel < 50.0) {
-                evadeChance = (agiPerLevel / 50.0) * 80.0;
-            } else if (agiPerLevel < 100.0) {
-                double bonus = ((agiPerLevel - 50.0) / 50.0) * 20.0; // 20% from 50 to 100
+            if (agiPerLevel < 25.0) {
+                evadeChance = (agiPerLevel / 25.0) * 80.0;
+            } else if (agiPerLevel < 50.0) {
+                double bonus = ((agiPerLevel - 25.0) / 25.0) * 20.0; // 20% from 25 to 50
                 evadeChance = 80.0 + bonus;
             } else {
                 evadeChance = 100.0;
@@ -1228,24 +1025,96 @@ public class DamageListener implements Listener {
                 return;
             }
 
+            if (monster instanceof Spider) {
+                // 10% chance to apply Nausea
+                if (new Random().nextInt(100) < 10) {
+                    player.addPotionEffect(new PotionEffect(PotionEffectType.NAUSEA, 200, 2)); // 3s
+                }
+
+            }
+
+            if (monster instanceof Blaze) {
+                if (player.hasPotionEffect(PotionEffectType.FIRE_RESISTANCE)) {
+
+                    player.removePotionEffect(PotionEffectType.FIRE_RESISTANCE);
+                    player.sendMessage("Your fire resistance effect has been removed by Blaze.");
+                }
+            }
+
+            if (monster instanceof Zombie) {
+                if (new Random().nextInt(100) < 10) {
+
+                    player.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 200, 2));
+
+                }
+            }
+
+            if (monster instanceof Skeleton && new Random().nextInt(100) < 10) {
+                Skeleton skeleton = (Skeleton) monster;
+
+                // Get the direction the skeleton is facing
+                Vector knockbackDirection = skeleton.getLocation().getDirection().normalize().multiply(3.5); // Horizontal speed
+                knockbackDirection.setY(0.5); // Optional upward force
+
+                // Apply velocity to knock the player away in the direction the skeleton is facing
+                player.setVelocity(knockbackDirection);
+
+                // Get custom name with formatting
+                String displayName = skeleton.getCustomName() != null ? skeleton.getCustomName() : ChatColor.GRAY + "Skeleton";
+
+                // Send a random insult
+                player.sendMessage(displayName + ChatColor.RED + ": " + getSkeletonRandomInsult());
+            }
+
+            if (monster instanceof Vindicator) {
+                if (new Random().nextInt(100) < 5){
+                    playerProfile.setDurability(Math.max(0,playerProfile.getDurability()-1000));
+                    String displayName = monster.getCustomName() != null ? monster.getCustomName() : ChatColor.GRAY + "Vindicator";
+                    player.sendMessage(displayName + ChatColor.RED + ": " + getVindicatorRandomInsult());
+                    player.sendMessage(ChatColor.RED + "Vindicator reduced your durability by 1000");
+                }
+                event.setDamage(1);
+            }
+
             // Apply Frenzy trait bonus
             if (playerProfile.getAbyssTrait().equalsIgnoreCase("Frenzy")) {
                 event.setDamage(event.getDamage() * 2);
             }
         }
 
+        if (!event.isCancelled()) {
+            Entity entity = event.getEntity();
+            Location loc = entity.getLocation();
+            World world = entity.getWorld();
+            String color = (entity instanceof Player) ? "#ff0004" : "#AA00FF";
+
+            spawnFloatingHologram(loc, (Math.max((int) event.getFinalDamage(),1)) + "", world, color);
+        }
+
+
     }
 
 
     private void handleMeleeDamage(Player attacker, LivingEntity target, EntityDamageByEntityEvent event, Location damagerLocation, Location damagedLocation, UserProfile damagerProfile) {
-        Material blockAtFeet = damagedLocation.getBlock().getType(); // Current block (feet)
-        Material blockBelow = damagedLocation.clone().subtract(0, 1, 0).getBlock().getType(); // Block below
-        Material blockAbove = damagedLocation.clone().add(0, 1, 0).getBlock().getType(); // Block above
+
         if (downedPlayers.containsKey(attacker.getUniqueId())) {
             event.setCancelled(true);
             attacker.sendMessage(org.bukkit.ChatColor.RED + "Can't attack");
             return;
         }
+
+        double baseDamage = event.getDamage();
+        ItemStack weapon = attacker.getInventory().getItemInMainHand();
+
+
+
+        // Fire element check: Disable fire if not selected
+        if (!damagerProfile.getSelectedElement().equalsIgnoreCase("fire")
+                && (weapon.containsEnchantment(Enchantment.FLAME) || weapon.containsEnchantment(Enchantment.FIRE_ASPECT))) {
+            event.getEntity().setFireTicks(0); // Cancel fire ticks
+        }
+        double damageWithStats = applyStatsToDamage(damagerProfile.getMeleeDmg()+baseDamage, damagerProfile, attacker, event);
+        if (event.isCancelled()) return;
 
         if (event.getCause() == EntityDamageEvent.DamageCause.THORNS) {
             if (!damagerProfile.getChosenClass().equalsIgnoreCase("swordsman") ||
@@ -1255,52 +1124,13 @@ public class DamageListener implements Listener {
             }
         }
 
-// Check water or lava in current, below, or above blocks
-//        if (((blockAtFeet == Material.WATER || blockAtFeet == Material.LAVA) ||
-//                (blockBelow == Material.WATER || blockBelow == Material.LAVA) ||
-//                (blockAbove == Material.WATER || blockAbove == Material.LAVA))
-//                && target instanceof Monster && !(target instanceof WaterMob)) {
-//
-//            event.setCancelled(true);
-//            attacker.sendMessage( ChatColor.RED+"Mob is invulnerable on water or lava!");
-//            return;
-//        }
 
 
-        ItemStack weapon = attacker.getInventory().getItemInMainHand();
-
-
-//        if (target instanceof Tameable tameable) {
-//            AnimalTamer owner = tameable.getOwner();
-//
-//            // Check if the tameable has an owner
-//            if (owner != null) {
-//                if (!(owner instanceof Player) )return;
-//                if (Objects.requireNonNull(owner.getName()).equalsIgnoreCase(attacker.getName())) return;
-//
-//                UserProfile ownerProfile = profileManager.getProfile(owner.getName());
-//                UserProfile profile = profileManager.getProfile(attacker.getName());
-//                if (!(profile.getTeam().equalsIgnoreCase(ownerProfile.getTeam())) && !profile.getTeam().equalsIgnoreCase("none")) return;
-//                if ((profile.isPvpEnabled() && ownerProfile.isPvpEnabled())) return;
-//                event.setCancelled(true);
-//            }
-//        }
-
-        // Fire element check: Disable fire if not selected
-        if (!damagerProfile.getSelectedElement().equalsIgnoreCase("fire")
-                && (weapon.containsEnchantment(Enchantment.FLAME) || weapon.containsEnchantment(Enchantment.FIRE_ASPECT))) {
-            event.getEntity().setFireTicks(0); // Cancel fire ticks
-        }
-
-        double baseDamage = event.getDamage();
-
-        // Apply stats based on class for non-default players
-        double damageWithStats = applyStatsToDamage(baseDamage, damagerProfile, attacker, event);
 
 
 
         // Apply extra health and set final damage
-        double finalDamage = applyExtraHealthAndDamage(target, damageWithStats, attacker);
+        double finalDamage = damageWithStats;
 
 
 
@@ -1314,40 +1144,6 @@ public class DamageListener implements Listener {
                 mob.setTarget(attacker);
             }
         }
-
-        int sharpnessLevel = weapon.getEnchantmentLevel(Enchantment.SHARPNESS);
-
-        if (sharpnessLevel > 0) {
-            finalDamage = finalDamage * (1+(0.1*sharpnessLevel));
-        }
-
-        if (
-                !(weapon.getType().toString().endsWith("_SWORD") ||
-                        weapon.getType().toString().endsWith("_AXE") ||
-                        weapon.getType() == Material.MACE ||
-                        weapon.getType() == Material.TRIDENT)
-        ) {
-            finalDamage *= 0.5;
-        }
-
-
-
-        if (event.getEntity() instanceof Player player) {
-            UserProfile playerProfile = profileManager.getProfile(player.getName());
-
-
-
-            finalDamage *= playerProfile.getDurability() == 0 ? 2 : 1;
-
-
-        }
-
-
-
-//        if (event.getEntity() instanceof Player player) {
-//            finalDamage /=1.5;
-//        }
-
 
         if (event.getEntity() instanceof Player victim) {
             UserProfile victimProfile = profileManager.getProfile(victim.getName());
@@ -1383,18 +1179,16 @@ public class DamageListener implements Listener {
 
 
         float attackCooldown = attacker.getAttackCooldown();
-
-//        if (attackCooldown < 0.5f) {
-//            finalDamage = 0.1f;
-//        } else {
             finalDamage *= attackCooldown;
-//        }
 
+        if (hasBeenAirborneTooLong(attacker, 5000) && !isStandingOnSolidBlock(attacker)) {
+            attacker.sendMessage("§e⚠ Damage is reduced because you have been in the air, on water, or on lava for too long.");
+            finalDamage *= 0.1; // reduce to 10%
+        }
 
-        if (damagerProfile.getAbyssTrait().equalsIgnoreCase("Fortress")) {
-            finalDamage*=.8;
-        } else if (damagerProfile.getAbyssTrait().equalsIgnoreCase("Frenzy")) {
-            finalDamage*=2;
+        if (event.getEntity() instanceof Player player) {
+            UserProfile playerProfile = profileManager.getProfile(player.getName());
+            finalDamage *= playerProfile.getDurability() == 0 ? 2 : 1;
         }
 
         event.setDamage(finalDamage
@@ -1718,38 +1512,8 @@ public class DamageListener implements Listener {
 
 
     // PvE Long Range Damage
-    private void handleLongRangeDamage(Player attacker, LivingEntity target, EntityDamageByEntityEvent event, Location damagerLocation, Location damagedLocation, UserProfile damagerProfile) {
-        Material blockAtFeet = damagedLocation.getBlock().getType(); // Current block (feet)
-        Material blockBelow = damagedLocation.clone().subtract(0, 1, 0).getBlock().getType(); // Block below
-        Material blockAbove = damagedLocation.clone().add(0, 1, 0).getBlock().getType(); // Block above
-
-// Check water or lava in current, below, or above blocks
-//        if (((blockAtFeet == Material.WATER || blockAtFeet == Material.LAVA) ||
-//                (blockBelow == Material.WATER || blockBelow == Material.LAVA) ||
-//                (blockAbove == Material.WATER || blockAbove == Material.LAVA))
-//                && target instanceof Monster && !(target instanceof WaterMob)) {
-//
-//            event.setCancelled(true);
-//            attacker.sendMessage(ChatColor.RED+ "Mob is invulnerable on water or lava!");
-//            return;
-//        }
-
-
-//        if (target instanceof Tameable tameable) {
-//            AnimalTamer owner = tameable.getOwner();
-//
-//            // Check if the tameable has an owner
-//            if (owner != null) {
-//                if (Objects.requireNonNull(owner.getName()).equalsIgnoreCase(attacker.getName())) return;
-//
-//                UserProfile ownerProfile = profileManager.getProfile(owner.getName());
-//                UserProfile profile = profileManager.getProfile(attacker.getName());
-//                if (!(profile.getTeam().equalsIgnoreCase(ownerProfile.getTeam()))) return;
-//                if ((profile.isPvpEnabled() && ownerProfile.isPvpEnabled())) return;
-//                event.setCancelled(true);
-//            }
-//        }
-
+    private void handleLongRangeDamage(Player attacker, LivingEntity target, EntityDamageByEntityEvent event, Location damagerLocation, Location damagedLocation, UserProfile damagerProfile, double damage) {
+        double baseDamage = event.getDamage();
         ItemStack weapon = attacker.getInventory().getItemInMainHand();
 
         // Fire element check: Disable fire if not selected
@@ -1757,48 +1521,26 @@ public class DamageListener implements Listener {
                 && (weapon.containsEnchantment(Enchantment.FLAME) || weapon.containsEnchantment(Enchantment.FIRE_ASPECT))) {
             event.getEntity().setFireTicks(0); // Cancel fire ticks
         }
-
-        double baseDamage = event.getDamage();
-
         // Apply stats based on class for non-default players
-        double damageWithStats = applyStatsToDamage(baseDamage, damagerProfile, attacker, event);
+        double damageWithStats = applyStatsToDamage(baseDamage+damage, damagerProfile, attacker, event);
+
+        if (event.isCancelled()) return;
+
+
+
+
 
 
 
         // Apply extra health and set final damage
-        double finalDamage = applyExtraHealthAndDamage(target, damageWithStats, attacker);
+        double finalDamage = damageWithStats;
 
         // Alchemist class - Check if using thrown potion
         if (damagerProfile.getChosenClass().equalsIgnoreCase("alchemist") && event.getDamager() instanceof ThrownPotion) {
-            int sharpnessLevel = weapon.getEnchantmentLevel(Enchantment.SHARPNESS);
-
-            if (sharpnessLevel > 0) {
-                finalDamage = finalDamage * (1+(0.1*sharpnessLevel));
-            }
-
-            int powerLevel = weapon.getEnchantmentLevel(Enchantment.POWER);
-
-            if (powerLevel > 0) {
-                finalDamage = finalDamage * (1+0.1*powerLevel);
-            }
 
 
             effectsAbilityManager.applyAbility(damagerProfile, target, damagerLocation, damagedLocation);
 
-//            if (attacker.getWorld().getName().contains("labyrinth") && target instanceof Monster mob) {
-//                if (Math.random() < 0.05) {
-//                    Location attackerLocation = attacker.getLocation();
-//                    Vector direction = attackerLocation.getDirection().normalize(); // Get the attacker's direction
-//                    double distance = 0.5; // Set the distance you want the mob to appear in front of the attacker
-//                    Location teleportLocation = attackerLocation.add(direction.multiply(distance));
-//
-//                    // Adjust Y to avoid the mob spawning inside the ground
-//                    teleportLocation.setY(attackerLocation.getY()+1);
-//
-//                    mob.teleport(teleportLocation);
-//                }
-//
-//            }
         }
 
         // Archer class - Check if using bow
@@ -1820,19 +1562,8 @@ public class DamageListener implements Listener {
 
         }
 
-        int powerLevel = weapon.getEnchantmentLevel(Enchantment.POWER);
-
-        if (powerLevel > 0) {
-            finalDamage = finalDamage * (1+0.1*powerLevel);
-        }
 
 
-
-        if (event.getEntity() instanceof Player player) {
-            UserProfile playerProfile = profileManager.getProfile(player.getName());
-
-            finalDamage *= playerProfile.getDurability() == 0 ? 2 : 1;
-        }
 
 
         if (event.getEntity() instanceof Player victim) {
@@ -1899,48 +1630,17 @@ public class DamageListener implements Listener {
         }
 
 
-//        try {
-//
-//            if (damagerProfile.getLs()>0
-//            ) {
-//
-//                AttributeInstance maxHealthAttribute = attacker.getAttribute(Attribute.MAX_HEALTH);
-//                if (maxHealthAttribute == null) {
-//                    System.err.println("Attacker does not have the GENERIC_MAX_HEALTH attribute.");
-//                    return;
-//                }
-//
-//                double maxHealth = maxHealthAttribute.getValue();
-//                double currentHealth = attacker.getHealth();
-//                if (currentHealth <= 0) {
-//                    System.err.println("Attacker is dead or has invalid health.");
-//                    return;
-//                }
-//
-//                if (finalDamage <= 0) {
-//                    System.err.println("Final damage is non-positive, no lifesteal will be applied.");
-//                    return;
-//                }
-//
-//                double lifestealAmount = finalDamage * damagerProfile.getLs(); // 5% lifesteal
-//                double newHealth = Math.min(currentHealth + lifestealAmount, maxHealth);
-//                attacker.setHealth(newHealth);
-//            }
-//        } catch (Exception e) {
-//            System.err.println("An error occurred in the lifesteal logic.");
-//            e.printStackTrace();
-//        }
-
-        if (damagerProfile.getAbyssTrait().equalsIgnoreCase("Fortress")) {
-            finalDamage*=.8;
-        } else if (damagerProfile.getAbyssTrait().equalsIgnoreCase("Frenzy")) {
-            finalDamage*=2;
-        }
-        String chosenClass = damagerProfile.getChosenClass();
-        if (chosenClass.equalsIgnoreCase("alchemist") || chosenClass.equalsIgnoreCase("archer")) {
-            finalDamage *= 1 + (damagerProfile.getTempAgi() / 1000.0 * 0.1);
+        if (hasBeenAirborneTooLong(attacker, 5000) && !isStandingOnSolidBlock(attacker)) {
+            attacker.sendMessage("§e⚠ Damage is reduced because you have been in the air, on water, or on lava for too long.");
+            finalDamage *= 0.1; // reduce to 10%
         }
 
+
+        if (event.getEntity() instanceof Player player) {
+            UserProfile playerProfile = profileManager.getProfile(player.getName());
+
+            finalDamage *= playerProfile.getDurability() == 0 ? 2 : 1;
+        }
         event.setDamage(finalDamage);
     }
 
@@ -1954,79 +1654,12 @@ public class DamageListener implements Listener {
     }
 
     // Method to apply stats to damage
-    private double applyStatsToDamage(double baseDamage, UserProfile damagerProfile, Player player, EntityDamageByEntityEvent event) {
+    private double applyStatsToDamage(double calculatedDamage, UserProfile damagerProfile, Player player, EntityDamageByEntityEvent event) {
 
         if (!damagerProfile.isLoggedIn()) {
             event.setCancelled(true);
             return 0;
         }
-
-        double str = 0, dex = 0, intel = 0, luk = 0, fnl=0;
-
-        str += (double) damagerProfile.getTempStr() /100;
-        dex += (double) damagerProfile.getTempDex() /100;
-        intel += (double) damagerProfile.getTempIntel() /100;
-        luk += damagerProfile.getTempLuk();
-        fnl += damagerProfile.getStatDmgMultiplier();
-
-        // Damage calculation based on class stats
-        double statDmg = 0;
-        double elementalDamage = 0;
-
-        // melee
-        if (event.getDamager() instanceof Player) {
-            statDmg+=str*4;
-            if (damagerProfile.getChosenClass().equalsIgnoreCase("swordsman")) {
-                if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 1") && (player.getInventory().getItemInMainHand().getType().toString().endsWith("_SWORD") || player.getInventory().getItemInMainHand().getType().toString().endsWith("_AXE"))) {
-                    elementalDamage += (intel * 8);
-                }
-            }
-        }
-
-
-        // bow
-        if (event.getDamager() instanceof Arrow) {
-            statDmg+=dex*4;
-            //archers
-            if (damagerProfile.getChosenClass().equalsIgnoreCase("archer")) {
-
-                if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 2")) {
-                    elementalDamage += (intel*4);
-                }
-
-                if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 1")) {
-                    elementalDamage += (intel*8);
-                }
-            }
-        }
-
-        // rocket
-        if (event.getDamager().getType() == EntityType.FIREWORK_ROCKET) {
-            elementalDamage += (intel*4);
-        }
-
-        // trident
-        if (event.getDamager() instanceof Trident) {
-            statDmg += (dex*4);
-        }
-
-        // thrown potions
-        if (event.getDamager() instanceof ThrownPotion) {
-            if (event.getEntity() instanceof Player) {
-                elementalDamage += intel * 3;
-            } else {
-                elementalDamage += intel * 10;
-            }
-            //alchemists
-            if (damagerProfile.getChosenClass().equalsIgnoreCase("alchemist")) {
-                if (damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 1")) {
-                    elementalDamage *=1.2;
-                }
-
-            }
-        }
-
-        double calculatedDamage = baseDamage + statDmg + elementalDamage;
 
         // Critical Hit System
         double critChance = damagerProfile.getCrit();
@@ -2097,24 +1730,10 @@ public class DamageListener implements Listener {
         } else {
             damagerProfile.setStamina(damagerProfile.getStamina() - 1);
         }
-        return calculatedDamage*(1 + (fnl*.01));
+        return calculatedDamage;
     }
 
 
-
-    // Method to apply extra health and return adjusted damage
-    private double applyExtraHealthAndDamage(LivingEntity target, double calculatedDamage, Player player) {
-        if (target instanceof Monster || target instanceof IronGolem || target instanceof Wolf) {
-
-        }
-
-        if (hasBeenAirborneTooLong(player, 5000) && !isStandingOnSolidBlock(player)) {
-            player.sendMessage("§e⚠ Damage is reduced because you have been in the air, on water, or on lava for too long.");
-            calculatedDamage *= 0.1; // reduce to 10%
-        }
-
-        return  calculatedDamage;
-    }
 
 
 

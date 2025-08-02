@@ -119,29 +119,29 @@ Hp% = 20% → ×1.20
 AGI is not divided
 Alchemist: Gear AGI × 1.2 before applying
 
-Every 1000 gives 10% bonus attackspeed
-Every 1000 gives 10% bonus final projectile damage
+Every 500 gives 10% bonus attackspeed
+Every 500 gives 10% bonus final projectile damage
 
 🏃‍♂️ PvE Evasion (vs Monsters)
 Your evasion rate scales based on your AGI per level, with a soft cap at 80%.
 
-AGI	Level	AGI/Level	Evasion
-50	1	    50	        80% ✅
-100	1	    100	        100% 🔥
-200	2	    100	        100% ✅
-50	2	    25	        40%
-400	4	    100	        100% ✅
-300	3	    100	        100% ✅
-150	3	    50	        80% ✅
+AGI	m.lvl	AGI/Level	Evasion
+25	1	    25	        80% ✅
+50	1	    50	        100% 🔥
+100	2	    50	        100% ✅
+25	2	    12.5	        40%
+200	4	    50	        100% ✅
+150	3	    50	        100% ✅
+75	3	    25	        80% ✅
 
 ⚙️ Formula:
-evade = min(80, (AGI / (Level × 50)) × 80)
-➡️ You need 50 AGI per level of monster for 80% evasion
-➡️ 100 AGI per level of monster guarantees 100% evasion
+evade = min(80, (AGI / (Level × 25)) × 80)
+➡️ You need 25 AGI per level of monster for 80% evasion
+➡️ 50 AGI per level of monster guarantees 100% evasion
 
 🧮 Evasion vs Monsters:
 Your AGI is divided by the monster’s level to determine how effective it is.
 ➡️ More AGI is needed to dodge higher-level monsters.
 Example:
-If you're Level 1 with 100 AGI vs a Level 2 monster, your AGI is worth 50 per level, not 100.
+If you're Level 1 with 50 AGI vs a Level 2 monster, your AGI is worth 25 per level, not 50.
 

@@ -287,6 +287,8 @@ public class RPGPlugin extends JavaPlugin {
         Objects.requireNonNull(getCommand("abyssstore")).setExecutor(new AbyssStoreCommand(this, profileManager));
         Objects.requireNonNull(getCommand("activityshop")).setExecutor(new ActivitiyShop(this, profileManager));
         Objects.requireNonNull(getCommand("cestore")).setExecutor(new CustomEnchant(this, profileManager));
+        Objects.requireNonNull(getCommand("ce")).setExecutor(new CustomEnchant(this, profileManager));
+        Objects.requireNonNull(getCommand("agc")).setExecutor(new AddGivenCurrencyCommand(profileManager));
         Objects.requireNonNull(getCommand("passiveskills")).setExecutor(new PassiveSkills(this, profileManager));
         Objects.requireNonNull(getCommand("cosmeticstore")).setExecutor(new CosmeticStore(this, profileManager));
         Objects.requireNonNull(getCommand("viewitem")).setExecutor(new ViewItemCommand());
