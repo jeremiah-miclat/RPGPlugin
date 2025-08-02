@@ -2097,16 +2097,6 @@ public class DamageListener implements Listener {
         } else {
             damagerProfile.setStamina(damagerProfile.getStamina() - 1);
         }
-
-
-
-
-//        String selectedElement = damagerProfile.getSelectedElement(); // Get the selected element (e.g., fire)
-
-        // If the selected element is "fire", and we want to check if the target is affected by Slowness
-//        if (selectedElement.equalsIgnoreCase("fire") && event.getEntity() instanceof LivingEntity target && target.hasPotionEffect(PotionEffectType.SLOWNESS)) {
-//                spawnFloatingHologram(event.getEntity().getLocation(), "Melt", player.getWorld(), ChatColor.AQUA);
-//        }
         return calculatedDamage*(1 + (fnl*.01));
     }
 

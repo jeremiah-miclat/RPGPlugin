@@ -327,16 +327,23 @@ public class DeadMobListener implements Listener {
         int playerLevel = profile.getLevel();
         int levelDiff = monsterLevel - playerLevel;
 
-        // Reward scaling based on level difference
+        if (Math.abs(levelDiff) > 60) {
+            if (profile.isBossIndicator()) {
+                player.sendMessage("⚠ No rewards due 60 level difference. /sdw to turn off this warning");
+            }
+            return;
+        }
+
+        // --- Reward Multiplier Logic ---
         double rewardMultiplier;
-        if (levelDiff > 30 || playerLevel - monsterLevel > 30) {
-            rewardMultiplier = 0.1;
-        } else if (levelDiff > 12 || playerLevel - monsterLevel > 12) {
-            rewardMultiplier = 0.5;
-        } else if (levelDiff > 10 || playerLevel - monsterLevel > 10) {
-            rewardMultiplier = 0.8;
+        if (Math.abs(levelDiff) > 30) {
+            rewardMultiplier = 0.1; // No drops if monster too weak or too strong
+        } else if (Math.abs(levelDiff) > 20) {
+            rewardMultiplier = 0.5; // Heavily reduced drops
+        } else if (Math.abs(levelDiff) > 10) {
+            rewardMultiplier = 0.8; // Slightly reduced
         } else {
-            rewardMultiplier = 1.0;
+            rewardMultiplier = 1.0; // Full rewards
         }
 
         // Notify player if rewards are reduced
@@ -423,11 +430,16 @@ public class DeadMobListener implements Listener {
         int playerLevel = profile.getLevel();
         int levelDiff = monsterLevel - playerLevel;
 
+        if (playerLevel - monsterLevel >= 60) {
+
+            return;
+        }
+
         // --- Reward Multiplier Logic ---
         double rewardMultiplier;
         if (Math.abs(levelDiff) > 30) {
             rewardMultiplier = 0.1; // No drops if monster too weak or too strong
-        } else if (Math.abs(levelDiff) > 12) {
+        } else if (Math.abs(levelDiff) > 20) {
             rewardMultiplier = 0.5; // Heavily reduced drops
         } else if (Math.abs(levelDiff) > 10) {
             rewardMultiplier = 0.8; // Slightly reduced
