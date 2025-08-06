@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 public class ConvertLevelsCommand implements CommandExecutor {
 
     private final PlayerProfileManager profileManager;
+    private static final int ATTRIBUTE_CAP = 20000;
 
     public ConvertLevelsCommand(PlayerProfileManager profileManager) {
         this.profileManager = profileManager;
@@ -28,7 +29,7 @@ public class ConvertLevelsCommand implements CommandExecutor {
         double playerClassTotalAttrib = profile.getTotalAllocatedPoints() + profile.getCurrentAttributePoints();
         double abyssPoints = profile.getAbysspoints();
 
-        if (playerClassTotalAttrib >= 20000) {
+        if (playerClassTotalAttrib >= ATTRIBUTE_CAP) {
             player.sendMessage(ChatColor.RED + "Max attributes reached.");
             return true;
         }
@@ -53,16 +54,14 @@ public class ConvertLevelsCommand implements CommandExecutor {
             }
         }
 
-        // Determine how many points can be converted if "all"
         if (convertAll) {
             double currentAttrib = playerClassTotalAttrib;
             int abyssAvailable = (int) abyssPoints;
             int maxConvertible = 0;
 
-            while (currentAttrib < 20000) {
+            while (currentAttrib < ATTRIBUTE_CAP) {
                 int cost = getLevelsRequiredForConversion(currentAttrib);
                 if (abyssAvailable < cost) break;
-
                 abyssAvailable -= cost;
                 currentAttrib++;
                 maxConvertible++;
@@ -76,12 +75,11 @@ public class ConvertLevelsCommand implements CommandExecutor {
             pointsToConvert = maxConvertible;
         }
 
-        if (pointsToConvert + playerClassTotalAttrib > 20000) {
+        if (pointsToConvert + playerClassTotalAttrib > ATTRIBUTE_CAP) {
             player.sendMessage(ChatColor.RED + "Max attributes reached.");
             return true;
         }
 
-        // Calculate the total abyss points needed
         int totalAbyssPointsRequired = 0;
         double currentAttribPoints = playerClassTotalAttrib;
 
@@ -104,56 +102,34 @@ public class ConvertLevelsCommand implements CommandExecutor {
         return true;
     }
 
-
     /**
-     * This method determines how many abyss points are required to convert 1 attribute point,
-     * based on the total allocated attribute points.
-     *
-     * @param totalAttrib The total allocated attribute points.
-     * @return The number of abyss points required for conversion.
+     * Doubled scaling curve: both thresholds and costs are multiplied
      */
     private int getLevelsRequiredForConversion(double totalAttrib) {
-        // Adjust the conversion rate of abyss points based on total allocated attribute points
-        if (totalAttrib < 100) {
-            return 200;
-        } else if (totalAttrib < 200) {
-            return 400;
-        } else if (totalAttrib < 300) {
-            return 600;
-        } else if (totalAttrib < 400) {
-            return 800;
-        } else if (totalAttrib < 500) {
-            return 1000;
-        } else if (totalAttrib < 600) {
-            return 2000;
-        } else if (totalAttrib < 700) {
-            return 4000;
-        } else if (totalAttrib < 800) {
-            return 6000;
-        } else if (totalAttrib < 900) {
-            return 8000;
-        } else if (totalAttrib < 1000) {
-            return 10000;
-        } else if (totalAttrib < 2000) {
-            return 20000;
-        } else if (totalAttrib < 3000) {
-            return 30000;
-        } else if (totalAttrib < 4000) {
-            return 40000;
-        } else if (totalAttrib < 5000) {
-            return 50000;
-        } else if (totalAttrib < 6000) {
-            return 60000;
-        } else if (totalAttrib < 7000) {
-            return 70000;
-        } else if (totalAttrib < 8000) {
-            return 80000;
-        } else if (totalAttrib < 9000) {
-            return 90000;
-        } else if (totalAttrib < 10000) {
-            return 100000;
-        } else {
-            return 100000;
-        }
+        if (totalAttrib < 200) return 400;
+        else if (totalAttrib < 400) return 800;
+        else if (totalAttrib < 600) return 1200;
+        else if (totalAttrib < 800) return 1600;
+        else if (totalAttrib < 1000) return 2000;
+        else if (totalAttrib < 1200) return 4000;
+        else if (totalAttrib < 1400) return 8000;
+        else if (totalAttrib < 1600) return 12000;
+        else if (totalAttrib < 1800) return 16000;
+        else if (totalAttrib < 2000) return 20000;
+        else if (totalAttrib < 4000) return 40000;
+        else if (totalAttrib < 6000) return 60000;
+        else if (totalAttrib < 8000) return 80000;
+        else if (totalAttrib < 10000) return 100000;
+        else if (totalAttrib < 11000) return 200000;
+        else if (totalAttrib < 12000) return 300000;
+        else if (totalAttrib < 13000) return 400000;
+        else if (totalAttrib < 14000) return 500000;
+        else if (totalAttrib < 15000) return 600000;
+        else if (totalAttrib < 16000) return 700000;
+        else if (totalAttrib < 17000) return 800000;
+        else if (totalAttrib < 18000) return 900000;
+        else if (totalAttrib < 19000) return 1000000;
+        else if (totalAttrib < 20000) return 1100000;
+        else return 1100000;
     }
 }

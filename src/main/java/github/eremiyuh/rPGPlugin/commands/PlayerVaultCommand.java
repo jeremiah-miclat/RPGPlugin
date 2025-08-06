@@ -3,6 +3,7 @@ package github.eremiyuh.rPGPlugin.commands;
 import github.eremiyuh.rPGPlugin.manager.PlayerProfileManager;
 import github.eremiyuh.rPGPlugin.manager.VaultManager;
 import github.eremiyuh.rPGPlugin.profile.UserProfile;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;

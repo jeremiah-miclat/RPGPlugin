@@ -36,6 +36,11 @@ public class ChunkCommand implements CommandExecutor {
                 z >= Math.min(zz1, zz2) && z <= Math.max(zz1, zz2);
     }
 
+    private boolean isInProtectedAreaEnd(int x, int z) {
+        return x >= Math.min(150, -150) && x <= Math.max(150, -150) &&
+                z >= Math.min(150, -150) && z <= Math.max(150, -150);
+    }
+
     public boolean chunkHasOwnedChunkNearby(Chunk chunk, Player player) {
         String playerName = player.getName();
 
@@ -105,6 +110,11 @@ public class ChunkCommand implements CommandExecutor {
 
             if (isInProtectedArea(player.getLocation().getBlockX(), player.getLocation().getBlockZ()) && player.getWorld().getName().equals("world")) {
                 player.sendMessage("Cannot claim chunks in this area.");
+                return true;
+            }
+
+            if (isInProtectedAreaEnd(player.getLocation().getBlockX(), player.getLocation().getBlockZ()) && player.getWorld().getName().equals("world_the_end")) {
+                player.sendMessage("Cannot claim chunks in this area (within xz 150,-150).");
                 return true;
             }
 

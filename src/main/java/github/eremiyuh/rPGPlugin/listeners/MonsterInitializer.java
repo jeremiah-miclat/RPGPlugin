@@ -12,6 +12,7 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.event.entity.EntitySpellCastEvent;
+import org.bukkit.event.raid.RaidTriggerEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -31,6 +32,21 @@ public class MonsterInitializer implements Listener {
 
     public MonsterInitializer(RPGPlugin plugin) {
         this.plugin = plugin;
+    }
+
+    @EventHandler
+    public void onRaidEvent(RaidTriggerEvent event) {
+        if (!event.getWorld().getName().contains("world_rpg")) {
+            return;
+        }
+        Location location = event.getRaid().getLocation();
+        double x = location.getX();
+        double z = location.getZ();
+
+        // Cancel if outside ±18000 range
+        if (Math.abs(x) > 18000 || Math.abs(z) > 18000) {
+            event.setCancelled(true);
+        }
     }
 
     @EventHandler
@@ -175,7 +191,15 @@ public class MonsterInitializer implements Listener {
 
         double extraHealth = lvl*5+entity.getHealth();
 
+        if (lvl>199) {
+            extraHealth = lvl*100+entity.getHealth();
+        }
+
         double customDamage = (lvl*.5) + Objects.requireNonNull(entity.getAttribute(Attribute.ATTACK_DAMAGE)).getValue() + 2;
+
+        if (lvl>199) {
+            customDamage = lvl*4+ + Objects.requireNonNull(entity.getAttribute(Attribute.ATTACK_DAMAGE)).getValue();
+        }
 
         // First, check for the purple world boss (0.1% chance)
         if (Math.random() < .0003 || entity instanceof Warden || entity instanceof Wither || entity instanceof ElderGuardian || entity instanceof Ravager || entity instanceof Evoker) { //0.0003
@@ -259,24 +283,24 @@ public class MonsterInitializer implements Listener {
         double jumpMultiplier = 1 + (0.00015 * maxCoord);  // Continuous increase for jump
 
         // Set extra movement speed if the attribute is available
-        if (entity.getAttribute(Attribute.MOVEMENT_SPEED) != null) {
-            double baseSpeed = Objects.requireNonNull(entity.getAttribute(Attribute.MOVEMENT_SPEED)).getBaseValue();
-            double newSpeed = baseSpeed * (1+ (speedMultiplier/4)); // Apply the calculated multiplier
-            Objects.requireNonNull(entity.getAttribute(Attribute.MOVEMENT_SPEED)).setBaseValue(newSpeed+.02);
-        }
+//        if (entity.getAttribute(Attribute.MOVEMENT_SPEED) != null) {
+//            double baseSpeed = Objects.requireNonNull(entity.getAttribute(Attribute.MOVEMENT_SPEED)).getBaseValue();
+//            double newSpeed = baseSpeed * (1+ (speedMultiplier/4)); // Apply the calculated multiplier
+//            Objects.requireNonNull(entity.getAttribute(Attribute.MOVEMENT_SPEED)).setBaseValue(newSpeed+.02);
+//        }
 
         // Set extra jump strength if applicable
-        if (entity.getAttribute(Attribute.JUMP_STRENGTH) != null) {
-            double baseJumpStrength = Objects.requireNonNull(entity.getAttribute(Attribute.JUMP_STRENGTH)).getBaseValue();
-            double newJumpStrength = baseJumpStrength * jumpMultiplier; // Apply the calculated multiplier
-            Objects.requireNonNull(entity.getAttribute(Attribute.JUMP_STRENGTH)).setBaseValue(newJumpStrength);
-        }
+//        if (entity.getAttribute(Attribute.JUMP_STRENGTH) != null) {
+//            double baseJumpStrength = Objects.requireNonNull(entity.getAttribute(Attribute.JUMP_STRENGTH)).getBaseValue();
+//            double newJumpStrength = baseJumpStrength * jumpMultiplier; // Apply the calculated multiplier
+//            Objects.requireNonNull(entity.getAttribute(Attribute.JUMP_STRENGTH)).setBaseValue(newJumpStrength);
+//        }
 
         // Set extra safe fall distance if applicable
-        if (entity.getAttribute(Attribute.SAFE_FALL_DISTANCE) != null) {
-            double baseSafeFallDistance = Objects.requireNonNull(entity.getAttribute(Attribute.SAFE_FALL_DISTANCE)).getBaseValue();
-            Objects.requireNonNull(entity.getAttribute(Attribute.SAFE_FALL_DISTANCE)).setBaseValue(baseSafeFallDistance * jumpMultiplier + 1);
-        }
+//        if (entity.getAttribute(Attribute.SAFE_FALL_DISTANCE) != null) {
+//            double baseSafeFallDistance = Objects.requireNonNull(entity.getAttribute(Attribute.SAFE_FALL_DISTANCE)).getBaseValue();
+//            Objects.requireNonNull(entity.getAttribute(Attribute.SAFE_FALL_DISTANCE)).setBaseValue(baseSafeFallDistance * jumpMultiplier + 1);
+//        }
     }
 
     @EventHandler

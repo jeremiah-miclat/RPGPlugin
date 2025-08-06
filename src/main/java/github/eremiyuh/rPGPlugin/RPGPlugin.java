@@ -40,6 +40,7 @@ public class RPGPlugin extends JavaPlugin {
     private RavagerSkillManager ravagerManager;
     private EvokerSkillManager evokerSkillManager;
     private WardenSkillManager wardenSkillManager;
+    private ZombieSkillManager zombieSkillManager;
     private final String WORLD_NAME = "world_resource";
     private final String DATA_PACK_FOLDER = "datapacks";
     private DamageListener damageListener;
@@ -275,6 +276,7 @@ public class RPGPlugin extends JavaPlugin {
         ravagerManager = new RavagerSkillManager(this);
         evokerSkillManager = new EvokerSkillManager(this);
         wardenSkillManager = new WardenSkillManager(this);
+        zombieSkillManager = new ZombieSkillManager(this);
 
         this.chunkManager = new ChunkManager(getDataFolder());
         EffectsAbilityManager effectsAbilityManager = new EffectsAbilityManager(this);

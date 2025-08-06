@@ -111,6 +111,11 @@ commands:
     usage: /<command>
     permission: RPGPlugin.givesword
     permission-default: op
+  agc:
+    description: Give a currency to a player
+    usage: /<command> <player> <currency> <amount>
+    permission: RPGPlugin.agc
+    permission-default: op
   craftpotion:
     description: "use magic to convert your lapiz to potion"
     usage: /<command>
@@ -289,6 +294,10 @@ commands:
     description: "Internal command to show GUI for a player's item."
   cestore:
     description: "Opens custom enchants store"
+    usage: /command
+  ce:
+    description: "Opens custom enchants store"
+    usage: /command
   fishsell:
     description: "Opens an inventory to convert fish into activity points"
   passiveskills:

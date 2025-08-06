@@ -23,11 +23,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Merchant;
 import org.bukkit.inventory.MerchantRecipe;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Level;
 
 public class AreaProtectionListener implements Listener {
@@ -53,6 +51,24 @@ public class AreaProtectionListener implements Listener {
         ANNOYING_BLOCKS.add(Material.DEAD_BUSH);
     }
 
+    private static final Set<EntityType> TRACKED_ANIMALS = EnumSet.of(
+            EntityType.COW,
+            EntityType.PIG,
+            EntityType.SHEEP,
+            EntityType.CHICKEN,
+            EntityType.HORSE,
+            EntityType.DONKEY,
+            EntityType.MULE,
+            EntityType.LLAMA,
+            EntityType.RABBIT,
+            EntityType.GOAT,
+            EntityType.CAMEL,
+            EntityType.FROG,
+            EntityType.SNIFFER
+    );
+
+    private static final int MAX_PER_TYPE_PER_3x3_CHUNKS = 25;
+
     public AreaProtectionListener(RPGPlugin plugin) {
         this.world = Bukkit.getWorld("world"); // Ensure this is the correct world name
 
@@ -75,6 +91,70 @@ public class AreaProtectionListener implements Listener {
                 z >= Math.min(zzz1, zzz2) && z <= Math.max(zzz1, zzz2);
     }
 
+    @EventHandler
+    public void onCreatureSpawn(CreatureSpawnEvent event) {
+        EntityType type = event.getEntityType();
+
+
+        if (!TRACKED_ANIMALS.contains(type)) return;
+
+        Location loc = event.getLocation();
+        World world = loc.getWorld();
+        int chunkX = loc.getChunk().getX();
+        int chunkZ = loc.getChunk().getZ();
+
+        int count = 0;
+
+        // Loop over 3x3 chunks centered on the spawn chunk
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dz = -1; dz <= 1; dz++) {
+                Chunk chunk = world.getChunkAt(chunkX + dx, chunkZ + dz);
+                for (@NotNull Entity entity : chunk.getEntities()) {
+                    if (entity.getType() == type) {
+                        count++;
+                        if (count >= MAX_PER_TYPE_PER_3x3_CHUNKS) {
+                            event.setCancelled(true);
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @EventHandler
+    public void onCreatureSpawnOnSpawn(CreatureSpawnEvent event) {
+        Entity entity = event.getEntity();
+
+        if (isInNoSpawnArea2(entity.getLocation().getBlockX(), entity.getLocation().getBlockZ())
+                && entity.getWorld().getName().equals("world")) {
+
+            if (entity instanceof Monster || entity instanceof Phantom || entity instanceof Chicken) {
+
+                // Optional: check all spawn reasons
+                CreatureSpawnEvent.SpawnReason reason = event.getSpawnReason();
+
+                switch (reason) {
+                    case NATURAL:
+                    case BREEDING:
+                    case SPAWNER:
+                    case SPAWNER_EGG:
+                    case DISPENSE_EGG:
+                    case EGG: // baby chicken from egg
+                    case COMMAND:
+                    case CUSTOM:
+                    case DEFAULT:
+                    case REINFORCEMENTS:
+                        event.setCancelled(true);
+                        return;
+                    default:
+                        break; // allow others if necessary
+                }
+            }
+        }
+    }
+
+
 
 
     @EventHandler
@@ -92,7 +172,7 @@ public class AreaProtectionListener implements Listener {
         if (isInNoSpawnArea2(entity.getLocation().getBlockX(), entity.getLocation().getBlockZ())
                 && entity.getWorld().getName().equals("world")) {
 
-            if (entity instanceof Monster || entity instanceof Phantom) {
+            if (entity instanceof Monster || entity instanceof Phantom || entity instanceof Chicken) {
                 event.setCancelled(true);
             }
         }

@@ -1,6 +1,7 @@
 package github.eremiyuh.rPGPlugin.manager;
 
 import org.bukkit.*;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.*;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -11,15 +12,15 @@ public class RavagerSkillManager {
 
     private final JavaPlugin plugin;
     private final Map<UUID, Long> lastUsed = new HashMap<>();
-    private final Set<UUID> activeReflect = new HashSet<>();
+    private final Set<UUID> reflecting = new HashSet<>();
     private final Set<UUID> frozen = new HashSet<>();
-    private final long cooldown = 30_000; // 30 seconds
+    private final long COOLDOWN_MS = 30_000;
     private final String targetWorld = "world_rpg";
 
     public RavagerSkillManager(JavaPlugin plugin) {
         this.plugin = plugin;
-        startSkillTick();       // Handles boasting 5s before ready
-        startAutoTriggerLoop(); // Automatically activates skill
+        startCooldownTick();       // Show pre-skill message
+        startAutoTriggerLoop();    // Automatically activate skill
     }
 
     public void tryActivate(Ravager ravager) {
@@ -28,87 +29,71 @@ public class RavagerSkillManager {
         UUID id = ravager.getUniqueId();
         long now = System.currentTimeMillis();
 
-        if (lastUsed.containsKey(id) && now - lastUsed.get(id) < cooldown) return;
+        long last = lastUsed.getOrDefault(id, 0L);
+        if (now - last < COOLDOWN_MS) return;
 
-        lastUsed.put(id, now);
+        lastUsed.put(id, now); // reset cooldown
         activateSkill(ravager);
     }
 
     private void activateSkill(Ravager ravager) {
         UUID id = ravager.getUniqueId();
-        activeReflect.add(id);
+        reflecting.add(id);
         frozen.add(id);
 
         ravager.setAI(false);
-//        ravager.setInvulnerable(true);
 
-        sayToNearbyPlayers(ravager, "§4" + ravager.getName() + " roars: \"COME, FEED ME YOUR WEAKNESS!\"", 60);
+        sayNearby(ravager, "§4" + ravager.getName() + " roars: \"COME, FEED ME YOUR WEAKNESS!\"", 60);
 
         new BukkitRunnable() {
             @Override
             public void run() {
                 ravager.setAI(true);
-//                ravager.setInvulnerable(false);
-                activeReflect.remove(id);
+                reflecting.remove(id);
                 frozen.remove(id);
-                sayToNearbyPlayers(ravager, "§7" + ravager.getName() + " Fly foo!", 30);
 
+                sayNearby(ravager, "§7" + ravager.getName() + " unleashes fiery rage!", 30);
 
-                Location ravagerLocXZ = ravager.getLocation().clone();
-                ravagerLocXZ.setY(0); // Ignore vertical difference
+                Location ravagerLoc = ravager.getLocation().clone();
+                ravagerLoc.setY(0); // flat distance
 
                 for (Player player : ravager.getWorld().getPlayers()) {
-                    Location playerLocXZ = player.getLocation().clone();
-                    playerLocXZ.setY(0); // Ignore vertical difference
+                    Location playerLoc = player.getLocation().clone();
+                    playerLoc.setY(0);
 
-                    if (ravagerLocXZ.distanceSquared(playerLocXZ) <= 30 * 30) {
+                    if (ravagerLoc.distanceSquared(playerLoc) <= 30 * 30) {
                         Location center = player.getLocation();
-
-                        for (int x = -1; x <= 1; x++) {
-                            for (int z = -1; z <= 1; z++) {
-                                Location fireLoc = center.clone().add(x, 0, z);
+                        for (int dx = -1; dx <= 1; dx++) {
+                            for (int dz = -1; dz <= 1; dz++) {
+                                Location fireLoc = center.clone().add(dx, 0, dz);
                                 fireLoc.getBlock().setType(Material.FIRE);
                             }
                         }
-//                        ravager.attack(player);
-                        // Toss logic here
 
-                        // Upward launch
-                        double maxCoord = Math.max(Math.abs(ravagerLocXZ.getX()), Math.abs(ravagerLocXZ.getZ()));
+                        double maxXZ = Math.max(Math.abs(ravagerLoc.getX()), Math.abs(ravagerLoc.getZ()));
+                        int damage = (int) (maxXZ / 100.0);
+                        if (damage > 200) {
+                            damage = (int) (Objects.requireNonNull(ravager.getAttribute(Attribute.ATTACK_DAMAGE)).getValue() * 1.2);
+                        }
 
-// Every 100 units = 5 damage
-                        int damage = (int) (maxCoord / 100.0);
                         player.damage(damage);
-
                         player.setVelocity(player.getVelocity().setY(2.2));
-
-                        // Sound
                         player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1f, 1f);
-
-
-                        player.getWorld().spawnParticle(
-                                Particle.EXPLOSION,
-                                player.getLocation().add(0, 1, 0), // position
-                                30,                                // count (more = denser effect)
-                                0.5, 1, 0.5,                       // offsetX, offsetY, offsetZ (spread area)
-                                0.1                                // extra (speed or size depending on particle)
-                        );
-
+                        player.spawnParticle(Particle.EXPLOSION, player.getLocation().add(0, 1, 0), 30, 0.5, 1, 0.5, 0.1);
                     }
                 }
-
             }
-        }.runTaskLater(plugin, 20L * 5); // 5 seconds
+        }.runTaskLater(plugin, 20L * 5); // 5s delay
     }
 
-    private void startSkillTick() {
+    private void startCooldownTick() {
         new BukkitRunnable() {
             @Override
             public void run() {
                 long now = System.currentTimeMillis();
 
                 for (UUID id : new HashSet<>(lastUsed.keySet())) {
-                    LivingEntity entity = Bukkit.getEntity(id) instanceof LivingEntity le ? le : null;
+                    Entity entity = Bukkit.getEntity(id);
                     if (!(entity instanceof Ravager ravager) || !ravager.isValid()) {
                         cleanup(id);
                         continue;
@@ -117,13 +102,12 @@ public class RavagerSkillManager {
                     if (!ravager.getWorld().getName().equals(targetWorld)) continue;
 
                     long last = lastUsed.getOrDefault(id, 0L);
-                    long remaining = cooldown - (now - last);
-                    if (remaining <= 5000 && remaining > 4000) {
-                        sayToNearbyPlayers(ravager, "§6" + ravager.getName() + " growls: \"I feel the power returning...\"", 60);
-                    }
+                    long timeSinceLast = now - last;
 
-                    if (remaining <= 0) {
-                        lastUsed.remove(id);
+                    long timeUntilReady = COOLDOWN_MS - timeSinceLast;
+
+                    if (timeUntilReady <= 5000 && timeUntilReady > 4000) {
+                        sayNearby(ravager, "§6" + ravager.getName() + " growls: \"I feel the power returning...\"", 60);
                     }
                 }
             }
@@ -143,7 +127,12 @@ public class RavagerSkillManager {
                     if (!(entity instanceof Ravager ravager)) continue;
 
                     UUID id = ravager.getUniqueId();
-                    if (!lastUsed.containsKey(id) || now - lastUsed.get(id) >= cooldown) {
+
+                    // Only initialize cooldown once
+                    lastUsed.putIfAbsent(id, now - (long) (Math.random() * COOLDOWN_MS));
+
+                    long last = lastUsed.getOrDefault(id, 0L);
+                    if (now - last >= COOLDOWN_MS) {
                         tryActivate(ravager);
                     }
                 }
@@ -151,16 +140,17 @@ public class RavagerSkillManager {
         }.runTaskTimer(plugin, 20L, 20L); // every second
     }
 
-    private void sayToNearbyPlayers(LivingEntity entity, String message, double radius) {
+    private void sayNearby(LivingEntity entity, String message, double radius) {
+        Location origin = entity.getLocation();
         for (Player player : entity.getWorld().getPlayers()) {
-            if (player.getLocation().distanceSquared(entity.getLocation()) <= radius * radius) {
+            if (player.getLocation().distanceSquared(origin) <= radius * radius) {
                 player.sendMessage(message);
             }
         }
     }
 
     public boolean isReflecting(UUID id) {
-        return activeReflect.contains(id);
+        return reflecting.contains(id);
     }
 
     public boolean isFrozen(UUID id) {
@@ -169,7 +159,7 @@ public class RavagerSkillManager {
 
     private void cleanup(UUID id) {
         lastUsed.remove(id);
-        activeReflect.remove(id);
+        reflecting.remove(id);
         frozen.remove(id);
     }
 }

@@ -227,7 +227,7 @@ public class DeadMobListener implements Listener {
 
                     for (Player player : nearbyPlayers) {
                         UserProfile playerProfile = profileManager.getProfile(player.getName());
-                        applyRewards(player, playerProfile, health*3, chance+.3, dropMultiplier,level);
+                        applyRewards(player, playerProfile, health*3, chance+.2, dropMultiplier,level);
                         distributeDrops(player, event, dropMultiplier,level);
 
                         if (bosslvl > 9 && isWorldBoss) {
@@ -326,6 +326,7 @@ public class DeadMobListener implements Listener {
     private void applyRewards(Player player, UserProfile profile, double healthForExp, double chanceForEquipLoreAndDias, int rewardCount, int monsterLevel) {
         int playerLevel = profile.getLevel();
         int levelDiff = monsterLevel - playerLevel;
+        double currentAmount = profile.getEmerald();
 
         if (Math.abs(levelDiff) > 60) {
             if (profile.isBossIndicator()) {
@@ -333,7 +334,7 @@ public class DeadMobListener implements Listener {
             }
             return;
         }
-
+        if (monsterLevel>=200) profile.setCurrency("emerald",currentAmount+1);
         // --- Reward Multiplier Logic ---
         double rewardMultiplier;
         if (Math.abs(levelDiff) > 30) {

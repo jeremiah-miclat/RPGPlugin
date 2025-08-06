@@ -50,7 +50,8 @@ public class DamageListener implements Listener {
     private final Map<UUID, BukkitTask> downedPlayers = new HashMap<>();
     private final RavagerSkillManager manager;
     private final Map<UUID, Long> lastDamageTime = new HashMap<>();
-
+    private final Map<UUID, Long> mobSkillCooldowns = new HashMap<>();
+    private final long SKILL_COOLDOWN_MS = 90_000;
     private final int x1 = -150, z1 = 150;
     private final int x2 = 90, z2 = -110;
 
@@ -803,6 +804,69 @@ public class DamageListener implements Listener {
         return insults[new Random().nextInt(insults.length)];
     }
 
+    private String getZRandomInsult() {
+        String[] insults = {
+                "You smell worse than a rotting creeper!",
+                "Brains? Yours must be long gone.",
+                "I've seen slimes with more courage!",
+                "You call that armor? I’ve chewed through tougher dirt!",
+                "You're not even worth the rot on my bones.",
+                "I died laughing at your combat skills.",
+                "Back when I was alive, I still wouldn't respect you!",
+                "You're slower than a shuffling husk!",
+                "Even skeletons laugh at your aim.",
+                "I've eaten villagers with more fight than you.",
+                "The only thing scary about you is your fashion sense.",
+                "Is that a sword or a toothpick?",
+                "Run while you can, snack!",
+                "You're the reason we say 'undead inside.'",
+                "You fight like a baby zombie on a chicken!"
+        };
+        return insults[new Random().nextInt(insults.length)];
+    }
+
+    private String getSpiderRandomInsult() {
+        String[] insults = {
+                "You're stuck in my web of failure.",
+                "I've spun webs smarter than you.",
+                "Is that a sword, or are you just swatting at shadows?",
+                "You panic like a villager in a cave!",
+                "Come closer... I promise not to bite. Much.",
+                "Your fear feeds me more than your flesh ever could.",
+                "I've seen baby spiders show more spine.",
+                "Tangled already? Pathetic.",
+                "You're as brave as a chicken on fire.",
+                "I've got eight eyes and none of them respect you.",
+                "Keep struggling, it only makes dinner sweeter.",
+                "Your moves are slower than a web update.",
+                "You're not the predator here, snack.",
+                "Caught you slippin' — again.",
+                "I don't need venom to bring you down."
+        };
+        return insults[new Random().nextInt(insults.length)];
+    }
+
+    private String getBlazeRandomInsult() {
+        String[] insults = {
+                "You're not even warm-up material.",
+                "I’ve roasted mobs tougher than you in my sleep.",
+                "Careful, you're flammable... and forgettable.",
+                "Is that fear I smell, or just your singed armor?",
+                "You bring water to a fire fight — cute.",
+                "Try not to cry when I turn up the heat.",
+                "You're the reason Nether portals have warning signs.",
+                "Too slow — I’ve already burned your hopes.",
+                "Your fire resistance won't save your ego.",
+                "You call that dodging? Pathetic.",
+                "I don’t chase… I incinerate.",
+                "Ashes to ashes, noob to dust.",
+                "You're not even worth the blaze rod drop.",
+                "You light yourself on fire better than I do.",
+                "I'll toast you before your potion timer runs out."
+        };
+        return insults[new Random().nextInt(insults.length)];
+    }
+
     private String getVindicatorRandomInsult() {
         String[] insults = {
                 "I'll split you like firewood!",
@@ -935,6 +999,11 @@ public class DamageListener implements Listener {
         double damage = event.getDamage();
 
 
+        if ((event.getCause() == EntityDamageEvent.DamageCause.LAVA || event.getCause() == EntityDamageEvent.DamageCause.VOID) && event.getEntity() instanceof Monster) {
+            event.setCancelled(true);
+            return;
+        }
+
 
 
 
@@ -1015,24 +1084,33 @@ public class DamageListener implements Listener {
                 evadeChance = 100.0;
             }
 
-            if (Math.random() * 100 < evadeChance) {
-                // Evade successful
-                event.setCancelled(true);
 
-                spawnFloatingHologram(player.getLocation(), "Evade", player.getWorld(), "#ff0004");
-                player.getWorld().spawnParticle(Particle.SWEEP_ATTACK, player.getLocation().add(0, 1, 0), 3);
-                player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 0.6f, 1.2f);
-                return;
-            }
 
-            if (monster instanceof Spider) {
+            if (monster instanceof Spider s) {
                 // 10% chance to apply Nausea
                 if (new Random().nextInt(100) < 10) {
-                    player.addPotionEffect(new PotionEffect(PotionEffectType.NAUSEA, 200, 2)); // 3s
+                    UUID id = s.getUniqueId();
+                    long now = System.currentTimeMillis();
+
+                    if (mobSkillCooldowns.containsKey(id)) {
+                        long lastUsed = mobSkillCooldowns.get(id);
+                        if (!((now - lastUsed) < SKILL_COOLDOWN_MS)) {
+                            double sdmg = Objects.requireNonNull(s.getAttribute(Attribute.ATTACK_DAMAGE)).getValue();
+                            player.damage(sdmg);
+                            event.setCancelled(true);
+                            // Get custom name with formatting
+                            String displayName = s.getCustomName() != null ? s.getCustomName() : ChatColor.GRAY + "Spider";
+
+                            // Send a random insult
+                            player.sendMessage(displayName + ChatColor.RED + ": " + getSpiderRandomInsult());
+                            player.addPotionEffect(new PotionEffect(PotionEffectType.NAUSEA, 200, 2)); // 3s
+                            mobSkillCooldowns.put(id, now);
+                        }
+                    }
+
                 }
 
             }
-
             if (monster instanceof Blaze) {
                 if (player.hasPotionEffect(PotionEffectType.FIRE_RESISTANCE)) {
 
@@ -1041,30 +1119,59 @@ public class DamageListener implements Listener {
                 }
             }
 
-            if (monster instanceof Zombie) {
-                if (new Random().nextInt(100) < 10) {
+            if (monster instanceof CaveSpider s && new Random().nextInt(100) < 10) {
+                tryUseMobSkill(s, player, () -> {
+                    double sdmg = Objects.requireNonNull(s.getAttribute(Attribute.ATTACK_DAMAGE)).getValue();
+                    player.damage(sdmg);
+                    event.setCancelled(true);
+                    String displayName = s.getCustomName() != null ? s.getCustomName() : ChatColor.GRAY + "Spider";
+                    player.sendMessage(displayName + ChatColor.RED + ": " + getSpiderRandomInsult());
+                    player.addPotionEffect(new PotionEffect(PotionEffectType.NAUSEA, 200, 2));
+                });
+            }
 
+            if (monster instanceof Zombie z && new Random().nextInt(100) < 10) {
+                tryUseMobSkill(z, player, () -> {
+                    double zdmg = Objects.requireNonNull(z.getAttribute(Attribute.ATTACK_DAMAGE)).getValue();
+                    player.damage(zdmg);
+                    event.setCancelled(true);
+                    String displayName = z.getCustomName() != null ? z.getCustomName() : ChatColor.GRAY + "Zombie";
+                    player.sendMessage(displayName + ChatColor.RED + ": " + getZRandomInsult());
                     player.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 200, 2));
-
-                }
+                });
             }
 
-            if (monster instanceof Skeleton && new Random().nextInt(100) < 10) {
+            if (monster instanceof ZombieVillager zv && new Random().nextInt(100) < 10) {
+                tryUseMobSkill(zv, player, () -> {
+                    double zdmg = Objects.requireNonNull(zv.getAttribute(Attribute.ATTACK_DAMAGE)).getValue();
+                    player.damage(zdmg);
+                    event.setCancelled(true);
+                    String displayName = zv.getCustomName() != null ? zv.getCustomName() : ChatColor.GRAY + "Zombie";
+                    player.sendMessage(displayName + ChatColor.RED + ": " + getZRandomInsult());
+                    player.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 200, 2));
+                });
+            }
+
+            if ((monster instanceof Skeleton || monster instanceof Stray) && new Random().nextInt(100) < 10) {
                 Skeleton skeleton = (Skeleton) monster;
+                tryUseMobSkill(skeleton, player, () -> {
+                    double skelDmg = Objects.requireNonNull(skeleton.getAttribute(Attribute.ATTACK_DAMAGE)).getValue();
+                    player.damage(skelDmg);
+                    event.setCancelled(true);
 
-                // Get the direction the skeleton is facing
-                Vector knockbackDirection = skeleton.getLocation().getDirection().normalize().multiply(3.5); // Horizontal speed
-                knockbackDirection.setY(0.5); // Optional upward force
+                    // Knockback in facing direction
+                    Vector knockbackDirection = skeleton.getLocation().getDirection().normalize().multiply(3.5);
+                    knockbackDirection.setY(0.5);
+                    player.setVelocity(knockbackDirection);
 
-                // Apply velocity to knock the player away in the direction the skeleton is facing
-                player.setVelocity(knockbackDirection);
+                    String displayName = skeleton.getCustomName() != null ?
+                            skeleton.getCustomName() :
+                            ChatColor.GRAY + (skeleton instanceof Stray ? "Stray" : "Skeleton");
 
-                // Get custom name with formatting
-                String displayName = skeleton.getCustomName() != null ? skeleton.getCustomName() : ChatColor.GRAY + "Skeleton";
-
-                // Send a random insult
-                player.sendMessage(displayName + ChatColor.RED + ": " + getSkeletonRandomInsult());
+                    player.sendMessage(displayName + ChatColor.RED + ": " + getSkeletonRandomInsult());
+                });
             }
+
 
             if (monster instanceof Vindicator) {
                 if (new Random().nextInt(100) < 5){
@@ -1074,6 +1181,16 @@ public class DamageListener implements Listener {
                     player.sendMessage(ChatColor.RED + "Vindicator reduced your durability by 1000");
                 }
                 event.setDamage(1);
+            }
+
+            if (Math.random() * 100 < evadeChance) {
+                // Evade successful
+                event.setCancelled(true);
+
+                spawnFloatingHologram(player.getLocation(), "Evade", player.getWorld(), "#ff0004");
+                player.getWorld().spawnParticle(Particle.SWEEP_ATTACK, player.getLocation().add(0, 1, 0), 3);
+                player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 0.6f, 1.2f);
+                return;
             }
 
             // Apply Frenzy trait bonus
@@ -2004,7 +2121,20 @@ public class DamageListener implements Listener {
         return isSupportedGround(type);
     }
 
+    @EventHandler
+    public void onMobDeath(EntityDeathEvent event) {
+        mobSkillCooldowns.remove(event.getEntity().getUniqueId());
+    }
 
+    void tryUseMobSkill(LivingEntity mob, Player player, Runnable skillEffect) {
+        UUID id = mob.getUniqueId();
+        long now = System.currentTimeMillis();
+        long lastUsed = mobSkillCooldowns.getOrDefault(id, 0L);
+        if ((now - lastUsed) >= SKILL_COOLDOWN_MS) {
+            skillEffect.run();
+            mobSkillCooldowns.put(id, now);
+        }
+    }
 }
 
 

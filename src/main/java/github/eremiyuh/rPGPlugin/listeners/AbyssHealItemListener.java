@@ -4,6 +4,8 @@ import github.eremiyuh.rPGPlugin.RPGPlugin;
 import github.eremiyuh.rPGPlugin.manager.PlayerProfileManager;
 import github.eremiyuh.rPGPlugin.profile.UserProfile;
 import github.eremiyuh.rPGPlugin.utils.ItemUtils;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -20,6 +22,21 @@ public class AbyssHealItemListener implements Listener {
     public void onPlayerRightClick(PlayerItemConsumeEvent event) {
         Player player = event.getPlayer();
         ItemStack item = event.getItem();
+        Location loc = player.getLocation();
+        String worldName = loc.getWorld().getName();
+        if (worldName.contains("world_rpg")) {
+            double x = loc.getX();
+            double z = loc.getZ();
+            if (Math.abs(x) > 17000 || Math.abs(z) > 17000) {
+                // ❌ If the item applies Bad Omen (or is suspicious stew with effect), block it
+                if (item.getType() == Material.SUSPICIOUS_STEW || item.getType() == Material.OMINOUS_BOTTLE) {
+                    event.setCancelled(true);
+                    player.sendMessage("§cYou cannot trigger a raid near or above the Level 80 zone.");
+                    return;
+                }
+            }
+        }
+
 
         // Check if the consumed item is the Abyss Potion
         if (item.isSimilar(ItemUtils.getAbyssPotion())) {

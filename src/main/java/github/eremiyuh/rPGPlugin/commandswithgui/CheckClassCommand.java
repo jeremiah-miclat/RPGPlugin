@@ -434,7 +434,7 @@ public class CheckClassCommand implements CommandExecutor, Listener {
                 if (profile.getChosenClass().equalsIgnoreCase("alchemist")) allocatedPoints = profile.getTotalAlchemistAllocatedPoints();
                 if (profile.getChosenClass().equalsIgnoreCase("swordsman")) allocatedPoints = profile.getTotalSwordsmanAllocatedPoints();
 
-                if (allocatedPoints > 10000) {
+                if (allocatedPoints >= 20000) {
                     player.sendMessage("Max attribute allocation per class reached.");
                     return;
                 }

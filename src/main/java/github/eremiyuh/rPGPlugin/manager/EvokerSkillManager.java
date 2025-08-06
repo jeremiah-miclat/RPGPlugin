@@ -14,10 +14,11 @@ public class EvokerSkillManager {
 
     private final JavaPlugin plugin;
     private final Map<UUID, Long> lastUsed = new HashMap<>();
-    private final Set<UUID> boasted = new HashSet<>(); // Tracks boasted Evokers
-    private final long cooldown = 10_000;
-    private final String targetWorld = "world_rpg";
-    List<LivingEntity> spawnedVindicators = new ArrayList<>();
+    private final Map<UUID, Long> cooldowns = new HashMap<>();
+    private final Set<UUID> boasted = new HashSet<>();
+    private final Map<UUID, List<LivingEntity>> spawnedVindicators = new HashMap<>();
+
+    private static final String TARGET_WORLD = "world_rpg";
 
     public EvokerSkillManager(JavaPlugin plugin) {
         this.plugin = plugin;
@@ -28,110 +29,93 @@ public class EvokerSkillManager {
         new BukkitRunnable() {
             @Override
             public void run() {
-                World world = Bukkit.getWorld(targetWorld);
+                World world = Bukkit.getWorld(TARGET_WORLD);
                 if (world == null) return;
 
                 long now = System.currentTimeMillis();
 
                 for (LivingEntity entity : world.getLivingEntities()) {
-                    if (!(entity instanceof Evoker evoker)) continue;
-                    if (!evoker.isValid() || evoker.isDead()) {
-                        lastUsed.remove(evoker.getUniqueId());
-                        boasted.remove(evoker.getUniqueId());
+                    if (!(entity instanceof Evoker evoker) || !evoker.isValid() || evoker.isDead()) {
+                        UUID id = entity.getUniqueId();
+                        lastUsed.remove(id);
+                        cooldowns.remove(id);
+                        boasted.remove(id);
+                        spawnedVindicators.remove(id);
                         continue;
                     }
 
                     UUID id = evoker.getUniqueId();
+
+                    // If no cooldown assigned yet, give a random one between 10 and 20 seconds
+                    cooldowns.putIfAbsent(id, (10 + new Random().nextInt(11)) * 1000L);
+
                     long last = lastUsed.getOrDefault(id, 0L);
+                    long cd = cooldowns.get(id);
                     long elapsed = now - last;
 
-                    if (elapsed >= cooldown) {
+                    if (elapsed >= cd) {
                         activateSkill(evoker);
                         lastUsed.put(id, now);
-                        boasted.remove(id); // Reset boast for next cycle
-                    } else if (elapsed >= cooldown - 5000 && !boasted.contains(id)) {
+                        cooldowns.put(id, (10 + new Random().nextInt(11)) * 1000L); // re-randomize for next use
+                        boasted.remove(id);
+                    } else if (elapsed >= cd - 5000 && !boasted.contains(id)) {
                         sendBoast(evoker);
-                        boasted.add(id); // Mark as boasted this cycle
+                        boasted.add(id);
                     }
                 }
-
-
-
-
             }
-        }.runTaskTimer(plugin, 20L, 20L); // every second
+        }.runTaskTimer(plugin, 20L, 20L); // Run every second
     }
 
-    private void activateHeal(Evoker evoker) {
-        double maxHealth = evoker.getAttribute(Attribute.MAX_HEALTH).getValue();
-        double current = evoker.getHealth();
-        double healAmount = Math.min(1000, maxHealth - current);
-
-        if (healAmount > 0) {
-            evoker.setHealth(current + healAmount);
-
-            // Healing effect: particles
-            evoker.getWorld().spawnParticle(Particle.HEART, evoker.getLocation().add(0, 1, 0), 30, 0.5, 0.5, 0.5);
-
-            // Healing sound
-            evoker.getWorld().playSound(evoker.getLocation(), Sound.ENTITY_EVOKER_PREPARE_WOLOLO, 1.5f, 1f);
-
-            // Message to nearby players
-            for (Player player : evoker.getWorld().getPlayers()) {
-                if (player.getLocation().distanceSquared(evoker.getLocation()) <= 60 * 60) {
-                    player.sendMessage("§a" + evoker.getName() + " chants: \"Life... returns to me.\"");
-                }
-            }
-        }
-    }
-
-    private void activateSkill(Evoker evoker) {
+    private void activateSkill(@NotNull Evoker evoker) {
         Location center = evoker.getLocation();
+        World world = center.getWorld();
+        if (world == null) return;
+
         double radius = 30;
+        Location centerFlat = center.clone();
+        centerFlat.setY(0);
 
-        // Sound and particle effects
-        center.getWorld().playSound(center, Sound.ENTITY_GENERIC_EXPLODE, 2f, 1f);
-        center.getWorld().spawnParticle(Particle.EXPLOSION, center.add(0, 1, 0), 1);
-        center.getWorld().spawnParticle(Particle.CLOUD, center, 100, 3, 1, 3, 0.1);
-        center.getWorld().spawnParticle(Particle.ENCHANT, center.add(0, 2, 0), 50, 1, 1, 1, 0);
+        // VFX & Sound
+        world.playSound(center, Sound.ENTITY_GENERIC_EXPLODE, 2f, 1f);
+        world.spawnParticle(Particle.EXPLOSION, center.clone().add(0, 1, 0), 1);
+        world.spawnParticle(Particle.CLOUD, center, 100, 3, 1, 3, 0.1);
+        world.spawnParticle(Particle.ENCHANT, center.clone().add(0, 2, 0), 50, 1, 1, 1, 0);
 
-
-        // Push players in XZ radius
-        for (Player player : evoker.getWorld().getPlayers()) {
+        // Knockback + damage players
+        for (Player player : world.getPlayers()) {
             Location playerLoc = player.getLocation().clone();
-            Location evokerLoc = center.clone();
             playerLoc.setY(0);
-            evokerLoc.setY(0);
 
-            if (playerLoc.distanceSquared(evokerLoc) <= radius * radius) {
-//                evoker.attack(player);
-                @NotNull Vector push = player.getLocation().toVector().subtract(center.toVector()).normalize().multiply(2);
-                push.setY(1.0); // Add upward knockback
+            if (playerLoc.distanceSquared(centerFlat) <= radius * radius) {
+                Vector push = player.getLocation().toVector().subtract(center.toVector()).normalize().multiply(2);
+                push.setY(1.0);
                 player.setVelocity(push);
-                double maxCoord = Math.max(Math.abs(evokerLoc.getX()), Math.abs(evokerLoc.getZ()));
+
+                double maxCoord = Math.max(Math.abs(center.getX()), Math.abs(center.getZ()));
                 int damage = (int) (maxCoord / 100.0);
+                if (damage > 200) {
+                    damage = (int) (Objects.requireNonNull(evoker.getAttribute(Attribute.ATTACK_DAMAGE)).getValue() * 1.2);
+                }
+
                 player.damage(damage);
                 player.sendMessage("§a" + evoker.getName() + ": \"Shinra Tensei!\"");
             }
         }
 
+        summonVindicators(evoker);
+    }
 
-
-
-        // 🔥 Summon 4 Vindicators in front of the Ravager
-        Location ravagerLoc = evoker.getLocation();
-        Vector forward = ravagerLoc.getDirection().setY(0).normalize();
-        Vector right = new Vector(-forward.getZ(), 0, forward.getX());
+    private void summonVindicators(@NotNull Evoker evoker) {
+        UUID id = evoker.getUniqueId();
+        Location base = evoker.getLocation().clone().add(evoker.getLocation().getDirection().setY(0).normalize().multiply(3));
+        Vector right = new Vector(-evoker.getLocation().getDirection().getZ(), 0, evoker.getLocation().getDirection().getX());
         World world = evoker.getWorld();
 
-// Base spawn location 3 blocks in front of the Ravager
-        Location base = ravagerLoc.clone().add(forward.clone().multiply(3));
+        List<LivingEntity> vindicators = new ArrayList<>();
 
         for (int i = -1; i <= 2; i++) {
-            Vector offset = right.clone().multiply(i); // spreads them left/right
-            Location spawnLoc = base.clone().add(offset);
-
-            // Set Y to ground level + 1
+            Location spawnLoc = base.clone().add(right.clone().multiply(i));
             spawnLoc.setY(world.getHighestBlockYAt(spawnLoc) + 1);
 
             Vindicator vindicator = (Vindicator) world.spawnEntity(spawnLoc, EntityType.VINDICATOR);
@@ -139,27 +123,49 @@ public class EvokerSkillManager {
             vindicator.setPersistent(true);
             vindicator.setRemoveWhenFarAway(false);
             vindicator.setCanPickupItems(false);
-            spawnedVindicators.add(vindicator);
+            vindicators.add(vindicator);
         }
+
+        spawnedVindicators.put(id, vindicators);
+
         new BukkitRunnable() {
             @Override
             public void run() {
-                for (LivingEntity entity : spawnedVindicators) {
-                    if (!entity.isDead()) {
-                        entity.remove();
+                List<LivingEntity> toRemove = spawnedVindicators.remove(id);
+                if (toRemove != null) {
+                    for (LivingEntity e : toRemove) {
+                        if (!e.isDead()) e.remove();
                     }
                 }
             }
-        }.runTaskLater(plugin, 6L * 20);
-
+        }.runTaskLater(plugin, 6 * 20L); // 6 seconds later
     }
 
-    private void sendBoast(Evoker evoker) {
+    private void sendBoast(@NotNull Evoker evoker) {
         evoker.getWorld().playSound(evoker.getLocation(), Sound.ENTITY_EVOKER_PREPARE_ATTACK, 1f, 0.8f);
 
         for (Player player : evoker.getWorld().getPlayers()) {
             if (player.getLocation().distanceSquared(evoker.getLocation()) <= 60 * 60) {
                 player.sendMessage("§e" + evoker.getName() + ": \"This world shall know pain...\"");
+            }
+        }
+    }
+
+    @SuppressWarnings("unused")
+    private void activateHeal(@NotNull Evoker evoker) {
+        double maxHealth = evoker.getAttribute(Attribute.MAX_HEALTH).getValue();
+        double current = evoker.getHealth();
+        double healAmount = Math.min(1000, maxHealth - current);
+
+        if (healAmount > 0) {
+            evoker.setHealth(current + healAmount);
+            evoker.getWorld().spawnParticle(Particle.HEART, evoker.getLocation().add(0, 1, 0), 30, 0.5, 0.5, 0.5);
+            evoker.getWorld().playSound(evoker.getLocation(), Sound.ENTITY_EVOKER_PREPARE_WOLOLO, 1.5f, 1f);
+
+            for (Player player : evoker.getWorld().getPlayers()) {
+                if (player.getLocation().distanceSquared(evoker.getLocation()) <= 60 * 60) {
+                    player.sendMessage("§a" + evoker.getName() + " chants: \"Life... returns to me.\"");
+                }
             }
         }
     }
