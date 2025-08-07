@@ -1249,9 +1249,10 @@ public class DamageListener implements Listener {
                     player.sendMessage(ChatColor.RED + "Vindicator reduced your durability by 1000");
                 }
                 event.setDamage(1);
+                event.setCancelled(true);
             }
 
-            if (Math.random() * 100 < evadeChance  && !isUnavoidableDamage(event.getCause())) {
+            if (Math.random() * 100 < evadeChance  && !isUnavoidableDamage(event.getCause()) && !event.isCancelled()) {
                 // Evade successful
                 event.setCancelled(true);
 
