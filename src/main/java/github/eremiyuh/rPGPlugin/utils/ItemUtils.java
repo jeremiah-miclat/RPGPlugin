@@ -24,6 +24,28 @@ import java.util.List;
 import java.util.Map;
 
 public class ItemUtils {
+
+    public static ItemStack getResistPotion() {
+        ItemStack resistItem = new ItemStack(Material.POTION); // Choose any material you prefer
+        ItemMeta meta = resistItem.getItemMeta();
+
+        if (meta != null) {
+            meta.displayName(Component.text("Potion of Resistance").color(TextColor.color(250,250,8)));
+            meta.lore(Arrays.asList(
+                    Component.text("Grants Resistance Buff for 30 minutes."),
+                    Component.text("Cost: 1 netherite currency")
+            ));
+
+            meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
+            meta.setEnchantmentGlintOverride(true);
+            resistItem.setItemMeta(meta);
+        }
+
+        return resistItem;
+    }
+
+
+
     public static ItemStack getResetItem() {
         ItemStack resetItem = new ItemStack(Material.POTION); // Choose any material you prefer
         ItemMeta meta = resetItem.getItemMeta();

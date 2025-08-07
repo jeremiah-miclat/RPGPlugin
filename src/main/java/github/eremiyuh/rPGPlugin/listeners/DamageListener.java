@@ -40,6 +40,8 @@ import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class DamageListener implements Listener {
 
@@ -51,7 +53,9 @@ public class DamageListener implements Listener {
     private final RavagerSkillManager manager;
     private final Map<UUID, Long> lastDamageTime = new HashMap<>();
     private final Map<UUID, Long> mobSkillCooldowns = new HashMap<>();
+    private final Map<UUID, Long> wardenSkillCooldowns = new HashMap<>();
     private final long SKILL_COOLDOWN_MS = 90_000;
+    private final long SKILLWARDEN_COOLDOWN_MS = 10_000;
     private final int x1 = -150, z1 = 150;
     private final int x2 = 90, z2 = -110;
 
@@ -66,6 +70,8 @@ public class DamageListener implements Listener {
     Set<UUID> rejoinDowned = new HashSet<>();
     private final Set<UUID> forceDeath = new HashSet<>();
     private final Map<UUID, Long> lastGroundedTime = new HashMap<>();
+    private final Map<UUID, Long> cooldowns = new HashMap<>();
+    private final long TELEPORT_COOLDOWN_MS = 20_000;
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
@@ -315,7 +321,50 @@ public class DamageListener implements Listener {
             // Get the damager (the entity dealing the damage)
             Entity damager = event.getDamager();
 
+            if (damaged instanceof Monster mob) {
+                String customName = mob.getCustomName();
+                int level = 0;
+                if (customName.contains("World Boss") && customName.contains("Lvl")) {
 
+                    // Remove the health indicator (anything in the format [number])
+                    customName = customName.replaceAll("\\[\\d+\\]", "").trim(); // Removes [number] and trims any extra spaces
+
+                    try {
+                        // Split the name at "Lvl" and extract the level
+                        String[] parts = customName.split("Lvl"); // Split the name at "Lvl"
+                        if (parts.length > 1) {
+                            // Get the part after "Lvl", then split by spaces to get the level
+                            String levelPart = parts[1].trim().split(" ")[0]; // Extract level number (before any space)
+                            level = Integer.parseInt(levelPart); // Parse the level number
+                            if (level >= 180) {
+
+                                UUID id = mob.getUniqueId();
+                                long now = System.currentTimeMillis();
+
+                                if (cooldowns.getOrDefault(id, 0L) <= now) {
+
+                                    Location newLoc = getSafeRandomLocation(mob.getLocation(), 8);
+                                    if (newLoc != null) {
+                                        // Teleport + cooldown + effect
+
+                                        mob.teleport(newLoc);
+                                        mob.getWorld().spawnParticle(Particle.PORTAL, newLoc.clone().add(0, 1, 0), 40, 0.5, 0.5, 0.5);
+                                        mob.getWorld().playSound(newLoc, Sound.ENTITY_ENDERMAN_TELEPORT, 1f, 1f);
+                                        cooldowns.put(id, now + TELEPORT_COOLDOWN_MS);
+
+                                    }
+                                }
+                            }
+                        }
+                    } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+
+                    }
+                }
+
+
+
+
+            }
 
             // Get the location of the damaged entity
             Location damagedLocation = damaged.getLocation();
@@ -883,6 +932,23 @@ public class DamageListener implements Listener {
         return insults[new Random().nextInt(insults.length)];
     }
 
+    private String getWRandomInsult() {
+        String[] insults = {
+                "Your heartbeat sings a song of fear.",
+                "You call that a weapon? I've stepped on worse.",
+                "Run. I love the sound of it.",
+                "You smell like surface light.",
+                "Darkness suits you — it hides your shame.",
+                "Is that fear... or just your bones rattling?",
+                "You came all this way to die?",
+                "Echoes of your failure are music to me.",
+                "You're as weak as the torches you carry.",
+                "The dark doesn't hide you. It mocks you."
+        };
+        return insults[new Random().nextInt(insults.length)];
+    }
+
+
     private boolean hasTotem(Player player) {
         ItemStack mainHand = player.getInventory().getItemInMainHand();
         ItemStack offHand = player.getInventory().getItemInOffHand();
@@ -1085,38 +1151,23 @@ public class DamageListener implements Listener {
             }
 
 
-
-            if (monster instanceof Spider s) {
-                // 10% chance to apply Nausea
-                if (new Random().nextInt(100) < 10) {
-                    UUID id = s.getUniqueId();
-                    long now = System.currentTimeMillis();
-
-                    if (mobSkillCooldowns.containsKey(id)) {
-                        long lastUsed = mobSkillCooldowns.get(id);
-                        if (!((now - lastUsed) < SKILL_COOLDOWN_MS)) {
-                            double sdmg = Objects.requireNonNull(s.getAttribute(Attribute.ATTACK_DAMAGE)).getValue();
-                            player.damage(sdmg);
-                            event.setCancelled(true);
-                            // Get custom name with formatting
-                            String displayName = s.getCustomName() != null ? s.getCustomName() : ChatColor.GRAY + "Spider";
-
-                            // Send a random insult
-                            player.sendMessage(displayName + ChatColor.RED + ": " + getSpiderRandomInsult());
-                            player.addPotionEffect(new PotionEffect(PotionEffectType.NAUSEA, 200, 2)); // 3s
-                            mobSkillCooldowns.put(id, now);
-                        }
-                    }
-
-                }
-
-            }
             if (monster instanceof Blaze) {
                 if (player.hasPotionEffect(PotionEffectType.FIRE_RESISTANCE)) {
 
                     player.removePotionEffect(PotionEffectType.FIRE_RESISTANCE);
                     player.sendMessage("Your fire resistance effect has been removed by Blaze.");
                 }
+            }
+
+            if (monster instanceof Spider s && new Random().nextInt(100) < 10) {
+                tryUseMobSkill(s, player, () -> {
+                    double sdmg = Objects.requireNonNull(s.getAttribute(Attribute.ATTACK_DAMAGE)).getValue();
+                    player.damage(sdmg);
+                    event.setCancelled(true);
+                    String displayName = s.getCustomName() != null ? s.getCustomName() : ChatColor.GRAY + "Spider";
+                    player.sendMessage(displayName + ChatColor.RED + ": " + getSpiderRandomInsult());
+                    player.addPotionEffect(new PotionEffect(PotionEffectType.NAUSEA, 200, 2));
+                });
             }
 
             if (monster instanceof CaveSpider s && new Random().nextInt(100) < 10) {
@@ -1152,6 +1203,23 @@ public class DamageListener implements Listener {
                 });
             }
 
+            if (monster instanceof Warden w && new Random().nextInt(100) < 5) {
+                tryUseWSkill(w, player, () -> {
+                    double wdmg = Objects.requireNonNull(w.getAttribute(Attribute.ATTACK_DAMAGE)).getValue();
+                    player.damage(wdmg);
+                    event.setCancelled(true);
+
+                    // Knockback
+                    Vector direction = player.getLocation().toVector().subtract(w.getLocation().toVector()).normalize();
+                    direction.setY(0.3); // slight upward push
+                    player.setVelocity(direction.multiply(3.5));
+
+                    // Message
+                    String displayName = w.getCustomName() != null ? w.getCustomName() : ChatColor.GRAY + "Warden";
+                    player.sendMessage(displayName + ChatColor.RED + ": " + getWRandomInsult());
+                });
+            }
+
             if ((monster instanceof Skeleton || monster instanceof Stray) && new Random().nextInt(100) < 10) {
                 Skeleton skeleton = (Skeleton) monster;
                 tryUseMobSkill(skeleton, player, () -> {
@@ -1183,7 +1251,7 @@ public class DamageListener implements Listener {
                 event.setDamage(1);
             }
 
-            if (Math.random() * 100 < evadeChance) {
+            if (Math.random() * 100 < evadeChance  && !isUnavoidableDamage(event.getCause())) {
                 // Evade successful
                 event.setCancelled(true);
 
@@ -1209,6 +1277,12 @@ public class DamageListener implements Listener {
         }
 
 
+    }
+
+    private boolean isUnavoidableDamage(EntityDamageEvent.DamageCause cause) {
+        return cause == EntityDamageEvent.DamageCause.BLOCK_EXPLOSION ||
+                cause == EntityDamageEvent.DamageCause.ENTITY_EXPLOSION || cause == EntityDamageEvent.DamageCause.SONIC_BOOM
+                ;
     }
 
 
@@ -2124,6 +2198,8 @@ public class DamageListener implements Listener {
     @EventHandler
     public void onMobDeath(EntityDeathEvent event) {
         mobSkillCooldowns.remove(event.getEntity().getUniqueId());
+        cooldowns.remove(event.getEntity().getUniqueId());
+        wardenSkillCooldowns.remove(event.getEntity().getUniqueId());
     }
 
     void tryUseMobSkill(LivingEntity mob, Player player, Runnable skillEffect) {
@@ -2135,6 +2211,66 @@ public class DamageListener implements Listener {
             mobSkillCooldowns.put(id, now);
         }
     }
+
+    void tryUseWSkill(LivingEntity mob, Player player, Runnable skillEffect) {
+        UUID id = mob.getUniqueId();
+        long now = System.currentTimeMillis();
+        long lastUsed = wardenSkillCooldowns.getOrDefault(id, 0L);
+        if ((now - lastUsed) >= SKILLWARDEN_COOLDOWN_MS) {
+            skillEffect.run();
+            wardenSkillCooldowns.put(id, now);
+        }
+    }
+
+    private Location getSafeRandomLocation(Location origin, int radius) {
+        World world = origin.getWorld();
+        if (world == null) return null;
+
+        for (int attempt = 0; attempt < 30; attempt++) {
+            int dx = (int) ((Math.random() * radius * 2) - radius);
+            int dz = (int) ((Math.random() * radius * 2) - radius);
+
+            int x = origin.getBlockX() + dx;
+            int z = origin.getBlockZ() + dz;
+
+            int maxY = world.getMaxHeight();
+
+            // Scan from top to bottom
+            for (int y = maxY - 4; y > world.getMinHeight(); y--) {
+                Location groundLoc = new Location(world, x, y, z);
+
+
+                if (isSolidWith3AirAbove(groundLoc)) {
+                    return groundLoc.clone().add(0.5, 1, 0.5); // Centered above ground
+                }
+            }
+        }
+
+        return null; // No safe spot found after 30 attempts
+    }
+
+
+
+    private boolean isSolidWith3AirAbove(Location ground) {
+        Block base = ground.getBlock();
+        if (!base.getType().isSolid()) return false;
+
+        // Exclude known unsafe ground materials
+        Material[] unsafeGrounds = {
+                Material.LAVA, Material.WATER, Material.CACTUS, Material.COBWEB, Material.MAGMA_BLOCK
+        };
+        if (Arrays.asList(unsafeGrounds).contains(base.getType())) return false;
+
+        // Ensure 3 air blocks above
+        for (int i = 1; i <= 3; i++) {
+            Block above = ground.clone().add(0, i, 0).getBlock();
+            if (!above.isPassable()) return false;
+        }
+
+        return true;
+    }
+
+
 }
 
 

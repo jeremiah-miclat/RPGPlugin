@@ -39,6 +39,8 @@ public class WorldProtectionListener implements Listener {
         ANNOYING_BLOCKS.add(Material.DEAD_BUSH);
         ANNOYING_BLOCKS.add(Material.FIRE);
         ANNOYING_BLOCKS.add(Material.SOUL_FIRE);
+        ANNOYING_BLOCKS.add(Material.WILDFLOWERS);
+        ANNOYING_BLOCKS.add(Material.BUSH);
     }
 
     @EventHandler

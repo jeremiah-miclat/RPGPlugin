@@ -84,7 +84,7 @@ public class PotionGiveListener implements Listener {
 //                            PotionEffectType.WITHER,
                             PotionEffectType.SLOWNESS,
                             PotionEffectType.STRENGTH,
-                            PotionEffectType.SPEED,
+//                            PotionEffectType.SPEED,
                             PotionEffectType.RESISTANCE
                     );
 

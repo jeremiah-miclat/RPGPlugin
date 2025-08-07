@@ -79,6 +79,13 @@ public class WardenSkillManager {
             wardenLoc.setY(0);
 
             if (playerLoc.distanceSquared(wardenLoc) <= radius * radius) {
+                double maxXZ = Math.max(Math.abs(wardenLoc.getX()), Math.abs(wardenLoc.getZ()));
+                int damage = (int) (maxXZ / 100.0);
+                if (damage > 200) {
+                    damage = (int) (Objects.requireNonNull(warden.getAttribute(Attribute.ATTACK_DAMAGE)).getValue() * 1.2);
+                }
+
+                player.damage(damage);
                 Location target = center.clone().add(direction).add(0, 1, 0);
                 player.teleport(target);
                 player.playSound(target, Sound.ENTITY_ENDERMAN_TELEPORT, 1.5f, 1.0f);

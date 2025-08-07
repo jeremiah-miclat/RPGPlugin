@@ -25,8 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static github.eremiyuh.rPGPlugin.utils.ItemUtils.getAbyssOre;
-import static github.eremiyuh.rPGPlugin.utils.ItemUtils.getAbyssPotion;
+import static github.eremiyuh.rPGPlugin.utils.ItemUtils.*;
 
 public class AbyssStoreCommand implements CommandExecutor, Listener {
     private final RPGPlugin plugin;
@@ -151,6 +150,10 @@ public class AbyssStoreCommand implements CommandExecutor, Listener {
 
         abyssStore.setItem(7, withSpawnEgg);
 
+        // Resistance Potion
+        ItemStack resistPotion = getResistPotion();
+        abyssStore.setItem(8, resistPotion);
+
 
 
         // Open the Abyss Store GUI for the player
@@ -247,6 +250,16 @@ public class AbyssStoreCommand implements CommandExecutor, Listener {
                     dropOrNotify(player, new ItemStack(Material.WITHER_SPAWN_EGG), "Successfully purchased!");
                 } else {
                     player.sendMessage(Component.text("You do not have enough emerald!").color(TextColor.color(255, 0, 0)));
+                }
+            }
+
+            //resist potion
+            if (event.getSlot() == 8 && event.getCurrentItem() != null && event.getCurrentItem().isSimilar(getResistPotion())) {
+                if (userProfile.getNetherite() >= 1) {
+                    userProfile.setNetherite(userProfile.getNetherite() - 1);
+                    dropOrNotify(player, ItemUtils.getResistPotion(), "Successfully purchased Resistance Potion!");
+                } else {
+                    player.sendMessage(Component.text("You do not have enough netherite currency!").color(TextColor.color(255, 0, 0)));
                 }
             }
         }
