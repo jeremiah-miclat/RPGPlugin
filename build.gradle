@@ -20,7 +20,8 @@ repositories {
 
 dependencies {
 //    compileOnly("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT")
-    compileOnly("io.papermc.paper:paper-api:1.21.6-R0.1-SNAPSHOT")
+//    compileOnly("io.papermc.paper:paper-api:1.21.6-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.21.8-R0.1-SNAPSHOT")
     compileOnly 'com.discordsrv:discordsrv:1.29.0'
     compileOnly 'net.dv8tion:JDA:5.0.0-alpha.14'  // Ensure this matches the version compatible with DiscordSRV
 }

@@ -1138,17 +1138,7 @@ public class DamageListener implements Listener {
             }
 
 
-            double evadeChance;
-            double agiPerLevel = agility / lvl;
 
-            if (agiPerLevel < 25.0) {
-                evadeChance = (agiPerLevel / 25.0) * 80.0;
-            } else if (agiPerLevel < 50.0) {
-                double bonus = ((agiPerLevel - 25.0) / 25.0) * 20.0; // 20% from 25 to 50
-                evadeChance = 80.0 + bonus;
-            } else {
-                evadeChance = 100.0;
-            }
 
 
             if (monster instanceof Blaze) {
@@ -1250,6 +1240,18 @@ public class DamageListener implements Listener {
                 }
                 event.setDamage(1);
                 event.setCancelled(true);
+            }
+
+            double evadeChance;
+            double agiPerLevel = agility / lvl;
+
+            if (agiPerLevel < 25.0) {
+                evadeChance = (agiPerLevel / 25.0) * 80.0;
+            } else if (agiPerLevel < 50.0) {
+                double bonus = ((agiPerLevel - 25.0) / 25.0) * 20.0; // 20% from 25 to 50
+                evadeChance = 80.0 + bonus;
+            } else {
+                evadeChance = 100.0;
             }
 
             if (Math.random() * 100 < evadeChance  && !isUnavoidableDamage(event.getCause()) && !event.isCancelled()) {

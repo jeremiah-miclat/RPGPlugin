@@ -274,7 +274,7 @@ public class CheckClassCommand implements CommandExecutor, Listener {
         lore.add("§7Crit%: " + df.format(profile.getCrit() * 100) + "%");
         lore.add("§7CritDmg%: " + df.format(profile.getCritDmg() * 100) + "%");
         lore.add("§7Lifesteal%: " + df.format(profile.getLs() * 100) + "%");
-        lore.add("§7Evasion%(Same level mob): " + df.format(profile.getTempAgi()/profile.getLevel()) + "%");
+        lore.add("§7Evasion%(Same level mob): " + df.format(calculateEvasion(profile.getTempAgi(), profile.getLevel())) + "%");
 
         // Add remaining points, total allocated points for chosen class, and overall allocated points
         lore.add("§eRemaining Points: " + profile.getCurrentAttributePoints());
@@ -313,7 +313,20 @@ public class CheckClassCommand implements CommandExecutor, Listener {
         return (baseHealth + (healthPerVitality * vitality)) * hpMultiplier;
     }
 
+    private double calculateEvasion(double agility, int level) {
+        double evadeChance;
+        double agiPerLevel = agility / level;
 
+        if (agiPerLevel < 25.0) {
+            evadeChance = (agiPerLevel / 25.0) * 80.0;
+        } else if (agiPerLevel < 50.0) {
+            double bonus = ((agiPerLevel - 25.0) / 25.0) * 20.0; // 20% from 25 to 50
+            evadeChance = 80.0 + bonus;
+        } else {
+            evadeChance = 100.0;
+        }
+        return evadeChance;
+    }
 
     private void createAttributePointItems(Inventory gui, Player player, UserProfile profile) {
         String[] attributes = {"Strength", "Agility", "Dexterity", "Intelligence", "Vitality", "Luck"};

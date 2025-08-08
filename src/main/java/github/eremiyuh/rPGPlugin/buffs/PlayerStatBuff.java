@@ -444,4 +444,18 @@ public class PlayerStatBuff {
         return multiplier;
     }
 
+    private double calculateEvasion(double agility, int level) {
+        double evadeChance;
+        double agiPerLevel = agility / level;
+
+        if (agiPerLevel < 25.0) {
+            evadeChance = (agiPerLevel / 25.0) * 80.0;
+        } else if (agiPerLevel < 50.0) {
+            double bonus = ((agiPerLevel - 25.0) / 25.0) * 20.0; // 20% from 25 to 50
+            evadeChance = 80.0 + bonus;
+        } else {
+            evadeChance = 100.0;
+        }
+        return evadeChance;
+    }
 }

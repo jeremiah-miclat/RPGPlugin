@@ -41,6 +41,12 @@ public class WorldProtectionListener implements Listener {
         ANNOYING_BLOCKS.add(Material.SOUL_FIRE);
         ANNOYING_BLOCKS.add(Material.WILDFLOWERS);
         ANNOYING_BLOCKS.add(Material.BUSH);
+        ANNOYING_BLOCKS.add(Material.LARGE_FERN);
+        ANNOYING_BLOCKS.add(Material.VINE);
+        ANNOYING_BLOCKS.add(Material.LEAF_LITTER);
+        ANNOYING_BLOCKS.add(Material.FIREFLY_BUSH);
+        ANNOYING_BLOCKS.add(Material.SHORT_DRY_GRASS);
+        ANNOYING_BLOCKS.add(Material.TALL_DRY_GRASS);
     }
 
     @EventHandler

@@ -396,27 +396,33 @@ public class AreaProtectionListener implements Listener {
 
     @EventHandler
     public void onSpawnEgg(PlayerInteractEvent event) {
+        if (event.getHand() != EquipmentSlot.HAND) return;
 
-        if (event.getHand() != EquipmentSlot.HAND) return; // Only check for main hand
-        if (event.getItem() == null || (event.getItem().getType() != Material.WARDEN_SPAWN_EGG && event.getItem().getType() != Material.RAVAGER_SPAWN_EGG
-                && event.getItem().getType() != Material.EVOKER_SPAWN_EGG && event.getItem().getType() != Material.WITHER_SPAWN_EGG && event.getItem().getType() != Material.VILLAGER_SPAWN_EGG
-        )) return; // Only check for spawn eggs
-        if (!event.getPlayer().isOp() && isInProtectedArea(Objects.requireNonNull(event.getClickedBlock()).getLocation().getBlockX(), event.getClickedBlock().getLocation().getBlockZ())) {
-            event.setCancelled(true);
-            return;}
-        if (!event.getPlayer().getWorld().getName().equals("world_rpg")) {
-//            event.setCancelled(true);
-            return;
-        }
-        Player player = event.getPlayer();
+        ItemStack item = event.getItem();
+        if (item == null || (item.getType() != Material.WARDEN_SPAWN_EGG &&
+                item.getType() != Material.RAVAGER_SPAWN_EGG &&
+                item.getType() != Material.EVOKER_SPAWN_EGG &&
+                item.getType() != Material.WITHER_SPAWN_EGG &&
+                item.getType() != Material.VILLAGER_SPAWN_EGG)) return;
+
         Block clickedBlock = event.getClickedBlock();
-
         if (clickedBlock == null) {
             event.setCancelled(true);
             return;
         }
 
-        Location location = Objects.requireNonNull(event.getClickedBlock()).getLocation();
+        Location location = clickedBlock.getLocation();
+
+        if (!event.getPlayer().isOp() && isInProtectedArea(location.getBlockX(), location.getBlockZ())) {
+            event.setCancelled(true);
+            return;
+        }
+
+        if (!event.getPlayer().getWorld().getName().equals("world_rpg")) {
+            return;
+        }
+
+        Player player = event.getPlayer();
 
         if (location.getY() <= 56) {
             event.setCancelled(true);
@@ -424,7 +430,6 @@ public class AreaProtectionListener implements Listener {
             return;
         }
 
-        // Check for air 3 blocks above
         for (int i = 1; i <= 3; i++) {
             Block blockAbove = location.clone().add(0, i, 0).getBlock();
             if (blockAbove.getType() != Material.AIR) {
@@ -434,11 +439,10 @@ public class AreaProtectionListener implements Listener {
             }
         }
 
-        // Check for air 2 blocks around x and z, excluding player's location
         for (int xOffset = -3; xOffset <= 3; xOffset++) {
             for (int zOffset = -3; zOffset <= 3; zOffset++) {
                 Location checkLocation = location.clone().add(xOffset, 1, zOffset);
-                if (!checkLocation.equals(player.getLocation())) { // Check if it's not the player's location
+                if (!checkLocation.equals(player.getLocation())) {
                     Block blockAround = checkLocation.getBlock();
                     if (blockAround.getType().isSolid()) {
                         event.setCancelled(true);
