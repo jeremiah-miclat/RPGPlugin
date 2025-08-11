@@ -397,6 +397,7 @@ public class AreaProtectionListener implements Listener {
     @EventHandler
     public void onSpawnEgg(PlayerInteractEvent event) {
         if (event.getHand() != EquipmentSlot.HAND) return;
+        if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
 
         ItemStack item = event.getItem();
         if (item == null || (item.getType() != Material.WARDEN_SPAWN_EGG &&
@@ -406,10 +407,7 @@ public class AreaProtectionListener implements Listener {
                 item.getType() != Material.VILLAGER_SPAWN_EGG)) return;
 
         Block clickedBlock = event.getClickedBlock();
-        if (clickedBlock == null) {
-            event.setCancelled(true);
-            return;
-        }
+        if (clickedBlock == null) return;
 
         Location location = clickedBlock.getLocation();
 
@@ -418,9 +416,7 @@ public class AreaProtectionListener implements Listener {
             return;
         }
 
-        if (!event.getPlayer().getWorld().getName().equals("world_rpg")) {
-            return;
-        }
+        if (!event.getPlayer().getWorld().getName().equals("world_rpg")) return;
 
         Player player = event.getPlayer();
 
@@ -453,6 +449,7 @@ public class AreaProtectionListener implements Listener {
             }
         }
     }
+
 
     @EventHandler
     public void onLightning(LightningStrikeEvent event) {

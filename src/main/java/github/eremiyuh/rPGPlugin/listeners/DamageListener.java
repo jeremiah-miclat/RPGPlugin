@@ -138,7 +138,7 @@ public class DamageListener implements Listener {
     @EventHandler (priority = EventPriority.LOWEST)
     public void onEntityDamage(EntityDamageByEntityEvent event) {
 
-        if (!Objects.requireNonNull(event.getDamager().getLocation().getWorld()).getName().equals("world_rpg") && !Objects.requireNonNull(event.getEntity().getLocation().getWorld()).getName().contains("world_labyrinth")) {
+        if (!Objects.requireNonNull(event.getDamager().getLocation().getWorld()).getName().contains("_rpg")) {
             // Get the entity that was damaged
             Entity damaged = event.getEntity();
             // Get the damager (the entity dealing the damage)
@@ -287,28 +287,9 @@ public class DamageListener implements Listener {
         }
 
 
-        if (Objects.requireNonNull(event.getDamager().getLocation().getWorld()).getName().equals("world_rpg") || Objects.requireNonNull(event.getEntity().getLocation().getWorld()).getName().contains("world_labyrinth")) {
+        if (Objects.requireNonNull(event.getDamager().getLocation().getWorld()).getName().contains("_rpg")) {
             Location loc = event.getEntity().getLocation();
-            // Check if the world name contains "Labyrinth" and coordinates match
-            if (loc.getWorld().getName().contains("labyrinth")) {
-                int x = loc.getBlockX();
-                int z = loc.getBlockZ();
 
-
-                // Check if the coordinates are within the specified range
-                if ((x >= -23 && x <= -6 && z >= -38 && z <= -34) && event.getEntity() instanceof Monster) {
-                    // Cancel the damage
-                    event.setCancelled(true);
-                    return;
-                }
-
-                // Check if the coordinates are within the specified range
-                if ((x >= -23 && x <= -17 && z >= -38 && z <= -34) && event.getEntity() instanceof Player) {
-                    // Cancel the damage
-                    event.setCancelled(true);
-                    return;
-                }
-            }
 
 
             if (!(event.getEntity() instanceof LivingEntity) && !(event.getEntity() instanceof  Monster)) {
@@ -323,41 +304,22 @@ public class DamageListener implements Listener {
 
             if (damaged instanceof Monster mob) {
                 String customName = mob.getCustomName();
-                int level = 0;
                 if (customName.contains("World Boss") && customName.contains("Lvl")) {
+                    UUID id = mob.getUniqueId();
+                    long now = System.currentTimeMillis();
 
-                    // Remove the health indicator (anything in the format [number])
-                    customName = customName.replaceAll("\\[\\d+\\]", "").trim(); // Removes [number] and trims any extra spaces
+                    if (cooldowns.getOrDefault(id, 0L) <= now) {
 
-                    try {
-                        // Split the name at "Lvl" and extract the level
-                        String[] parts = customName.split("Lvl"); // Split the name at "Lvl"
-                        if (parts.length > 1) {
-                            // Get the part after "Lvl", then split by spaces to get the level
-                            String levelPart = parts[1].trim().split(" ")[0]; // Extract level number (before any space)
-                            level = Integer.parseInt(levelPart); // Parse the level number
-                            if (level >= 180) {
+                        Location newLoc = getSafeRandomLocation(mob.getLocation(), 8);
+                        if (newLoc != null) {
+                            // Teleport + cooldown + effect
 
-                                UUID id = mob.getUniqueId();
-                                long now = System.currentTimeMillis();
+                            mob.teleport(newLoc);
+                            mob.getWorld().spawnParticle(Particle.PORTAL, newLoc.clone().add(0, 1, 0), 40, 0.5, 0.5, 0.5);
+                            mob.getWorld().playSound(newLoc, Sound.ENTITY_ENDERMAN_TELEPORT, 1f, 1f);
+                            cooldowns.put(id, now + TELEPORT_COOLDOWN_MS);
 
-                                if (cooldowns.getOrDefault(id, 0L) <= now) {
-
-                                    Location newLoc = getSafeRandomLocation(mob.getLocation(), 8);
-                                    if (newLoc != null) {
-                                        // Teleport + cooldown + effect
-
-                                        mob.teleport(newLoc);
-                                        mob.getWorld().spawnParticle(Particle.PORTAL, newLoc.clone().add(0, 1, 0), 40, 0.5, 0.5, 0.5);
-                                        mob.getWorld().playSound(newLoc, Sound.ENTITY_ENDERMAN_TELEPORT, 1f, 1f);
-                                        cooldowns.put(id, now + TELEPORT_COOLDOWN_MS);
-
-                                    }
-                                }
-                            }
                         }
-                    } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
-
                     }
                 }
 
@@ -656,7 +618,12 @@ public class DamageListener implements Listener {
                     }
                     if (attackerProfile != null) {
                         if (attackerProfile.getChosenClass().equalsIgnoreCase("alchemist") && attacker.getName().equals(victim.getName())) {event.setCancelled(true); return;}
-                        handleLongRangeDamage(attacker,victim,event,damagerLocation,damagedLocation,attackerProfile, attackerProfile.getSplashDmg());
+                        double splash = attackerProfile.getSplashDmg();
+                        if (damaged instanceof Player) {
+                            splash = ((double) attackerProfile.getTempIntel() /100)*8;
+                        }
+
+                        handleLongRangeDamage(attacker,victim,event,damagerLocation,damagedLocation,attackerProfile, splash);
 
                         if ((event.getEntity() instanceof Ravager ravager)) {
 
@@ -1307,7 +1274,12 @@ public class DamageListener implements Listener {
                 && (weapon.containsEnchantment(Enchantment.FLAME) || weapon.containsEnchantment(Enchantment.FIRE_ASPECT))) {
             event.getEntity().setFireTicks(0); // Cancel fire ticks
         }
-        double damageWithStats = applyStatsToDamage(damagerProfile.getMeleeDmg()+baseDamage, damagerProfile, attacker, event);
+
+        double statDamage = damagerProfile.getMeleeDmg();
+
+        if (event.getEntity() instanceof Player) statDamage*=.2;
+
+        double damageWithStats = applyStatsToDamage(statDamage+baseDamage, damagerProfile, attacker, event);
         if (event.isCancelled()) return;
 
         if (event.getCause() == EntityDamageEvent.DamageCause.THORNS) {
@@ -1715,8 +1687,13 @@ public class DamageListener implements Listener {
                 && (weapon.containsEnchantment(Enchantment.FLAME) || weapon.containsEnchantment(Enchantment.FIRE_ASPECT))) {
             event.getEntity().setFireTicks(0); // Cancel fire ticks
         }
+
+        double statDamage = damage;
+
+        if (event.getEntity() instanceof Player) statDamage*=.2;
+
         // Apply stats based on class for non-default players
-        double damageWithStats = applyStatsToDamage(baseDamage+damage, damagerProfile, attacker, event);
+        double damageWithStats = applyStatsToDamage(baseDamage+statDamage, damagerProfile, attacker, event);
 
         if (event.isCancelled()) return;
 
@@ -1876,17 +1853,63 @@ public class DamageListener implements Listener {
             UserProfile defenderProfile = profileManager.getProfile(defender.getName());
             double attackerDex = damagerProfile.getTempDex();
             double defenderAgi = defenderProfile.getTempAgi();
+            double attackerLvl = damagerProfile.getArLvl();
+            double defenderLvl = defenderProfile.getArLvl();
 
-            double evadeChance = 50.0 + ((defenderAgi - attackerDex) * 0.25);
-            evadeChance = Math.max(5.0, Math.min(evadeChance, 95.0));
+
+            // === Evade calculation (AGI-based) ===
+            double evadeChance;
+            double agiPerLevel = defenderAgi / attackerLvl;
+
+            if (agiPerLevel < 25.0) {
+                evadeChance = (agiPerLevel / 25.0) * 80.0;
+            } else if (agiPerLevel < 50.0) {
+                double bonus = ((agiPerLevel - 25.0) / 25.0) * 20.0; // +20% from 25 to 50
+                evadeChance = 80.0 + bonus;
+            } else {
+                evadeChance = 100.0;
+            }
+
+// Cap evade to 70% unless stat gap >= 1000
+            double statDiffEvade = defenderAgi - attackerDex;
+            if (Math.abs(statDiffEvade) < 1000) {
+                evadeChance = Math.min(evadeChance, 70.0);
+            }
+
+// === Pierce calculation (DEX-based) ===
+            double pierceChance;
+            double dexPerLevel = attackerDex / defenderLvl;
+
+            if (dexPerLevel < 25.0) {
+                pierceChance = (dexPerLevel / 25.0) * 80.0;
+            } else if (dexPerLevel < 50.0) {
+                double bonus = ((dexPerLevel - 25.0) / 25.0) * 20.0;
+                pierceChance = 80.0 + bonus;
+            } else {
+                pierceChance = 100.0;
+            }
+
+// Cap pierce to 70% unless stat gap >= 1000
+            double statDiffPierce = attackerDex - defenderAgi;
+            if (Math.abs(statDiffPierce) < 1000) {
+                pierceChance = Math.min(pierceChance, 70.0);
+            }
+
 
             if (Math.random() * 100 < evadeChance) {
-                // Evade successful
-                event.setCancelled(true);
-                spawnFloatingHologram(defender.getLocation(), "Evade", defender.getWorld(), "#ff0004");
-                defender.getWorld().spawnParticle(Particle.SWEEP_ATTACK, defender.getLocation().add(0, 1, 0), 3);
-                defender.getWorld().playSound(defender.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 0.6f, 1.2f);
-                return 0; // damage is negated due to evasion
+                // Evade triggered — now check pierce
+                if (Math.random() * 100 < pierceChance) {
+                    // Pierce succeeds → evade ignored
+                    spawnFloatingHologram(defender.getLocation(), "Pierce!", defender.getWorld(), "#ffcc00");
+                    defender.getWorld().playSound(defender.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 0.8f, 1.0f);
+                } else {
+                    // Pierce fails → evade successful
+                    event.setCancelled(true);
+                    spawnFloatingHologram(defender.getLocation(), "Evade", defender.getWorld(), "#ff0004");
+                    defender.getWorld().spawnParticle(Particle.SWEEP_ATTACK, defender.getLocation().add(0, 1, 0), 3);
+                    defender.getWorld().playSound(defender.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 0.6f, 1.2f);
+                    return 0;
+                }
             }
         }
 
@@ -1924,6 +1947,7 @@ public class DamageListener implements Listener {
         } else {
             damagerProfile.setStamina(damagerProfile.getStamina() - 1);
         }
+
         return calculatedDamage;
     }
 

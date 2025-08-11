@@ -119,6 +119,9 @@ public class UserProfile {
     private double longDmg = 0;
     private double splashDmg = 0;
 
+    // abyss royale level
+    private int arLvl = 0;
+
     //constructor
     public UserProfile(String playerName) {
         this.crit = 0;
@@ -733,6 +736,14 @@ public class UserProfile {
 
     public void setSplashDmg(double splashDmg) {
         this.splashDmg = splashDmg;
+    }
+
+    public int getArLvl() {
+        return arLvl;
+    }
+
+    public void setArLvl(int arLvl) {
+        this.arLvl = arLvl;
     }
 
     // Inner class to hold class-specific attributes

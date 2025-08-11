@@ -34,25 +34,25 @@ public class MonsterInitializer implements Listener {
         this.plugin = plugin;
     }
 
-    @EventHandler
-    public void onRaidEvent(RaidTriggerEvent event) {
-        if (!event.getWorld().getName().contains("world_rpg")) {
-            return;
-        }
-        Location location = event.getRaid().getLocation();
-        double x = location.getX();
-        double z = location.getZ();
-
-        // Cancel if outside ±18000 range
-        if (Math.abs(x) > 18000 || Math.abs(z) > 18000) {
-            event.setCancelled(true);
-        }
-    }
+//    @EventHandler
+//    public void onRaidEvent(RaidTriggerEvent event) {
+//        if (!event.getWorld().getName().contains("world_rpg")) {
+//            return;
+//        }
+//        Location location = event.getRaid().getLocation();
+//        double x = location.getX();
+//        double z = location.getZ();
+//
+//        // Cancel if outside ±18000 range
+//        if (Math.abs(x) > 18000 || Math.abs(z) > 18000) {
+//            event.setCancelled(true);
+//        }
+//    }
 
     @EventHandler
     public void onMobPickUpItem(EntityPickupItemEvent event) {
         String world = Objects.requireNonNull(event.getEntity().getLocation().getWorld()).getName();
-        if (!world.contains("world_rpg")) {
+        if (!world.contains("_rpg")) {
             return;
         }
 
@@ -65,7 +65,7 @@ public class MonsterInitializer implements Listener {
     public void armorStandSpawn(EntitySpawnEvent event) {
         String world = Objects.requireNonNull(event.getLocation().getWorld()).getName();
 
-        if (!world.equals("world_rpg")) {
+        if (!world.contains("_rpg")) {
             return;
         }
         if (!(event.getEntity() instanceof ArmorStand)) {
@@ -87,7 +87,7 @@ public class MonsterInitializer implements Listener {
     public void onCreatureSpawn(CreatureSpawnEvent event) {
         String world = Objects.requireNonNull(event.getLocation().getWorld()).getName();
 
-        if (!world.equals("world_rpg")) {
+        if (!world.contains("_rpg")) {
             return;
         }
         event.getEntity().setCanPickupItems(false);
@@ -195,10 +195,14 @@ public class MonsterInitializer implements Listener {
             extraHealth = lvl*100+entity.getHealth();
         }
 
-        double customDamage = (lvl*.5) + Objects.requireNonNull(entity.getAttribute(Attribute.ATTACK_DAMAGE)).getValue() + 2;
+        double customDamage = (lvl*.5) + Objects.requireNonNull(entity.getAttribute(Attribute.ATTACK_DAMAGE)).getValue();
+
+        if (lvl>=20) {
+            customDamage = (lvl*.5)+ Objects.requireNonNull(entity.getAttribute(Attribute.ATTACK_DAMAGE)).getValue()+2;
+        }
 
         if (lvl>199) {
-            customDamage = lvl*4+ + Objects.requireNonNull(entity.getAttribute(Attribute.ATTACK_DAMAGE)).getValue();
+            customDamage = (lvl*.7)+ Objects.requireNonNull(entity.getAttribute(Attribute.ATTACK_DAMAGE)).getValue()+2;
         }
 
         // First, check for the purple world boss (0.1% chance)
