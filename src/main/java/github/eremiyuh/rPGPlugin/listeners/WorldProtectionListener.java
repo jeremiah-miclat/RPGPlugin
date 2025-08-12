@@ -26,7 +26,7 @@ public class WorldProtectionListener implements Listener {
 
     public WorldProtectionListener(JavaPlugin plugin) {
         this.plugin = plugin;
-        this.protectedWorldNames = Set.of("world_rpg", "world_labyrinth", "world_labyrinth2"); // Add all protected world names here
+        this.protectedWorldNames = Set.of("world_rpg", "world_rpg_br_10", "world_labyrinth2"); // Add all protected world names here
     }
 
     private static final Set<Material> ANNOYING_BLOCKS;

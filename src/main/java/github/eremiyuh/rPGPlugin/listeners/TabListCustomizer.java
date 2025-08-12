@@ -9,7 +9,9 @@ import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -107,6 +109,34 @@ public class TabListCustomizer implements Listener {
         if (profile == null || profile.getChosenClass() == null) return "";
 
         String profileClass = profile.getChosenClass();
+        int arlvl= profile.getArLvl();
+        String worldName = player.getWorld().getName();
+        if (worldName.contains("_br")) {
+            if (!profile.getTeam().equalsIgnoreCase("none")) {
+                World mainWorld = Bukkit.getWorld("world");
+                if (mainWorld != null) {
+                    player.teleport(mainWorld.getSpawnLocation());
+                    player.sendMessage(ChatColor.RED + "You can not team up in this world. Teleporting to spawn.");
+                }
+            }
+
+            // Extract map level from the world name (e.g., world_rpg_br_10 -> 10)
+            String[] parts = worldName.split("_");
+            int mapLvl = Integer.parseInt(parts[parts.length - 1]);
+
+            // The map level corresponds to the *upper bound* of the range
+            int minLvl = mapLvl - 9;
+            int maxLvl = mapLvl;
+
+            // If player level is outside the allowed range, teleport to main world spawn
+            if (arlvl < minLvl || arlvl > maxLvl ) {
+                World mainWorld = Bukkit.getWorld("world");
+                if (mainWorld != null) {
+                    player.teleport(mainWorld.getSpawnLocation());
+                    player.sendMessage(ChatColor.RED + "You are not in the correct BP. Teleported to spawn.");
+                }
+            }
+        }
         String capitalizedClass = profileClass.substring(0, 1).toUpperCase() + profileClass.substring(1);
 
         return String.format(" - %s Lvl %d |", capitalizedClass, profile.getLevel());

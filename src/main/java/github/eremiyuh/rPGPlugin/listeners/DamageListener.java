@@ -987,7 +987,7 @@ public class DamageListener implements Listener {
             lastDamageTime.put(uuid, now);
         }
 
-        if (!Objects.requireNonNull(event.getEntity().getLocation().getWorld()).getName().equals("world_rpg") && !Objects.requireNonNull(event.getEntity().getLocation().getWorld()).getName().contains("world_labyrinth")) {
+        if (!Objects.requireNonNull(event.getEntity().getLocation().getWorld()).getName().contains("world_rpg")) {
             return;
         }
 
@@ -1243,7 +1243,7 @@ public class DamageListener implements Listener {
             World world = entity.getWorld();
             String color = (entity instanceof Player) ? "#ff0004" : "#AA00FF";
 
-            spawnFloatingHologram(loc, (Math.max((int) event.getFinalDamage(),1)) + "", world, color);
+            spawnFloatingHologram(loc, String.valueOf((int) Math.ceil(event.getFinalDamage())), world, color);
         }
 
 
@@ -1345,7 +1345,11 @@ public class DamageListener implements Listener {
 
 
         float attackCooldown = attacker.getAttackCooldown();
-            finalDamage *= attackCooldown;
+        if (attackCooldown <= 0.5) {
+            finalDamage = finalDamage * 0.1; // 10% damage
+        } else {
+            finalDamage = finalDamage * attackCooldown;
+        }
 
         if (hasBeenAirborneTooLong(attacker, 5000) && !isStandingOnSolidBlock(attacker)) {
             attacker.sendMessage("§e⚠ Damage is reduced because you have been in the air, on water, or on lava for too long.");
@@ -1872,7 +1876,7 @@ public class DamageListener implements Listener {
 
 // Cap evade to 70% unless stat gap >= 1000
             double statDiffEvade = defenderAgi - attackerDex;
-            if (Math.abs(statDiffEvade) < 1000) {
+            if (Math.abs(statDiffEvade) < 300) {
                 evadeChance = Math.min(evadeChance, 70.0);
             }
 
@@ -1891,7 +1895,7 @@ public class DamageListener implements Listener {
 
 // Cap pierce to 70% unless stat gap >= 1000
             double statDiffPierce = attackerDex - defenderAgi;
-            if (Math.abs(statDiffPierce) < 1000) {
+            if (Math.abs(statDiffPierce) < 300) {
                 pierceChance = Math.min(pierceChance, 70.0);
             }
 
@@ -2251,14 +2255,20 @@ public class DamageListener implements Listener {
 
     private Location getSafeRandomLocation(Location origin, int radius) {
         World world = origin.getWorld();
-        if (world == null) return null;
 
+        if (world == null) return null;
+        WorldBorder border = world.getWorldBorder();
         for (int attempt = 0; attempt < 30; attempt++) {
             int dx = (int) ((Math.random() * radius * 2) - radius);
             int dz = (int) ((Math.random() * radius * 2) - radius);
 
             int x = origin.getBlockX() + dx;
             int z = origin.getBlockZ() + dz;
+
+            Location testLoc = new Location(world, x, origin.getBlockY(), z);
+
+            // Skip if outside world border
+            if (!border.isInside(testLoc)) continue;
 
             int maxY = world.getMaxHeight();
 

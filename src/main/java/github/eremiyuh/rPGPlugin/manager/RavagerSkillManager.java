@@ -24,7 +24,8 @@ public class RavagerSkillManager {
     }
 
     public void tryActivate(Ravager ravager) {
-        if (!ravager.getWorld().getName().equals(targetWorld)) return;
+        String worldName = ravager.getWorld().getName();
+        if (!(worldName.equals("world_rpg") || worldName.contains("_br"))) return;
 
         UUID id = ravager.getUniqueId();
         long now = System.currentTimeMillis();
@@ -35,6 +36,7 @@ public class RavagerSkillManager {
         lastUsed.put(id, now); // reset cooldown
         activateSkill(ravager);
     }
+
 
     private void activateSkill(Ravager ravager) {
         UUID id = ravager.getUniqueId();
@@ -71,10 +73,7 @@ public class RavagerSkillManager {
                         }
 
                         double maxXZ = Math.max(Math.abs(ravagerLoc.getX()), Math.abs(ravagerLoc.getZ()));
-                        int damage = (int) (maxXZ / 100.0);
-                        if (damage > 200) {
-                            damage = (int) (Objects.requireNonNull(ravager.getAttribute(Attribute.ATTACK_DAMAGE)).getValue() * 1.2);
-                        }
+                        int damage = (int) (Objects.requireNonNull(ravager.getAttribute(Attribute.ATTACK_DAMAGE)).getValue() * 1.2);
 
                         player.damage(damage);
                         player.setVelocity(player.getVelocity().setY(2.2));
@@ -99,7 +98,8 @@ public class RavagerSkillManager {
                         continue;
                     }
 
-                    if (!ravager.getWorld().getName().equals(targetWorld)) continue;
+                    String worldName = ravager.getWorld().getName();
+                    if (!(worldName.equals("world_rpg") || worldName.contains("_br"))) continue;
 
                     long last = lastUsed.getOrDefault(id, 0L);
                     long timeSinceLast = now - last;
@@ -111,34 +111,38 @@ public class RavagerSkillManager {
                     }
                 }
             }
-        }.runTaskTimer(plugin, 20L, 20L); // every second
+        }.runTaskTimer(plugin, 20L, 20L);
     }
+
 
     private void startAutoTriggerLoop() {
         new BukkitRunnable() {
             @Override
             public void run() {
-                World world = Bukkit.getWorld(targetWorld);
-                if (world == null) return;
-
                 long now = System.currentTimeMillis();
 
-                for (LivingEntity entity : world.getLivingEntities()) {
-                    if (!(entity instanceof Ravager ravager)) continue;
+                for (World world : Bukkit.getWorlds()) {
+                    String worldName = world.getName();
+                    if (!(worldName.equals("world_rpg") || worldName.contains("_br"))) continue;
 
-                    UUID id = ravager.getUniqueId();
+                    for (LivingEntity entity : world.getLivingEntities()) {
+                        if (!(entity instanceof Ravager ravager)) continue;
 
-                    // Only initialize cooldown once
-                    lastUsed.putIfAbsent(id, now - (long) (Math.random() * COOLDOWN_MS));
+                        UUID id = ravager.getUniqueId();
 
-                    long last = lastUsed.getOrDefault(id, 0L);
-                    if (now - last >= COOLDOWN_MS) {
-                        tryActivate(ravager);
+                        // Only initialize cooldown once
+                        lastUsed.putIfAbsent(id, now - (long) (Math.random() * COOLDOWN_MS));
+
+                        long last = lastUsed.getOrDefault(id, 0L);
+                        if (now - last >= COOLDOWN_MS) {
+                            tryActivate(ravager);
+                        }
                     }
                 }
             }
-        }.runTaskTimer(plugin, 20L, 20L); // every second
+        }.runTaskTimer(plugin, 20L, 20L);
     }
+
 
     private void sayNearby(LivingEntity entity, String message, double radius) {
         Location origin = entity.getLocation();

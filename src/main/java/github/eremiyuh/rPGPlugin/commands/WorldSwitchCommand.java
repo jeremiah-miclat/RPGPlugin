@@ -5,6 +5,7 @@ import github.eremiyuh.rPGPlugin.buffs.PlayerStatBuff;
 import github.eremiyuh.rPGPlugin.manager.PlayerProfileManager;
 import github.eremiyuh.rPGPlugin.profile.UserProfile;
 import org.bukkit.*;
+import org.bukkit.block.Biome;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -16,15 +17,16 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+
+import static org.bukkit.Bukkit.getServer;
 
 public class WorldSwitchCommand implements CommandExecutor, Listener {
 
     private final RPGPlugin plugin;
     private final PlayerStatBuff playerStatBuff;
     private final PlayerProfileManager profileManager;
-
+    private final Map<UUID, Long> lastBossRewardTime = new HashMap<>();
     public WorldSwitchCommand(RPGPlugin plugin, PlayerStatBuff playerStatBuff, PlayerProfileManager profileManager) {
         this.plugin = plugin;
         this.playerStatBuff = playerStatBuff;
@@ -32,138 +34,100 @@ public class WorldSwitchCommand implements CommandExecutor, Listener {
         this.profileManager = profileManager;
     }
 
+
+
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!(sender instanceof Player player)) {
+    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+        if (!(sender instanceof Player)) {
             sender.sendMessage("Only players can use this command.");
             return true;
         }
 
-        UserProfile userProfile = profileManager.getProfile(player.getName());
+        Player player = (Player) sender;
 
-        int playerEP = userProfile.getEnderPearl();
-
-
-        if (args.length < 1) {
-            openWorldSwitchGUI(player);
+        // No args: usage message
+        if (args.length == 0) {
+            player.sendMessage(ChatColor.RED + "Usage: /warp <a|o|a<number>>");
             return true;
         }
 
-        if (args.length < 1) {
-            player.sendMessage("/warp a or ad or o | a for abyss | ad for abyss dungeon | o for Overworld");
-            return false;
-        }
+        String input = args[0].toLowerCase();
 
-        String worldType = args[0].toLowerCase();
-        String targetWorldName;
-
-        switch (worldType) {
-            case "a":
-                targetWorldName = "world_rpg"; // abyss overworld
-                break;
-            case "o":
-                targetWorldName = "world"; // overworld
-                break;
-//            case "e":
-//                targetWorldName = "world_the_end";
-//                break;
-//            case "n":
-//                targetWorldName = "world_nether";
-//                break;
-//            case "ad":
-//                targetWorldName = "world_labyrinth2"; // abyss dungeon
-//                break;
-//            case "ro":
-//                targetWorldName = "resource_normal"; // resource overworld
-//                break;
-//            case "rn":
-//                targetWorldName = "resource_nether"; // resource nether
-//                break;
-//            case "re":
-//                targetWorldName = "resource_end"; // resource end
-//                break;
-            default:
-                player.sendMessage("/warp a or ad or o | a for abyss | ad for abyss dungeon | o for Overworld");
-                return false;
-        }
-
-        if (player.getWorld().getName().equals(targetWorldName)) {
-            player.sendMessage("You are already in the world.");
+        // ==== /warp a ====
+        if (input.equals("a")) {
+            World world = Bukkit.getWorld("world_rpg");
+            if (world != null) {
+                player.teleport(world.getSpawnLocation());
+                player.sendMessage(ChatColor.GREEN + "Warped to Adventure World!");
+            } else {
+                player.sendMessage(ChatColor.RED + "World 'world_rpg' not found.");
+            }
             return true;
         }
 
-        World world = plugin.getServer().getWorld(targetWorldName);
-        if (world == null) {
-
-            player.sendMessage("Failed to load the world ");
-            return true;
-
-
-        }
-
-        if (playerEP < 1) {
-            player.sendMessage("Ender Pearl currency required. Get ender pearl and enter /convertmaterial enderpearl");
+        // ==== /warp o ====
+        if (input.equals("o")) {
+            World world = Bukkit.getWorld("world");
+            if (world != null) {
+                player.teleport(world.getSpawnLocation());
+                player.sendMessage(ChatColor.GREEN + "Warped to Overworld!");
+            } else {
+                player.sendMessage(ChatColor.RED + "World 'world' not found.");
+            }
             return true;
         }
 
-        Location spawnLocation = world.getSpawnLocation();
+        // ==== /warp a<number> ====
+        if (input.matches("a\\d+")) {
+            int num = Integer.parseInt(input.substring(1));
 
-        if (targetWorldName.contains("resource")
+            // Must be multiple of 10 between 10 and 300
+            if (num % 10 == 0 && num >= 10 && num <= 300) {
 
+                String folderWorldName = "world_rpg_br_" + num; // actual folder name
+                String displayName = "Abyss Warzone " + num;    // name shown to player
 
-
-        ) {
-
-            player.sendMessage(ChatColor.BLUE + "You are in a resource world. Resource worlds RESETS daily. Do not build farms here.");
-
-            if ( !(spawnLocation.getBlock().isSolid()
-                    && spawnLocation.getBlock().getType() != Material.BEDROCK
-                    && spawnLocation.clone().add(0, 1, 0).getBlock().getType() == Material.AIR
-                    && spawnLocation.clone().add(0, 2, 0).getBlock().getType() == Material.AIR))
-            {
-                spawnLocation = spawnLocation.add(10,0,10);
-                // Loop through a 3x3x3 cube around the spawn location
-                for (int x = -1; x <= 1; x++) {
-                    for (int y = -1; y <= 1; y++) {
-                        for (int z = -1; z <= 1; z++) {
-                            assert spawnLocation != null;
-                            Location blockLocation = spawnLocation.clone().add(x, y, z);
-
-                            // Set to obsidian if it's not above the spawn
-                            if (y <= 0) {
-                                if (world.getEnvironment() == World.Environment.NETHER) blockLocation.getBlock().setType(Material.NETHERRACK);
-                                if (world.getEnvironment() == World.Environment.NORMAL) blockLocation.getBlock().setType(Material.GRASS_BLOCK);
-                                if (world.getEnvironment() == World.Environment.THE_END) blockLocation.getBlock().setType(Material.END_STONE);
-                            }
-                        }
-                    }
+                // Load world if missing
+                if (Bukkit.getWorld(folderWorldName) == null) {
+                    loadWorld(folderWorldName, -1, -1, -1, -1, -1, 0, 0, 150, 18000,
+                            GameRule.DO_DAYLIGHT_CYCLE, false,
+                            World.Environment.NORMAL, null);
                 }
 
-                // Clear the two blocks above the spawn location
-                spawnLocation.clone().add(0, 1, 0).getBlock().setType(Material.AIR);
-                spawnLocation.clone().add(0, 2, 0).getBlock().setType(Material.AIR);
-                spawnLocation = spawnLocation.add(0,1,0);
+                World world = Bukkit.getWorld(folderWorldName);
+                if (world == null) {
+                    player.sendMessage(ChatColor.RED + "World " + displayName + " could not be loaded.");
+                    return true;
+                }
+
+                // Reward cooldown check
+                long now = System.currentTimeMillis();
+                long cooldownMillis = 15 * 60 * 1000; // 15 minutes
+                Long lastTime = lastBossRewardTime.get(player.getUniqueId());
+
+                if (lastTime != null && now - lastTime < cooldownMillis) {
+                    long remaining = (cooldownMillis - (now - lastTime)) / 1000;
+                    player.sendMessage(ChatColor.RED + "You must wait " + (remaining / 60) + "m " + (remaining % 60) + "s before earning rewards again.");
+                } else {
+                    lastBossRewardTime.put(player.getUniqueId(), now);
+                    player.sendMessage(ChatColor.GOLD + "You are now eligible for rewards in this map.");
+                }
+
+                // Teleport player
+                player.teleport(world.getSpawnLocation());
+                player.sendMessage(ChatColor.GREEN + "Warped to " + displayName + "!");
+
+                return true;
             }
         }
 
-
-
-        if (player.teleport(spawnLocation)) {
-            userProfile.setEnderPearl(playerEP-1);
-        } else {
-            player.sendMessage(ChatColor.RED + "Failed to teleport");
-        }
-
-        playerStatBuff.updatePlayerStatsToNormal(player);
-
-        if (targetWorldName.contains("rpg") ||targetWorldName.contains("labyrinth")) {
-            playerStatBuff.updatePlayerStatsToRPG(player);
-        }
-
-
-
+        player.sendMessage(ChatColor.RED + "Invalid warp command.");
         return true;
     }
+
+
+
+
 
     private void openWorldSwitchGUI(Player player) {
         // Create an inventory with 27 slots (3 rows of 9)
@@ -318,6 +282,54 @@ public class WorldSwitchCommand implements CommandExecutor, Listener {
     }
 
 
+    private void loadWorld(String worldName, int sx, int sy, int sz, int syaw,  int spitch ,int bcx, int bcz, int bs, long time, GameRule<Boolean> rule, boolean grValue, World.Environment env, Biome biome) {
+        // Check if the world is already loaded
+        World world = getServer().getWorld(worldName);
+        if (world == null) {
+            world = getServer().createWorld(new WorldCreator(worldName).environment(env));
+            assert world != null;
+
+            // Set the biome for a region (example: 100x100 area at coordinates (0, 64, 0))
+            if (biome != null) {
+                for (int x = 0; x < 100; x++) {
+                    for (int z = 0; z < 100; z++) {
+                        // Assuming y is set at 64 (you might want to adjust this depending on your needs)
+                        world.setBiome(x, 64, z, biome);
+                    }
+                }
+            }
+
+            world.setGameRule(GameRule.SPAWN_RADIUS, 0);
+            if (world == null) {
+
+                return;
+            }
+
+        } else {
+            world.setGameRule(GameRule.SPAWN_RADIUS, 0);
+
+        }
+
+        if (sx != -1) {
+            Location spawnLocation = new Location(
+                    Bukkit.getWorld(worldName), // Specify the world
+                    sx, sy, sz,             // Coordinates
+                    syaw, spitch                     // Yaw (90° East), Pitch (0° level)
+            );
+//            world.setSpawnLocation(spawnLocation);
+        }
+
+        if (bcx != -1) {
+            WorldBorder worldBorder = world.getWorldBorder();
+            worldBorder.setCenter(bcx, bcz);
+            worldBorder.setSize(bs);
+        }
+
+        if (rule != null) {
+            world.setGameRule(rule, grValue);
+            world.setTime(time);
+        }
+    }
 
 
 

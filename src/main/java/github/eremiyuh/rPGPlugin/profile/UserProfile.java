@@ -549,7 +549,7 @@ public class UserProfile {
         Player player = Bukkit.getPlayer(this.getPlayerName());
         double oldAmount = 0;
 
-        // Get the old amount before setting the new one
+        // Store old amount & update currency
         switch (currencyName.toLowerCase()) {
             case "diamond":
                 oldAmount = this.diamond;
@@ -595,19 +595,28 @@ public class UserProfile {
                 throw new IllegalArgumentException("Invalid currency name: " + currencyName);
         }
 
-        // Notify the player of the change in currency
+        // Notify player
         if (player != null) {
             double difference = amount - oldAmount;
-            if (difference > 0) {
-                // Player gained currency
-                player.sendMessage(ChatColor.GREEN + "" + ChatColor.ITALIC + "You gained " + (int) difference + " " + currencyName + ".");
 
+            // Format difference — if less than 1 or not a whole number, keep 2 decimals
+            String formattedDiff;
+            if (Math.abs(difference) < 1 || difference % 1 != 0) {
+                formattedDiff = String.format("%.2f", Math.abs(difference));
+            } else {
+                formattedDiff = String.valueOf((int) Math.abs(difference));
+            }
+
+            if (difference > 0) {
+                player.sendMessage(ChatColor.GREEN + "" + ChatColor.ITALIC +
+                        "You gained " + formattedDiff + " " + currencyName + ".");
             } else if (difference < 0) {
-                // Player spent currency
-                player.sendMessage(ChatColor.BLUE + "" + ChatColor.ITALIC + "You spent " + (int) Math.abs(difference) + " " + currencyName + ".");
+                player.sendMessage(ChatColor.BLUE + "" + ChatColor.ITALIC +
+                        "You spent " + formattedDiff + " " + currencyName + ".");
             }
         }
     }
+
 
 
     public double getAbysspoints() {

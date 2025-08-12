@@ -43,6 +43,11 @@ public class TptCommand implements CommandExecutor {
                 return true;
             }
 
+            if (requester.getWorld().getName().contains("_br")) {
+                requester.sendMessage("Not allowed.");
+                return true;
+            }
+
             UserProfile profile = profileManager.getProfile(sender.getName());
             if (profile.getEnderPearl() < 1) {
                 sender.sendMessage("Need ender pearl to teleport");
@@ -51,6 +56,12 @@ public class TptCommand implements CommandExecutor {
 
             String targetName = args[0];
             Player target = Bukkit.getPlayer(targetName);
+
+            assert target != null;
+            if (target.getWorld().getName().contains("_br")) {
+                requester.sendMessage("Not allowed.");
+                return true;
+            }
 
             if (target == null || !target.isOnline()) {
                 requester.sendMessage(ChatColor.RED + "Player not found or not online.");

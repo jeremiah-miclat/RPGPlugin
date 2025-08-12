@@ -29,43 +29,50 @@ public class EvokerSkillManager {
         new BukkitRunnable() {
             @Override
             public void run() {
-                World world = Bukkit.getWorld(TARGET_WORLD);
-                if (world == null) return;
-
                 long now = System.currentTimeMillis();
 
-                for (LivingEntity entity : world.getLivingEntities()) {
-                    if (!(entity instanceof Evoker evoker) || !evoker.isValid() || evoker.isDead()) {
-                        UUID id = entity.getUniqueId();
-                        lastUsed.remove(id);
-                        cooldowns.remove(id);
-                        boasted.remove(id);
-                        spawnedVindicators.remove(id);
+                for (World world : Bukkit.getWorlds()) {
+                    String worldName = world.getName();
+
+                    // Only run if it's world_rpg or has "_br" in the name
+                    if (!worldName.equals("world_rpg") && !worldName.contains("_br")) {
                         continue;
                     }
 
-                    UUID id = evoker.getUniqueId();
+                    for (LivingEntity entity : world.getLivingEntities()) {
+                        if (!(entity instanceof Evoker evoker) || !evoker.isValid() || evoker.isDead()) {
+                            UUID id = entity.getUniqueId();
+                            lastUsed.remove(id);
+                            cooldowns.remove(id);
+                            boasted.remove(id);
+                            spawnedVindicators.remove(id);
+                            continue;
+                        }
 
-                    // If no cooldown assigned yet, give a random one between 10 and 20 seconds
-                    cooldowns.putIfAbsent(id, (10 + new Random().nextInt(11)) * 1000L);
+                        UUID id = evoker.getUniqueId();
 
-                    long last = lastUsed.getOrDefault(id, 0L);
-                    long cd = cooldowns.get(id);
-                    long elapsed = now - last;
+                        // Assign cooldown if not present
+                        cooldowns.putIfAbsent(id, (10 + new Random().nextInt(11)) * 1000L);
 
-                    if (elapsed >= cd) {
-                        activateSkill(evoker);
-                        lastUsed.put(id, now);
-                        cooldowns.put(id, (10 + new Random().nextInt(11)) * 1000L); // re-randomize for next use
-                        boasted.remove(id);
-                    } else if (elapsed >= cd - 5000 && !boasted.contains(id)) {
-                        sendBoast(evoker);
-                        boasted.add(id);
+                        long last = lastUsed.getOrDefault(id, 0L);
+                        long cd = cooldowns.get(id);
+                        long elapsed = now - last;
+
+                        if (elapsed >= cd) {
+                            activateSkill(evoker);
+                            lastUsed.put(id, now);
+                            cooldowns.put(id, (10 + new Random().nextInt(11)) * 1000L); // randomize next use
+                            boasted.remove(id);
+                        } else if (elapsed >= cd - 5000 && !boasted.contains(id)) {
+                            sendBoast(evoker);
+                            boasted.add(id);
+                        }
                     }
                 }
             }
         }.runTaskTimer(plugin, 20L, 20L); // Run every second
     }
+
 
     private void activateSkill(@NotNull Evoker evoker) {
         Location center = evoker.getLocation();
@@ -92,11 +99,9 @@ public class EvokerSkillManager {
                 push.setY(1.0);
                 player.setVelocity(push);
 
-                double maxCoord = Math.max(Math.abs(center.getX()), Math.abs(center.getZ()));
-                int damage = (int) (maxCoord / 100.0);
-                if (damage > 200) {
-                    damage = (int) (Objects.requireNonNull(evoker.getAttribute(Attribute.ATTACK_DAMAGE)).getValue() * 1.2);
-                }
+
+                int damage = (int) (Objects.requireNonNull(evoker.getAttribute(Attribute.ATTACK_DAMAGE)).getValue() * 1.2);
+
 
                 player.damage(damage);
                 player.sendMessage("§a" + evoker.getName() + ": \"Shinra Tensei!\"");

@@ -34,20 +34,13 @@ public class MonsterInitializer implements Listener {
         this.plugin = plugin;
     }
 
-//    @EventHandler
-//    public void onRaidEvent(RaidTriggerEvent event) {
-//        if (!event.getWorld().getName().contains("world_rpg")) {
-//            return;
-//        }
-//        Location location = event.getRaid().getLocation();
-//        double x = location.getX();
-//        double z = location.getZ();
-//
-//        // Cancel if outside ±18000 range
-//        if (Math.abs(x) > 18000 || Math.abs(z) > 18000) {
-//            event.setCancelled(true);
-//        }
-//    }
+    @EventHandler
+    public void onRaidEvent(RaidTriggerEvent event) {
+        if (!event.getWorld().getName().contains("world_rpg")) {
+            return;
+        }
+        event.setCancelled(true);
+    }
 
     @EventHandler
     public void onMobPickUpItem(EntityPickupItemEvent event) {
@@ -173,6 +166,16 @@ public class MonsterInitializer implements Listener {
             entity.setRemoveWhenFarAway(false);
         }
 
+        if (entity instanceof PigZombie wither) {
+            wither.setPersistent(true);
+            entity.setRemoveWhenFarAway(false);
+        }
+
+        if (entity instanceof PiglinBrute wither) {
+            wither.setPersistent(true);
+            entity.setRemoveWhenFarAway(false);
+        }
+
         if (entity instanceof Evoker) {
             entity.setPersistent(true);
             entity.setRemoveWhenFarAway(false);
@@ -184,6 +187,11 @@ public class MonsterInitializer implements Listener {
         }
 
         int lvl = (int) (Math.floor(maxCoord) / 100);
+        if (entity.getWorld().getName().contains("_br")) {
+            String worldName = entity.getWorld().getName();
+            String[] parts = worldName.split("_");
+            lvl = Integer.parseInt(parts[parts.length - 1]);
+        }
         String normalName = ChatColor.GREEN + "Lvl " + lvl + " " + entity.getType().name();
         entity.setCustomName(normalName);
         double customMaxHealth =entity.getHealth() + lvl+20;
@@ -206,7 +214,7 @@ public class MonsterInitializer implements Listener {
         }
 
         // First, check for the purple world boss (0.1% chance)
-        if (Math.random() < .0003 || entity instanceof Warden || entity instanceof Wither || entity instanceof ElderGuardian || entity instanceof Ravager || entity instanceof Evoker) { //0.0003
+        if (Math.random() < .0003 || entity instanceof PiglinBrute || entity instanceof PigZombie || entity instanceof Warden || entity instanceof Wither || entity instanceof ElderGuardian || entity instanceof Ravager || entity instanceof Evoker) { //0.0003
             if (lvl <= 100) {
                 extraHealth += lvl * 2000;
             } else {
@@ -275,7 +283,15 @@ public class MonsterInitializer implements Listener {
     }
 
     private void setBossAttributes(LivingEntity entity, double maxCoord, String type, ChatColor color) {
-        String bossName = color + "Lvl " + (int) (Math.floor(maxCoord) / 100) + " " + type + " " + entity.getType().name();
+        int lvl = (int) (Math.floor(maxCoord) / 100);
+        if (entity.getWorld().getName().contains("_br")) {
+            String worldName = entity.getWorld().getName();
+            String[] parts = worldName.split("_");
+            lvl = Integer.parseInt(parts[parts.length - 1]);
+        }
+
+
+        String bossName = color + "Lvl " + lvl + " " + type + " " + entity.getType().name();
         entity.setCustomName(bossName);
 
 

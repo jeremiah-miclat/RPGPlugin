@@ -14,7 +14,6 @@ import java.util.*;
 public class ZombieSkillManager {
 
     private final JavaPlugin plugin;
-    private final String targetWorld = "world_rpg";
     private final Map<UUID, Long> lastUsed = new HashMap<>();
     private final long cooldown = 60_000; // 60 seconds
 
@@ -27,43 +26,45 @@ public class ZombieSkillManager {
         new BukkitRunnable() {
             @Override
             public void run() {
-                World world = Bukkit.getWorld(targetWorld);
-                if (world == null) return;
-
                 long now = System.currentTimeMillis();
 
-                for (LivingEntity entity : world.getLivingEntities()) {
-                    if (!(entity instanceof Zombie zombie)) continue;
-                    if (!zombie.isValid() || zombie.isDead()) continue;
-                    if (zombie.getCustomName() == null) continue;
+                for (World world : Bukkit.getWorlds()) {
+                    if (!world.getName().contains("_rpg")) continue; // Only RPG worlds
 
-                    String name = zombie.getCustomName();
-                    if (!name.contains("World Boss") || name.contains("Clone")) continue;
+                    for (LivingEntity entity : world.getLivingEntities()) {
+                        EntityType type = entity.getType();
+                        if (type != EntityType.ZOMBIE &&
+                                type != EntityType.ZOMBIE_VILLAGER &&
+                                type != EntityType.ZOMBIFIED_PIGLIN) continue;
 
-                    UUID id = zombie.getUniqueId();
-                    long last = lastUsed.getOrDefault(id, -1L);
+                        if (!entity.isValid() || entity.isDead()) continue;
+                        if (entity.getCustomName() == null) continue;
 
-                    if (last == -1L) {
-                        // First time seeing this zombie, randomize initial delay
-                        long initialOffset = (long) (Math.random() * cooldown);
-                        lastUsed.put(id, now - initialOffset);
-                        continue;
-                    }
+                        String name = entity.getCustomName();
+                        if (!name.contains("World Boss") || name.contains("Clone")) continue;
 
-                    long elapsed = now - last;
-                    if (elapsed >= cooldown) {
-                        spawnClones(zombie);
+                        UUID id = entity.getUniqueId();
+                        long last = lastUsed.getOrDefault(id, -1L);
 
-                        // Desync next use with a small random offset (0–5s)
-                        long nextOffset = (long) (Math.random() * 5000);
-                        lastUsed.put(id, now + nextOffset);
+                        if (last == -1L) {
+                            // Randomize first use
+                            long initialOffset = (long) (Math.random() * cooldown);
+                            lastUsed.put(id, now - initialOffset);
+                            continue;
+                        }
+
+                        if (now - last >= cooldown) {
+                            spawnClones(entity);
+                            long nextOffset = (long) (Math.random() * 5000);
+                            lastUsed.put(id, now + nextOffset);
+                        }
                     }
                 }
             }
-        }.runTaskTimer(plugin, 20L, 20L); // Run every second
+        }.runTaskTimer(plugin, 20L, 20L); // Runs every second
     }
 
-    private void spawnClones(Zombie original) {
+    private void spawnClones(LivingEntity original) {
         World world = original.getWorld();
         Location base = original.getLocation();
         Vector[] offsets = {
@@ -81,28 +82,26 @@ public class ZombieSkillManager {
             attackDamage = damageAttr.getBaseValue();
         }
 
-        List<Zombie> clones = new ArrayList<>();
+        List<LivingEntity> clones = new ArrayList<>();
 
         for (Vector offset : offsets) {
             Location spawnLoc = base.clone().add(offset);
             spawnLoc.setY(world.getHighestBlockYAt(spawnLoc) + 1);
 
-            Zombie clone = (Zombie) world.spawnEntity(spawnLoc, EntityType.ZOMBIE);
-
+            LivingEntity clone = (LivingEntity) world.spawnEntity(spawnLoc, original.getType());
             clone.setCustomName(original.getCustomName() + " Clone");
             clone.setCustomNameVisible(true);
-            clone.setBaby(original.isBaby());
             clone.setPersistent(false);
             clone.setRemoveWhenFarAway(false);
 
-            // Set health
+            // Health
             AttributeInstance cloneHealth = clone.getAttribute(Attribute.MAX_HEALTH);
             if (cloneHealth != null) {
                 cloneHealth.setBaseValue(maxHealth);
                 clone.setHealth(Math.min(currentHealth, maxHealth));
             }
 
-            // Set attack damage
+            // Attack damage
             AttributeInstance cloneAttack = clone.getAttribute(Attribute.ATTACK_DAMAGE);
             if (cloneAttack != null) {
                 cloneAttack.setBaseValue(attackDamage);
@@ -116,16 +115,16 @@ public class ZombieSkillManager {
             clones.add(clone);
         }
 
-        // Remove clones after 10 seconds
+        // Remove after 10 seconds
         new BukkitRunnable() {
             @Override
             public void run() {
-                for (Zombie clone : clones) {
+                for (LivingEntity clone : clones) {
                     if (!clone.isDead()) {
                         clone.remove();
                     }
                 }
             }
-        }.runTaskLater(plugin, 10 * 20); // 10 seconds later
+        }.runTaskLater(plugin, 10 * 20);
     }
 }

@@ -25,40 +25,43 @@ public class WardenSkillManager {
         new BukkitRunnable() {
             @Override
             public void run() {
-                World world = Bukkit.getWorld("world_rpg");
-                if (world == null) return;
-
                 long now = System.currentTimeMillis();
 
-                for (LivingEntity entity : world.getLivingEntities()) {
-                    if (!(entity instanceof Warden warden)) continue;
-                    if (!warden.isValid() || warden.isDead()) continue;
+                for (World world : Bukkit.getWorlds()) {
+                    String name = world.getName();
+                    if (!(name.equals("world_rpg") || name.contains("_br"))) continue;
 
-                    UUID id = warden.getUniqueId();
-                    long last = lastUsed.getOrDefault(id, -1L);
+                    for (LivingEntity entity : world.getLivingEntities()) {
+                        if (!(entity instanceof Warden warden)) continue;
+                        if (!warden.isValid() || warden.isDead()) continue;
 
-                    if (last == -1L) {
-                        // First time seeing this Warden – apply random desync offset
-                        long randomDelay = (long) (Math.random() * cooldown);
-                        lastUsed.put(id, now - randomDelay);
-                        continue;
-                    }
+                        UUID id = warden.getUniqueId();
+                        long last = lastUsed.getOrDefault(id, -1L);
 
-                    long elapsed = now - last;
+                        if (last == -1L) {
+                            // First time seeing this Warden – apply random desync offset
+                            long randomDelay = (long) (Math.random() * cooldown);
+                            lastUsed.put(id, now - randomDelay);
+                            continue;
+                        }
 
-                    if (elapsed >= cooldown) {
-                        activateSkill(warden);
-                        long offset = (long) (Math.random() * 5000); // 0–5s offset
-                        lastUsed.put(id, now + offset);
-                        boasted.remove(id); // Reset boast flag
-                    } else if (elapsed >= cooldown - 10_000 && !boasted.contains(id)) {
-                        sendBoast(warden);
-                        boasted.add(id);
+                        long elapsed = now - last;
+
+                        if (elapsed >= cooldown) {
+                            activateSkill(warden);
+                            long offset = (long) (Math.random() * 5000); // 0–5s offset
+                            lastUsed.put(id, now + offset);
+                            boasted.remove(id); // Reset boast flag
+                        } else if (elapsed >= cooldown - 10_000 && !boasted.contains(id)) {
+                            sendBoast(warden);
+                            boasted.add(id);
+                        }
                     }
                 }
             }
         }.runTaskTimer(plugin, 20L, 20L); // every second
     }
+
 
     private void activateSkill(Warden warden) {
         Location center = warden.getLocation();
@@ -79,11 +82,7 @@ public class WardenSkillManager {
             wardenLoc.setY(0);
 
             if (playerLoc.distanceSquared(wardenLoc) <= radius * radius) {
-                double maxXZ = Math.max(Math.abs(wardenLoc.getX()), Math.abs(wardenLoc.getZ()));
-                int damage = (int) (maxXZ / 100.0);
-                if (damage > 200) {
-                    damage = (int) (Objects.requireNonNull(warden.getAttribute(Attribute.ATTACK_DAMAGE)).getValue() * 1.2);
-                }
+                int damage = (int) (Objects.requireNonNull(warden.getAttribute(Attribute.ATTACK_DAMAGE)).getValue() * 1.2);
 
                 player.damage(damage);
                 Location target = center.clone().add(direction).add(0, 1, 0);

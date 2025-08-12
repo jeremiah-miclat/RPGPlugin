@@ -24,6 +24,8 @@ public class DeadMobListener implements Listener {
     private final RPGPlugin plugin;
     private final PlayerProfileManager profileManager;
     private final Random random = new Random();
+    private final Map<UUID, Long> lastBrBossRewardTime = new HashMap<>();
+    private static final long REWARD_COOLDOWN = 15 * 60 * 1000;
 
     private final List<BossDropItem> regularBossDrops = Arrays.asList(
             new BossDropItem(new ItemStack(Material.IRON_HELMET), random.nextInt(1, 2), 0.7),
@@ -94,8 +96,7 @@ public class DeadMobListener implements Listener {
 
 
 
-        if (!Objects.requireNonNull(event.getEntity().getLocation().getWorld()).getName().equals("world_rpg")
-            && !Objects.requireNonNull(event.getEntity().getLocation().getWorld()).getName().contains("world_labyrinth")
+        if (!Objects.requireNonNull(event.getEntity().getLocation().getWorld()).getName().contains("_rpg")
         ) {
 
                 if (event.getEntity().getKiller() instanceof Player player  ) {
@@ -208,7 +209,7 @@ public class DeadMobListener implements Listener {
 
 
 
-                if (world.getName().contains("labyrinth")) {xValidRange = 60; yValidRange = 5;}
+
 
 
 
@@ -226,6 +227,21 @@ public class DeadMobListener implements Listener {
 
 
                     for (Player player : nearbyPlayers) {
+                        String worldName = player.getWorld().getName();
+                        // ✅ Only enforce cooldown in _br maps
+                        if (worldName.contains("_br")) {
+                            long lastTime = lastBrBossRewardTime.getOrDefault(player.getUniqueId(), 0L);
+                            long now = System.currentTimeMillis();
+
+                            if (now - lastTime < REWARD_COOLDOWN) {
+                                long minutesLeft = ((REWARD_COOLDOWN - (now - lastTime)) / 1000) / 60;
+                                player.sendMessage("§cYou can only receive boss rewards every 15 minutes in this kind of map. Try again in " + minutesLeft + " min(s).");
+                                continue; // ⛔ Skip giving reward
+                            }
+
+                            // Record new reward time
+                            lastBrBossRewardTime.put(player.getUniqueId(), now);
+                        }
                         UserProfile playerProfile = profileManager.getProfile(player.getName());
                         applyRewards(player, playerProfile, health*3, chance+.2, dropMultiplier,level);
                         distributeDrops(player, event, dropMultiplier,level);

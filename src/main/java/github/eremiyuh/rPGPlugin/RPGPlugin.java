@@ -420,7 +420,15 @@ public class RPGPlugin extends JavaPlugin {
 
         worldConfig();
         loadWorld("world_rpg",-91,75,-91, 0,0,-1,-1,-1,18000,GameRule.DO_DAYLIGHT_CYCLE,false, World.Environment.NORMAL, null);
-//        loadWorld("world_labyrinth",-23,312,-35, 270,0,0,0,100,18000,null,false, World.Environment.NORMAL,Biome.NETHER_WASTES);
+        for (int i = 10; i <= 300; i += 10) {
+            loadWorld("world_rpg_br_" + i,
+                    -1, -1, -1, -1, -1,
+                    0, 0, 150, 18000,
+                    GameRule.DO_DAYLIGHT_CYCLE,
+                    false,
+                    World.Environment.NORMAL,
+                    null);
+        }
 //        loadWorld("world_labyrinth2",-19,251,-36,270,0,0,0,100,18000,null,false, World.Environment.NETHER,Biome.NETHER_WASTES);
         getServer().getPluginManager().registerEvents(new TabListCustomizer(this, profileManager), this);
 
@@ -433,7 +441,8 @@ public class RPGPlugin extends JavaPlugin {
 
         Objects.requireNonNull(getCommand("junkshop")).setExecutor(new JunkShopCommand(profileManager));
         getServer().getPluginManager().registerEvents(new JunkShopCommand(profileManager), this);
-
+        new BRBossSpawner(this);
+        new BlockRewardManager(profileManager,this).start();
 //        createResourceWorld("resource_normal", World.Environment.NORMAL);
 //        createResourceWorld("resource_nether", World.Environment.NETHER);
 //        createResourceWorld("resource_end", World.Environment.THE_END);

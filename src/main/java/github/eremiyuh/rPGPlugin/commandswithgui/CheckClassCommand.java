@@ -256,6 +256,7 @@ public class CheckClassCommand implements CommandExecutor, Listener {
 
         // Add class name and attribute values
         lore.add("§ePlayer Class: " + profile.getChosenClass() + " Lvl " + profile.getLevel());
+        lore.add("§eBP level(from current gears & stats): " + profile.getArLvl());
         lore.add("§eAbyss Trait: " + profile.getAbyssTrait());
         lore.add("§7Attributes:");
         lore.add("§7Strength: " + profile.getTempStr());

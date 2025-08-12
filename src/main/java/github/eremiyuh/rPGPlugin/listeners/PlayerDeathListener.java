@@ -28,7 +28,7 @@ public class PlayerDeathListener implements Listener {
         Player player = event.getEntity();
 //        event.getDrops().clear();
         // Check if the player is in a world other than "world_resource"
-        if (Objects.requireNonNull(player.getLocation().getWorld()).getName().equals(keepInventoryWorld)) {
+        if (Objects.requireNonNull(player.getLocation().getWorld()).getName().contains(keepInventoryWorld)) {
             event.setKeepInventory(true);
             event.getDrops().clear();
 
@@ -47,8 +47,7 @@ public class PlayerDeathListener implements Listener {
 
 
         UserProfile profile = profileManager.getProfile(player.getName());
-        if (player.getLocation().getWorld().getName().equalsIgnoreCase("world_rpg")
-                || player.getLocation().getWorld().getName().contains("labyrinth")
+        if (player.getLocation().getWorld().getName().contains("world_rpg")
         ) {
             int durability = profile.getDurability();
             int newDurability = (int) Math.floor(durability * 0.50);
