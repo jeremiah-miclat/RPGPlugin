@@ -30,6 +30,7 @@ public class MonsterZoneWarningListener implements Listener {
     public void onPlayerMove(PlayerMoveEvent event) {
 
         Player player = event.getPlayer();
+        if (player.getWorld().getName().contains("_br")) return;
         if (!player.getWorld().getName().contains("_rpg")) return;
         // Only react to horizontal movement
         if (event.getFrom().getBlockX() == event.getTo().getBlockX() &&

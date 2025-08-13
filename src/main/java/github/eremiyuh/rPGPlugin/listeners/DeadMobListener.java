@@ -255,8 +255,10 @@ public class DeadMobListener implements Listener {
                                         : BossDropItem.getRandomBossDropItem(worldBossDrops);
 
                                 if (dropItem != null) {
+                                    int playerLevel = playerProfile.getLevel();
+                                    if (player.getWorld().getName().contains("_br")) playerLevel = playerProfile.getArLvl();
                                     ItemStack itemToDrop = dropItem.getItem().clone();
-                                    dropItem.addLoreWithBossLevel(itemToDrop, bosslvl, playerProfile.getLevel(), isWorldBoss);
+                                    dropItem.addLoreWithBossLevel(itemToDrop, bosslvl, playerLevel, isWorldBoss);
 
                                     player.sendMessage("You received a boss reward for killing " + customName);
 
@@ -341,6 +343,9 @@ public class DeadMobListener implements Listener {
 
     private void applyRewards(Player player, UserProfile profile, double healthForExp, double chanceForEquipLoreAndDias, int rewardCount, int monsterLevel) {
         int playerLevel = profile.getLevel();
+        if (player.getWorld().getName().contains("_br")) {
+            playerLevel = profile.getArLvl();
+        }
         int levelDiff = monsterLevel - playerLevel;
         double currentAmount = profile.getEmerald();
 
@@ -445,6 +450,7 @@ public class DeadMobListener implements Listener {
         if (profile == null) return;
 
         int playerLevel = profile.getLevel();
+        if (player.getWorld().getName().contains("_br")) playerLevel=profile.getArLvl();
         int levelDiff = monsterLevel - playerLevel;
 
         if (playerLevel - monsterLevel >= 60) {
