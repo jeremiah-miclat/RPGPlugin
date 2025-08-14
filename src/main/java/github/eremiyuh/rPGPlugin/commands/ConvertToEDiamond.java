@@ -91,7 +91,7 @@ public class ConvertToEDiamond implements CommandExecutor {
 
         // Inform the player of the conversion
         player.sendMessage("You have converted " + itemCount + " " + currencyName + "(s) to your profile's balance!");
-        player.sendMessage("Your new " + currencyName + " balance is: " + newBalance + ".");
+        player.sendMessage("Your new " + currencyName + " balance is: " + (int) newBalance + ".");
 
         return true; // Indicates the command was processed successfully
     }

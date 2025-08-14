@@ -98,11 +98,15 @@ public class PlayerStatBuff {
     private double calculateMaxHealth(UserProfile profile) {
         double baseHealth = 20.0;
         double healthPerVitality = 20.0;
+        double healthPerStrength = 5.0; // +5 HP per 100 strength
 
-        double vitality = (double) profile.getTempVit() / 100.0;
+        double vitality = profile.getTempVit() / 100.0;
+        double strength = profile.getTempStr() / 100.0;
         double hpMultiplier = 1.0 + (profile.getHpMultiplier() * 0.01);
 
-        return (baseHealth + (healthPerVitality * vitality)) * hpMultiplier;
+        return (baseHealth
+                + (healthPerVitality * vitality)
+                + (healthPerStrength * strength)) * hpMultiplier;
     }
 
 
@@ -233,6 +237,12 @@ public class PlayerStatBuff {
 
             if (isHoldingValidMeleeWeapon(player)) {
                 meleeDmg+=((double) str /100)*4;
+                if (str>dex) {
+                    meleeDmg+=((double) dex /100)*3;
+                } else {
+                    meleeDmg+=((double) dex /100)*4;
+                }
+
                 if (selectedSkill.contains("1") && chosenClass.contains("sword")) {
                     meleeDmg+=((double) intel /100)*8;
                 }

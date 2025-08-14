@@ -343,28 +343,29 @@ public class DamageListener implements Listener {
 
 
 
-                if (damaged instanceof Player damagedPlayer) {
-
-                    UserProfile attackerProfile = profileManager.getProfile(attacker.getName());
-                    UserProfile damagedProfile = profileManager.getProfile(damagedPlayer.getName());
-
-
-                    if (attackerProfile == null || damagedProfile == null) {
-                        attacker.sendMessage("Your profile or target's profile can not be found. contact developer to fix files");
-                        damaged.sendMessage("Your profile or dude's profile can not be found. contact developer to fix files");
-                        event.setCancelled(true);
-                        return;
-                    }
-
-                    int attackerLevel = attackerProfile.getLevel();
-                    int damagedLevel = damagedProfile.getLevel();
-
-
-                    // Check if the difference between the total points is greater than 10
-                    if (Math.abs(attackerLevel - damagedLevel) > 10) {
-                        event.setCancelled(true);
-                        return;
-                    }
+                if (damaged instanceof Player damagedPlayer && !attacker.getWorld().getName().contains("_br")) {
+                    event.setCancelled(true);
+                    return;
+//                    UserProfile attackerProfile = profileManager.getProfile(attacker.getName());
+//                    UserProfile damagedProfile = profileManager.getProfile(damagedPlayer.getName());
+//
+//
+//                    if (attackerProfile == null || damagedProfile == null) {
+//                        attacker.sendMessage("Your profile or target's profile can not be found. contact developer to fix files");
+//                        damaged.sendMessage("Your profile or dude's profile can not be found. contact developer to fix files");
+//                        event.setCancelled(true);
+//                        return;
+//                    }
+//
+//                    int attackerLevel = attackerProfile.getLevel();
+//                    int damagedLevel = damagedProfile.getLevel();
+//
+//
+//                    // Check if the difference between the total points is greater than 10
+//                    if (Math.abs(attackerLevel - damagedLevel) > 10) {
+//                        event.setCancelled(true);
+//                        return;
+//                    }
 
 //                    assert attackerProfile != null;
 //                    if (!attackerProfile.isPvpEnabled()) {
@@ -378,10 +379,10 @@ public class DamageListener implements Listener {
 //                        return;
 //                    }
 
-                    if (!Objects.equals(damagedProfile.getTeam(), "none") && Objects.equals(damagedProfile.getTeam(), attackerProfile.getTeam())) {
-                        event.setCancelled(true);
-                        return;
-                    }
+//                    if (!Objects.equals(damagedProfile.getTeam(), "none") && Objects.equals(damagedProfile.getTeam(), attackerProfile.getTeam())) {
+//                        event.setCancelled(true);
+//                        return;
+//                    }
 
                 }
 
@@ -456,45 +457,37 @@ public class DamageListener implements Listener {
                             return;
                         }
 
-                        UserProfile attackerProfile = profileManager.getProfile(attacker.getName());
-                        UserProfile damagedProfile = profileManager.getProfile(damagedPlayer.getName());
+                        if (!attacker.getWorld().getName().contains("_br")) event.setCancelled(true);
 
-
-
-                        if (attackerProfile == null || damagedProfile == null) {
-                            attacker.sendMessage("Your profile or target's profile can not be found. contact developer to fix files");
-                            damaged.sendMessage("Your profile or dude's profile can not be found. contact developer to fix files");
-                            event.setCancelled(true);
-                            return;
-                        }
-
-
-                        int attackerLevel = attackerProfile.getLevel();
-                        int damagedLevel = damagedProfile.getLevel();
-
-
-                        // Check if the difference between the total points is greater than 10
-                        if (Math.abs(attackerLevel - damagedLevel) > 10) {
-                            event.setCancelled(true);
-                            return;
-                        }
-
-//                        assert attackerProfile != null;
-//                        if (!attackerProfile.isPvpEnabled()) {
+//                        UserProfile attackerProfile = profileManager.getProfile(attacker.getName());
+//                        UserProfile damagedProfile = profileManager.getProfile(damagedPlayer.getName());
+//
+//
+//
+//                        if (attackerProfile == null || damagedProfile == null) {
+//                            attacker.sendMessage("Your profile or target's profile can not be found. contact developer to fix files");
+//                            damaged.sendMessage("Your profile or dude's profile can not be found. contact developer to fix files");
 //                            event.setCancelled(true);
 //                            return;
 //                        }
 //
-//                        assert damagedProfile != null;
-//                        if (!damagedProfile.isPvpEnabled()) {
+//
+//                        int attackerLevel = attackerProfile.getLevel();
+//                        int damagedLevel = damagedProfile.getLevel();
+//
+//
+//                        // Check if the difference between the total points is greater than 10
+//                        if (Math.abs(attackerLevel - damagedLevel) > 10) {
 //                            event.setCancelled(true);
 //                            return;
 //                        }
 
-                        if (!Objects.equals(damagedProfile.getTeam(), "none") && Objects.equals(damagedProfile.getTeam(), attackerProfile.getTeam())) {
-                            event.setCancelled(true);
-                            return;
-                        }
+
+
+//                        if (!Objects.equals(damagedProfile.getTeam(), "none") && Objects.equals(damagedProfile.getTeam(), attackerProfile.getTeam())) {
+//                            event.setCancelled(true);
+//                            return;
+//                        }
 
 
 
@@ -558,42 +551,39 @@ public class DamageListener implements Listener {
 
                     if (damaged instanceof Player damagedPlayer) {
 
-                        UserProfile attackerProfile = profileManager.getProfile(attacker.getName());
-                        UserProfile damagedProfile = profileManager.getProfile(damagedPlayer.getName());
-
-                        if (attackerProfile == null || damagedProfile == null) {
-                            attacker.sendMessage("Your profile or target's profile can not be found. contact developer to fix files");
-                            damaged.sendMessage("Your profile or dude's profile can not be found. contact developer to fix files");
+                        if (attacker.getName().equalsIgnoreCase(damagedPlayer.getName())) {
                             event.setCancelled(true);
                             return;
                         }
 
-                        int attackerLevel = attackerProfile.getLevel();
-                        int damagedLevel = damagedProfile.getLevel();
+                        if (!attacker.getWorld().getName().contains("_br")) event.setCancelled(true);
 
-
-                        // Check if the difference between the total points is greater than 10
-                        if (Math.abs(attackerLevel - damagedLevel) > 10) {
-                            event.setCancelled(true);
-                            return;
-                        }
-
-//                        assert attackerProfile != null;
-//                        if (!attackerProfile.isPvpEnabled()) {
+//                        UserProfile attackerProfile = profileManager.getProfile(attacker.getName());
+//                        UserProfile damagedProfile = profileManager.getProfile(damagedPlayer.getName());
+//
+//                        if (attackerProfile == null || damagedProfile == null) {
+//                            attacker.sendMessage("Your profile or target's profile can not be found. contact developer to fix files");
+//                            damaged.sendMessage("Your profile or dude's profile can not be found. contact developer to fix files");
 //                            event.setCancelled(true);
 //                            return;
 //                        }
 //
-//                        assert damagedProfile != null;
-//                        if (!damagedProfile.isPvpEnabled()) {
+//                        int attackerLevel = attackerProfile.getLevel();
+//                        int damagedLevel = damagedProfile.getLevel();
+//
+//
+//                        // Check if the difference between the total points is greater than 10
+//                        if (Math.abs(attackerLevel - damagedLevel) > 10) {
 //                            event.setCancelled(true);
 //                            return;
 //                        }
-
-                        if (!Objects.equals(damagedProfile.getTeam(), "none") && Objects.equals(damagedProfile.getTeam(), attackerProfile.getTeam())) {
-                            event.setCancelled(true);
-                            return;
-                        }
+//
+//
+//
+//                        if (!Objects.equals(damagedProfile.getTeam(), "none") && Objects.equals(damagedProfile.getTeam(), attackerProfile.getTeam())) {
+//                            event.setCancelled(true);
+//                            return;
+//                        }
 
                     }
 
@@ -1008,10 +998,7 @@ public class DamageListener implements Listener {
                     warden.getAttribute(Attribute.ATTACK_DAMAGE)
             ).getValue();
 
-            double boostedDamage = modifiedDamage * 1.2;
-
-            // Apply it as the Sonic Boom damage
-            event.setDamage(boostedDamage);
+            event.setDamage(modifiedDamage);
         }
 
 
@@ -1076,7 +1063,7 @@ public class DamageListener implements Listener {
                     double lifestealAmount = finalDamage * damagerProfile.getLs();
                     double healAmount = Math.min(lifestealAmount, maxHealth - currentHealth);
 
-                    if (healAmount >= 1.0) {
+                    if (healAmount > 0 && !damager.isDead()) {
                         damager.setHealth(currentHealth + healAmount);
                         spawnFloatingHologram(damager.getLocation(), Math.max(1,(int) healAmount) + "", damager.getWorld(), "#65fe08");
                     }
@@ -2255,8 +2242,8 @@ public class DamageListener implements Listener {
 
     private Location getSafeRandomLocation(Location origin, int radius) {
         World world = origin.getWorld();
-
         if (world == null) return null;
+
         WorldBorder border = world.getWorldBorder();
         for (int attempt = 0; attempt < 30; attempt++) {
             int dx = (int) ((Math.random() * radius * 2) - radius);
@@ -2276,17 +2263,16 @@ public class DamageListener implements Listener {
             for (int y = maxY - 4; y > world.getMinHeight(); y--) {
                 Location groundLoc = new Location(world, x, y, z);
 
+                // Must be above Y=58
+                if (y <= 58) continue;
 
                 if (isSolidWith3AirAbove(groundLoc)) {
                     return groundLoc.clone().add(0.5, 1, 0.5); // Centered above ground
                 }
             }
         }
-
         return null; // No safe spot found after 30 attempts
     }
-
-
 
     private boolean isSolidWith3AirAbove(Location ground) {
         Block base = ground.getBlock();
@@ -2294,9 +2280,13 @@ public class DamageListener implements Listener {
 
         // Exclude known unsafe ground materials
         Material[] unsafeGrounds = {
-                Material.LAVA, Material.WATER, Material.CACTUS, Material.COBWEB, Material.MAGMA_BLOCK
+                Material.LAVA, Material.WATER, Material.CACTUS,
+                Material.COBWEB, Material.MAGMA_BLOCK
         };
         if (Arrays.asList(unsafeGrounds).contains(base.getType())) return false;
+
+        // Exclude any leaves block
+        if (base.getType().name().endsWith("_LEAVES")) return false;
 
         // Ensure 3 air blocks above
         for (int i = 1; i <= 3; i++) {
@@ -2306,6 +2296,7 @@ public class DamageListener implements Listener {
 
         return true;
     }
+
 
 
 }

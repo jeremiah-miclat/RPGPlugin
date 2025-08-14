@@ -389,7 +389,7 @@ public class RPGPlugin extends JavaPlugin {
         Objects.requireNonNull(this.getCommand("iteminfo")).setExecutor(new ItemInfoCommand());
         Objects.requireNonNull(this.getCommand("grt")).setExecutor(new GiveResetTokenCommand());
         Objects.requireNonNull(this.getCommand("enderchest")).setExecutor(new EnderChestCommand());
-        Objects.requireNonNull(this.getCommand("addstat")).setExecutor(new AddAttributeCommand(profileManager));
+        Objects.requireNonNull(this.getCommand("addstat")).setExecutor(new AddAttributeCommand(profileManager,playerStatBuff));
         Objects.requireNonNull(this.getCommand("shopsavetploc")).setExecutor(new ShopTpSaveCommand(shopTpSaveManager));
         Objects.requireNonNull(this.getCommand("shop")).setExecutor(new ShopTpCommand(shopsManager, shopTpSaveManager,profileManager));
         getServer().getPluginManager().registerEvents(new GuiListener(this), this);

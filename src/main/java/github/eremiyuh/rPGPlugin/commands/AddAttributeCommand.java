@@ -1,7 +1,9 @@
 package github.eremiyuh.rPGPlugin.commands;
 
+import github.eremiyuh.rPGPlugin.buffs.PlayerStatBuff;
 import github.eremiyuh.rPGPlugin.manager.PlayerProfileManager;
 import github.eremiyuh.rPGPlugin.profile.UserProfile;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -12,9 +14,10 @@ import java.util.Objects;
 public class AddAttributeCommand implements CommandExecutor {
 
     private final PlayerProfileManager profileManager;
-
-    public AddAttributeCommand(PlayerProfileManager profileManager) {
+    private final PlayerStatBuff playerStatBuff;
+    public AddAttributeCommand(PlayerProfileManager profileManager, PlayerStatBuff playerStatBuff) {
         this.profileManager = profileManager;
+        this.playerStatBuff = playerStatBuff;
     }
 
     @Override
@@ -88,6 +91,15 @@ public class AddAttributeCommand implements CommandExecutor {
             userProfile.setCurrentAttributePoints(availablePoints - points);
 
             player.sendMessage("Successfully added " + points + " points to " + attribute + " for the " + currentClass + " class.");
+            String worldName = player.getWorld().getName();
+            if (!worldName.contains("rpg") && !worldName.contains("labyrinth")) {
+                playerStatBuff.updatePlayerStatsToNormal(player);
+            }
+            if (worldName.contains("rpg") || worldName.contains("labyrinth")) {
+                playerStatBuff.updatePlayerStatsToRPG(player);
+            }
+
+
         } catch (IllegalArgumentException e) {
             player.sendMessage("Invalid attribute. Valid attributes are: str, agi, dex, intel, vit, luk.");
         }

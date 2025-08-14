@@ -38,20 +38,31 @@ public class LoginListener implements Listener {
 
     @EventHandler
     public void onPlayerChat(AsyncPlayerChatEvent event) {
+        Player player = event.getPlayer();
         String message = event.getMessage().toLowerCase();
 
+        // 1. Check for bad words
         if (containsBadWord(message)) {
             event.setCancelled(true);
-            event.getPlayer().sendMessage(ChatColor.RED + "⚠ Your message was blocked due to inappropriate language.");
+            player.sendMessage(ChatColor.RED + "⚠ Your message was blocked due to inappropriate language.");
+            Bukkit.getLogger().warning("[ChatFilter] " + player.getName() + " tried to say: " + message);
+            return;
+        }
 
-            // Optional: log to console or take further action
-            Bukkit.getLogger().warning("[ChatFilter] " + event.getPlayer().getName() + " tried to say: " + message);
-
-            // Optional: kick or ban
-            // event.getPlayer().kickPlayer("You were kicked for using offensive language.");
-            // Bukkit.getBanList(BanList.Type.NAME).addBan(event.getPlayer().getName(), "Banned for profanity", null, null);
+        // 2. Block specific words/commands in _rpg worlds
+        if (player.getWorld().getName().toLowerCase().contains("_rpg")) {
+            String[] blockedWords = {"/sit", "/spin", "/crawl", "/lay", "/gsit", "/bellyflop"};
+            for (String word : blockedWords) {
+                if (message.contains(word)) { // strong contains check
+                    event.setCancelled(true);
+                    player.sendMessage(ChatColor.RED + "⚠ This action is disabled in abyss worlds.");
+                    Bukkit.getLogger().info("[ChatFilter] Blocked " + player.getName() + " from saying: " + message);
+                    return;
+                }
+            }
         }
     }
+
 
     private boolean containsBadWord(String message) {
         String[] bannedWords = {

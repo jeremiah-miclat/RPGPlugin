@@ -74,43 +74,26 @@ public class ZombieSkillManager {
                 new Vector(0, 0, -1)
         };
 
-        double maxHealth = original.getAttribute(Attribute.MAX_HEALTH).getBaseValue();
-        double currentHealth = original.getHealth();
-        double attackDamage = 5.0;
-        AttributeInstance damageAttr = original.getAttribute(Attribute.ATTACK_DAMAGE);
-        if (damageAttr != null) {
-            attackDamage = damageAttr.getBaseValue();
-        }
+
 
         List<LivingEntity> clones = new ArrayList<>();
-
         for (Vector offset : offsets) {
             Location spawnLoc = base.clone().add(offset);
             spawnLoc.setY(world.getHighestBlockYAt(spawnLoc) + 1);
 
             LivingEntity clone = (LivingEntity) world.spawnEntity(spawnLoc, original.getType());
-            clone.setCustomName(original.getCustomName() + " Clone");
+//            clone.setCustomName(original.getCustomName() + " Clone");
             clone.setCustomNameVisible(true);
             clone.setPersistent(false);
-            clone.setRemoveWhenFarAway(false);
+            clone.setRemoveWhenFarAway(true);
 
-            // Health
-            AttributeInstance cloneHealth = clone.getAttribute(Attribute.MAX_HEALTH);
-            if (cloneHealth != null) {
-                cloneHealth.setBaseValue(maxHealth);
-                clone.setHealth(Math.min(currentHealth, maxHealth));
-            }
 
-            // Attack damage
-            AttributeInstance cloneAttack = clone.getAttribute(Attribute.ATTACK_DAMAGE);
-            if (cloneAttack != null) {
-                cloneAttack.setBaseValue(attackDamage);
-            }
+
 
             // Copy equipment
-            for (EquipmentSlot slot : EquipmentSlot.values()) {
-                clone.getEquipment().setItem(slot, original.getEquipment().getItem(slot));
-            }
+//            for (EquipmentSlot slot : EquipmentSlot.values()) {
+//                clone.getEquipment().setItem(slot, original.getEquipment().getItem(slot));
+//            }
 
             clones.add(clone);
         }

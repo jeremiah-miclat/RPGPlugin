@@ -11,7 +11,7 @@ Alchemist	Gets +20% more from gear stats (before ÷ 100).
 
 📊 What Each Stat Does
 Stat	Role in Combat
-💪 STR	Boosts melee damage. (÷100 before used)
+💪 STR	Boosts melee damage, increases max HP by +5 per 1.0 STR. (÷100 before used)
 🏹 DEX	Boosts bow/trident damage and archer crit chance. (÷100 before used)
 🧠 INT	Increases elemental skill damage. (÷100 before used)
 💖 VIT	Increases max health. (÷100 before used)
@@ -23,10 +23,17 @@ Stat	Role in Combat
 🔹 All STR, DEX, and INT values below are assumed already divided by 100.
 
 ✅ Basic Damage:
-Melee: STR × 4
-Bow/Trident: DEX × 4
+*Melee:
+Base = STR × 4
+If STR > DEX → Bonus = DEX × 3
+If DEX > STR → Bonus = DEX × 4
+Final = (Base + Bonus) × (1 + StatDamage% / 100)
 
-Elemental: Class + Skill-based
+*Bow/Trident: DEX × 4
+
+*Splash Potion:
+INT × 3 vs players
+INT × 10 vs mobs
 
 ================================================================================================
 
@@ -60,21 +67,35 @@ Enemy has 100 LUK → -2% = Final Crit Chance: 30%
 (Again, STR/DEX/INT in formulas below are assumed ÷ 100)
 
 🗡️ SWORDSMAN
-Skill 1:
+Skill 1 SWORDSMAN:
 STR × 4 (melee)
 INT × 8 (elemental)
 
+SWORDSMAN
+STR = 1.50 (150 raw)
+DEX = 1.00 (100 raw)
+Base = 1.50 × 4 = 6
+Bonus = 1.00 × 3 = 3 (since STR > DEX)
+Total = 9 before multipliers
+
+SWORDSMAN
+STR = 1.00 (100 raw)
+DEX = 1.50 (150 raw)
+Base = 1.00 × 4 = 4
+Bonus = DEX × 4 = 6 (since DEX > STR)
+Total = 10 before multipliers
+
 
 🏹 ARCHER
-Skill 1:
+Skill 1 ARCHER:
 DEX × 4 (bow)
 INT × 8 (elemental)
 
-Skill 2:
+Skill 2 ARCHER:
 DEX × 4
 INT × 6
 
-Skill 3:
+Skill 3 ARCHER:
 DEX × 4
 +25% crit chance
 +DEX × 0.00005 to crit multiplier
@@ -85,7 +106,7 @@ Potion Throw
 INT × 3 vs players
 INT × 10 vs mobs
 
-Skill 1: +20% damage from INT
+Skill 1 ALCHEMIST: +20% damage from INT
 Bonus:
 +20% to all gear stats before division (STR/DEX/INT/VIT/AGI)
 

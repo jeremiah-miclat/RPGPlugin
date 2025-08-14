@@ -229,7 +229,7 @@ public class DeadMobListener implements Listener {
                     for (Player player : nearbyPlayers) {
                         String worldName = player.getWorld().getName();
                         // ✅ Only enforce cooldown in _br maps
-                        if (worldName.contains("_br")) {
+                        if (worldName.contains("_br") && isWorldBoss) {
                             long lastTime = lastBrBossRewardTime.getOrDefault(player.getUniqueId(), 0L);
                             long now = System.currentTimeMillis();
 
@@ -241,6 +241,7 @@ public class DeadMobListener implements Listener {
 
                             // Record new reward time
                             lastBrBossRewardTime.put(player.getUniqueId(), now);
+                            player.sendMessage("§cYou can only receive boss rewards every 15 minutes in this kind of map.");
                         }
                         UserProfile playerProfile = profileManager.getProfile(player.getName());
                         applyRewards(player, playerProfile, health*3, chance+.2, dropMultiplier,level);

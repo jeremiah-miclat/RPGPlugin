@@ -24,8 +24,11 @@ public class BRBossSpawner {
             EntityType.ZOMBIFIED_PIGLIN
     );
 
-    // Tracks last minute we spawned a boss in a given world
-    private final Map<String, Integer> lastSpawnMinute = new HashMap<>();
+    // Tracks last mark we spawned a boss for each world
+    private final Map<String, Integer> lastSpawnMark = new HashMap<>();
+
+    // Stores the first run after restart to avoid instant spawn
+    private boolean firstRun = true;
 
     public BRBossSpawner(RPGPlugin plugin) {
         this.plugin = plugin;
@@ -37,31 +40,45 @@ public class BRBossSpawner {
             @Override
             public void run() {
                 int currentMinute = LocalTime.now().getMinute();
+                int currentMark = (currentMinute / 15) * 15; // 0, 15, 30, 45
 
                 for (World world : Bukkit.getWorlds()) {
                     if (!world.getName().contains("_br")) continue;
 
+                    // ✅ Skip if no players in the map
+                    if (world.getPlayers().isEmpty()) continue;
+
                     boolean bossExists = world.getEntities().stream()
                             .anyMatch(e -> bossTypes.contains(e.getType()));
 
-                    // If world is freshly loaded & no boss → spawn immediately
-                    if (!lastSpawnMinute.containsKey(world.getName()) && !bossExists) {
-                        spawnBoss(world);
-                        lastSpawnMinute.put(world.getName(), currentMinute);
+                    int lastMark = lastSpawnMark.getOrDefault(world.getName(), -1);
+
+                    // ✅ Skip if boss already exists
+                    if (bossExists) continue;
+
+                    // ✅ Avoid instant spawn right after restart
+                    if (firstRun) {
+                        lastSpawnMark.put(world.getName(), currentMark);
                         continue;
                     }
 
-                    // Spawn only on 15-minute multiples, avoid re-spawning same minute
-                    if (currentMinute % 15 == 0 &&
-                            (!bossExists) &&
-                            lastSpawnMinute.getOrDefault(world.getName(), -1) != currentMinute) {
-
+                    // 1️⃣ Spawn exactly at mark if not already done
+                    if (currentMinute % 15 == 0 && lastMark != currentMinute) {
                         spawnBoss(world);
-                        lastSpawnMinute.put(world.getName(), currentMinute);
+                        lastSpawnMark.put(world.getName(), currentMinute);
+                        continue;
+                    }
+
+                    // 2️⃣ Spawn if past mark and missed spawn
+                    if (currentMinute != currentMark && lastMark != currentMark) {
+                        spawnBoss(world);
+                        lastSpawnMark.put(world.getName(), currentMark);
                     }
                 }
+
+                firstRun = false; // After first tick, allow normal behavior
             }
-        }.runTaskTimer(plugin, 0L, 20L * 60L); // Check every 60 seconds
+        }.runTaskTimer(plugin, 0L, 20L * 60L); // check every minute
     }
 
     private void spawnBoss(World world) {

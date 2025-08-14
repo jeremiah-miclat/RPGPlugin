@@ -52,9 +52,9 @@ public class BlockRewardManager {
             Material.EMERALD_BLOCK,  500.0 / 60.0,
             Material.IRON_BLOCK,     1000.0 / 60.0,
             Material.NETHERITE_BLOCK,6.0 / 60.0,
-            Material.LAPIS_BLOCK,    300.0 / 60.0,
+            Material.LAPIS_BLOCK,    1000 / 60.0,
             Material.GOLD_BLOCK,     500.0 / 60.0,
-            Material.COPPER_BLOCK,   5000.0 / 60.0,
+            Material.COPPER_BLOCK,   500.0 / 60.0,
             Material.DIAMOND_BLOCK,  20.0 / 60.0
     );
 
@@ -79,7 +79,7 @@ public class BlockRewardManager {
                         continue; // skip players not in "world"
                     }
                     UUID uuid = player.getUniqueId();
-                    Material blockType = player.getLocation().subtract(0, 1, 0).getBlock().getType();
+                    Material blockType = player.getLocation().subtract(0, .1, 0).getBlock().getType();
                     UserProfile profile = profileManager.getProfile(player.getName());
                     int x = player.getLocation().getBlockX();
                     int z = player.getLocation().getBlockZ();
@@ -121,6 +121,7 @@ public class BlockRewardManager {
 
                     } else {
                         if (lastBlockType.containsKey(uuid) && !testMode) {
+                            player.sendMessage("You left the afk site");
                             plugin.getLogger().info(player.getName() + " left reward block/region (x=" + x + ", z=" + z + ")");
                         }
                         timeOnBlock.remove(uuid);

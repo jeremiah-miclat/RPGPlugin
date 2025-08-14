@@ -200,33 +200,28 @@ public class MonsterInitializer implements Listener {
         double extraHealth = lvl*5+entity.getHealth();
 
         if (lvl>199) {
-            extraHealth = lvl*100+entity.getHealth();
+            extraHealth = lvl*20+entity.getHealth();
         }
 
         double customDamage = (lvl*.5) + Objects.requireNonNull(entity.getAttribute(Attribute.ATTACK_DAMAGE)).getValue();
 
-        if (lvl>=20) {
-            customDamage = (lvl*.5)+ Objects.requireNonNull(entity.getAttribute(Attribute.ATTACK_DAMAGE)).getValue()+2;
-        }
-
         if (lvl>199) {
-            customDamage = (lvl*.7)+ Objects.requireNonNull(entity.getAttribute(Attribute.ATTACK_DAMAGE)).getValue()+2;
+            customDamage = (lvl*.7)+ Objects.requireNonNull(entity.getAttribute(Attribute.ATTACK_DAMAGE)).getValue();
         }
 
         // First, check for the purple world boss (0.1% chance)
         if (Math.random() < .0003 || entity instanceof PiglinBrute || entity instanceof PigZombie || entity instanceof Warden || entity instanceof Wither || entity instanceof ElderGuardian || entity instanceof Ravager || entity instanceof Evoker) { //0.0003
-            if (lvl <= 100) {
-                extraHealth += lvl * 2000;
-            } else {
-                int bonusMultiplier = 2000 + ((lvl - 91) / 10) * 100;
-                extraHealth += lvl * bonusMultiplier;
-            }
+            extraHealth += lvl * 800;
             setBossAttributes(entity, maxCoord, "World Boss", ChatColor.DARK_PURPLE);
             entity.setGlowing(true);
             Objects.requireNonNull(entity.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(extraHealth);
             entity.setHealth(extraHealth);
 
-            Objects.requireNonNull(entity.getAttribute(Attribute.ATTACK_DAMAGE)).setBaseValue(customDamage+(customDamage*.5) );
+            if (!(entity instanceof Warden)) {
+                Objects.requireNonNull(entity.getAttribute(Attribute.ATTACK_DAMAGE)).setBaseValue(customDamage+(customDamage*.5));
+            } else {
+                Objects.requireNonNull(entity.getAttribute(Attribute.ATTACK_DAMAGE)).setBaseValue(customDamage);
+            }
             entity.setPersistent(true);
             entity.setCustomNameVisible(true);
             entity.addPotionEffect(new PotionEffect((PotionEffectType.REGENERATION),Integer.MAX_VALUE,1,true,true));
@@ -235,12 +230,7 @@ public class MonsterInitializer implements Listener {
 
         // Only check for red boss (1% chance) if not already a purple boss
         if (Math.random() < .003 ) { //0.003
-            if (lvl <= 100) {
-                extraHealth += lvl * 200;
-            } else {
-                int bonusMultiplier = 200 + ((lvl - 91) / 10) * 100;
-                extraHealth += lvl * bonusMultiplier;
-            }
+            extraHealth += lvl * 100;
             setBossAttributes(entity, maxCoord, "Boss", ChatColor.RED);
             Objects.requireNonNull(entity.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(extraHealth);
             entity.setHealth(extraHealth);
@@ -252,12 +242,7 @@ public class MonsterInitializer implements Listener {
 
 
         if (Math.random() < 0.03 || entity instanceof Vindicator) {
-            if (lvl <= 100) {
-                extraHealth += lvl * 20;
-            } else {
-                int bonusMultiplier = 20 + ((lvl - 91) / 10) * 100;
-                extraHealth += lvl * bonusMultiplier;
-            }
+            extraHealth += lvl * 10;
             setBossAttributes(entity, maxCoord, "Leader", ChatColor.YELLOW);
             Objects.requireNonNull(entity.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(extraHealth);
             entity.setHealth(extraHealth);

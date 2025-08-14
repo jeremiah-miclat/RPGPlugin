@@ -33,8 +33,7 @@ public class PotionGiveListener implements Listener {
         Player player = event.getPlayer();
         UUID uuid = player.getUniqueId();
 
-        if (!player.getWorld().getName().equals("world_rpg") &&
-                !player.getWorld().getName().contains("labyrinth")) {
+        if (!player.getWorld().getName().contains("world_rpg")) {
             return;
         }
 

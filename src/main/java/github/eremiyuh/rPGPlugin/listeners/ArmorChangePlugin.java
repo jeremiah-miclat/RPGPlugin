@@ -47,7 +47,7 @@ public class ArmorChangePlugin  implements Listener {
 
         String worldName = Objects.requireNonNull(player.getLocation().getWorld()).getName();
 
-        if (worldName.equals("world_rpg") || worldName.contains("world_labyrinth")) {
+        if (worldName.contains("world_rpg")) {
             if (player.getHealth() <= 0) return;
             try {
                 playerStatBuff.updatePlayerStatsToRPG(player);
@@ -87,7 +87,7 @@ public class ArmorChangePlugin  implements Listener {
                 if (player.getHealth() <= 0) return;
 
                 try {
-                    if (worldName.equals("world_rpg") || worldName.contains("world_labyrinth")) {
+                    if (worldName.contains("world_rpg")) {
                         UserProfile profile = profileManager.getProfile(player.getName());
                         ItemStack item = player.getInventory().getItemInMainHand();
 

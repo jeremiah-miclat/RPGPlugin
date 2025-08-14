@@ -65,7 +65,7 @@ public class AlchemistThrowPotion implements Listener {
         }
 
 
-        if (!Objects.requireNonNull(event.getEntity().getLocation().getWorld()).getName().equals("world_rpg") && !Objects.requireNonNull(event.getEntity().getLocation().getWorld()).getName().contains("labyrinth")) {
+        if (!Objects.requireNonNull(event.getEntity().getLocation().getWorld()).getName().contains("world_rpg")) {
             return;
         }
 

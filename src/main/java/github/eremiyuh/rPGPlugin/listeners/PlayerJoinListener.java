@@ -94,14 +94,14 @@ public class PlayerJoinListener implements Listener {
             player.sendMessage("§6[§Server§6] §7Enter the command §e/register <password> <password>§7 to inscribe your credentials.");
             player.sendMessage("§6[§Server§6] §7Then enter the realm by using §e/login <password>§7.");
             givekit(playerName);
-            World customWorld = Bukkit.getWorld("world_rpg");
-
-            if (customWorld != null) {
-                Location spawnLoc = customWorld.getSpawnLocation(); // Set your spawn coords
-                player.teleport(spawnLoc);
-            } else {
-                player.sendMessage(ChatColor.RED + "Custom world not found!");
-            }
+//            World customWorld = Bukkit.getWorld("world_rpg");
+//
+//            if (customWorld != null) {
+//                Location spawnLoc = customWorld.getSpawnLocation(); // Set your spawn coords
+//                player.teleport(spawnLoc);
+//            } else {
+//                player.sendMessage(ChatColor.RED + "Custom world not found!");
+//            }
 
         } else {
             // Handle returning players

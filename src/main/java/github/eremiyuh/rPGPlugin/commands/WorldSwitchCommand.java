@@ -45,47 +45,32 @@ public class WorldSwitchCommand implements CommandExecutor, Listener {
 
         Player player = (Player) sender;
 
-        // No args: usage message
+        // No args: open GUI
         if (args.length == 0) {
-            player.sendMessage(ChatColor.RED + "Usage: /warp <a|o|a<number>>");
+            openWorldSwitchGUI(player);
             return true;
         }
 
         String input = args[0].toLowerCase();
 
-        // ==== /warp a ====
+// ==== /warp a ====
         if (input.equals("a")) {
-            World world = Bukkit.getWorld("world_rpg");
-            if (world != null) {
-                player.teleport(world.getSpawnLocation());
-                player.sendMessage(ChatColor.GREEN + "Warped to Adventure World!");
-            } else {
-                player.sendMessage(ChatColor.RED + "World 'world_rpg' not found.");
-            }
+            teleportPlayerToWorld(player, "world_rpg", "Adventure World");
             return true;
         }
 
-        // ==== /warp o ====
+// ==== /warp o ====
         if (input.equals("o")) {
-            World world = Bukkit.getWorld("world");
-            if (world != null) {
-                player.teleport(world.getSpawnLocation());
-                player.sendMessage(ChatColor.GREEN + "Warped to Overworld!");
-            } else {
-                player.sendMessage(ChatColor.RED + "World 'world' not found.");
-            }
+            teleportPlayerToWorld(player, "world", "Overworld");
             return true;
         }
 
         // ==== /warp a<number> ====
         if (input.matches("a\\d+")) {
             int num = Integer.parseInt(input.substring(1));
-
-            // Must be multiple of 10 between 10 and 300
             if (num % 10 == 0 && num >= 10 && num <= 300) {
-
-                String folderWorldName = "world_rpg_br_" + num; // actual folder name
-                String displayName = "Abyss Warzone " + num;    // name shown to player
+                String folderWorldName = "world_rpg_br_" + num;
+                String displayName = "Abyss Warzone " + num;
 
                 // Load world if missing
                 if (Bukkit.getWorld(folderWorldName) == null) {
@@ -94,29 +79,8 @@ public class WorldSwitchCommand implements CommandExecutor, Listener {
                             World.Environment.NORMAL, null);
                 }
 
-                World world = Bukkit.getWorld(folderWorldName);
-                if (world == null) {
-                    player.sendMessage(ChatColor.RED + "World " + displayName + " could not be loaded.");
-                    return true;
-                }
-
-                // Reward cooldown check
-                long now = System.currentTimeMillis();
-                long cooldownMillis = 15 * 60 * 1000; // 15 minutes
-                Long lastTime = lastBossRewardTime.get(player.getUniqueId());
-
-                if (lastTime != null && now - lastTime < cooldownMillis) {
-                    long remaining = (cooldownMillis - (now - lastTime)) / 1000;
-                    player.sendMessage(ChatColor.RED + "You must wait " + (remaining / 60) + "m " + (remaining % 60) + "s before earning rewards again.");
-                } else {
-                    lastBossRewardTime.put(player.getUniqueId(), now);
-                    player.sendMessage(ChatColor.GOLD + "You are now eligible for rewards in this map.");
-                }
-
-                // Teleport player
-                player.teleport(world.getSpawnLocation());
-                player.sendMessage(ChatColor.GREEN + "Warped to " + displayName + "!");
-
+                // Use existing teleport function
+                teleportPlayerToWorld(player, folderWorldName, displayName);
                 return true;
             }
         }
@@ -124,6 +88,7 @@ public class WorldSwitchCommand implements CommandExecutor, Listener {
         player.sendMessage(ChatColor.RED + "Invalid warp command.");
         return true;
     }
+
 
 
 
