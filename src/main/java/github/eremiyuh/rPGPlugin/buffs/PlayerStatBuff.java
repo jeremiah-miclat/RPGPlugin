@@ -226,10 +226,10 @@ public class PlayerStatBuff {
             if (finalLevel>profile.getLevel()) {
                 profile.setLevel(finalLevel);
             }
-
+            boolean validRangedWeapon = isHoldingValidRangedWeapon(player);
             profile.setLs(lifeStealPercent(chosenClass,profile.getSelectedSkill(),player,chosenTrait));
-            profile.setCrit(critChance(chosenClass,luk,dex, profile.getSelectedSkill(),chosenTrait));
-            profile.setCritDmg(getCritMultiplier(chosenClass,luk,dex, profile.getSelectedSkill(),chosenTrait));
+            profile.setCrit(critChance(chosenClass,luk,dex, profile.getSelectedSkill(),chosenTrait,validRangedWeapon));
+            profile.setCritDmg(getCritMultiplier(chosenClass,luk,dex, profile.getSelectedSkill(),chosenTrait,validRangedWeapon));
 
             double meleeDmg = 0;
             double longDmg=0;
@@ -250,7 +250,7 @@ public class PlayerStatBuff {
                 meleeDmg*=dmgMultiplierFromEnchant(player);
             }
 
-            if (isHoldingValidRangedWeapon(player)) {
+            if (validRangedWeapon) {
                 longDmg+=((double) dex /100)*4;
                 if (chosenClass.contains("archer")) {
                     if(selectedSkill.contains("1")) longDmg+=((double) intel /100)*8;
@@ -394,31 +394,42 @@ public class PlayerStatBuff {
         return lifeSteal;
     }
 
-    public double critChance(String chosenClass, int luk, int dex, String chosenSkill, String chosenTrait) {
+    public double critChance(String chosenClass, int luk, int dex, String chosenSkill, String chosenTrait, boolean validRangedWeapon) {
         double baseChance;
 
         switch (chosenClass.toLowerCase()) {
             case "swordsman":
                 baseChance = luk * 0.0003;
                 break;
+
             case "archer":
-                baseChance = (luk * 0.0003) + (dex * 0.0001);
-                if (chosenSkill.equalsIgnoreCase("skill 3")) {
-                    baseChance += 0.25; // +25% flat
+                if (validRangedWeapon) {
+                    baseChance = (luk * 0.0003) + (dex * 0.0001);
+                    if (chosenSkill.equalsIgnoreCase("skill 3")) {
+                        baseChance += 0.25; // +25% flat
+                    }
+                } else {
+                    baseChance = luk * 0.0002; // maybe fallback for no ranged weapon
                 }
                 break;
+
             default:
                 baseChance = luk * 0.0002;
                 break;
         }
-        if (chosenTrait.equalsIgnoreCase("Gamble")) baseChance-=0.25;
+
+        if (chosenTrait.equalsIgnoreCase("Gamble")) {
+            baseChance -= 0.25;
+        }
+
         return baseChance;
     }
 
-    public double getCritMultiplier(String classType, double luk, double dex, String chosenSkill, String chosenTrait) {
+
+    public double getCritMultiplier(String classType, double luk, double dex, String chosenSkill, String chosenTrait, boolean validRangedWeapon) {
         double multiplier = 1.5 + (luk * 0.001);
 
-        if (classType.equalsIgnoreCase("archer") && chosenSkill.equalsIgnoreCase("skill 3")) {
+        if (classType.equalsIgnoreCase("archer") && chosenSkill.equalsIgnoreCase("skill 3") && validRangedWeapon) {
             multiplier += dex * 0.00005;
         }
         if (chosenTrait.equalsIgnoreCase("Gamble")) multiplier+=0.25;
