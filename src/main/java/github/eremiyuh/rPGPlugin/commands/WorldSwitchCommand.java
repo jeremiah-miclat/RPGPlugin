@@ -195,6 +195,9 @@ public class WorldSwitchCommand implements CommandExecutor, Listener {
 
         if (world != null) {
             Location spawnLocation = world.getSpawnLocation();
+            if (worldName.startsWith("world_rpg_br_")) {
+                spawnLocation = getRandomWarzoneSpawn(world);
+            }
 
             if (worldName.contains("resource")
                     &&
@@ -296,6 +299,52 @@ public class WorldSwitchCommand implements CommandExecutor, Listener {
         }
     }
 
+    private Location getRandomWarzoneSpawn(World world) {
+        WorldBorder border = world.getWorldBorder();
+        double halfSize = border.getSize() / 2.0;
+        Location center = border.getCenter();
+
+        Random rand = new Random();
+
+        // Choose which side of the border: 0 = north, 1 = south, 2 = west, 3 = east
+        int side = rand.nextInt(4);
+
+        double x = center.getX();
+        double z = center.getZ();
+
+        double offset = 1 + rand.nextInt(5); // 1–5 blocks inside the border
+        double randomWithin = rand.nextDouble() * (border.getSize() - (offset * 2)) - (border.getSize() / 2 - offset);
+
+        switch (side) {
+            case 0: // north
+                z = center.getZ() - halfSize + offset;
+                x = center.getX() + randomWithin;
+                break;
+            case 1: // south
+                z = center.getZ() + halfSize - offset;
+                x = center.getX() + randomWithin;
+                break;
+            case 2: // west
+                x = center.getX() - halfSize + offset;
+                z = center.getZ() + randomWithin;
+                break;
+            case 3: // east
+                x = center.getX() + halfSize - offset;
+                z = center.getZ() + randomWithin;
+                break;
+        }
+
+        // Find highest solid block at X,Z
+        int y = world.getHighestBlockYAt((int) x, (int) z);
+        Location spawn = new Location(world, x + 0.5, y, z + 0.5);
+
+        // Ensure block is safe
+        if (spawn.getBlock().getType().isSolid()) {
+            spawn.add(0, 1, 0); // Move above solid block
+        }
+
+        return spawn;
+    }
 
 
 }
