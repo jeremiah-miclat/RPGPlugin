@@ -48,7 +48,8 @@ public class PlayerJoinListener implements Listener {
             "Visit Yabmat's shop. /spawn",
             "Don't forget to claim your land. /cc",
             "Store some items in your vault. /vault",
-            "Catch some fish using your fishing rod then sell them for activity points. /fishsell"
+            "Catch some fish using your fishing rod then sell them for activity points. /fishsell",
+            "Combine your equips using emerald. /ascendtoggle"
     );
 
     public PlayerJoinListener(PlayerProfileManager profileManager) {

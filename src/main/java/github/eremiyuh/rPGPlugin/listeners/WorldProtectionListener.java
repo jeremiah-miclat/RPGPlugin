@@ -74,7 +74,8 @@ public class WorldProtectionListener implements Listener {
 
         // In protected world, cancel everything else if not creative
         if (isProtected && !isCreative) {
-            player.sendMessage(ChatColor.RED + "This is a combat only map. Building/Breaking blocks is not allowed");
+            player.sendMessage(ChatColor.RED + "This is a combat only map. Building/Breaking blocks is not allowed.");
+            player.sendMessage(ChatColor.RED + "If you were stuck, enter /tbhb");
             event.setCancelled(true);
         }
 
@@ -86,6 +87,7 @@ public class WorldProtectionListener implements Listener {
         if (isInProtectedWorld(event.getBlock().getWorld()) && event.getPlayer().getGameMode() != GameMode.CREATIVE) {
 
             event.getPlayer().sendMessage(ChatColor.RED + "This is a combat only map. Building/Breaking blocks is not allowed");
+            event.getPlayer().sendMessage(ChatColor.RED + "If you were stuck, enter /tbhb");
             event.setCancelled(true);
         }
     }
@@ -161,8 +163,9 @@ public class WorldProtectionListener implements Listener {
 
     }
 
-    // Helper method to check if the event occurs in a protected world
+
     private boolean isInProtectedWorld(World world) {
-        return protectedWorldNames.contains(world.getName().toLowerCase());
+        String name = world.getName().toLowerCase();
+        return name.contains("_rpg");
     }
 }

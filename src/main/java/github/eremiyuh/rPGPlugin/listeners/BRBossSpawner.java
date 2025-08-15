@@ -19,7 +19,7 @@ public class BRBossSpawner {
             EntityType.RAVAGER,
             EntityType.EVOKER,
             EntityType.WARDEN,
-            EntityType.WITHER,
+            EntityType.RAVAGER,
             EntityType.PIGLIN_BRUTE,
             EntityType.ZOMBIFIED_PIGLIN
     );

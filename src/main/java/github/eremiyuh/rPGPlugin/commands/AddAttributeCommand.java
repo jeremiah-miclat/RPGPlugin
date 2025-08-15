@@ -75,7 +75,7 @@ public class AddAttributeCommand implements CommandExecutor {
             default -> 0;
         };
 
-        if (points + allocatedPoints > 20000) {
+        if (points + allocatedPoints >= 20000) {
             player.sendMessage("Max attribute allocation per class reached.");
             return true;
         }

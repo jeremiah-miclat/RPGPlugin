@@ -8,10 +8,7 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.CreatureSpawnEvent;
-import org.bukkit.event.entity.EntityPickupItemEvent;
-import org.bukkit.event.entity.EntitySpawnEvent;
-import org.bukkit.event.entity.EntitySpellCastEvent;
+import org.bukkit.event.entity.*;
 import org.bukkit.event.raid.RaidTriggerEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
@@ -212,6 +209,7 @@ public class MonsterInitializer implements Listener {
         // First, check for the purple world boss (0.1% chance)
         if (Math.random() < .0003 || entity instanceof PiglinBrute || entity instanceof PigZombie || entity instanceof Warden || entity instanceof Wither || entity instanceof ElderGuardian || entity instanceof Ravager || entity instanceof Evoker) { //0.0003
             extraHealth += lvl * 800;
+            if (lvl>199) extraHealth += lvl * 1200;
             setBossAttributes(entity, maxCoord, "World Boss", ChatColor.DARK_PURPLE);
             entity.setGlowing(true);
             Objects.requireNonNull(entity.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(extraHealth);
@@ -231,6 +229,7 @@ public class MonsterInitializer implements Listener {
         // Only check for red boss (1% chance) if not already a purple boss
         if (Math.random() < .003 ) { //0.003
             extraHealth += lvl * 100;
+            if (lvl>199) extraHealth += lvl * 120;
             setBossAttributes(entity, maxCoord, "Boss", ChatColor.RED);
             Objects.requireNonNull(entity.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(extraHealth);
             entity.setHealth(extraHealth);
@@ -243,6 +242,7 @@ public class MonsterInitializer implements Listener {
 
         if (Math.random() < 0.03 || entity instanceof Vindicator) {
             extraHealth += lvl * 10;
+            if (lvl>199) extraHealth += lvl * 12;
             setBossAttributes(entity, maxCoord, "Leader", ChatColor.YELLOW);
             Objects.requireNonNull(entity.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(extraHealth);
             entity.setHealth(extraHealth);
@@ -314,6 +314,13 @@ public class MonsterInitializer implements Listener {
             if (event.getSpell() == Spellcaster.Spell.SUMMON_VEX) {
                 event.setCancelled(true); // Cancel only Vex summon
             }
+        }
+    }
+
+    @EventHandler
+    public void transformCanceller(EntityTransformEvent event) {
+        if (event.getEntity().getWorld().getName().contains("_rpg")) {
+            event.setCancelled(true);
         }
     }
 
