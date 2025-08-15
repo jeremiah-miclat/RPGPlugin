@@ -92,7 +92,7 @@ public class SelectElement implements CommandExecutor, Listener {
         if (fireMeta != null) {
             fireMeta.setDisplayName("§cFire Element");
             List<String> lore = new ArrayList<>();
-            lore.add("§7🔥 Sets enemies ablaze.");
+            lore.add("§7🔥 Sets enemies ablaze. Adds 10% damage bonus from stats");
             lore.add("§eSwordsmen and Skill 1 users §7applies fire effect.");
             lore.add("§7Duration: §65s base + 0.25s per 100 Int");
 
@@ -106,7 +106,7 @@ public class SelectElement implements CommandExecutor, Listener {
         if (waterMeta != null) {
             waterMeta.setDisplayName("§9Water Element");
             List<String> lore = new ArrayList<>();
-            lore.add("§7💧 Drenches targets with water.");
+            lore.add("§7💧 Drenches targets with water. Adds 10% HP bonus");
             lore.add("§eSwordsmen and Skill 1 users §7applies §fWeakness§7.");
             lore.add("§7Duration: §65s base +0.5 seconds per 100 Intelligence");
             lore.add("§7Amplifier: §6-4 base melee damage + 4 per 500 Intelligence");
@@ -120,7 +120,7 @@ public class SelectElement implements CommandExecutor, Listener {
         if (iceMeta != null) {
             iceMeta.setDisplayName("§bIce Element");
             List<String> lore = new ArrayList<>();
-            lore.add("§7💧 Drenches targets with ice.");
+            lore.add("§7💧 Drenches targets with ice. Adds 10% Crit Chance");
             lore.add("§eSwordsmen and Skill 1 users §7applies §fSlowness§7.");
             lore.add("§7Duration: §65s base +0.5 seconds per 100 Intelligence");
             lore.add("§7Starts at 15% slow.");

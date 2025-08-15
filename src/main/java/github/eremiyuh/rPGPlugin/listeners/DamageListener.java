@@ -1263,13 +1263,11 @@ public class DamageListener implements Listener {
             }
 
             if (monster instanceof PiglinBrute) {
-                if (new Random().nextInt(100) < 5){
+                if (new Random().nextInt(100) < 30){
                     playerProfile.setDurability(Math.max(0,playerProfile.getDurability()-100));
                     String displayName = monster.getCustomName() != null ? monster.getCustomName() : ChatColor.GRAY + "Brute";
                     player.sendMessage(ChatColor.RED + "Brute reduced your durability by 100");
                 }
-                event.setDamage(1);
-                event.setCancelled(true);
             }
 
             double evadeChance;
@@ -1331,13 +1329,6 @@ public class DamageListener implements Listener {
         ItemStack weapon = attacker.getInventory().getItemInMainHand();
 
 
-
-        // Fire element check: Disable fire if not selected
-        if (!damagerProfile.getSelectedElement().equalsIgnoreCase("fire")
-                && (weapon.containsEnchantment(Enchantment.FLAME) || weapon.containsEnchantment(Enchantment.FIRE_ASPECT))) {
-            event.getEntity().setFireTicks(0); // Cancel fire ticks
-        }
-
         double statDamage = damagerProfile.getMeleeDmg();
 
         if (event.getEntity() instanceof Player) statDamage*=.2;
@@ -1384,7 +1375,6 @@ public class DamageListener implements Listener {
         if (event.getEntity() instanceof Player victim) {
             UserProfile victimProfile = profileManager.getProfile(victim.getName());
             if (victimProfile==null) return;
-            if (damagerProfile.getSelectedElement().equalsIgnoreCase("fire")) {finalDamage=finalDamage*1.1;}
             if (damagerProfile.getSelectedElement().equalsIgnoreCase("fire") && victimProfile.getSelectedElement().equalsIgnoreCase("ice")) {
                 finalDamage=finalDamage*1.1;
             }
@@ -1756,12 +1746,6 @@ public class DamageListener implements Listener {
         double baseDamage = event.getDamage();
         ItemStack weapon = attacker.getInventory().getItemInMainHand();
 
-        // Fire element check: Disable fire if not selected
-        if (!damagerProfile.getSelectedElement().equalsIgnoreCase("fire")
-                && (weapon.containsEnchantment(Enchantment.FLAME) || weapon.containsEnchantment(Enchantment.FIRE_ASPECT))) {
-            event.getEntity().setFireTicks(0); // Cancel fire ticks
-        }
-
         double statDamage = damage;
 
         if (event.getEntity() instanceof Player) statDamage*=.2;
@@ -1821,7 +1805,6 @@ public class DamageListener implements Listener {
         if (event.getEntity() instanceof Player victim) {
             UserProfile victimProfile = profileManager.getProfile(victim.getName());
             if (victimProfile==null) return;
-            if (damagerProfile.getSelectedElement().equalsIgnoreCase("fire")) {finalDamage=finalDamage*1.1;}
             if (damagerProfile.getSelectedElement().equalsIgnoreCase("fire") && victimProfile.getSelectedElement().equalsIgnoreCase("ice")) {
                 finalDamage=finalDamage*1.2;
             }

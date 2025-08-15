@@ -228,7 +228,9 @@ public class PlayerStatBuff {
             }
             boolean validRangedWeapon = isHoldingValidRangedWeapon(player);
             profile.setLs(lifeStealPercent(chosenClass,profile.getSelectedSkill(),player,chosenTrait));
-            profile.setCrit(critChance(chosenClass,luk,dex, profile.getSelectedSkill(),chosenTrait,validRangedWeapon));
+            double bonusCrit = 0;
+            if (profile.getSelectedElement().equalsIgnoreCase("ice")) bonusCrit+=.1;
+            profile.setCrit(critChance(chosenClass,luk,dex, profile.getSelectedSkill(),chosenTrait,validRangedWeapon)+bonusCrit);
             profile.setCritDmg(getCritMultiplier(chosenClass,luk,dex, profile.getSelectedSkill(),chosenTrait,validRangedWeapon));
 
             double meleeDmg = 0;
@@ -278,6 +280,12 @@ public class PlayerStatBuff {
                 splashDmg*=2;
             }
 
+            if (profile.getSelectedElement().contains("fire")) {
+                meleeDmg *=1.1;
+                longDmg*=1.1;
+                splashDmg*=1.1;
+            }
+
             profile.setMeleeDmg(meleeDmg);
             profile.setLongDmg(longDmg);
             profile.setSplashDmg(splashDmg);
@@ -292,6 +300,7 @@ public class PlayerStatBuff {
                     else if (chosenTrait.equalsIgnoreCase("Fortress")) {
                         newMaxHealth*=2;
                     }
+                    if (profile.getSelectedElement().contains("water")) newMaxHealth*=1.1;
                     maxHealthAttr.setBaseValue(newMaxHealth);
                     player.setHealth(Math.min(player.getHealth(), newMaxHealth));
                 }
