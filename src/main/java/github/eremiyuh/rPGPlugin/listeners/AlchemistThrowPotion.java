@@ -257,7 +257,7 @@ public class AlchemistThrowPotion implements Listener {
 
 
                 if (throwerProfile != null && "alchemist".equalsIgnoreCase(throwerProfile.getChosenClass()) && throwerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
-                    double intel = throwerProfile.getAlchemistClassInfo() != null ? throwerProfile.getAlchemistClassInfo().getIntel() : 0;
+                    double intel = throwerProfile.getAlchemistClassInfo() != null ? throwerProfile.getTempIntel() : 0;
 
                     for (PotionEffect effect : event.getPotion().getEffects()) {
                         int baseDuration = effect.getDuration();
