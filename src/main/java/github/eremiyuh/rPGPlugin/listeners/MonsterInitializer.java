@@ -5,11 +5,13 @@ import net.kyori.adventure.text.TextComponent;
 import org.apache.commons.lang3.text.WordUtils;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.raid.RaidTriggerEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -98,16 +100,50 @@ public class MonsterInitializer implements Listener {
         }
 
         if (event.getEntity() instanceof Monster monster) {
-            monster.setNoDamageTicks(0);
             initializeExtraAttributes(monster);
 
         }
 
         if (event.getEntity() instanceof Villager villager) {
-            Objects.requireNonNull(villager.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(10000);
-            villager.setHealth(10000);
+            String name = villager.getCustomName();
+            if (name != null && name.contains("tester-player")) {
+                villager.setCustomName("Dummy - Players");
+                Objects.requireNonNull(villager.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(10000000);
+                villager.setHealth(10000000);
+                villager.setAI(false);
 
+                // Create full Netherite armor with Prot IV
+                ItemStack helmet = new ItemStack(Material.NETHERITE_HELMET);
+                ItemStack chestplate = new ItemStack(Material.NETHERITE_CHESTPLATE);
+                ItemStack leggings = new ItemStack(Material.NETHERITE_LEGGINGS);
+                ItemStack boots = new ItemStack(Material.NETHERITE_BOOTS);
+
+                // Add Protection IV to each
+                helmet.addEnchantment(Enchantment.PROTECTION, 4);
+                chestplate.addEnchantment(Enchantment.PROTECTION, 4);
+                leggings.addEnchantment(Enchantment.PROTECTION, 4);
+                boots.addEnchantment(Enchantment.PROTECTION, 4);
+
+                // Give the armor
+                villager.getEquipment().setHelmet(helmet);
+                villager.getEquipment().setChestplate(chestplate);
+                villager.getEquipment().setLeggings(leggings);
+                villager.getEquipment().setBoots(boots);
+
+                // Prevent armor from dropping when it dies
+                villager.getEquipment().setHelmetDropChance(0f);
+                villager.getEquipment().setChestplateDropChance(0f);
+                villager.getEquipment().setLeggingsDropChance(0f);
+                villager.getEquipment().setBootsDropChance(0f);
+            }
+            if (name != null && name.contains("tester-monster")) {
+                villager.setCustomName("Dummy - Monsters");
+                Objects.requireNonNull(villager.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(10000000);
+                villager.setHealth(10000000);
+                villager.setAI(false);
+            }
         }
+
     }
 
 
@@ -129,11 +165,13 @@ public class MonsterInitializer implements Listener {
 
     // Method to initialize extra health and extra damage metadata
     private void initializeExtraAttributes(LivingEntity entity) {
-        Location location = entity.getLocation();
-        calculateExtraAttributes(location, entity);
+        if (entity instanceof Monster) {
+            Location location = entity.getLocation();
+            calculateExtraAttributes(location, entity);
 
 
-        setHealthIndicator(entity);
+            setHealthIndicator(entity);
+        }
     }
 
     private void setHealthIndicator(LivingEntity entity) {

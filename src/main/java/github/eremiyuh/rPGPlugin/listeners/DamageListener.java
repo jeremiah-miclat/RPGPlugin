@@ -58,7 +58,8 @@ public class DamageListener implements Listener {
     private final long SKILLWARDEN_COOLDOWN_MS = 10_000;
     private final int x1 = -150, z1 = 150;
     private final int x2 = 90, z2 = -110;
-
+    private final Map<UUID, Double> dummyDamage = new HashMap<>();
+    private final Map<UUID, BukkitTask> dummyTimers = new HashMap<>();
     public DamageListener(PlayerProfileManager profileManager, EffectsAbilityManager effectsAbilityManager, DamageAbilityManager damageAbilityManager, RPGPlugin plugin, RavagerSkillManager manager) {
         this.profileManager = profileManager;
         this.effectsAbilityManager = effectsAbilityManager;
@@ -918,13 +919,75 @@ public class DamageListener implements Listener {
     }
 
 
+
+
     @EventHandler(priority = EventPriority.MONITOR)
     public void onFatalDamage(EntityDamageEvent event) {
 
         // ✅ Exit early if event already cancelled by other plugin or mechanics
         if (event.isCancelled()) return;
 
+        if (event.getEntity() instanceof Villager villager && !villager.isDead()) {
+            if (event.getDamageSource().getCausingEntity() instanceof Player op && op.isOp() && op.getGameMode() == GameMode.CREATIVE) {
+                villager.setHealth(0);
+                return;
+            }
 
+            String name = villager.getCustomName();
+            if (name == null || !name.contains("Dummy")) return;
+            Objects.requireNonNull(villager.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(10000000);
+            villager.setHealth(10000000);
+
+
+            if (event.getDamageSource().getCausingEntity() instanceof Player player) {
+
+                UUID playerId = player.getUniqueId();
+
+                // Start timer if not running
+                if (!dummyTimers.containsKey(playerId)) {
+                    player.sendMessage(ChatColor.YELLOW + "⏳ Damage test started! You have 60 seconds.");
+                    dummyDamage.put(playerId, 0.0);
+
+                    // Countdown task
+                    BukkitRunnable countdown = new BukkitRunnable() {
+                        int timeLeft = 60;
+
+                        @Override
+                        public void run() {
+                            timeLeft -= 10;
+                            if (timeLeft > 0) {
+                                player.sendMessage(ChatColor.GRAY + "⏳ " + ChatColor.YELLOW + timeLeft + " seconds remaining...");
+                            } else {
+                                cancel();
+                            }
+                        }
+                    };
+                    countdown.runTaskTimer(plugin, 20L * 10, 20L * 10); // starts after 10s, repeats every 10s
+
+                    // Final result task
+                    BukkitTask task = Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                        double totalDamage = dummyDamage.getOrDefault(playerId, 0.0);
+                        double dps = totalDamage / 60.0;
+
+                        player.sendMessage(ChatColor.GREEN + "✅ Time's up!");
+                        player.sendMessage(ChatColor.AQUA + "📊 Total Damage: " + ChatColor.GOLD + String.format("%.2f", totalDamage));
+                        player.sendMessage(ChatColor.LIGHT_PURPLE + "⚡ DPS: " + ChatColor.GOLD + String.format("%.2f", dps));
+
+                        // Cleanup
+                        dummyDamage.remove(playerId);
+                        dummyTimers.remove(playerId);
+                    }, 20L * 60);
+
+                    dummyTimers.put(playerId, task);
+                }
+
+                // Add this hit's damage
+                double currentTotal = dummyDamage.getOrDefault(playerId, 0.0);
+                dummyDamage.put(playerId, currentTotal + event.getFinalDamage());
+
+            }
+
+        }
 
         if (!(event.getEntity() instanceof Player player)) return;
 
@@ -1027,7 +1090,9 @@ public class DamageListener implements Listener {
 
 
 
-        resetHealthIndicator((LivingEntity) event.getEntity(), damage);
+        if (event.getEntity() instanceof Monster) {
+            resetHealthIndicator((LivingEntity) event.getEntity(), damage);
+        }
         if (event.getDamageSource().getCausingEntity() instanceof Player damager && !event.isCancelled()) {
             UserProfile damagerProfile = profileManager.getProfile(damager.getName());
             double finalDamage = event.getFinalDamage();
@@ -1275,6 +1340,13 @@ public class DamageListener implements Listener {
         double statDamage = damagerProfile.getMeleeDmg();
 
         if (event.getEntity() instanceof Player) statDamage*=.2;
+
+        if (event.getEntity() instanceof Villager villager) {
+            String name = villager.getCustomName();
+            if (name != null && name.contains("Players")) {
+                statDamage*=.2;
+            }
+        }
 
         double damageWithStats = applyStatsToDamage(statDamage+baseDamage, damagerProfile, attacker, event);
         if (event.isCancelled()) return;
@@ -1692,6 +1764,13 @@ public class DamageListener implements Listener {
         double statDamage = damage;
 
         if (event.getEntity() instanceof Player) statDamage*=.2;
+
+        if (event.getEntity() instanceof Villager villager) {
+            String name = villager.getCustomName();
+            if (name != null && name.contains("Players")) {
+                statDamage*=.2;
+            }
+        }
 
         // Apply stats based on class for non-default players
         double damageWithStats = applyStatsToDamage(baseDamage+statDamage, damagerProfile, attacker, event);

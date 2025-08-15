@@ -403,8 +403,7 @@ public class AreaProtectionListener implements Listener {
         if (item == null || (item.getType() != Material.WARDEN_SPAWN_EGG &&
                 item.getType() != Material.RAVAGER_SPAWN_EGG &&
                 item.getType() != Material.EVOKER_SPAWN_EGG &&
-                item.getType() != Material.WITHER_SPAWN_EGG &&
-                item.getType() != Material.VILLAGER_SPAWN_EGG)) return;
+                item.getType() != Material.WITHER_SPAWN_EGG)) return;
 
         Block clickedBlock = event.getClickedBlock();
         if (clickedBlock == null) return;
