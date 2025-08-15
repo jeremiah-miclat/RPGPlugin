@@ -222,7 +222,6 @@ public class PlayerStatBuff {
             double level = totalStats / 100;
             int flooredLevel = (int) level; // or use Math.floor(level) if you're being explicit
             profile.setArLvl(flooredLevel);
-            player.sendMessage(ChatColor.BLUE + "Your BP Level is: " + profile.getArLvl());
             int finalLevel = (int) Math.max(1, (totalStats - 100) / 100 + 1);
             if (finalLevel>profile.getLevel()) {
                 profile.setLevel(finalLevel);

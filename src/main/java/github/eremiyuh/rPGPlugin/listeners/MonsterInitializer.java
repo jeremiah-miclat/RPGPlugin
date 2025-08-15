@@ -229,7 +229,7 @@ public class MonsterInitializer implements Listener {
         // Only check for red boss (1% chance) if not already a purple boss
         if (Math.random() < .003 ) { //0.003
             extraHealth += lvl * 100;
-            if (lvl>199) extraHealth += lvl * 120;
+            if (lvl>199) extraHealth += lvl * 200;
             setBossAttributes(entity, maxCoord, "Boss", ChatColor.RED);
             Objects.requireNonNull(entity.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(extraHealth);
             entity.setHealth(extraHealth);
@@ -242,7 +242,7 @@ public class MonsterInitializer implements Listener {
 
         if (Math.random() < 0.03 || entity instanceof Vindicator) {
             extraHealth += lvl * 10;
-            if (lvl>199) extraHealth += lvl * 12;
+            if (lvl>199) extraHealth += lvl * 100;
             setBossAttributes(entity, maxCoord, "Leader", ChatColor.YELLOW);
             Objects.requireNonNull(entity.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(extraHealth);
             entity.setHealth(extraHealth);

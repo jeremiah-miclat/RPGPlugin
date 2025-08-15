@@ -1125,7 +1125,7 @@ public class DamageListener implements Listener {
                 });
             }
 
-            if (monster instanceof Zombie z && new Random().nextInt(100) < 10) {
+            if (monster instanceof Zombie z && new Random().nextInt(100) < 40) {
                 tryUseMobSkill(z, player, () -> {
                     double zdmg = Objects.requireNonNull(z.getAttribute(Attribute.ATTACK_DAMAGE)).getValue();
                     player.damage(zdmg);
@@ -1136,7 +1136,7 @@ public class DamageListener implements Listener {
                 });
             }
 
-            if (monster instanceof ZombieVillager zv && new Random().nextInt(100) < 10) {
+            if (monster instanceof ZombieVillager zv && new Random().nextInt(100) < 40) {
                 tryUseMobSkill(zv, player, () -> {
                     double zdmg = Objects.requireNonNull(zv.getAttribute(Attribute.ATTACK_DAMAGE)).getValue();
                     player.damage(zdmg);
@@ -1191,6 +1191,16 @@ public class DamageListener implements Listener {
                     String displayName = monster.getCustomName() != null ? monster.getCustomName() : ChatColor.GRAY + "Vindicator";
                     player.sendMessage(displayName + ChatColor.RED + ": " + getVindicatorRandomInsult());
                     player.sendMessage(ChatColor.RED + "Vindicator reduced your durability by 1000");
+                }
+                event.setDamage(1);
+                event.setCancelled(true);
+            }
+
+            if (monster instanceof PiglinBrute) {
+                if (new Random().nextInt(100) < 5){
+                    playerProfile.setDurability(Math.max(0,playerProfile.getDurability()-100));
+                    String displayName = monster.getCustomName() != null ? monster.getCustomName() : ChatColor.GRAY + "Brute";
+                    player.sendMessage(ChatColor.RED + "Brute reduced your durability by 100");
                 }
                 event.setDamage(1);
                 event.setCancelled(true);
@@ -2291,7 +2301,7 @@ public class DamageListener implements Listener {
         // Ensure 3 air blocks above
         for (int i = 1; i <= 3; i++) {
             Block above = ground.clone().add(0, i, 0).getBlock();
-            if (!above.isPassable()) return false;
+            if (!above.isEmpty()) return false;
         }
 
         return true;

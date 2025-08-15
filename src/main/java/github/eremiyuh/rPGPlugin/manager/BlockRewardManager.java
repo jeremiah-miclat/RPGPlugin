@@ -55,7 +55,7 @@ public class BlockRewardManager {
             Material.LAPIS_BLOCK,    1000 / 60.0,
             Material.GOLD_BLOCK,     500.0 / 60.0,
             Material.COPPER_BLOCK,   500.0 / 60.0,
-            Material.DIAMOND_BLOCK,  20.0 / 60.0
+            Material.DIAMOND_BLOCK,  100.0 / 60.0
     );
 
     private final Map<UUID, Integer> timeOnBlock = new HashMap<>();

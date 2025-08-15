@@ -490,7 +490,7 @@ public class CheckClassCommand implements CommandExecutor, Listener {
                     }
 
                     playerStatBuff.onClassSwitchOrAttributeChange(player);
-
+                    player.sendMessage(ChatColor.BLUE + "Your BP Level is: " + profile.getArLvl());
                     openClassInfoGUI(player, profile);  // Refresh the GUI
                 } else {
                     player.sendMessage("You have no remaining points to allocate.");

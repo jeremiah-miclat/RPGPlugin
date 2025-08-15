@@ -91,6 +91,7 @@ public class AddAttributeCommand implements CommandExecutor {
             userProfile.setCurrentAttributePoints(availablePoints - points);
 
             player.sendMessage("Successfully added " + points + " points to " + attribute + " for the " + currentClass + " class.");
+
             String worldName = player.getWorld().getName();
             if (!worldName.contains("rpg") && !worldName.contains("labyrinth")) {
                 playerStatBuff.updatePlayerStatsToNormal(player);
@@ -98,7 +99,7 @@ public class AddAttributeCommand implements CommandExecutor {
             if (worldName.contains("rpg") || worldName.contains("labyrinth")) {
                 playerStatBuff.updatePlayerStatsToRPG(player);
             }
-
+            player.sendMessage(ChatColor.BLUE + "Your BP Level is: " + userProfile.getArLvl());
 
         } catch (IllegalArgumentException e) {
             player.sendMessage("Invalid attribute. Valid attributes are: str, agi, dex, intel, vit, luk.");
