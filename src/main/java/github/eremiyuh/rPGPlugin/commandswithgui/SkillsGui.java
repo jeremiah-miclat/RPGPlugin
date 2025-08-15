@@ -17,6 +17,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 public class SkillsGui implements CommandExecutor, Listener {
@@ -31,7 +32,6 @@ public class SkillsGui implements CommandExecutor, Listener {
 
     private final long COOLDOWN = 10000;
 
-    // When a player enters /selectskill, the GUI will appear
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
@@ -41,7 +41,6 @@ public class SkillsGui implements CommandExecutor, Listener {
 
         Player player = (Player) sender;
         UserProfile profile = profileManager.getProfile(player.getName());
-        double playerLapis = profile.getLapiz();
 
         if (profile == null) {
             player.sendMessage("You do not have a profile.");
@@ -52,51 +51,117 @@ public class SkillsGui implements CommandExecutor, Listener {
         return true;
     }
 
-    // Open the skills GUI for the player
     public void openSkillsGui(Player player, UserProfile profile) {
         Inventory gui = Bukkit.createInventory(null, 9, "Select Skill");
 
-        // Set up skills based on the player's chosen class
         switch (profile.getChosenClass().toLowerCase()) {
             case "swordsman":
-                addSkillsToGui(gui, "Swordsman", "Int-based damage", "10% Lifesteal", "Counter Helix: Return Damage of 30% of your damage from strength when using thorns");
+                addSkillsToGui(gui, "Swordsman",
+                        "Int-based damage",
+                        "10% Lifesteal",
+                        "Counter Helix: Return Damage of 30% of your damage from strength when using thorns",
+                        Arrays.asList(
+                                "§7Right-click with sword (main hand).",
+                                "§7Damages all living entities in 5 block radius by your §cmelee damage§7.",
+                                "§7Crit and other multipliers applies.",
+                                "§7Fire: Burn 10s | Water: Weakness IX 10s | Ice: Slowness IX 10s.",
+                                "§730s cooldown."
+                        ),
+                        Arrays.asList(
+                                "§7Right-click with sword in both hands.",
+                                "§73 lines, 20 blocks forward, §cmelee damage§7.",
+                                "§7Crit and other multipliers applies.",
+                                "§73 Can hit a single target up to 5 times.",
+                                "§730s cooldown + 4s fixed cooldown"
+                        ),
+                        Arrays.asList(
+                                "§7Right-click with sword (main hand).",
+                                "§710 block radius taunt – all mobs target you.",
+                                "§7Gain Strength & Resistance based on number of mobs hit.",
+                                "§7Effect lasts 10s. 30s cooldown."
+                        )
+                );
                 break;
             case "archer":
-                addSkillsToGui(gui, "Archer", "High Int-based damage. Single Target", "Arrow Shower. Dex for Chance & Int for Damage.", "Bonus Crit Chance. Crossbow heals 5% of damage dealt (5% lifesteal effect)");
+                addSkillsToGui(gui, "Archer",
+                        "High Int-based damage. Single Target",
+                        "Arrow Shower. Dex for Chance & Int for Damage.",
+                        "Bonus Crit Chance. Crossbow heals 5% of damage dealt (5% lifesteal effect)",
+                        Arrays.asList(
+                                "§7Right-click with bow/crossbow.",
+                                "§7Damages mobs in 5 block radius by your §cranged damage§7.",
+                                "§7Crit and other multipliers applies.",
+                                "§7Targets switch to random mob (Boss priority).",
+                                "§7Fire: Burn 10s | Water: Weakness IX 10s | Ice: Slowness IX 10s.",
+                                "§730s cooldown. Item on Slot 9 is the cd identifier"
+                        ),
+                        Arrays.asList(
+                                "§7Right-click with bow/crossbow.",
+                                "§715x15 square centered on player – arrow rain from y+100.",
+                                "§730s cooldown. Item on Slot 9 is the cd identifier"
+                        ),
+                        Arrays.asList(
+                                "§7Right-click with bow/crossbow.",
+                                "§7Gain Speed II for 10 seconds.",
+                                "§7No damage dealt. Mobility skill.",
+                                "§730s cooldown. Item on Slot 9 is the cd identifier"
+                        )
+                );
                 break;
             case "alchemist":
-                addSkillsToGui(gui, "Alchemist", "Instant Damage Potion", "Random Buff/Debuff", "Healing Potion");
+                addSkillsToGui(gui, "Alchemist",
+                        "Instant Damage Potion",
+                        "Random Buff/Debuff",
+                        "Healing Potion",
+                        Arrays.asList(
+                                "§7Right-click with main hand.",
+                                "§7Shower location with Instant Damage splash potions for 20s.",
+                                "§7Position fixed at cast start.",
+                                "§7Potions fall fast from y+3.",
+                                "§730s cooldown + 9s fixed cooldown."
+                        ),
+                        Arrays.asList(
+                                "§7Right-click with main hand.",
+                                "§7Shower location with Strength splash potions for 20s.",
+                                "§71 potion every 0.5s.",
+                                "§7Potions fall fast from y+3.",
+                                "§730s cooldown + 9s fixed cooldown."
+                        ),
+                        Arrays.asList(
+                                "§7Right-click with main hand.",
+                                "§7Shower location with Instant Heal splash potions for 20s.",
+                                "§71 potion every 0.5s.",
+                                "§7Potions fall fast from y+3.",
+                                "§730s cooldown + 9s fixed cooldown."
+                        )
+                );
                 break;
             default:
                 player.sendMessage("Your class does not have any skills.");
                 return;
         }
 
-        // Open the GUI for the player
         player.openInventory(gui);
     }
 
-    // Add the skills for the player's chosen class to the GUI
-    private void addSkillsToGui(Inventory gui, String className, String skill1, String skill2, String skill3) {
-        // Skill 1
-        gui.setItem(1, createSkillIcon(Material.EMERALD, "§a" + className + " Skill 1", skill1));
-
-        // Skill 2
-        gui.setItem(3, createSkillIcon(Material.EMERALD, "§a" + className + " Skill 2", skill2));
-
-        // Skill 3
-        gui.setItem(5, createSkillIcon(Material.EMERALD, "§a" + className + " Skill 3", skill3));
+    private void addSkillsToGui(Inventory gui, String className, String skill1, String skill2, String skill3,
+                                List<String> detail1, List<String> detail2, List<String> detail3) {
+        gui.setItem(1, createSkillIcon(Material.EMERALD, "§a" + className + " Skill 1", skill1, detail1));
+        gui.setItem(3, createSkillIcon(Material.EMERALD, "§a" + className + " Skill 2", skill2, detail2));
+        gui.setItem(5, createSkillIcon(Material.EMERALD, "§a" + className + " Skill 3", skill3, detail3));
     }
 
-    // Create an icon for each skill with a unique lore to identify it
-    private ItemStack createSkillIcon(Material material, String displayName, String description) {
+    private ItemStack createSkillIcon(Material material, String displayName, String description, List<String> details) {
         ItemStack item = new ItemStack(material);
         ItemMeta meta = item.getItemMeta();
 
         if (meta != null) {
             meta.setDisplayName(displayName);
-            // Add a unique line of lore to identify the GUI item
-            meta.setLore(Arrays.asList("§7Description:", "§f" + description, "§eUniqueSkillIcon"));
+            List<String> lore = Arrays.asList("§7Description:", "§f" + description, "");
+            lore = new java.util.ArrayList<>(lore);
+            lore.addAll(details);
+            lore.add("§eUniqueSkillIcon");
+            meta.setLore(lore);
             item.setItemMeta(meta);
         }
 
@@ -105,25 +170,20 @@ public class SkillsGui implements CommandExecutor, Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        // Check if the inventory is the skills GUI by checking its title
         if (event.getView().getTitle().equals("Select Skill")) {
-            event.setCancelled(true);  // Prevent interactions such as clicking or dragging
+            event.setCancelled(true);
 
-            // Ensure the player who clicked is a Player instance
             if (event.getWhoClicked() instanceof Player) {
                 Player player = (Player) event.getWhoClicked();
                 UserProfile profile = profileManager.getProfile(player.getName());
 
-                // Get the clicked item
                 ItemStack clickedItem = event.getCurrentItem();
                 if (clickedItem != null && clickedItem.hasItemMeta() && Objects.requireNonNull(clickedItem.getItemMeta()).hasLore()) {
                     ItemMeta itemMeta = clickedItem.getItemMeta();
-                    // Ensure the item has the unique lore for skill selection
                     if (itemMeta.getLore() != null && itemMeta.getLore().contains("§eUniqueSkillIcon")) {
                         String displayName = itemMeta.getDisplayName();
                         String currentSkill = profile.getSelectedSkill();
 
-                        // Identify the selected skill
                         String selectedSkill;
                         if (displayName.contains("Skill 1")) {
                             selectedSkill = "Skill 1";
@@ -141,23 +201,9 @@ public class SkillsGui implements CommandExecutor, Listener {
                             return;
                         }
 
-                        // Check if the player has selected a skill before
-//                        if (!profile.getSelectedSkill().equals("none")) {
-//                            // Check if the player has enough lapis
-//                            if (profile.getLapiz() < 100) {
-//                                player.sendMessage("You need at least 100 lapis to select a new skill.");
-//                                return;
-//                            }
-//                            // Deduct 100 lapis for skill reselection
-//                            profile.setLapiz(profile.getLapiz() - 100);
-//                        }
-
-                        // Save the selected skill to the profile
                         profile.setSelectedSkill(selectedSkill);
                         profileManager.saveProfile(player.getName());
                         player.sendMessage("You have selected " + selectedSkill + "!");
-
-                        // Close the inventory after the player selects a skill
                         player.closeInventory();
                     }
                 }

@@ -220,8 +220,8 @@ public class PlayerStatBuff {
 
 // Divide the total by 100
             double level = totalStats / 100;
-            int flooredLevel = (int) level; // or use Math.floor(level) if you're being explicit
-            profile.setArLvl(flooredLevel);
+            int tempLvl = (int) Math.ceil(level); // always round UP
+            profile.setArLvl(Math.max(1,tempLvl));
             int finalLevel = (int) Math.max(1, (totalStats - 100) / 100 + 1);
             if (finalLevel>profile.getLevel()) {
                 profile.setLevel(finalLevel);
@@ -236,6 +236,11 @@ public class PlayerStatBuff {
             double meleeDmg = 0;
             double longDmg=0;
             double splashDmg= (double) intel /100*30;
+            if (intel>dex) {
+                splashDmg+=((double) dex /100)*4;
+            } else {
+                splashDmg+=((double) dex /100)*2;
+            }
 
             if (isHoldingValidMeleeWeapon(player)) {
                 meleeDmg+=((double) str /100)*4;
@@ -289,7 +294,7 @@ public class PlayerStatBuff {
             profile.setMeleeDmg(meleeDmg);
             profile.setLongDmg(longDmg);
             profile.setSplashDmg(splashDmg);
-
+            profile.setCdr(getCooldownReduction(dex, profile.getArLvl()));
 
             if (player.getWorld().getName().contains("_rpg")) {
                 // Update player health
@@ -489,5 +494,21 @@ public class PlayerStatBuff {
             evadeChance = 100.0;
         }
         return evadeChance;
+    }
+
+    public double getCooldownReduction(int dex, int level) {
+        double dexPerLevel = (double) dex / level;
+        double reduction;
+
+        if (dexPerLevel >= 100) {
+            reduction = 29.0;
+        } else if (dexPerLevel >= 50) {
+            // Between 50 and 100 DEX/level
+            reduction = 15.0 + ((dexPerLevel - 50.0) / 50.0) * 14.0;
+        } else {
+            // Between 0 and 50 DEX/level
+            reduction = (dexPerLevel / 50.0) * 15.0;
+        }
+        return reduction;
     }
 }

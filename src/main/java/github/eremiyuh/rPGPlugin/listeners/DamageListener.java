@@ -612,6 +612,25 @@ public class DamageListener implements Listener {
                         double splash = attackerProfile.getSplashDmg();
                         if (damaged instanceof Player) {
                             splash = ((double) attackerProfile.getTempIntel() /100)*8;
+                            double intel = attackerProfile.getTempIntel();
+                            double dex = attackerProfile.getTempDex();
+                            if (intel>dex) {
+                                splash+=( dex /100)*4;
+                            } else {
+                                splash+=( dex /100)*2;
+                            }
+                        }
+
+                        if (damaged instanceof Villager villager) {
+                            String name = villager.getCustomName();
+                            if (name != null && name.contains("players")) splash = ((double) attackerProfile.getTempIntel() /100)*8;
+                            double intel = attackerProfile.getTempIntel();
+                            double dex = attackerProfile.getTempDex();
+                            if (intel>dex) {
+                                splash+=( dex /100)*4;
+                            } else {
+                                splash+=( dex /100)*2;
+                            }
                         }
 
                         handleLongRangeDamage(attacker,victim,event,damagerLocation,damagedLocation,attackerProfile, splash);

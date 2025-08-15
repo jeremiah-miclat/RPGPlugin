@@ -122,6 +122,8 @@ public class UserProfile {
     // abyss royale level
     private int arLvl = 0;
 
+    private double cdr = 0;
+
     //constructor
     public UserProfile(String playerName) {
         this.crit = 0;
@@ -753,6 +755,14 @@ public class UserProfile {
 
     public void setArLvl(int arLvl) {
         this.arLvl = arLvl;
+    }
+
+    public double getCdr() {
+        return cdr;
+    }
+
+    public void setCdr(double cdr) {
+        this.cdr = cdr;
     }
 
     // Inner class to hold class-specific attributes

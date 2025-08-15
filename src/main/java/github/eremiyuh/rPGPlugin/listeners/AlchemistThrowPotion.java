@@ -296,6 +296,8 @@ public class AlchemistThrowPotion implements Listener {
                                 applyEffect = true;
                             }
 
+
+
                             // Apply the effect if conditions are met
                             if (applyEffect) {
                                 if (target.getHealth()>0) {
@@ -305,6 +307,10 @@ public class AlchemistThrowPotion implements Listener {
                                     double newHealth = Math.min(target.getHealth() + healAmount, Objects.requireNonNull(target.getAttribute(Attribute.MAX_HEALTH)).getValue());
                                     target.setHealth(newHealth);
                                 }
+                            }
+
+                            if (isPositiveEffect && !applyEffect && target.getWorld().getName().contains("_br")) {
+                                target.damage(4);
                             }
                         }
                     }

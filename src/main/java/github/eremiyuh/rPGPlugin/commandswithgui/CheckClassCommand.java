@@ -276,7 +276,7 @@ public class CheckClassCommand implements CommandExecutor, Listener {
         lore.add("§7CritDmg%: " + df.format(profile.getCritDmg() * 100) + "%");
         lore.add("§7Lifesteal%: " + df.format(profile.getLs() * 100) + "%");
         lore.add("§7Evasion%(Same level mob): " + df.format(calculateEvasion(profile.getTempAgi(), profile.getLevel())) + "%");
-
+        lore.add("§7CD reduction: -" + profile.getCdr());
         // Add remaining points, total allocated points for chosen class, and overall allocated points
         lore.add("§eRemaining Points: " + profile.getCurrentAttributePoints());
         lore.add("§eAllocated Points (" + profile.getChosenClass() +"): " + getTotalPointsForChosenClass(profile));

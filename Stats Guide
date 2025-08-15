@@ -32,8 +32,11 @@ Final = (Base + Bonus) × (1 + StatDamage% / 100)
 *Bow/Trident: DEX × 4
 
 *Splash Potion:
-INT × 3 vs players
-INT × 10 vs mobs
+INT × 8 vs players
+INT × 30 vs mobs
+
+If INT > DEX → Bonus = DEX × 4
+If DEX > INT → Bonus = DEX × 2
 
 ================================================================================================
 

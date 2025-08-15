@@ -335,7 +335,7 @@ public class RPGPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new SkillListener(),this);
         getServer().getPluginManager().registerEvents(new HungerListener(profileManager),this);
         getServer().getPluginManager().registerEvents(new SignCoordListener(),this);
-
+        getServer().getPluginManager().registerEvents(new SkillsListener(this,profileManager),this);
 
         // Register the command executor
         Objects.requireNonNull(this.getCommand("status")).setExecutor(new CheckClassCommand(profileManager));

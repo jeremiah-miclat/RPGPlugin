@@ -108,6 +108,7 @@ public class MonsterInitializer implements Listener {
             String name = villager.getCustomName();
             if (name != null && name.contains("tester-player")) {
                 villager.setCustomName("Dummy - Players");
+                villager.setCustomNameVisible(true);
                 Objects.requireNonNull(villager.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(10000000);
                 villager.setHealth(10000000);
                 villager.setAI(false);
@@ -138,6 +139,7 @@ public class MonsterInitializer implements Listener {
             }
             if (name != null && name.contains("tester-monster")) {
                 villager.setCustomName("Dummy - Monsters");
+                villager.setCustomNameVisible(true);
                 Objects.requireNonNull(villager.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(10000000);
                 villager.setHealth(10000000);
                 villager.setAI(false);
