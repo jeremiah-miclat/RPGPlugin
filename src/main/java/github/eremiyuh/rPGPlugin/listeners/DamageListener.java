@@ -945,16 +945,16 @@ public class DamageListener implements Listener {
 
                 // Start timer if not running
                 if (!dummyTimers.containsKey(playerId)) {
-                    player.sendMessage(ChatColor.YELLOW + "⏳ Damage test started! You have 60 seconds.");
+                    player.sendMessage(ChatColor.YELLOW + "⏳ Damage test started! You have 10 seconds.");
                     dummyDamage.put(playerId, 0.0);
 
                     // Countdown task
                     BukkitRunnable countdown = new BukkitRunnable() {
-                        int timeLeft = 60;
+                        int timeLeft = 10;
 
                         @Override
                         public void run() {
-                            timeLeft -= 10;
+                            timeLeft -= 1;
                             if (timeLeft > 0) {
                                 player.sendMessage(ChatColor.GRAY + "⏳ " + ChatColor.YELLOW + timeLeft + " seconds remaining...");
                             } else {
@@ -962,12 +962,12 @@ public class DamageListener implements Listener {
                             }
                         }
                     };
-                    countdown.runTaskTimer(plugin, 20L * 10, 20L * 10); // starts after 10s, repeats every 10s
+                    countdown.runTaskTimer(plugin, 20L, 20L); // start after 1s, tick every 1s
 
                     // Final result task
                     BukkitTask task = Bukkit.getScheduler().runTaskLater(plugin, () -> {
                         double totalDamage = dummyDamage.getOrDefault(playerId, 0.0);
-                        double dps = totalDamage / 60.0;
+                        double dps = totalDamage / 10.0;
 
                         player.sendMessage(ChatColor.GREEN + "✅ Time's up!");
                         player.sendMessage(ChatColor.AQUA + "📊 Total Damage: " + ChatColor.GOLD + String.format("%.2f", totalDamage));
@@ -976,7 +976,7 @@ public class DamageListener implements Listener {
                         // Cleanup
                         dummyDamage.remove(playerId);
                         dummyTimers.remove(playerId);
-                    }, 20L * 60);
+                    }, 20L * 10);
 
                     dummyTimers.put(playerId, task);
                 }
@@ -986,6 +986,7 @@ public class DamageListener implements Listener {
                 dummyDamage.put(playerId, currentTotal + event.getFinalDamage());
 
             }
+
 
         }
 
