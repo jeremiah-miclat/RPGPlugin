@@ -57,13 +57,27 @@ If Archer + Skill 3: gains extra +0.05x every 100 DEX
 
 🛡 Crit Resistance (PVP Enemy Defense)
 
-Reduces your crit chance:
--0.02% per enemy LUK + any crit resistance from items
-📌 Example:
-You (Archer): 200 LUK, 100 DEX → 200×0.03% + 100×0.01% = 7%
-With Skill 3: 7% + 25% = 32% total
-Enemy has 100 LUK → -2% = Final Crit Chance: 30%
+🛡️ Critical Resistance Guide
 
+Crit Resistance Formula
++0.02% per AGI
++0.02% per VIT
++0.02% per LUK
++0.02% per HP%
+
+📌 Example Calculation
+
+You (Defender):
+200 LUK → 200 × 0.02% = 4%
+100 VIT → 100 × 0.02% = 2%
+50 AGI → 50 × 0.02% = 1%
+Base Crit Resistance = 7%
+
+Player Swordsman (Attacker):
+1000 LUK → 1000 × 0.03% = 30%
+
+Final Crit chance of attacker:
+30 - 7 = 23%
 
 =================================================================
 ⚔️ CLASS SKILL SCALING
