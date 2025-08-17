@@ -9,7 +9,10 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.*;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.raid.RaidTriggerEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -77,6 +80,7 @@ public class MonsterInitializer implements Listener {
 
     @EventHandler
     public void onCreatureSpawn(CreatureSpawnEvent event) {
+
         String world = Objects.requireNonNull(event.getLocation().getWorld()).getName();
 
         if (!world.contains("_rpg")) {
@@ -99,12 +103,7 @@ public class MonsterInitializer implements Listener {
             }
         }
 
-        if (event.getEntity() instanceof Monster monster) {
-            initializeExtraAttributes(monster);
-
-        }
-
-        if (event.getEntity() instanceof Villager villager) {
+        if (event.getEntity() instanceof Pillager villager) {
             String name = villager.getCustomName();
             if (name != null && name.contains("tester-player")) {
                 villager.setCustomName("Dummy - Players");
@@ -112,7 +111,7 @@ public class MonsterInitializer implements Listener {
                 Objects.requireNonNull(villager.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(10000000);
                 villager.setHealth(10000000);
                 villager.setAI(false);
-
+                villager.setRemoveWhenFarAway(false);
                 // Create full Netherite armor with Prot IV
                 ItemStack helmet = new ItemStack(Material.NETHERITE_HELMET);
                 ItemStack chestplate = new ItemStack(Material.NETHERITE_CHESTPLATE);
@@ -136,6 +135,7 @@ public class MonsterInitializer implements Listener {
                 villager.getEquipment().setChestplateDropChance(0f);
                 villager.getEquipment().setLeggingsDropChance(0f);
                 villager.getEquipment().setBootsDropChance(0f);
+                return;
             }
             if (name != null && name.contains("tester-monster")) {
                 villager.setCustomName("Dummy - Monsters");
@@ -143,8 +143,17 @@ public class MonsterInitializer implements Listener {
                 Objects.requireNonNull(villager.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(10000000);
                 villager.setHealth(10000000);
                 villager.setAI(false);
+                villager.setRemoveWhenFarAway(false);
+                return;
             }
         }
+
+        if (event.getEntity() instanceof Monster monster) {
+            initializeExtraAttributes(monster);
+
+        }
+
+
 
     }
 
@@ -171,6 +180,9 @@ public class MonsterInitializer implements Listener {
             Location location = entity.getLocation();
             calculateExtraAttributes(location, entity);
 
+            if (entity instanceof Pillager pillager)  {
+                if (pillager.getCustomName().contains("Dummy")) return;
+            }
 
             setHealthIndicator(entity);
         }
@@ -218,6 +230,12 @@ public class MonsterInitializer implements Listener {
             entity.setRemoveWhenFarAway(false);
         }
 
+        if (entity instanceof Vindicator) {
+            entity.setPersistent(false);
+            entity.setRemoveWhenFarAway(true);
+        }
+
+
         if (entity instanceof Ravager) {
             entity.setPersistent(true);
             entity.setRemoveWhenFarAway(false);
@@ -236,8 +254,10 @@ public class MonsterInitializer implements Listener {
 
         double extraHealth = lvl*5+entity.getHealth();
 
-        if (lvl>199) {
-            extraHealth = lvl*20+entity.getHealth();
+        if (lvl > 199) {
+            int extraMultiplier = ((lvl - 200) / 10) * 20; // increase 1000 every 10 levels above 199
+            int multiplier = 20 + extraMultiplier;
+            extraHealth += lvl * multiplier;
         }
 
         double customDamage = (lvl*.5) + Objects.requireNonNull(entity.getAttribute(Attribute.ATTACK_DAMAGE)).getValue();
@@ -249,7 +269,11 @@ public class MonsterInitializer implements Listener {
         // First, check for the purple world boss (0.1% chance)
         if (Math.random() < .0003 || entity instanceof PiglinBrute || entity instanceof PigZombie || entity instanceof Warden || entity instanceof Wither || entity instanceof ElderGuardian || entity instanceof Ravager || entity instanceof Evoker) { //0.0003
             extraHealth += lvl * 800;
-            if (lvl>199) extraHealth += lvl * 1200;
+            if (lvl > 199) {
+                int extraMultiplier = ((lvl - 200) / 10) * 1000; // increase 1000 every 10 levels above 199
+                int multiplier = 1200 + extraMultiplier;
+                extraHealth += lvl * multiplier;
+            }
             setBossAttributes(entity, maxCoord, "World Boss", ChatColor.DARK_PURPLE);
             entity.setGlowing(true);
             Objects.requireNonNull(entity.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(extraHealth);
@@ -269,7 +293,11 @@ public class MonsterInitializer implements Listener {
         // Only check for red boss (1% chance) if not already a purple boss
         if (Math.random() < .003 ) { //0.003
             extraHealth += lvl * 100;
-            if (lvl>199) extraHealth += lvl * 200;
+            if (lvl > 199) {
+                int extraMultiplier = ((lvl - 200) / 10) * 200; // increase 1000 every 10 levels above 199
+                int multiplier = 200 + extraMultiplier;
+                extraHealth += lvl * multiplier;
+            }
             setBossAttributes(entity, maxCoord, "Boss", ChatColor.RED);
             Objects.requireNonNull(entity.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(extraHealth);
             entity.setHealth(extraHealth);
@@ -282,7 +310,11 @@ public class MonsterInitializer implements Listener {
 
         if (Math.random() < 0.03 || entity instanceof Vindicator) {
             extraHealth += lvl * 10;
-            if (lvl>199) extraHealth += lvl * 100;
+            if (lvl > 199) {
+                int extraMultiplier = ((lvl - 200) / 10) * 100; // increase 1000 every 10 levels above 199
+                int multiplier = 100 + extraMultiplier;
+                extraHealth += lvl * multiplier;
+            }
             setBossAttributes(entity, maxCoord, "Leader", ChatColor.YELLOW);
             Objects.requireNonNull(entity.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(extraHealth);
             entity.setHealth(extraHealth);

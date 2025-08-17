@@ -1,6 +1,7 @@
 package github.eremiyuh.rPGPlugin.listeners;
 
 import github.eremiyuh.rPGPlugin.RPGPlugin;
+import github.eremiyuh.rPGPlugin.buffs.PlayerStatBuff;
 import github.eremiyuh.rPGPlugin.manager.PlayerProfileManager;
 import github.eremiyuh.rPGPlugin.profile.UserProfile;
 import net.kyori.adventure.text.Component;
@@ -26,10 +27,12 @@ public class TabListCustomizer implements Listener {
 
     private final RPGPlugin plugin;
     private final PlayerProfileManager profileManager;
+    private final PlayerStatBuff playerStatBuff;
 
-    public TabListCustomizer(RPGPlugin plugin, PlayerProfileManager profileManager) {
+    public TabListCustomizer(RPGPlugin plugin, PlayerProfileManager profileManager, PlayerStatBuff playerStatBuff) {
         this.plugin = plugin;
         this.profileManager = profileManager;
+        this.playerStatBuff = playerStatBuff;
         startTabListUpdater();
     }
 
@@ -116,6 +119,7 @@ public class TabListCustomizer implements Listener {
                 World mainWorld = Bukkit.getWorld("world");
                 if (mainWorld != null) {
                     player.teleport(mainWorld.getSpawnLocation());
+                    playerStatBuff.updatePlayerStatsToNormal(player);
                     player.sendMessage(ChatColor.RED + "You can not team up in this world. Teleporting to spawn.");
                 }
             }
@@ -133,6 +137,7 @@ public class TabListCustomizer implements Listener {
                 World mainWorld = Bukkit.getWorld("world");
                 if (mainWorld != null) {
                     player.teleport(mainWorld.getSpawnLocation());
+                    playerStatBuff.updatePlayerStatsToNormal(player);
                     player.sendMessage(ChatColor.RED + "You are not in the correct BP. Teleported to spawn.");
                 }
             }

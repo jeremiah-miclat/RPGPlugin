@@ -80,7 +80,7 @@ public class AlchemistThrowPotion implements Listener {
 
 
                 if (throwerProfile != null && "alchemist".equalsIgnoreCase(throwerProfile.getChosenClass()) && throwerProfile.getSelectedSkill().equalsIgnoreCase("skill 2")) {
-                    double intel = throwerProfile.getAlchemistClassInfo() != null ? (double) throwerProfile.getAlchemistClassInfo().getIntel() : 0;
+                    double intel = throwerProfile.getAlchemistClassInfo() != null ? (double) throwerProfile.getTempIntel() : 0;
 
                     for (PotionEffect effect : event.getPotion().getEffects()) {
                         int baseIntensity = effect.getAmplifier();
@@ -203,42 +203,20 @@ public class AlchemistThrowPotion implements Listener {
                                 }
 
                                 if (target instanceof Player targetPlayer && isNegativeEffect) {
-                                    UserProfile targetProfile = profileManager.getProfile(targetPlayer.getName());
-                                    if (throwerProfile.getTeam().equals(targetProfile.getTeam()) && !throwerProfile.getTeam().equalsIgnoreCase("none")) {
+                                    if (!target.getWorld().getName().contains("_br")) {
                                         targetPlayer.removePotionEffect(effect.getType());
                                         target.addPotionEffect(new PotionEffect((PotionEffectType.REGENERATION),200,0,true,true));
                                     }
-
-                                    int attackerLevel = throwerProfile.getLevel();
-                                    int damagedLevel = targetProfile.getLevel();
-
-                                    if ((Math.abs(attackerLevel - damagedLevel) > 10) &&
-                                            (!throwerProfile.getTeam().equals(targetProfile.getTeam()) ||
-                                                    throwerProfile.getTeam().equalsIgnoreCase("none"))) {
-
-                                        targetPlayer.removePotionEffect(effect.getType());
-                                        target.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 200, 0, true, true));
-                                    }
                                 }
-                                if (target instanceof Player targetPlayer && isPositiveEffect && !throwerProfile.getTeam().equals("none")) {
+                                if (target instanceof Player targetPlayer && isPositiveEffect) {
                                     UserProfile targetProfile = profileManager.getProfile(targetPlayer.getName());
-                                    int attackerLevel = throwerProfile.getLevel();
-                                    int damagedLevel = targetProfile.getLevel();
 
-                                    // Only affect players from a different team
-                                    if (!throwerProfile.getTeam().equals(targetProfile.getTeam())) {
+                                    String throwerTeam = throwerProfile.getTeam();
+                                    String targetTeam = targetProfile.getTeam();
+
+                                    if (!targetPlayer.equals(thrower) // don't remove if same player
+                                            && (!throwerTeam.equals(targetTeam) || throwerTeam.equals("none"))) {
                                         targetPlayer.removePotionEffect(effect.getType());
-
-                                        // If level difference is NOT greater than 10, apply nausea
-                                        if (Math.abs(attackerLevel - damagedLevel) <= 10) {
-                                            target.addPotionEffect(new PotionEffect(
-                                                    PotionEffectType.NAUSEA,
-                                                    200 + (int)(intel / 10),
-                                                    1,
-                                                    true,
-                                                    true
-                                            ));
-                                        }
                                     }
                                 }
 
@@ -310,7 +288,7 @@ public class AlchemistThrowPotion implements Listener {
                             }
 
                             if (isPositiveEffect && !applyEffect && target.getWorld().getName().contains("_br")) {
-                                target.damage(4);
+                                target.damage(8);
                             }
                         }
                     }

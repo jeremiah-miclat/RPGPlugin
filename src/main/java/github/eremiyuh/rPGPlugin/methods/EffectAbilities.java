@@ -85,7 +85,7 @@ public class EffectAbilities {
         int userInt = profile.getTempIntel();
 
         int duration = baseDuration + (userInt / 10); // 5s + 0.5s per 100 Int
-        int amplifier = (int) ((userInt / 10000.0) * 3); // Scales to 3 at 10,000 Int = Slowness IV
+        int amplifier = (int) ((userInt / 20000.0) * 3); // Scales to 3 at 10,000 Int = Slowness IV
 
         target.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, duration, amplifier));
         target.getWorld().spawnParticle(Particle.SNOWFLAKE, target.getLocation(), 10, 0.5, .5, 0.5);

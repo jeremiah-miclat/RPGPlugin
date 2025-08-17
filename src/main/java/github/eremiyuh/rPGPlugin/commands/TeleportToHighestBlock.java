@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -46,7 +47,6 @@ public class TeleportToHighestBlock implements CommandExecutor {
         int heightLimit = world.getMaxHeight();
         int upperBound = world.getEnvironment() == World.Environment.NETHER ? 120 : heightLimit;  // Avoid Nether roof
         int lowerBound = 0;  // Start searching from ground level
-
         // Loop through each block in a 5x5 radius around the player's X and Z position
         for (int x = -5; x <= 5; x++) {
             for (int z = -5; z <= 5; z++) {
@@ -75,12 +75,15 @@ public class TeleportToHighestBlock implements CommandExecutor {
                         continue;
                     }
 
-                    // Check if there are two air blocks above the highest block
-                    if (world.getBlockAt(highestBlock.clone().add(0, 1, 0)).getType() == Material.AIR &&
-                            world.getBlockAt(highestBlock.clone().add(0, 2, 0)).getType() == Material.AIR) {
+                    Block above1 = world.getBlockAt(highestBlock.clone().add(0, 1, 0));
+                    Block above2 = world.getBlockAt(highestBlock.clone().add(0, 2, 0));
 
+                    boolean passable1 = above1.getType() == Material.AIR || above1.getType() == Material.SNOW;
+                    boolean passable2 = above2.getType() == Material.AIR || above2.getType() == Material.SNOW;
+
+                    if (passable1 && passable2) {
                         if (targetLocation == null || highestBlock.getY() > targetLocation.getY()) {
-                            targetLocation = highestBlock.clone().add(0, 1, 0); // One block above solid ground
+                            targetLocation = highestBlock.clone().add(0, 1, 0);
                         }
                     }
                 }

@@ -621,7 +621,7 @@ public class DamageListener implements Listener {
                             }
                         }
 
-                        if (damaged instanceof Villager villager) {
+                        if (damaged instanceof Pillager villager) {
                             String name = villager.getCustomName();
                             if (name != null && name.contains("players")) splash = ((double) attackerProfile.getTempIntel() /100)*8;
                             double intel = attackerProfile.getTempIntel();
@@ -946,14 +946,17 @@ public class DamageListener implements Listener {
         // ✅ Exit early if event already cancelled by other plugin or mechanics
         if (event.isCancelled()) return;
 
-        if (event.getEntity() instanceof Villager villager && !villager.isDead()) {
+        if (event.getEntity() instanceof Pillager villager && !villager.isDead()) {
+
+
+            String name = villager.getCustomName();
+            if (name == null || !name.contains("Dummy")) return;
+
             if (event.getDamageSource().getCausingEntity() instanceof Player op && op.isOp() && op.getGameMode() == GameMode.CREATIVE) {
                 villager.setHealth(0);
                 return;
             }
 
-            String name = villager.getCustomName();
-            if (name == null || !name.contains("Dummy")) return;
             Objects.requireNonNull(villager.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(10000000);
             villager.setHealth(10000000);
 
@@ -1352,7 +1355,7 @@ public class DamageListener implements Listener {
 
         if (event.getEntity() instanceof Player) statDamage*=.2;
 
-        if (event.getEntity() instanceof Villager villager) {
+        if (event.getEntity() instanceof Pillager villager) {
             String name = villager.getCustomName();
             if (name != null && name.contains("Players")) {
                 statDamage*=.2;
@@ -1438,6 +1441,13 @@ public class DamageListener implements Listener {
         if (event.getEntity() instanceof Player player) {
             UserProfile playerProfile = profileManager.getProfile(player.getName());
             finalDamage *= playerProfile.getDurability() == 0 ? 2 : 1;
+        }
+
+        PotionEffect effect = attacker.getPotionEffect(PotionEffectType.WEAKNESS);
+        if (effect != null) {
+            int weaknessLevel = effect.getAmplifier() + 1; // 1 = Weakness I
+            finalDamage -= (weaknessLevel * 3);
+            finalDamage = Math.max(0, finalDamage); // prevent negative damage
         }
 
         event.setDamage(finalDamage
@@ -1769,7 +1779,7 @@ public class DamageListener implements Listener {
 
         if (event.getEntity() instanceof Player) statDamage*=.2;
 
-        if (event.getEntity() instanceof Villager villager) {
+        if (event.getEntity() instanceof Pillager villager) {
             String name = villager.getCustomName();
             if (name != null && name.contains("Players")) {
                 statDamage*=.2;
@@ -1895,6 +1905,19 @@ public class DamageListener implements Listener {
 
             finalDamage *= playerProfile.getDurability() == 0 ? 2 : 1;
         }
+
+        PotionEffect strEffect = attacker.getPotionEffect(PotionEffectType.STRENGTH);
+        if (strEffect != null) {
+            int strLevel = strEffect.getAmplifier() + 1;
+            finalDamage += (strLevel * 2);
+        }
+
+        PotionEffect effect = attacker.getPotionEffect(PotionEffectType.WEAKNESS);
+        if (effect != null) {
+            int weaknessLevel = effect.getAmplifier() + 1; // 1 = Weakness I
+            finalDamage -= (weaknessLevel * 3);
+            finalDamage = Math.max(0, finalDamage); // prevent negative damage
+        }
         event.setDamage(finalDamage);
     }
 
@@ -1925,7 +1948,7 @@ public class DamageListener implements Listener {
             int p1Luk=player1Profile.getTempLuk();
 
 
-            critChance = Math.max(0, critChance - (p1Luk * 0.0002));
+            critChance = Math.max(0, critChance - player1Profile.getCritResist());
 
         }
 
@@ -2152,6 +2175,10 @@ public class DamageListener implements Listener {
 
 
     private void resetHealthIndicator(LivingEntity entity, double damage) {
+        if (entity instanceof Pillager pillager)  {
+            if (pillager.getCustomName().contains("Dummy")) return;
+        }
+
         double totalHealth = entity.getHealth();
         double totalRemainingHealth = Math.max(0, totalHealth - damage);
 
@@ -2337,6 +2364,8 @@ public class DamageListener implements Listener {
         if (world == null) return null;
 
         WorldBorder border = world.getWorldBorder();
+        Location bestLoc = null; // track highest safe loc found
+
         for (int attempt = 0; attempt < 30; attempt++) {
             int dx = (int) ((Math.random() * radius * 2) - radius);
             int dz = (int) ((Math.random() * radius * 2) - radius);
@@ -2353,22 +2382,35 @@ public class DamageListener implements Listener {
 
             // Scan from top to bottom
             for (int y = maxY - 4; y > world.getMinHeight(); y--) {
+                if (y <= 58) continue; // must be above Y=58
+
                 Location groundLoc = new Location(world, x, y, z);
 
-                // Must be above Y=58
-                if (y <= 58) continue;
-
                 if (isSolidWith3AirAbove(groundLoc)) {
-                    return groundLoc.clone().add(0.5, 1, 0.5); // Centered above ground
+                    Location candidate = groundLoc.clone().add(0.5, 1, 0.5);
+
+                    // If this is the first safe spot OR higher than previous
+                    if (bestLoc == null || candidate.getBlockY() > bestLoc.getBlockY()) {
+                        bestLoc = candidate;
+                    }
+                    break; // no need to keep scanning lower
                 }
             }
         }
-        return null; // No safe spot found after 30 attempts
+        return bestLoc; // may still be null if no safe spot
     }
+
 
     private boolean isSolidWith3AirAbove(Location ground) {
         Block base = ground.getBlock();
-        if (!base.getType().isSolid()) return false;
+
+        // Case 1: Normal solid block
+        boolean isSolidBase = base.getType().isSolid();
+
+        // Case 2: Snow layer sitting on a solid block
+        boolean isSnowOnSolid = base.getType() == Material.SNOW && base.getRelative(BlockFace.DOWN).getType().isSolid();
+
+        if (!(isSolidBase || isSnowOnSolid)) return false;
 
         // Exclude known unsafe ground materials
         Material[] unsafeGrounds = {

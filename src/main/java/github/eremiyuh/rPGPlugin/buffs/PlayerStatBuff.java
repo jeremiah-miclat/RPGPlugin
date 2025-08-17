@@ -231,6 +231,7 @@ public class PlayerStatBuff {
             double bonusCrit = 0;
             if (profile.getSelectedElement().equalsIgnoreCase("ice")) bonusCrit+=.1;
             profile.setCrit(critChance(chosenClass,luk,dex, profile.getSelectedSkill(),chosenTrait,validRangedWeapon)+bonusCrit);
+            profile.setCritResist(calculateCritResist(agi,vit,luk, hp));
             profile.setCritDmg(getCritMultiplier(chosenClass,luk,dex, profile.getSelectedSkill(),chosenTrait,validRangedWeapon));
 
             double meleeDmg = 0;
@@ -510,5 +511,10 @@ public class PlayerStatBuff {
             reduction = (dexPerLevel / 50.0) * 15.0;
         }
         return reduction;
+    }
+
+    public double calculateCritResist(int agi, int vit, int luk, int hp) {
+        int totalStats = agi + vit + luk+hp;
+        return totalStats * 0.0002;
     }
 }

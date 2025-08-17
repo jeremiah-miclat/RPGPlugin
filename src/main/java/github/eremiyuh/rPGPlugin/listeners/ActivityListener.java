@@ -101,7 +101,7 @@ public class ActivityListener implements Listener {
                         if (line.contains("ExtraFish:")) {
                             try {
                                 // Extract the additional points from the lore
-                                multiplier = Integer.parseInt(line.split(":")[1].trim());
+                                multiplier = Math.min(99, Integer.parseInt(line.split(":")[1].trim()));
                             } catch (NumberFormatException e) {
                                 // If lore parsing fails, fallback to 0 additional points
                                 multiplier = 0;

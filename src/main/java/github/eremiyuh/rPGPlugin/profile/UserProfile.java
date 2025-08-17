@@ -123,7 +123,7 @@ public class UserProfile {
     private int arLvl = 0;
 
     private double cdr = 0;
-
+    private double critResist =0;
     //constructor
     public UserProfile(String playerName) {
         this.crit = 0;
@@ -763,6 +763,14 @@ public class UserProfile {
 
     public void setCdr(double cdr) {
         this.cdr = cdr;
+    }
+
+    public double getCritResist() {
+        return critResist;
+    }
+
+    public void setCritResist(double critResist) {
+        this.critResist = critResist;
     }
 
     // Inner class to hold class-specific attributes

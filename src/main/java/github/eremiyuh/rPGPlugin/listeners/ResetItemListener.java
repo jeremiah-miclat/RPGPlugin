@@ -1,6 +1,7 @@
 package github.eremiyuh.rPGPlugin.listeners;
 
 import github.eremiyuh.rPGPlugin.RPGPlugin;
+import github.eremiyuh.rPGPlugin.buffs.PlayerStatBuff;
 import github.eremiyuh.rPGPlugin.manager.PlayerProfileManager;
 import github.eremiyuh.rPGPlugin.profile.UserProfile;
 import github.eremiyuh.rPGPlugin.utils.ItemUtils;
@@ -13,9 +14,11 @@ import org.bukkit.inventory.ItemStack;
 
 public class ResetItemListener implements Listener {
     private final PlayerProfileManager profileManager;
+    private final PlayerStatBuff playerStatBuff;
 
-    public ResetItemListener(PlayerProfileManager profileManager) {
+    public ResetItemListener(PlayerProfileManager profileManager, PlayerStatBuff playerStatBuff) {
         this.profileManager = profileManager;
+        this.playerStatBuff = playerStatBuff;
     }
 
     @EventHandler
@@ -49,6 +52,11 @@ public class ResetItemListener implements Listener {
                 } else {
                     player.getInventory().setItemInMainHand(null);
                 }
+            }
+            if (player.getWorld().getName().contains("_rpg")) {
+                playerStatBuff.updatePlayerStatsToRPG(player);
+            } else {
+                playerStatBuff.updatePlayerStatsToNormal(player);
             }
             profileManager.saveProfile(player.getName());
             // Prevent further interactions

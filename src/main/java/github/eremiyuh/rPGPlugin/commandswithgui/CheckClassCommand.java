@@ -273,10 +273,12 @@ public class CheckClassCommand implements CommandExecutor, Listener {
         lore.add("§7Longrange Dmg from stats: " + (int) profile.getLongDmg() );
         lore.add("§7Splashpotion Dmg from stats: " + (int) profile.getSplashDmg());
         lore.add("§7Crit%: " + df.format(profile.getCrit() * 100) + "%");
+        lore.add("§7CritRes%: " + df.format(profile.getCritResist() * 100) + "%");
         lore.add("§7CritDmg%: " + df.format(profile.getCritDmg() * 100) + "%");
         lore.add("§7Lifesteal%: " + df.format(profile.getLs() * 100) + "%");
-        lore.add("§7Evasion%(Same level mob): " + df.format(calculateEvasion(profile.getTempAgi(), profile.getLevel())) + "%");
-        lore.add("§7CD reduction: -" + profile.getCdr());
+        lore.add("§7Evasion%: " + df.format(calculateEvasion(profile.getTempAgi(), profile.getLevel())) + "% for BPLvl " + profile.getArLvl());
+        lore.add("§7PierceEvasion%: " + df.format(calculatePierce(profile.getTempDex(), profile.getArLvl())) + "% for BPLvl " + profile.getArLvl());
+        lore.add("§7CD reduction: -" + (int) profile.getCdr());
         // Add remaining points, total allocated points for chosen class, and overall allocated points
         lore.add("§eRemaining Points: " + profile.getCurrentAttributePoints());
         lore.add("§eAllocated Points (" + profile.getChosenClass() +"): " + getTotalPointsForChosenClass(profile));
@@ -504,5 +506,19 @@ public class CheckClassCommand implements CommandExecutor, Listener {
         if (event.getView().getTitle().equals("Player Class Info")) {
             event.setCancelled(true);
         }
+    }
+    private double calculatePierce(double attackerDex, int defenderLvl) {
+        double pierceChance;
+        double dexPerLevel = attackerDex / defenderLvl;
+
+        if (dexPerLevel < 25.0) {
+            pierceChance = (dexPerLevel / 25.0) * 80.0;
+        } else if (dexPerLevel < 50.0) {
+            double bonus = ((dexPerLevel - 25.0) / 25.0) * 20.0;
+            pierceChance = 80.0 + bonus;
+        } else {
+            pierceChance = 100.0;
+        }
+        return pierceChance;
     }
 }

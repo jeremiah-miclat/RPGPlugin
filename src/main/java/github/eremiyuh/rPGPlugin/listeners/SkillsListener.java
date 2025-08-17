@@ -12,6 +12,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -38,6 +39,10 @@ public class SkillsListener implements Listener {
         if (!event.getAction().name().contains("RIGHT_CLICK")) return;
 
         Player player = event.getPlayer();
+
+        double cd = player.getAttackCooldown();
+        if (cd<1) return;
+
         String worldName = player.getWorld().getName().toLowerCase();
         if (!worldName.contains("_rpg")) return;
         if (player.isFlying()) return;
@@ -117,7 +122,7 @@ public class SkillsListener implements Listener {
                 if (e instanceof LivingEntity target && !target.equals(player)) {
                     if (target instanceof Player && !target.getWorld().getName().contains("_br")) continue;
                     double damage = profile.getMeleeDmg();
-                    target.damage(0, player);
+                    target.damage(damage, player);
                     applyElementEffect(target, element);
                 }
             }
@@ -245,20 +250,20 @@ public class SkillsListener implements Listener {
             World world = base.getWorld();
 
             if (world != null) {
-                double startX = base.getX() - 7; // half of 15 blocks
-                double startZ = base.getZ() - 7;
+                double startX = base.getBlockX() - 15; // half of 30
+                double startZ = base.getBlockZ() - 15;
 
-                for (int x = 0; x < 15; x++) {       // Cover each block in X
-                    for (int z = 0; z < 15; z++) {   // Cover each block in Z
-                        Location spawnLocation = new Location(world, startX + x, base.getY() + 100, startZ + z);
+                for (int x = 0; x < 30; x++) {
+                    for (int z = 0; z < 30; z++) {
+                        Location spawnLocation = new Location(world, startX + x + 0.5, base.getY() + 50, startZ + z + 0.5);
                         Arrow arrow = world.spawn(spawnLocation, Arrow.class);
                         arrow.setShooter(player);
-                        arrow.setVelocity(new Vector(0, -0.1, 0)); // faster fall
-                        arrow.setDamage(10);
+                        arrow.setVelocity(new Vector(0, -2, 0)); // faster downward velocity
                         arrow.setPickupStatus(AbstractArrow.PickupStatus.DISALLOWED);
                         Bukkit.getScheduler().runTaskLater(plugin, arrow::remove, 160L);
                     }
                 }
+
             }
 
             setCooldown(player, 30, main.getType(), profile);
@@ -266,9 +271,64 @@ public class SkillsListener implements Listener {
 
 
         if (skill.contains("3") && !isOnCooldown(player)) {
-            player.addPotionEffect(new org.bukkit.potion.PotionEffect(PotionEffectType.SPEED, 200, 1));
+            int duration = 5 * 20; // 5 seconds in ticks
+            int interval = 10;     // 0.5s = 10 ticks
+            int shots = duration / interval; // 10 shots
+
+            // Speed boost effect (optional)
+            player.addPotionEffect(new org.bukkit.potion.PotionEffect(PotionEffectType.SPEED, duration, 1));
+
+            // Capture the locked direction once
+            Location eyeLoc = player.getEyeLocation();
+            Vector lockedDirection = eyeLoc.getDirection().normalize().multiply(5); // super fast arrow
+            Location spawnBase = eyeLoc.clone();
+
+            Bukkit.getScheduler().runTaskTimer(plugin, new Runnable() {
+                int count = 0;
+
+                @Override
+                public void run() {
+                    if (count >= shots || !player.isOnline()) {
+                        return;
+                    }
+
+                    // Spawn arrow slightly in front of eyes
+                    Location fireLocation = spawnBase.clone().add(lockedDirection.clone().multiply(0.2));
+                    Arrow arrow = player.getWorld().spawn(fireLocation, Arrow.class);
+                    arrow.setShooter(player);
+                    arrow.setVelocity(lockedDirection);
+                    arrow.setPickupStatus(AbstractArrow.PickupStatus.DISALLOWED);
+
+                    // ⚡ Particles at firing spot
+                    player.getWorld().spawnParticle(Particle.CRIT, fireLocation, 10, 0.1, 0.1, 0.1, 0.05);
+                    player.getWorld().spawnParticle(Particle.FLAME, fireLocation, 5, 0.05, 0.05, 0.05, 0.01);
+
+                    // 🔊 Play sound at arrow spawn
+                    player.getWorld().playSound(fireLocation, Sound.ENTITY_ARROW_SHOOT, 1.0f, 1.5f);
+
+                    // ⚡ Trail effect for the arrow
+                    Bukkit.getScheduler().runTaskTimer(plugin, new Runnable() {
+                        @Override
+                        public void run() {
+                            if (arrow.isDead() || arrow.isOnGround()) {
+                                this.cancel();
+                                return;
+                            }
+                            arrow.getWorld().spawnParticle(Particle.CRIT, arrow.getLocation(), 2, 0.05, 0.05, 0.05, 0.01);
+                        }
+
+                        private void cancel() {
+                            // no direct cancel in Runnable, so wrap with task
+                        }
+                    }, 1L, 1L);
+
+                    count++;
+                }
+            }, 0L, interval);
+
             setCooldown(player, 30, main.getType(), profile);
         }
+
     }
 
     // =======================
@@ -279,20 +339,20 @@ public class SkillsListener implements Listener {
         if (main.getType() == Material.AIR) return;
 
         if (skill.contains("1") && !isOnCooldown(player)) {
-            potionShower(player, PotionType.HARMING, 20);
+            potionShower(player, PotionEffectType.INSTANT_DAMAGE, 20);
             setCooldown(player, 30, main.getType(), profile);
         }
         if (skill.contains("2") && !isOnCooldown(player)) {
-            potionShower(player, PotionType.STRENGTH, 20);
+            potionShower(player, PotionEffectType.STRENGTH, 20);
             setCooldown(player, 30, main.getType(), profile);
         }
         if (skill.contains("3") && !isOnCooldown(player)) {
-            potionShower(player, PotionType.HEALING, 20);
+            potionShower(player, PotionEffectType.INSTANT_HEALTH, 20);
             setCooldown(player, 30, main.getType(), profile);
         }
     }
 
-    private void potionShower(Player player, PotionType type, int seconds) {
+    private void potionShower(Player player, PotionEffectType type, int seconds) {
         Location origin = player.getLocation();
         new BukkitRunnable() {
             int ticks = 0;
@@ -305,9 +365,12 @@ public class SkillsListener implements Listener {
                 ThrownPotion potion = player.getWorld().spawn(origin.clone().add(0, 3, 0), ThrownPotion.class);
                 potion.setShooter(player);
                 ItemStack item = new ItemStack(Material.SPLASH_POTION);
-                PotionMeta meta = (PotionMeta) item.getItemMeta();
-                meta.setBasePotionType(type);
-                item.setItemMeta(meta);
+                PotionMeta potionMeta = (PotionMeta) item.getItemMeta();
+                PotionEffect potionEffect = null;
+                potionEffect = new PotionEffect(type, 0, 0);
+
+                potionMeta.addCustomEffect(potionEffect, true);
+                item.setItemMeta(potionMeta);
                 potion.setItem(item);
                 potion.setVelocity(new Vector(0, -1, 0));
                 ticks += 10;
@@ -322,7 +385,7 @@ public class SkillsListener implements Listener {
         switch (element) {
             case "fire" -> target.setFireTicks(200);
             case "water" -> target.addPotionEffect(new org.bukkit.potion.PotionEffect(PotionEffectType.WEAKNESS, 200, 9));
-            case "ice" -> target.addPotionEffect(new org.bukkit.potion.PotionEffect(PotionEffectType.SLOWNESS, 200, 9));
+            case "ice" -> target.addPotionEffect(new org.bukkit.potion.PotionEffect(PotionEffectType.SLOWNESS, 200, 1));
         }
     }
 

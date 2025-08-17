@@ -62,9 +62,9 @@ public class SkillsGui implements CommandExecutor, Listener {
                         "Counter Helix: Return Damage of 30% of your damage from strength when using thorns",
                         Arrays.asList(
                                 "§7Right-click with sword (main hand).",
-                                "§7Damages all living entities in 5 block radius by your §cmelee damage§7.",
+                                "§7Damages all living entities in 5 block radius by your §cmelee damage * 2§7.",
                                 "§7Crit and other multipliers applies.",
-                                "§7Fire: Burn 10s | Water: Weakness IX 10s | Ice: Slowness IX 10s.",
+                                "§7Fire: Burn 10s | Water: Weakness IX 10s | Ice: Slowness II 10s.",
                                 "§730s cooldown."
                         ),
                         Arrays.asList(
@@ -84,7 +84,7 @@ public class SkillsGui implements CommandExecutor, Listener {
                 break;
             case "archer":
                 addSkillsToGui(gui, "Archer",
-                        "High Int-based damage. Single Target",
+                        "High Int-based damage.",
                         "Arrow Shower. Dex for Chance & Int for Damage.",
                         "Bonus Crit Chance. Crossbow heals 5% of damage dealt (5% lifesteal effect)",
                         Arrays.asList(
@@ -92,19 +92,21 @@ public class SkillsGui implements CommandExecutor, Listener {
                                 "§7Damages mobs in 5 block radius by your §cranged damage§7.",
                                 "§7Crit and other multipliers applies.",
                                 "§7Targets switch to random mob (Boss priority).",
-                                "§7Fire: Burn 10s | Water: Weakness IX 10s | Ice: Slowness IX 10s.",
+                                "§7Fire: Burn 10s | Water: Weakness IX 10s | Ice: Slowness II 10s.",
                                 "§730s cooldown. Item on Slot 9 is the cd identifier"
                         ),
                         Arrays.asList(
                                 "§7Right-click with bow/crossbow.",
-                                "§715x15 square centered on player – arrow rain from y+100.",
+                                "§730x30 square centered on player – arrow rain from y+50.",
                                 "§730s cooldown. Item on Slot 9 is the cd identifier"
                         ),
                         Arrays.asList(
                                 "§7Right-click with bow/crossbow.",
-                                "§7Gain Speed II for 10 seconds.",
-                                "§7No damage dealt. Mobility skill.",
-                                "§730s cooldown. Item on Slot 9 is the cd identifier"
+                                "§7Gain Speed II for 5 seconds.",
+                                "§7Automatically fires 1 arrow every 0.5s in the",
+                                "§7direction you're facing (10 arrows total).",
+                                "§7No damage dealt by the skill itself.",
+                                "§730s cooldown. Item in Slot 9 indicates cooldown."
                         )
                 );
                 break;

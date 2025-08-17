@@ -318,7 +318,7 @@ public class RPGPlugin extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new CheckClassCommand(profileManager), this);
         getServer().getPluginManager().registerEvents(new LoginListener(this, profileManager), this);
         getServer().getPluginManager().registerEvents(new ItemAscensionListener(profileManager), this);
-        getServer().getPluginManager().registerEvents(new ResetItemListener(profileManager), this);
+        getServer().getPluginManager().registerEvents(new ResetItemListener(profileManager,playerStatBuff), this);
         getServer().getPluginManager().registerEvents(new SummonVillagerListener(), this);
         getServer().getPluginManager().registerEvents(new AbyssHealItemListener(), this);
         getServer().getPluginManager().registerEvents(new AbyssOreListener(profileManager), this);
@@ -430,7 +430,7 @@ public class RPGPlugin extends JavaPlugin {
                     null);
         }
 //        loadWorld("world_labyrinth2",-19,251,-36,270,0,0,0,100,18000,null,false, World.Environment.NETHER,Biome.NETHER_WASTES);
-        getServer().getPluginManager().registerEvents(new TabListCustomizer(this, profileManager), this);
+        getServer().getPluginManager().registerEvents(new TabListCustomizer(this, profileManager,playerStatBuff), this);
 
         Objects.requireNonNull(getCommand("junk")).setExecutor(new JunkCommand(profileManager));
         getServer().getPluginManager().registerEvents(new JunkCommand(profileManager), this);
