@@ -44,6 +44,7 @@ public class RPGPlugin extends JavaPlugin {
     private final String WORLD_NAME = "world_resource";
     private final String DATA_PACK_FOLDER = "datapacks";
     private DamageListener damageListener;
+    private SkillsListener skillsListener;
     @Override
     public void onEnable() {
 
@@ -295,8 +296,10 @@ public class RPGPlugin extends JavaPlugin {
         Objects.requireNonNull(getCommand("cosmeticstore")).setExecutor(new CosmeticStore(this, profileManager));
         Objects.requireNonNull(getCommand("viewitem")).setExecutor(new ViewItemCommand());
 //        Objects.requireNonNull(getCommand("shop")).setExecutor(new ShopCommand());
-        damageListener = new DamageListener(profileManager, effectsAbilityManager, damageAbilityManager,this,ravagerManager);
+        skillsListener = new SkillsListener(this,profileManager);
+        damageListener = new DamageListener(profileManager, effectsAbilityManager, damageAbilityManager,this,ravagerManager, skillsListener);
         getServer().getPluginManager().registerEvents(damageListener,this);
+        getServer().getPluginManager().registerEvents(skillsListener,this);
         getServer().getPluginManager().registerEvents(new PotionGiveListener(this,profileManager),this);
         new OverworldBlastProtectionListener(this);
         new ArrowHitListener((this),profileManager);
@@ -335,7 +338,7 @@ public class RPGPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new SkillListener(),this);
         getServer().getPluginManager().registerEvents(new HungerListener(profileManager),this);
         getServer().getPluginManager().registerEvents(new SignCoordListener(),this);
-        getServer().getPluginManager().registerEvents(new SkillsListener(this,profileManager),this);
+//        getServer().getPluginManager().registerEvents(new SkillsListener(this,profileManager),this);
 
         // Register the command executor
         Objects.requireNonNull(this.getCommand("status")).setExecutor(new CheckClassCommand(profileManager));

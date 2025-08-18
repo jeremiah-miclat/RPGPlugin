@@ -60,19 +60,22 @@ public class DamageListener implements Listener {
     private final int x2 = 90, z2 = -110;
     private final Map<UUID, Double> dummyDamage = new HashMap<>();
     private final Map<UUID, BukkitTask> dummyTimers = new HashMap<>();
-    public DamageListener(PlayerProfileManager profileManager, EffectsAbilityManager effectsAbilityManager, DamageAbilityManager damageAbilityManager, RPGPlugin plugin, RavagerSkillManager manager) {
+    private final SkillsListener skillsListener;
+;
+    public DamageListener(PlayerProfileManager profileManager, EffectsAbilityManager effectsAbilityManager, DamageAbilityManager damageAbilityManager, RPGPlugin plugin, RavagerSkillManager manager, SkillsListener skillsListener) {
         this.profileManager = profileManager;
         this.effectsAbilityManager = effectsAbilityManager;
         this. damageAbilityManager = damageAbilityManager;
         this.plugin = plugin;
         this.manager = manager;
+        this.skillsListener = skillsListener;
     }
 
     Set<UUID> rejoinDowned = new HashSet<>();
     private final Set<UUID> forceDeath = new HashSet<>();
     private final Map<UUID, Long> lastGroundedTime = new HashMap<>();
     private final Map<UUID, Long> cooldowns = new HashMap<>();
-    private final long TELEPORT_COOLDOWN_MS = 20_000;
+    private final long TELEPORT_COOLDOWN_MS = 30_000;
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
@@ -1427,10 +1430,12 @@ public class DamageListener implements Listener {
 
 
         float attackCooldown = attacker.getAttackCooldown();
-        if (attackCooldown <= 0.5) {
-            finalDamage = finalDamage * 0.1; // 10% damage
-        } else {
-            finalDamage = finalDamage * attackCooldown;
+        if (!skillsListener.getIsSkill()) {
+            if (attackCooldown <= 0.5) {
+                finalDamage = finalDamage * 0.1; // 10% damage
+            } else {
+                finalDamage = finalDamage * attackCooldown;
+            }
         }
 
         if (hasBeenAirborneTooLong(attacker, 5000) && !isStandingOnSolidBlock(attacker)) {
@@ -2364,7 +2369,6 @@ public class DamageListener implements Listener {
         if (world == null) return null;
 
         WorldBorder border = world.getWorldBorder();
-        Location bestLoc = null; // track highest safe loc found
 
         for (int attempt = 0; attempt < 30; attempt++) {
             int dx = (int) ((Math.random() * radius * 2) - radius);
@@ -2389,16 +2393,20 @@ public class DamageListener implements Listener {
                 if (isSolidWith3AirAbove(groundLoc)) {
                     Location candidate = groundLoc.clone().add(0.5, 1, 0.5);
 
-                    // If this is the first safe spot OR higher than previous
-                    if (bestLoc == null || candidate.getBlockY() > bestLoc.getBlockY()) {
-                        bestLoc = candidate;
+                    int playerY = origin.getBlockY();
+                    int candidateY = candidate.getBlockY();
+
+                    // ✅ Only accept if candidate is between [playerY, playerY + 3]
+                    if (candidateY >= playerY && candidateY <= playerY + 3) {
+                        return candidate;
                     }
-                    break; // no need to keep scanning lower
+                    // If not in valid range → keep scanning
                 }
             }
         }
-        return bestLoc; // may still be null if no safe spot
+        return null; // No safe spot found after 30 attempts
     }
+
 
 
     private boolean isSolidWith3AirAbove(Location ground) {

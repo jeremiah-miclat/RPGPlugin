@@ -25,6 +25,7 @@ public class SkillsListener implements Listener {
     private final RPGPlugin plugin;
     private final PlayerProfileManager profileManager;
     private final Map<UUID,Long> cooldowns = new HashMap<>();
+    private boolean isSkill = false;
 
     public SkillsListener(RPGPlugin plugin, PlayerProfileManager profileManager) {
         this.plugin = plugin;
@@ -93,6 +94,7 @@ public class SkillsListener implements Listener {
                 player.setCooldown(item, (int) (finalSeconds * 20));
             }
         }
+        isSkill = false;
     }
 
 
@@ -122,6 +124,7 @@ public class SkillsListener implements Listener {
                 if (e instanceof LivingEntity target && !target.equals(player)) {
                     if (target instanceof Player && !target.getWorld().getName().contains("_br")) continue;
                     double damage = profile.getMeleeDmg();
+                    isSkill = true;
                     target.damage(damage, player);
                     applyElementEffect(target, element);
                 }
@@ -155,6 +158,7 @@ public class SkillsListener implements Listener {
                             if (target instanceof Player && !target.getWorld().getName().contains("_br")) continue;
 
                             double damage = profile.getMeleeDmg()*.5;
+                            isSkill = true;
                             target.damage(0, player);
 
                             // Impact particles
@@ -213,6 +217,7 @@ public class SkillsListener implements Listener {
 
                     // Damage & effects
                     double damage = profile.getLongDmg();
+                    isSkill = true;
                     target.damage(damage, player);
                     applyElementEffect(target, element);
 
@@ -404,5 +409,9 @@ public class SkillsListener implements Listener {
             }
         }
         return null;
+    }
+
+    public boolean getIsSkill() {
+        return isSkill;
     }
 }
