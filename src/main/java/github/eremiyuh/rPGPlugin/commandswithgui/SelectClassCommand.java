@@ -50,7 +50,7 @@ public class SelectClassCommand implements CommandExecutor, Listener {
         // Create icons for each class
         ItemStack swordsmanIcon = createClassIcon(Material.DIAMOND_SWORD, "Swordsman", "A fierce warrior skilled in melee combat.");
         ItemStack archerIcon = createClassIcon(Material.BOW, "Archer", "A master of ranged combat and precision.");
-        ItemStack alchemistIcon = createClassIcon(Material.POTION, "Alchemist", "A wise potion maker and supporter.");
+        ItemStack alchemistIcon = createClassIcon(Material.POTION, "Alchemist", "A wise potion maker, that applies buff/debuff.");
 
         // Add icons to the inventory
         gui.setItem(2, swordsmanIcon);

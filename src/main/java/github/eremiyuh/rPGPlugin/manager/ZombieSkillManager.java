@@ -82,7 +82,7 @@ public class ZombieSkillManager {
             spawnLoc.setY(world.getHighestBlockYAt(spawnLoc) + 1);
 
             LivingEntity clone = (LivingEntity) world.spawnEntity(spawnLoc, original.getType());
-//            clone.setCustomName(original.getCustomName() + " Clone");
+            clone.setCustomName(original.getCustomName() + " Clone");
             clone.setCustomNameVisible(true);
             clone.setPersistent(false);
             clone.setRemoveWhenFarAway(true);

@@ -9,6 +9,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
@@ -25,7 +26,8 @@ public class SkillsListener implements Listener {
     private final RPGPlugin plugin;
     private final PlayerProfileManager profileManager;
     private final Map<UUID,Long> cooldowns = new HashMap<>();
-    private boolean isSkill = false;
+    private final Map<UUID, Boolean> skillStates = new HashMap<>();
+
 
     public SkillsListener(RPGPlugin plugin, PlayerProfileManager profileManager) {
         this.plugin = plugin;
@@ -70,10 +72,10 @@ public class SkillsListener implements Listener {
         long finalSeconds = Math.max(1, Math.round(baseSeconds - reduction)); // min 1 sec
 
         // Special rule: Swordsman skill 2 must have at least 5 sec cooldown
-        if (profile.getChosenClass().equalsIgnoreCase("swordsman") &&
-                profile.getSelectedSkill().contains("2")) {
-            finalSeconds = Math.max(5, finalSeconds+4);
-        }
+//        if (profile.getChosenClass().equalsIgnoreCase("swordsman") &&
+//                profile.getSelectedSkill().contains("2")) {
+//            finalSeconds = Math.max(5, finalSeconds+1);
+//        }
 
         if (profile.getChosenClass().equalsIgnoreCase("alchemist")) {
             finalSeconds = Math.max(10, finalSeconds+9);
@@ -94,7 +96,7 @@ public class SkillsListener implements Listener {
                 player.setCooldown(item, (int) (finalSeconds * 20));
             }
         }
-        isSkill = false;
+        skillStates.remove(player.getUniqueId());
     }
 
 
@@ -124,7 +126,7 @@ public class SkillsListener implements Listener {
                 if (e instanceof LivingEntity target && !target.equals(player)) {
                     if (target instanceof Player && !target.getWorld().getName().contains("_br")) continue;
                     double damage = profile.getMeleeDmg();
-                    isSkill = true;
+                    skillStates.put(player.getUniqueId(), true);
                     target.damage(damage, player);
                     applyElementEffect(target, element);
                 }
@@ -132,44 +134,120 @@ public class SkillsListener implements Listener {
             setCooldown(player, 30, main.getType(), profile);
         }
 
+//        if (skill.contains("2") && !isOnCooldown(player) && off.getType().name().endsWith("_SWORD")) {
+//            player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 1.2f, 1.2f);
+//
+//            Location start = player.getLocation();
+//            Vector dir = start.getDirection().normalize();
+//
+//            for (int i = 1; i <= 20; i++) { // Distance forward
+//                Location basePoint = start.clone().add(dir.clone().multiply(i));
+//
+//                for (int y = -5; y <= 5; y++) { // 10 blocks tall (5 up, 5 down)
+//                    Location point = basePoint.clone().add(0, y, 0);
+//
+//                    // Particle effects showing hit zone
+//                    player.getWorld().spawnParticle(Particle.SWEEP_ATTACK, point, 1, 0, 0, 0, 0);
+//                    player.getWorld().spawnParticle(Particle.CRIT, point, 2, 0.1, 0.1, 0.1, 0.05);
+//                    player.getWorld().spawnParticle(
+//                            Particle.DUST_COLOR_TRANSITION, point, 1,
+//                            new Particle.DustTransition(Color.RED, Color.ORANGE, 1.5f)
+//                    );
+//
+//                    // Damage entities in a 3-block horizontal radius
+//                    for (Entity e : player.getWorld().getNearbyEntities(point, 3, 0.5, 3)) {
+//                        if (e instanceof LivingEntity target && !target.equals(player)) {
+//                            if (target instanceof Player && !target.getWorld().getName().contains("_br")) continue;
+//
+//                            double damage = profile.getMeleeDmg()*.5;
+//                            isSkill = true;
+//                            target.damage(0, player);
+//
+//                            // Impact particles
+//                            target.getWorld().spawnParticle(Particle.SWEEP_ATTACK, target.getLocation().add(0, 1, 0), 5, 0.2, 0.2, 0.2, 0.05);
+//                        }
+//                    }
+//                }
+//            }
+//
+//            setCooldown(player, 30, main.getType(), profile);
+//        }
+
         if (skill.contains("2") && !isOnCooldown(player) && off.getType().name().endsWith("_SWORD")) {
+            boolean isSkill = skillStates.getOrDefault(player.getUniqueId(), false);
+            if (isSkill) return;
+            skillStates.put(player.getUniqueId(), true);
             player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 1.2f, 1.2f);
 
-            Location start = player.getLocation();
-            Vector dir = start.getDirection().normalize();
+            // maybe play a "charge-up" particle or sound here
+            player.getWorld().spawnParticle(Particle.LARGE_SMOKE, player.getLocation().add(0, 1, 0), 20, 0.5, 0.5, 0.5, 0.1);
+            player.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 40, 100, false, false));
+            // Delay 1.5s (30 ticks) before triggering sweep
+            Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                if (!player.isOnline() || player.isDead()) {
+                    skillStates.remove(player.getUniqueId());
+                    return;
+                }
 
-            for (int i = 1; i <= 20; i++) { // Distance forward
-                Location basePoint = start.clone().add(dir.clone().multiply(i));
+                Location start = player.getLocation();
+                Vector dir = start.getDirection().normalize();
 
-                for (int y = -5; y <= 5; y++) { // 10 blocks tall (5 up, 5 down)
-                    Location point = basePoint.clone().add(0, y, 0);
+                double forwardDistance = 20;
+                double halfWidth = 3;
+                double halfHeight = 5;
 
-                    // Particle effects showing hit zone
-                    player.getWorld().spawnParticle(Particle.SWEEP_ATTACK, point, 1, 0, 0, 0, 0);
-                    player.getWorld().spawnParticle(Particle.CRIT, point, 2, 0.1, 0.1, 0.1, 0.05);
-                    player.getWorld().spawnParticle(
-                            Particle.DUST_COLOR_TRANSITION, point, 1,
-                            new Particle.DustTransition(Color.RED, Color.ORANGE, 1.5f)
-                    );
+                // --- Collect entities once ---
+                Set<LivingEntity> hitEntities = new HashSet<>();
+                Location center = start.clone().add(dir.clone().multiply(forwardDistance / 2));
 
-                    // Damage entities in a 3-block horizontal radius
-                    for (Entity e : player.getWorld().getNearbyEntities(point, 3, 0.5, 3)) {
-                        if (e instanceof LivingEntity target && !target.equals(player)) {
-                            if (target instanceof Player && !target.getWorld().getName().contains("_br")) continue;
+                for (Entity e : player.getWorld().getNearbyEntities(center, forwardDistance / 2 + halfWidth, halfHeight, forwardDistance / 2 + halfWidth)) {
+                    if (e instanceof LivingEntity target && !target.equals(player)) {
+                        if (target instanceof Player && !target.getWorld().getName().contains("_br")) continue;
 
-                            double damage = profile.getMeleeDmg()*.5;
-                            isSkill = true;
-                            target.damage(0, player);
-
-                            // Impact particles
-                            target.getWorld().spawnParticle(Particle.SWEEP_ATTACK, target.getLocation().add(0, 1, 0), 5, 0.2, 0.2, 0.2, 0.05);
+                        Vector toEntity = target.getLocation().toVector().subtract(start.toVector());
+                        double dot = dir.dot(toEntity.normalize());
+                        if (dot > 0.5) {
+                            hitEntities.add(target);
                         }
                     }
                 }
-            }
 
-            setCooldown(player, 30, main.getType(), profile);
+                // --- Apply damage & impact particles ---
+
+                for (LivingEntity target : hitEntities) {
+                    double damage = profile.getMeleeDmg() * 2;
+
+                    target.damage(damage, player);
+
+                    target.getWorld().spawnParticle(Particle.SWEEP_ATTACK, target.getLocation().add(0, 1, 0), 5, 0.3, 0.3, 0.3, 0.05);
+                }
+                setCooldown(player, 30, main.getType(), profile);
+                // --- Show sweep particle effect ---
+                int steps = 20;
+                int verticals = 5;
+                for (int i = 1; i <= steps; i++) {
+                    Location base = start.clone().add(dir.clone().multiply(i));
+
+                    for (int y = -verticals; y <= verticals; y += 2) {
+                        for (int x = (int) -halfWidth; x <= halfWidth; x += 2) {
+                            Location p = base.clone().add(x, y, 0);
+
+                            player.getWorld().spawnParticle(Particle.SWEEP_ATTACK, p, 1, 0, 0, 0, 0);
+                            player.getWorld().spawnParticle(Particle.CRIT, p, 1, 0.1, 0.1, 0.1, 0.01);
+                            player.getWorld().spawnParticle(
+                                    Particle.DUST_COLOR_TRANSITION, p, 1,
+                                    new Particle.DustTransition(Color.RED, Color.ORANGE, 1.2f)
+                            );
+                        }
+                    }
+                }
+
+            }, 30L); // 1.5 seconds
+
+
         }
+
+
 
         if (skill.contains("3") && !isOnCooldown(player)) {
             int amp = 0;
@@ -217,7 +295,7 @@ public class SkillsListener implements Listener {
 
                     // Damage & effects
                     double damage = profile.getLongDmg();
-                    isSkill = true;
+                    skillStates.put(player.getUniqueId(), true);
                     target.damage(damage, player);
                     applyElementEffect(target, element);
 
@@ -303,6 +381,7 @@ public class SkillsListener implements Listener {
                     arrow.setShooter(player);
                     arrow.setVelocity(lockedDirection);
                     arrow.setPickupStatus(AbstractArrow.PickupStatus.DISALLOWED);
+                    arrow.setPierceLevel(10);
 
                     // ⚡ Particles at firing spot
                     player.getWorld().spawnParticle(Particle.CRIT, fireLocation, 10, 0.1, 0.1, 0.1, 0.05);
@@ -348,7 +427,17 @@ public class SkillsListener implements Listener {
             setCooldown(player, 30, main.getType(), profile);
         }
         if (skill.contains("2") && !isOnCooldown(player)) {
-            potionShower(player, PotionEffectType.STRENGTH, 20);
+            // List of possible effects
+            PotionEffectType[] effects = {
+                    PotionEffectType.STRENGTH, // Strength
+                    PotionEffectType.RESISTANCE, // Resistance
+                    PotionEffectType.SLOWNESS // Slowness
+            };
+
+            // Pick one at random
+            PotionEffectType chosen = effects[(int)(Math.random() * effects.length)];
+
+            potionShower(player, chosen, 20); // 20 = duration (ticks or seconds depending on your method)
             setCooldown(player, 30, main.getType(), profile);
         }
         if (skill.contains("3") && !isOnCooldown(player)) {
@@ -411,7 +500,22 @@ public class SkillsListener implements Listener {
         return null;
     }
 
-    public boolean getIsSkill() {
-        return isSkill;
+    public boolean getIsSkill(Player player) {
+
+        return skillStates.getOrDefault(player.getUniqueId(), false);
+    }
+
+    @EventHandler
+    public void isCharging(PlayerMoveEvent event) {
+        Player player = event.getPlayer();
+        if (!player.getWorld().getName().contains("_rpg")) return;
+
+        PotionEffect slowEffect = player.getPotionEffect(PotionEffectType.SLOWNESS);
+        if (slowEffect != null) {
+            int slowLevel = slowEffect.getAmplifier();
+            if (slowLevel >= 100) {
+                event.setCancelled(true);
+            }
+        }
     }
 }

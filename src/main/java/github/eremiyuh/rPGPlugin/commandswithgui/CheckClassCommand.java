@@ -308,14 +308,15 @@ public class CheckClassCommand implements CommandExecutor, Listener {
 
     private double calculateMaxHealth(UserProfile profile) {
         double baseHealth = 20.0;
-        double healthPerVitality = 20.0;
+        double healthPerVitality = 10.0;
         double healthPerStrength = 5.0; // +5 HP per 100 strength
 
         double vitality = profile.getTempVit() / 100.0;
         double strength = profile.getTempStr() / 100.0;
+        double healthPerLevel = (Math.max(0,profile.getArLvl()-1))*8;
         double hpMultiplier = 1.0 + (profile.getHpMultiplier() * 0.01);
 
-        return (baseHealth
+        return (baseHealth + healthPerLevel
                 + (healthPerVitality * vitality)
                 + (healthPerStrength * strength)) * hpMultiplier;
     }

@@ -141,16 +141,12 @@ StatDamage% = 25 → multiply final by 1.25
 
 💖 VITALITY & HEALTH GUIDE
 ✅ Max HP Formula:
-Max HP = (20 + 10 × (classVIT + gearVIT)) × (1 + FinalHpMultiplier%)
+Max HP = (20 + 12 × (classVIT + gearVIT)) × (1 + FinalHpMultiplier%)
 Base Health = 20 HP (10 hearts)
 +10 HP per 1.0 VIT
-
+1 vit = Raw Damage Received -1 (PVE)
+1 vit = Damage Received from attacker stat -1 (PVP)
 Alchemist: Gear VIT × 1.2 before division
-📌 Example:
-Class VIT = 125 → 1.25
-Gear VIT = 75 → 0.75
-Hp% = 20% → ×1.20
-➜ (20 + 10 × (1.25 + 0.75)) × 1.2 = 48 HP = ❤️ 24 hearts
 
 🏃‍♂️ AGILITY
 ✅ Speed Formula:

@@ -260,11 +260,7 @@ public class MonsterInitializer implements Listener {
             extraHealth += lvl * multiplier;
         }
 
-        double customDamage = (lvl*.5) + Objects.requireNonNull(entity.getAttribute(Attribute.ATTACK_DAMAGE)).getValue();
-
-        if (lvl>199) {
-            customDamage = (lvl*.7)+ Objects.requireNonNull(entity.getAttribute(Attribute.ATTACK_DAMAGE)).getValue();
-        }
+        double customDamage = (lvl) + Objects.requireNonNull(entity.getAttribute(Attribute.ATTACK_DAMAGE)).getValue();
 
         // First, check for the purple world boss (0.1% chance)
         if (Math.random() < .0003 || entity instanceof PiglinBrute || entity instanceof PigZombie || entity instanceof Warden || entity instanceof Wither || entity instanceof ElderGuardian || entity instanceof Ravager || entity instanceof Evoker) { //0.0003

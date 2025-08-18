@@ -709,7 +709,7 @@ public class DamageListener implements Listener {
 
 
                         if (mob instanceof Creeper) {
-                            event.setDamage((mobDamage+event.getDamage()));
+                            event.setDamage(mobDamage);
                             return;
                         }
 
@@ -1284,7 +1284,6 @@ public class DamageListener implements Listener {
                     player.sendMessage(ChatColor.RED + "Vindicator reduced your durability by 1000");
                 }
                 event.setDamage(1);
-                event.setCancelled(true);
             }
 
             if (monster instanceof PiglinBrute) {
@@ -1316,11 +1315,16 @@ public class DamageListener implements Listener {
                 player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 0.6f, 1.2f);
                 return;
             }
-
+            double finalDamage = event.getDamage();
+            double damageReduction = ((double) playerProfile.getTempVit() /100);
             // Apply Frenzy trait bonus
             if (playerProfile.getAbyssTrait().equalsIgnoreCase("Frenzy")) {
-                event.setDamage(event.getDamage() * 2);
+                event.setDamage(finalDamage * 2);
+            } else {
+                event.setDamage(Math.max(.001,finalDamage - damageReduction));
             }
+
+
         }
 
         if (!event.isCancelled()) {
@@ -1356,12 +1360,14 @@ public class DamageListener implements Listener {
 
         double statDamage = damagerProfile.getMeleeDmg();
 
-        if (event.getEntity() instanceof Player) statDamage*=.2;
+
+
+        if (event.getEntity() instanceof Player ){ statDamage*=.5;}
 
         if (event.getEntity() instanceof Pillager villager) {
             String name = villager.getCustomName();
             if (name != null && name.contains("Players")) {
-                statDamage*=.2;
+                statDamage*=.5;
             }
         }
 
@@ -1430,7 +1436,7 @@ public class DamageListener implements Listener {
 
 
         float attackCooldown = attacker.getAttackCooldown();
-        if (!skillsListener.getIsSkill()) {
+        if (!skillsListener.getIsSkill(attacker)) {
             if (attackCooldown <= 0.5) {
                 finalDamage = finalDamage * 0.1; // 10% damage
             } else {
@@ -1782,12 +1788,12 @@ public class DamageListener implements Listener {
 
         double statDamage = damage;
 
-        if (event.getEntity() instanceof Player) statDamage*=.2;
+        if (event.getEntity() instanceof Player) statDamage*=.5;
 
         if (event.getEntity() instanceof Pillager villager) {
             String name = villager.getCustomName();
             if (name != null && name.contains("Players")) {
-                statDamage*=.2;
+                statDamage*=.5;
             }
         }
 
@@ -1818,7 +1824,7 @@ public class DamageListener implements Listener {
             effectsAbilityManager.applyAbility(damagerProfile, target, damagerLocation, damagedLocation);
 
             if (!arrow.hasMetadata("WeaknessArrowBarrage") && !arrow.hasMetadata("FireArrowBarrage") && !arrow.hasMetadata("FreezeArrowBarrage")) {
-                double archerDex = damagerProfile.getArcherClassInfo().getDex();
+                double archerDex = damagerProfile.getTempDex();
                 double baseChance = 0.30; // 10% base chance
                 double dexModifier = 0.00007;
                 double totalChance = Math.min(1.0, baseChance + (archerDex * dexModifier));
@@ -2011,6 +2017,7 @@ public class DamageListener implements Listener {
                 // Evade triggered — now check pierce
                 if (Math.random() * 100 < pierceChance) {
                     // Pierce succeeds → evade ignored
+                    calculatedDamage -= ((double) defenderProfile.getTempVit()/100);
                     spawnFloatingHologram(defender.getLocation(), "Pierce!", defender.getWorld(), "#ffcc00");
                     defender.getWorld().playSound(defender.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 0.8f, 1.0f);
                 } else {
@@ -2024,7 +2031,7 @@ public class DamageListener implements Listener {
             }
         }
 
-        if (isCrit) {
+        if (isCrit && !skillsListener.getIsSkill(player)) {
             calculatedDamage *= critDmgMultiplier;
             player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_ATTACK_CRIT, 1.0f, 1.0f);
             event.getEntity().getWorld().playSound(event.getEntity().getLocation(), Sound.ENTITY_PLAYER_ATTACK_CRIT, 1.0f, 1.0f);
@@ -2059,7 +2066,7 @@ public class DamageListener implements Listener {
             damagerProfile.setStamina(damagerProfile.getStamina() - 1);
         }
 
-        return calculatedDamage;
+        return Math.max(.001, calculatedDamage);
     }
 
 

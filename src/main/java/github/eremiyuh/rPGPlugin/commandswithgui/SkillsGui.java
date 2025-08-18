@@ -63,16 +63,16 @@ public class SkillsGui implements CommandExecutor, Listener {
                         Arrays.asList(
                                 "§7Right-click with sword (main hand).",
                                 "§7Damages all living entities in 5 block radius by your §cmelee damage * 2§7.",
-                                "§7Crit and other multipliers applies.",
+                                "§7Multipliers apply, cannot crit.",
                                 "§7Fire: Burn 10s | Water: Weakness IX 10s | Ice: Slowness II 10s.",
                                 "§730s cooldown."
                         ),
                         Arrays.asList(
                                 "§7Right-click with sword in both hands.",
-                                "§73 lines, 20 blocks forward, §cmelee damage§7.",
-                                "§7Crit and other multipliers applies.",
-                                "§73 Can hit a single target up to 5 times.",
-                                "§730s cooldown + 4s fixed cooldown"
+                                "§73 lines, 20 blocks forward, §cmelee damage x 3§7.",
+                                "§7Multipliers apply, cannot crit.",
+                                "§7Can hit a single target up to 10 times.",
+                                "§730s cooldown"
                         ),
                         Arrays.asList(
                                 "§7Right-click with sword (main hand).",
@@ -90,7 +90,7 @@ public class SkillsGui implements CommandExecutor, Listener {
                         Arrays.asList(
                                 "§7Right-click with bow/crossbow.",
                                 "§7Damages mobs in 5 block radius by your §cranged damage§7.",
-                                "§7Crit and other multipliers applies.",
+                                "§7Multipliers apply, cannot crit.",
                                 "§7Targets switch to random mob (Boss priority).",
                                 "§7Fire: Burn 10s | Water: Weakness IX 10s | Ice: Slowness II 10s.",
                                 "§730s cooldown. Item on Slot 9 is the cd identifier"
@@ -103,7 +103,7 @@ public class SkillsGui implements CommandExecutor, Listener {
                         Arrays.asList(
                                 "§7Right-click with bow/crossbow.",
                                 "§7Gain Speed II for 5 seconds.",
-                                "§7Automatically fires 1 arrow every 0.5s in the",
+                                "§7Automatically fires arrow every 0.5s in the",
                                 "§7direction you're facing (10 arrows total).",
                                 "§7No damage dealt by the skill itself.",
                                 "§730s cooldown. Item in Slot 9 indicates cooldown."
@@ -124,7 +124,8 @@ public class SkillsGui implements CommandExecutor, Listener {
                         ),
                         Arrays.asList(
                                 "§7Right-click with main hand.",
-                                "§7Shower location with Strength splash potions for 20s.",
+                                "§7Shower location with Strength/Resistance/Slow splash potions for 20s.",
+                                "§7Applies Strength/Resistance debuff for none team mates",
                                 "§71 potion every 0.5s.",
                                 "§7Potions fall fast from y+3.",
                                 "§730s cooldown + 9s fixed cooldown."

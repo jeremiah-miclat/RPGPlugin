@@ -97,14 +97,15 @@ public class PlayerStatBuff {
      */
     private double calculateMaxHealth(UserProfile profile) {
         double baseHealth = 20.0;
-        double healthPerVitality = 20.0;
+        double healthPerVitality = 10.0;
         double healthPerStrength = 5.0; // +5 HP per 100 strength
 
         double vitality = profile.getTempVit() / 100.0;
         double strength = profile.getTempStr() / 100.0;
+        double healthPerLevel = (Math.max(0,profile.getArLvl()-1))*8;
         double hpMultiplier = 1.0 + (profile.getHpMultiplier() * 0.01);
 
-        return (baseHealth
+        return (baseHealth + healthPerLevel
                 + (healthPerVitality * vitality)
                 + (healthPerStrength * strength)) * hpMultiplier;
     }
@@ -501,14 +502,14 @@ public class PlayerStatBuff {
         double dexPerLevel = (double) dex / level;
         double reduction;
 
-        if (dexPerLevel >= 100) {
+        if (dexPerLevel >= 80) {
             reduction = 29.0;
-        } else if (dexPerLevel >= 50) {
-            // Between 50 and 100 DEX/level
-            reduction = 15.0 + ((dexPerLevel - 50.0) / 50.0) * 14.0;
+        } else if (dexPerLevel >= 40) {
+
+            reduction = 15.0 + ((dexPerLevel - 40) / 40.0) * 14.0;
         } else {
-            // Between 0 and 50 DEX/level
-            reduction = (dexPerLevel / 50.0) * 15.0;
+
+            reduction = (dexPerLevel / 40.0) * 15.0;
         }
         return reduction;
     }
