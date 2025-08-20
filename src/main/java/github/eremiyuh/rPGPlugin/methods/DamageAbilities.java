@@ -47,7 +47,7 @@ public class DamageAbilities {
                 arrow.setShooter(Bukkit.getPlayer(profile.getPlayerName()));
                 // Apply downward velocity
                 arrow.setVelocity(new Vector(0, -.01, 0));
-                arrow.setDamage(arrowDamage);
+//                arrow.setDamage(arrowDamage);
                 // Tag arrow with metadata for recognition in handleLongRangeDamage
                 arrow.setMetadata("FireArrowBarrage", new FixedMetadataValue(plugin, true));
                 Bukkit.getScheduler().runTaskLater(plugin, () -> {
@@ -77,7 +77,7 @@ public class DamageAbilities {
                 arrow.setShooter(Bukkit.getPlayer(profile.getPlayerName()));
                 // Apply downward velocity
                 arrow.setVelocity(new Vector(0, -.01, 0)); // Straight down
-                arrow.setDamage(arrowDamage);
+//                arrow.setDamage(arrowDamage);
 
                 // Tag arrow with metadata for recognition in handleLongRangeDamage
                 arrow.setMetadata("FreezeArrowBarrage", new FixedMetadataValue(plugin, true));
@@ -108,7 +108,7 @@ public class DamageAbilities {
                 Arrow arrow = location.getWorld().spawn(spawnLocation, Arrow.class);
                 // Apply downward velocity
                 arrow.setVelocity(new Vector(0, -.01, 0)); // Straight down
-                arrow.setDamage(arrowDamage);
+//                arrow.setDamage(arrowDamage);
                 arrow.setShooter(Bukkit.getPlayer(profile.getPlayerName()));
                 // Tag arrow with metadata for recognition in handleLongRangeDamage
                 arrow.setMetadata("WeaknessArrowBarrage", new FixedMetadataValue(plugin, true));

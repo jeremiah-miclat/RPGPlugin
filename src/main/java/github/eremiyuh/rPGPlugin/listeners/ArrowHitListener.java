@@ -53,7 +53,7 @@ public class ArrowHitListener implements Listener {
                 }
             }
 
-            int archerInt = userProfile.getArcherClassInfo().getIntel();
+            int archerInt = userProfile.getTempIntel();
             double modifier = .02;
             double intensitymodifier = Math.min(archerInt / 2500, 4);
 

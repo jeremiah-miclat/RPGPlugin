@@ -57,7 +57,7 @@ public class SkillsGui implements CommandExecutor, Listener {
         switch (profile.getChosenClass().toLowerCase()) {
             case "swordsman":
                 addSkillsToGui(gui, "Swordsman",
-                        "Int-based damage",
+                        "Int-based damage, normal attack applies element effect",
                         "10% Lifesteal",
                         "Counter Helix: Return Damage of 10% of your damage from strength when using thorns",
                         Arrays.asList(
@@ -84,7 +84,7 @@ public class SkillsGui implements CommandExecutor, Listener {
                 break;
             case "archer":
                 addSkillsToGui(gui, "Archer",
-                        "High Int-based damage.",
+                        "Int-based damage, normal attack applies element effect.",
                         "Arrow Shower. Dex for Chance & Int for Damage.",
                         "Bonus Crit Chance. Crossbow heals 5% of damage dealt (5% lifesteal effect)",
                         Arrays.asList(
@@ -112,7 +112,7 @@ public class SkillsGui implements CommandExecutor, Listener {
                 break;
             case "alchemist":
                 addSkillsToGui(gui, "Alchemist",
-                        "Instant Damage Potion",
+                        "Instant Damage Potion, applies element effects on hit",
                         "Random Buff/Debuff",
                         "Healing Potion",
                         Arrays.asList(

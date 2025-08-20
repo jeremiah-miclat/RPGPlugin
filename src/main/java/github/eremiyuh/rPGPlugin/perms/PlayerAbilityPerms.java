@@ -32,13 +32,11 @@ public class PlayerAbilityPerms {
             return false;
         }
 
-        if (chosenClass.equalsIgnoreCase("Swordsman")) {
-            return true;
-        }
 
         return (chosenClass.equalsIgnoreCase("Alchemist") ||
                 chosenClass.equalsIgnoreCase("Archer") ||
-                chosenClass.equalsIgnoreCase("Rocket"))
+                chosenClass.equalsIgnoreCase("Rocket")||
+                chosenClass.equalsIgnoreCase("Swordsman"))
                 && skill.equalsIgnoreCase("Skill 1");
     }
 
@@ -51,13 +49,11 @@ public class PlayerAbilityPerms {
             return false;
         }
 
-        if (chosenClass.equalsIgnoreCase("Swordsman")) {
-            return true;
-        }
 
         return (chosenClass.equalsIgnoreCase("Alchemist") ||
                 chosenClass.equalsIgnoreCase("Archer") ||
-                chosenClass.equalsIgnoreCase("Rocket"))
+                chosenClass.equalsIgnoreCase("Rocket")||
+                chosenClass.equalsIgnoreCase("Swordsman"))
                 && skill.equalsIgnoreCase("Skill 1");
     }
 
@@ -70,13 +66,10 @@ public class PlayerAbilityPerms {
             return false;
         }
 
-        if (chosenClass.equalsIgnoreCase("Swordsman")) {
-            return true;
-        }
-
         return (chosenClass.equalsIgnoreCase("Alchemist") ||
                 chosenClass.equalsIgnoreCase("Archer") ||
-                chosenClass.equalsIgnoreCase("Rocket"))
+                chosenClass.equalsIgnoreCase("Rocket")||
+                chosenClass.equalsIgnoreCase("Swordsman"))
                 && skill.equalsIgnoreCase("Skill 1");
     }
 
