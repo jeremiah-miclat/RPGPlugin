@@ -276,6 +276,8 @@ public class CheckClassCommand implements CommandExecutor, Listener {
         lore.add("§7CritRes%: " + df.format(profile.getCritResist() * 100) + "%");
         lore.add("§7CritDmg%: " + df.format(profile.getCritDmg() * 100) + "%");
         lore.add("§7Lifesteal%: " + df.format(profile.getLs() * 100) + "%");
+        lore.add("§7AttackSpeed Bonus: " + String.format("%.1f%%", calculateBonusAttackSpeed(profile) * 100));
+        lore.add("§7Ranged/Splash bonus from agi: +" + String.format("%.1f%%", (dmgMultiplierFromAgi(profile)-1) * 100));
         lore.add("§7Evasion%: " + df.format(calculateEvasion(profile.getTempAgi(), profile.getLevel())) + "% for BPLvl " + profile.getArLvl());
         lore.add("§7PierceEvasion%: " + df.format(calculatePierce(profile.getTempDex(), profile.getArLvl())) + "% for BPLvl " + profile.getArLvl());
         lore.add("§7CD reduction: -" + (int) profile.getCdr());
@@ -523,5 +525,52 @@ public class CheckClassCommand implements CommandExecutor, Listener {
             pierceChance = 100.0;
         }
         return pierceChance;
+    }
+
+
+    private double calculateBonusAttackSpeed(UserProfile profile) {
+        double agility = profile.getTempAgi();
+        double lvl = profile.getArLvl();
+
+        if (lvl <= 0) return 0;
+
+        double agiPerLvl = agility / lvl;
+        double bonus;
+
+        if (agiPerLvl <= 50) {
+            // Linear from 0 → 50 AGI/lvl maps to 0 → 1 bonus
+            bonus = agiPerLvl / 50.0;
+        } else if (agiPerLvl <= 100) {
+            // Linear from 50 → 100 AGI/lvl maps to 1 → 3 bonus
+            bonus = 1.0 + ((agiPerLvl - 50) / 50.0) * 2.0;
+        } else {
+            // Cap at 3
+            bonus = 3.0;
+        }
+
+        return bonus;
+    }
+
+    public double dmgMultiplierFromAgi(UserProfile profile) {
+        double lvl = profile.getArLvl();
+        double agi = profile.getTempAgi();
+
+        if (lvl <= 0) return 1.0; // safety check
+
+        double agiPerLvl = agi / lvl;
+        double multiplier;
+
+        if (agiPerLvl <= 50) {
+            // Linear scaling from 1.0 → 2.0 at 50/lvl
+            multiplier = 1.0 + (agiPerLvl / 50.0);
+        } else if (agiPerLvl <= 100) {
+            // Linear scaling from 2.0 → 4.0 at 100/lvl
+            multiplier = 2.0 + ((agiPerLvl - 50) / 50.0) * 2.0;
+        } else {
+            // Cap at 4.0
+            multiplier = 4.0;
+        }
+
+        return multiplier;
     }
 }

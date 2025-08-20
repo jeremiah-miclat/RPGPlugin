@@ -129,7 +129,25 @@ public class PlayerStatBuff {
 
     private double calculateBonusAttackSpeed(UserProfile profile) {
         double agility = profile.getTempAgi();
-        return (agility / 500) * 0.10; // +10% per 500 Agility
+        double lvl = profile.getArLvl();
+
+        if (lvl <= 0) return 0;
+        if (agility <= 0) return 0;
+        double agiPerLvl = agility / lvl;
+        double bonus;
+
+        if (agiPerLvl <= 50) {
+            // Linear from 0 → 50 AGI/lvl maps to 0 → 1 bonus
+            bonus = agiPerLvl / 50.0;
+        } else if (agiPerLvl <= 100) {
+            // Linear from 50 → 100 AGI/lvl maps to 1 → 3 bonus
+            bonus = 1.0 + ((agiPerLvl - 50) / 50.0) * 2.0;
+        } else {
+            // Cap at 3
+            bonus = 3.0;
+        }
+
+        return bonus;
     }
 
     public void applyAttackSpeedBonus(Player player, UserProfile profile) {
@@ -467,10 +485,24 @@ public class PlayerStatBuff {
     }
 
     public double dmgMultiplierFromAgi(UserProfile profile) {
-        double multiplier = 1;
-
+        double lvl = profile.getArLvl();
         double agi = profile.getTempAgi();
-        multiplier+=agi/ 500.0 * 0.1;
+
+        if (lvl <= 0) return 1.0; // safety check
+
+        double agiPerLvl = agi / lvl;
+        double multiplier;
+
+        if (agiPerLvl <= 50) {
+            // Linear scaling from 1.0 → 2.0 at 50/lvl
+            multiplier = 1.0 + (agiPerLvl / 50.0);
+        } else if (agiPerLvl <= 100) {
+            // Linear scaling from 2.0 → 4.0 at 100/lvl
+            multiplier = 2.0 + ((agiPerLvl - 50) / 50.0) * 2.0;
+        } else {
+            // Cap at 4.0
+            multiplier = 4.0;
+        }
 
         return multiplier;
     }
@@ -509,5 +541,12 @@ public class PlayerStatBuff {
     public double calculateCritResist(int agi, int vit, int luk, int hp) {
         int totalStats = agi + vit + luk+hp;
         return totalStats * 0.0002;
+    }
+
+    public double calculateASMultiplier(int agi, int lvl) {
+        double asMultiplier = 1;
+        double agiPerLvl = agi/lvl;
+
+        return asMultiplier;
     }
 }

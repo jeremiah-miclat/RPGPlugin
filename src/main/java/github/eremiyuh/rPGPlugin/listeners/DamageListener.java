@@ -1346,6 +1346,15 @@ public class DamageListener implements Listener {
             return;
         }
 
+        if (event.getCause() == EntityDamageEvent.DamageCause.THORNS) {
+            if (!damagerProfile.getChosenClass().equalsIgnoreCase("swordsman") ||
+                    !damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
+                event.setCancelled(true);
+                return;
+            }
+        }
+
+
         double baseDamage = event.getDamage();
         ItemStack weapon = attacker.getInventory().getItemInMainHand();
 
@@ -1366,13 +1375,6 @@ public class DamageListener implements Listener {
         double damageWithStats = applyStatsToDamage(statDamage+baseDamage, damagerProfile, attacker, event);
         if (event.isCancelled()) return;
 
-        if (event.getCause() == EntityDamageEvent.DamageCause.THORNS) {
-            if (!damagerProfile.getChosenClass().equalsIgnoreCase("swordsman") ||
-                    !damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
-                event.setCancelled(true);
-                return;
-            }
-        }
 
 
 
@@ -1399,7 +1401,7 @@ public class DamageListener implements Listener {
             UserProfile victimProfile = profileManager.getProfile(victim.getName());
             if (victimProfile==null) return;
             if (damagerProfile.getSelectedElement().equalsIgnoreCase("fire") && victimProfile.getSelectedElement().equalsIgnoreCase("ice")) {
-                finalDamage=finalDamage*1.1;
+                finalDamage=finalDamage*1.2;
             }
             if (damagerProfile.getSelectedElement().equalsIgnoreCase("ice") && victimProfile.getSelectedElement().equalsIgnoreCase("water")) {
                 finalDamage=finalDamage*1.2;
@@ -1865,18 +1867,10 @@ public class DamageListener implements Listener {
 
                 Location shooterLoc = attacker.getLocation();
                 double distance = shooterLoc.distance(damagedLocation);
-                if (distance <= 1) {
-                    finalDamage *= 0.05;
-                } else if (distance <= 2) {
-                    finalDamage *= 0.1;
-                } else if (distance <= 3) {
-                    finalDamage *= 0.4;
-                } else if (distance <= 4) {
-                    finalDamage *= 0.7;
-                } else if (distance <= 5) {
-                    finalDamage *= 0.7;
+                if (distance <= 5) {
+                    finalDamage *= 0.5;
                 } else if (distance <= 6) {
-                    finalDamage *= 0.7;
+                    finalDamage *= 0.6;
                 } else if (distance <= 7) {
                     finalDamage *= 0.7;
                 } else if (distance <= 8) {
