@@ -614,14 +614,14 @@ public class DamageListener implements Listener {
                         if (attackerProfile.getChosenClass().equalsIgnoreCase("alchemist") && attacker.getName().equals(victim.getName())) {event.setCancelled(true); return;}
                         double splash = attackerProfile.getSplashDmg();
                         if (damaged instanceof Player) {
-                            splash = ((double) attackerProfile.getTempIntel() /100)*8;
+                            splash = ((double) attackerProfile.getTempIntel() /100)*4;
                             double dex = attackerProfile.getTempDex();
                             splash+=( dex /100)*2;
                         }
 
                         if (damaged instanceof Pillager villager) {
                             String name = villager.getCustomName();
-                            if (name != null && name.contains("players")) splash = ((double) attackerProfile.getTempIntel() /100)*8;
+                            if (name != null && name.contains("players")) splash = ((double) attackerProfile.getTempIntel() /100)*4;
                             double dex = attackerProfile.getTempDex();
                             splash+=( dex /100)*2;
                         }
@@ -1946,7 +1946,7 @@ public class DamageListener implements Listener {
 
 
             critChance = Math.max(0, critChance - player1Profile.getCritResist());
-
+            critDmgMultiplier = (Math.max(1.5,critDmgMultiplier - (player1Profile.getCritResist2())));
         }
 
         boolean isCrit = Math.random() < critChance;

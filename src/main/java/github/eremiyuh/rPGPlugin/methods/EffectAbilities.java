@@ -55,7 +55,7 @@ public class EffectAbilities {
         }
 
 
-        int fireDuration =  100 + (userInt*5); // Extend fire duration based on profile buff
+        int fireDuration = 100 + (userInt / 10);
 
         target.setFireTicks(fireDuration);
 

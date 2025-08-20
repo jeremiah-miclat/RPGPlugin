@@ -255,7 +255,7 @@ public class PlayerStatBuff {
 
             double meleeDmg = 0;
             double longDmg=0;
-            double splashDmg= (double) intel /100*30;
+            double splashDmg= (double) intel /100*8;
             splashDmg+=((double) dex /100)*2;
 
             if (isHoldingValidMeleeWeapon(player)) {
@@ -263,7 +263,7 @@ public class PlayerStatBuff {
                 meleeDmg+=((double) dex /100)*2;
 
                 if (selectedSkill.contains("1") && chosenClass.contains("sword")) {
-                    meleeDmg+=((double) intel /100)*8;
+                    meleeDmg+=((double) intel /100)*4;
                 }
                 meleeDmg*=dmgMultiplierFromCE(profile);
                 meleeDmg*=dmgMultiplierFromEnchant(player);
@@ -272,8 +272,8 @@ public class PlayerStatBuff {
             if (validRangedWeapon) {
                 longDmg+=((double) dex /100)*4;
                 if (chosenClass.contains("archer")) {
-                    if(selectedSkill.contains("1")) longDmg+=((double) intel /100)*8;
-                    else if (selectedSkill.contains("2")) longDmg+=((double) intel /100)*6;
+                    if(selectedSkill.contains("1")) longDmg+=((double) intel /100)*4;
+                    else if (selectedSkill.contains("2")) longDmg+=((double) intel /100)*4;
                 }
                 longDmg*=dmgMultiplierFromCE(profile);
                 longDmg*=dmgMultiplierFromEnchant(player);
@@ -307,6 +307,7 @@ public class PlayerStatBuff {
             profile.setLongDmg(longDmg);
             profile.setSplashDmg(splashDmg);
             profile.setCdr(getCooldownReduction(dex, profile.getArLvl()));
+            profile.setCritResist2(calculateCritDmgNegate(agi,vit,luk,hp));
 
             if (player.getWorld().getName().contains("_rpg")) {
                 // Update player health
@@ -543,10 +544,14 @@ public class PlayerStatBuff {
         return totalStats * 0.0002;
     }
 
-    public double calculateASMultiplier(int agi, int lvl) {
-        double asMultiplier = 1;
-        double agiPerLvl = agi/lvl;
-
-        return asMultiplier;
+    public double calculateCritDmgNegate(int agi,int vit, int luk, int hp) {
+        double result = 0;
+        result += agi+vit+luk + hp;
+        if (result>0) {
+            return (result* 0.001);
+        }
+        else {
+            return 0;
+        }
     }
 }

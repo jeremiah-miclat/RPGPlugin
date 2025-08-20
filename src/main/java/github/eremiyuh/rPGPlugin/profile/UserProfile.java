@@ -124,6 +124,7 @@ public class UserProfile {
 
     private double cdr = 0;
     private double critResist =0;
+    private  double critResist2= 0;
     //constructor
     public UserProfile(String playerName) {
         this.crit = 0;
@@ -771,6 +772,14 @@ public class UserProfile {
 
     public void setCritResist(double critResist) {
         this.critResist = critResist;
+    }
+
+    public double getCritResist2() {
+        return critResist2;
+    }
+
+    public void setCritResist2(double critResist2) {
+        this.critResist2 = critResist2;
     }
 
     // Inner class to hold class-specific attributes

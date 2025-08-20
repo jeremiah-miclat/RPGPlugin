@@ -86,7 +86,7 @@ Final Crit chance of attacker:
 🗡️ SWORDSMAN
 Skill 1 SWORDSMAN:
 STR × 4
-INT × 8
+INT × 4
 DEX * 2
 
 
@@ -94,7 +94,7 @@ DEX * 2
 🏹 ARCHER
 Skill 1 ARCHER:
 DEX × 4
-INT × 8
+INT × 4
 
 Skill 2 ARCHER:
 DEX × 4
@@ -108,8 +108,8 @@ Crossbow heals 5% of damage dealt (5% lifesteal effect)
 
 ⚗️ ALCHEMIST
 Potion Throw
-INT × 3 vs players
-INT × 10 vs mobs
+INT × 4 vs players
+INT × 8 vs mobs
 DEX * 2
 
 Skill 1 ALCHEMIST: +20% damage from INT

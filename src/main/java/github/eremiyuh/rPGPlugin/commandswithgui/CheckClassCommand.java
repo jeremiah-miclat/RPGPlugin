@@ -272,9 +272,10 @@ public class CheckClassCommand implements CommandExecutor, Listener {
         lore.add("§7Melee Dmg from stats: " + (int)profile.getMeleeDmg() );
         lore.add("§7Longrange Dmg from stats: " + (int) profile.getLongDmg() );
         lore.add("§7Splashpotion Dmg from stats: " + (int) profile.getSplashDmg());
-        lore.add("§7Crit%: " + df.format(profile.getCrit() * 100) + "%");
-        lore.add("§7CritRes%: " + df.format(profile.getCritResist() * 100) + "%");
+        lore.add("§7Crit chance: " + df.format(profile.getCrit() * 100) + "%");
+        lore.add("§7Crit chance Res%: " + df.format(profile.getCritResist() * 100) + "%");
         lore.add("§7CritDmg%: " + df.format(profile.getCritDmg() * 100) + "%");
+        lore.add("§7CritDmg Res%: " + df.format(profile.getCritResist2() * 100) + "%");
         lore.add("§7Lifesteal%: " + df.format(profile.getLs() * 100) + "%");
         lore.add("§7AttackSpeed Bonus: " + String.format("%.1f%%", calculateBonusAttackSpeed(profile) * 100));
         lore.add("§7Ranged/Splash bonus from agi: +" + String.format("%.1f%%", (dmgMultiplierFromAgi(profile)-1) * 100));
