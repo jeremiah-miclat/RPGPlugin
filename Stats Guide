@@ -85,28 +85,16 @@ Final Crit chance of attacker:
 
 🗡️ SWORDSMAN
 Skill 1 SWORDSMAN:
-STR × 4 (melee)
-INT × 8 (elemental)
+STR × 4
+INT × 8
+DEX * 2
 
-SWORDSMAN
-STR = 1.50 (150 raw)
-DEX = 1.00 (100 raw)
-Base = 1.50 × 4 = 6
-Bonus = 1.00 × 3 = 3 (since STR > DEX)
-Total = 9 before multipliers
-
-SWORDSMAN
-STR = 1.00 (100 raw)
-DEX = 1.50 (150 raw)
-Base = 1.00 × 4 = 4
-Bonus = DEX × 4 = 6 (since DEX > STR)
-Total = 10 before multipliers
 
 
 🏹 ARCHER
 Skill 1 ARCHER:
-DEX × 4 (bow)
-INT × 8 (elemental)
+DEX × 4
+INT × 8
 
 Skill 2 ARCHER:
 DEX × 4
@@ -122,6 +110,7 @@ Crossbow heals 5% of damage dealt (5% lifesteal effect)
 Potion Throw
 INT × 3 vs players
 INT × 10 vs mobs
+DEX * 2
 
 Skill 1 ALCHEMIST: +20% damage from INT
 Bonus:
@@ -178,4 +167,56 @@ Your AGI is divided by the monster’s level to determine how effective it is.
 ➡️ More AGI is needed to dodge higher-level monsters.
 Example:
 If you're Level 1 with 50 AGI vs a Level 2 monster, your AGI is worth 25 per level, not 50.
+
+
+
+
+🎯 Guide to Cooldown Reduction from Dexterity
+In this system, your Dexterity (DEX) directly reduces your skill cooldowns. The reduction depends on your DEX compared to your Level, not just raw DEX.
+The formula behind the scenes looks at Dexterity per Level (DEX ÷ Level). This makes sure cooldown reduction stays balanced no matter what level you are.
+
+🔹 Step 1: Calculate Dexterity per Level
+To determine your cooldown reduction (CDR), first calculate:
+Dexterity per Level = DEX ÷ Level
+Example:
+100 DEX at Level 5 → 100 ÷ 5 = 20s
+200 DEX at Level 10 → 200 ÷ 10 = 20s
+
+👉 Even though the first player has 100 DEX and the second has 200 DEX, they both have the same 20 DEX/Level ratio, so their cooldown reduction is identical.
+
+🔹 Step 2: Apply Cooldown Reduction Rules
+Depending on your DEX per Level ratio, cooldown reduction follows three different zones:
+
+🟢 Zone 1: Low Dexterity (0–19 DEX/Level)
+Formula: (DEX per Level ÷ 20) × 15
+Cooldown reduction gradually increases from 0 up to 15s.
+
+Examples:
+10 DEX/Level → 7.5s CDR
+20 DEX/Level → 15s CDR
+
+🟡 Zone 2: Mid Dexterity (20–39 DEX/Level)
+Formula: 15 + ((DEX per Level – 20) ÷ 20) × 14
+Cooldown reduction starts at 15% and scales up to 29s.
+
+Examples:
+25 DEX/Level → 18.5s CDR
+30 DEX/Level → 22s CDR
+39 DEX/Level → 28.3s CDR
+
+🔴 Zone 3: High Dexterity (40+ DEX/Level)
+Cooldown reduction is capped at 29s.
+No matter how much more Dexterity you stack, you cannot exceed 29s reduction.
+
+Examples:
+40 DEX/Level → 29s CDR
+60 DEX/Level → 29s CDR (cap)
+
+📊 Quick Reference Table
+DEX	Level	DEX/Level	Cooldown Reduction
+20	2	    10	            7.5s
+100	5	    20	            15s
+150	5	    30	            22s
+200	5	    40	            29s (cap)
+500	10	    50	            29s (cap)
 

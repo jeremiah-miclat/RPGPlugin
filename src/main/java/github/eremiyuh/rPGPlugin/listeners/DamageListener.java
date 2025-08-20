@@ -615,25 +615,15 @@ public class DamageListener implements Listener {
                         double splash = attackerProfile.getSplashDmg();
                         if (damaged instanceof Player) {
                             splash = ((double) attackerProfile.getTempIntel() /100)*8;
-                            double intel = attackerProfile.getTempIntel();
                             double dex = attackerProfile.getTempDex();
-                            if (intel>dex) {
-                                splash+=( dex /100)*4;
-                            } else {
-                                splash+=( dex /100)*2;
-                            }
+                            splash+=( dex /100)*2;
                         }
 
                         if (damaged instanceof Pillager villager) {
                             String name = villager.getCustomName();
                             if (name != null && name.contains("players")) splash = ((double) attackerProfile.getTempIntel() /100)*8;
-                            double intel = attackerProfile.getTempIntel();
                             double dex = attackerProfile.getTempDex();
-                            if (intel>dex) {
-                                splash+=( dex /100)*4;
-                            } else {
-                                splash+=( dex /100)*2;
-                            }
+                            splash+=( dex /100)*2;
                         }
 
                         handleLongRangeDamage(attacker,victim,event,damagerLocation,damagedLocation,attackerProfile, splash);
@@ -1255,8 +1245,7 @@ public class DamageListener implements Listener {
                 });
             }
 
-            if ((monster instanceof Skeleton || monster instanceof Stray) && new Random().nextInt(100) < 10) {
-                Skeleton skeleton = (Skeleton) monster;
+            if (monster instanceof AbstractSkeleton skeleton && new Random().nextInt(100) < 10) {
                 tryUseMobSkill(skeleton, player, () -> {
                     double skelDmg = Objects.requireNonNull(skeleton.getAttribute(Attribute.ATTACK_DAMAGE)).getValue();
                     player.damage(skelDmg);
@@ -1269,7 +1258,10 @@ public class DamageListener implements Listener {
 
                     String displayName = skeleton.getCustomName() != null ?
                             skeleton.getCustomName() :
-                            ChatColor.GRAY + (skeleton instanceof Stray ? "Stray" : "Skeleton");
+                            ChatColor.GRAY + (
+                                    skeleton instanceof Stray ? "Stray" :
+                                            skeleton instanceof WitherSkeleton ? "Wither Skeleton" : "Skeleton"
+                            );
 
                     player.sendMessage(displayName + ChatColor.RED + ": " + getSkeletonRandomInsult());
                 });
@@ -1362,14 +1354,14 @@ public class DamageListener implements Listener {
 
 
 
-        if (event.getEntity() instanceof Player ){ statDamage*=.5;}
-
-        if (event.getEntity() instanceof Pillager villager) {
-            String name = villager.getCustomName();
-            if (name != null && name.contains("Players")) {
-                statDamage*=.5;
-            }
-        }
+//        if (event.getEntity() instanceof Player ){ statDamage*=.5;}
+//
+//        if (event.getEntity() instanceof Pillager villager) {
+//            String name = villager.getCustomName();
+//            if (name != null && name.contains("Players")) {
+//                statDamage*=.5;
+//            }
+//        }
 
         double damageWithStats = applyStatsToDamage(statDamage+baseDamage, damagerProfile, attacker, event);
         if (event.isCancelled()) return;
@@ -1430,7 +1422,7 @@ public class DamageListener implements Listener {
         }
 
         if (event.getCause() == EntityDamageEvent.DamageCause.THORNS && damagerProfile.getChosenClass().equalsIgnoreCase("swordsman") && damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
-            event.setDamage(finalDamage*.3);
+            event.setDamage(finalDamage*.1);
             return;
         }
 
@@ -1788,14 +1780,14 @@ public class DamageListener implements Listener {
 
         double statDamage = damage;
 
-        if (event.getEntity() instanceof Player) statDamage*=.5;
-
-        if (event.getEntity() instanceof Pillager villager) {
-            String name = villager.getCustomName();
-            if (name != null && name.contains("Players")) {
-                statDamage*=.5;
-            }
-        }
+//        if (event.getEntity() instanceof Player) statDamage*=.5;
+//
+//        if (event.getEntity() instanceof Pillager villager) {
+//            String name = villager.getCustomName();
+//            if (name != null && name.contains("Players")) {
+//                statDamage*=.5;
+//            }
+//        }
 
         // Apply stats based on class for non-default players
         double damageWithStats = applyStatsToDamage(baseDamage+statDamage, damagerProfile, attacker, event);

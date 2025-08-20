@@ -377,7 +377,9 @@ public class CheckClassCommand implements CommandExecutor, Listener {
                 }
 
                 if (item.getType() == Material.BOW) {
-                    lore.add("Increases arrow damage.");
+                    lore.add("Increases arrow damage greatly.");
+                    lore.add("Increases melee and splash damage slightly.");
+                    lore.add("Provides cooldown reduction");
                     lore.add("Slightly increases critical chance and critical damage for Archers.");
                 }
 

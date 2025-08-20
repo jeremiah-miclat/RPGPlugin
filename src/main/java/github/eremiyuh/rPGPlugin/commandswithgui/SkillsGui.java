@@ -59,10 +59,10 @@ public class SkillsGui implements CommandExecutor, Listener {
                 addSkillsToGui(gui, "Swordsman",
                         "Int-based damage",
                         "10% Lifesteal",
-                        "Counter Helix: Return Damage of 30% of your damage from strength when using thorns",
+                        "Counter Helix: Return Damage of 10% of your damage from strength when using thorns",
                         Arrays.asList(
                                 "§7Right-click with sword (main hand).",
-                                "§7Damages all living entities in 5 block radius by your §cmelee damage * 2§7.",
+                                "§7Damages all living entities in 5 block radius by your §cmelee damage * 1.5§7.",
                                 "§7Multipliers apply, cannot crit.",
                                 "§7Fire: Burn 10s | Water: Weakness IX 10s | Ice: Slowness II 10s.",
                                 "§730s cooldown."
@@ -77,8 +77,8 @@ public class SkillsGui implements CommandExecutor, Listener {
                         Arrays.asList(
                                 "§7Right-click with sword (main hand).",
                                 "§710 block radius taunt – all mobs target you.",
-                                "§7Gain Strength & Resistance based on number of mobs hit.",
-                                "§7Effect lasts 10s. 30s cooldown."
+                                "§7Gain Strength I (+BP level) & Resistance I, buff amplifier + number of mobs hit.",
+                                "§7Effect lasts 10s. 30s cooldown + 20s fixed cooldown"
                         )
                 );
                 break;
@@ -89,7 +89,7 @@ public class SkillsGui implements CommandExecutor, Listener {
                         "Bonus Crit Chance. Crossbow heals 5% of damage dealt (5% lifesteal effect)",
                         Arrays.asList(
                                 "§7Right-click with bow/crossbow.",
-                                "§7Damages mobs in 5 block radius by your §cranged damage§7.",
+                                "§7Damages mobs in 5 block radius by your §cranged damage * 1.5§7.",
                                 "§7Multipliers apply, cannot crit.",
                                 "§7Targets switch to random mob (Boss priority).",
                                 "§7Fire: Burn 10s | Water: Weakness IX 10s | Ice: Slowness II 10s.",
@@ -120,22 +120,22 @@ public class SkillsGui implements CommandExecutor, Listener {
                                 "§7Shower location with Instant Damage splash potions for 20s.",
                                 "§7Position fixed at cast start.",
                                 "§7Potions fall fast from y+3.",
-                                "§730s cooldown + 9s fixed cooldown."
+                                "§730s cooldown + 10s fixed cooldown."
                         ),
                         Arrays.asList(
                                 "§7Right-click with main hand.",
-                                "§7Shower location with Strength/Resistance/Slow splash potions for 20s.",
+                                "§7Shower location with Strength/Resistance splash potions for 20s.",
                                 "§7Applies Strength/Resistance debuff for none team mates",
                                 "§71 potion every 0.5s.",
                                 "§7Potions fall fast from y+3.",
-                                "§730s cooldown + 9s fixed cooldown."
+                                "§730s cooldown + 10s fixed cooldown."
                         ),
                         Arrays.asList(
                                 "§7Right-click with main hand.",
                                 "§7Shower location with Instant Heal splash potions for 20s.",
                                 "§71 potion every 0.5s.",
                                 "§7Potions fall fast from y+3.",
-                                "§730s cooldown + 9s fixed cooldown."
+                                "§730s cooldown + 10s fixed cooldown."
                         )
                 );
                 break;

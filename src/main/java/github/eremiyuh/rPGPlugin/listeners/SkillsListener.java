@@ -71,14 +71,14 @@ public class SkillsListener implements Listener {
         double reduction = profile.getCdr(); // cooldown reduction in seconds
         long finalSeconds = Math.max(1, Math.round(baseSeconds - reduction)); // min 1 sec
 
-        // Special rule: Swordsman skill 2 must have at least 5 sec cooldown
-//        if (profile.getChosenClass().equalsIgnoreCase("swordsman") &&
-//                profile.getSelectedSkill().contains("2")) {
-//            finalSeconds = Math.max(5, finalSeconds+1);
-//        }
+
+        if (profile.getChosenClass().equalsIgnoreCase("swordsman") &&
+                profile.getSelectedSkill().contains("3")) {
+            finalSeconds = Math.max(20, finalSeconds+20);
+        }
 
         if (profile.getChosenClass().equalsIgnoreCase("alchemist")) {
-            finalSeconds = Math.max(10, finalSeconds+9);
+            finalSeconds = Math.max(10, finalSeconds+10);
         }
 
         // Store functional cooldown timer
@@ -122,12 +122,13 @@ public class SkillsListener implements Listener {
                     player.getLocation(),
                     80, 5, 1, 5, 0.2
             );
+            player.swingMainHand();
             for (Entity e : player.getNearbyEntities(5, 5, 5)) {
                 if (e instanceof LivingEntity target && !target.equals(player)) {
                     if (target instanceof Player && !target.getWorld().getName().contains("_br")) continue;
                     double damage = profile.getMeleeDmg();
                     skillStates.put(player.getUniqueId(), true);
-                    target.damage(damage, player);
+                    target.damage(damage*.5, player);
                     applyElementEffect(target, element);
                 }
             }
@@ -213,6 +214,7 @@ public class SkillsListener implements Listener {
                 }
 
                 // --- Apply damage & impact particles ---
+                player.swingOffHand();
 
                 for (LivingEntity target : hitEntities) {
                     double damage = profile.getMeleeDmg() * 2;
@@ -259,8 +261,9 @@ public class SkillsListener implements Listener {
                     }
                 }
             }
-            player.addPotionEffect(new org.bukkit.potion.PotionEffect(PotionEffectType.STRENGTH, 200, amp));
-            player.addPotionEffect(new org.bukkit.potion.PotionEffect(PotionEffectType.RESISTANCE, 200, amp));
+            player.swingMainHand();
+            player.addPotionEffect(new org.bukkit.potion.PotionEffect(PotionEffectType.STRENGTH, 200, amp+profile.getArLvl(),true,true));
+            player.addPotionEffect(new org.bukkit.potion.PotionEffect(PotionEffectType.RESISTANCE, 200, amp,true,true));
             setCooldown(player, 30, main.getType(), profile);
         }
     }
@@ -286,6 +289,7 @@ public class SkillsListener implements Listener {
             }
 
             // 2️⃣ Quick burst over all affected entities
+            player.swingMainHand();
             for (Entity e : player.getNearbyEntities(10, 5, 10)) {
                 if (e instanceof LivingEntity target && !target.equals(player)) {
                     if (target instanceof Player && !target.getWorld().getName().contains("_br")) continue;
@@ -296,7 +300,7 @@ public class SkillsListener implements Listener {
                     // Damage & effects
                     double damage = profile.getLongDmg();
                     skillStates.put(player.getUniqueId(), true);
-                    target.damage(damage, player);
+                    target.damage(damage*.5, player);
                     applyElementEffect(target, element);
 
                     // Optional: retarget monsters
@@ -331,7 +335,7 @@ public class SkillsListener implements Listener {
         if (skill.contains("2") && !isOnCooldown(player)) {
             Location base = player.getLocation();
             World world = base.getWorld();
-
+            player.swingMainHand();
             if (world != null) {
                 double startX = base.getBlockX() - 15; // half of 30
                 double startZ = base.getBlockZ() - 15;
@@ -359,6 +363,7 @@ public class SkillsListener implements Listener {
             int shots = duration / interval; // 10 shots
 
             // Speed boost effect (optional)
+            player.swingMainHand();
             player.addPotionEffect(new org.bukkit.potion.PotionEffect(PotionEffectType.SPEED, duration, 1));
 
             // Capture the locked direction once
@@ -423,15 +428,16 @@ public class SkillsListener implements Listener {
         if (main.getType() == Material.AIR) return;
 
         if (skill.contains("1") && !isOnCooldown(player)) {
+            player.swingMainHand();
             potionShower(player, PotionEffectType.INSTANT_DAMAGE, 20);
             setCooldown(player, 30, main.getType(), profile);
         }
         if (skill.contains("2") && !isOnCooldown(player)) {
+            player.swingMainHand();
             // List of possible effects
             PotionEffectType[] effects = {
                     PotionEffectType.STRENGTH, // Strength
                     PotionEffectType.RESISTANCE, // Resistance
-                    PotionEffectType.SLOWNESS // Slowness
             };
 
             // Pick one at random
@@ -441,6 +447,7 @@ public class SkillsListener implements Listener {
             setCooldown(player, 30, main.getType(), profile);
         }
         if (skill.contains("3") && !isOnCooldown(player)) {
+            player.swingMainHand();
             potionShower(player, PotionEffectType.INSTANT_HEALTH, 20);
             setCooldown(player, 30, main.getType(), profile);
         }

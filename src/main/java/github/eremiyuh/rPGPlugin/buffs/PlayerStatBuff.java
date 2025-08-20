@@ -238,19 +238,11 @@ public class PlayerStatBuff {
             double meleeDmg = 0;
             double longDmg=0;
             double splashDmg= (double) intel /100*30;
-            if (intel>dex) {
-                splashDmg+=((double) dex /100)*4;
-            } else {
-                splashDmg+=((double) dex /100)*2;
-            }
+            splashDmg+=((double) dex /100)*2;
 
             if (isHoldingValidMeleeWeapon(player)) {
                 meleeDmg+=((double) str /100)*4;
-                if (str>dex) {
-                    meleeDmg+=((double) dex /100)*3;
-                } else {
-                    meleeDmg+=((double) dex /100)*4;
-                }
+                meleeDmg+=((double) dex /100)*2;
 
                 if (selectedSkill.contains("1") && chosenClass.contains("sword")) {
                     meleeDmg+=((double) intel /100)*8;
@@ -502,14 +494,14 @@ public class PlayerStatBuff {
         double dexPerLevel = (double) dex / level;
         double reduction;
 
-        if (dexPerLevel >= 80) {
+        if (dexPerLevel >= 40) {
             reduction = 29.0;
-        } else if (dexPerLevel >= 40) {
+        } else if (dexPerLevel >= 20) {
 
-            reduction = 15.0 + ((dexPerLevel - 40) / 40.0) * 14.0;
+            reduction = 15.0 + ((dexPerLevel - 20) / 20.0) * 14.0;
         } else {
 
-            reduction = (dexPerLevel / 40.0) * 15.0;
+            reduction = (dexPerLevel / 20.0) * 15.0;
         }
         return reduction;
     }
