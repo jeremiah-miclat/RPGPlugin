@@ -1946,7 +1946,7 @@ public class DamageListener implements Listener {
 
 
             critChance = Math.max(0, critChance - player1Profile.getCritResist());
-            critDmgMultiplier = (Math.max(1.5,critDmgMultiplier - (player1Profile.getCritResist2())));
+//            critDmgMultiplier = (Math.max(1.5,critDmgMultiplier - (player1Profile.getCritResist2())));
         }
 
         boolean isCrit = Math.random() < critChance;
@@ -2018,7 +2018,7 @@ public class DamageListener implements Listener {
         }
 
         if (isCrit && !skillsListener.getIsSkill(player)) {
-            calculatedDamage *= critDmgMultiplier;
+            calculatedDamage += critDmgMultiplier;
             player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_ATTACK_CRIT, 1.0f, 1.0f);
             event.getEntity().getWorld().playSound(event.getEntity().getLocation(), Sound.ENTITY_PLAYER_ATTACK_CRIT, 1.0f, 1.0f);
             World world = event.getEntity().getWorld();

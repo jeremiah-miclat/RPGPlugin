@@ -274,8 +274,8 @@ public class CheckClassCommand implements CommandExecutor, Listener {
         lore.add("§7Splashpotion Dmg from stats: " + (int) profile.getSplashDmg());
         lore.add("§7Crit chance: " + df.format(profile.getCrit() * 100) + "%");
         lore.add("§7Crit chance Res%: " + df.format(profile.getCritResist() * 100) + "%");
-        lore.add("§7CritDmg%: " + df.format(profile.getCritDmg() * 100) + "%");
-        lore.add("§7CritDmg Res%: " + df.format(profile.getCritResist2() * 100) + "%");
+        lore.add("§7CritDmg Bonus: " + (int) profile.getCritDmg());
+//        lore.add("§7CritDmg Res%: " + df.format(profile.getCritResist2() * 100) + "%");
         lore.add("§7Lifesteal%: " + df.format(profile.getLs() * 100) + "%");
         lore.add("§7AttackSpeed Bonus: " + String.format("%.1f%%", calculateBonusAttackSpeed(profile) * 100));
         lore.add("§7Ranged/Splash bonus from agi: +" + String.format("%.1f%%", (dmgMultiplierFromAgi(profile)-1) * 100));
@@ -370,37 +370,42 @@ public class CheckClassCommand implements CommandExecutor, Listener {
 
                 // Add specific lore for items
                 if (item.getType() == Material.IRON_SWORD) {
-                    lore.add("Increases damage for melee attacks.");
+                    lore.add("Increases damage by .04 for melee attacks. ");
+                    lore.add("Increases 5 hp per 100 points.");
                 }
 
                 if (item.getType() == Material.FEATHER) {
                     lore.add("Increases attack speed or projectiles damage.");
-                    lore.add("Increases evasion.");
-                    lore.add("Check discord for more info.");
+                    lore.add("Increases normal attack evasion.");
+                    lore.add("25/bp lvl = 80% evasion against same level mob");
+                    lore.add("50/bp lvl = 100% evasion against same level mob");
                 }
 
                 if (item.getType() == Material.BOW) {
-                    lore.add("Increases arrow damage greatly.");
+                    lore.add("Increases arrow damage by .04.");
                     lore.add("Increases melee and splash damage slightly.");
                     lore.add("Provides cooldown reduction");
-                    lore.add("Slightly increases critical chance and critical damage for Archers.");
                 }
 
                 if (item.getType() == Material.BOOK) {
-                    lore.add("Increases damage from thrown potions.");
-                    lore.add("Damage stats for Skill 1 users.");
-                    lore.add("Boosts potion effects, healing, and damage for Alchemists.");
+                    lore.add("Increases splash potion damage by .04 for pvp and .08 for pve.");
+                    lore.add("Increases non-splash potion damage by .04 when using Skill 1");
+                    lore.add("Boosts elemental effects durations and amplifiers.");
+                    lore.add("Boosts potion healing for Alchemists.");
                 }
 
                 if (item.getType() == Material.GOLDEN_APPLE) {
-                    lore.add("Increases HP.");
+                    lore.add("Increases HP by .1.");
                     lore.add("Use /healthscale to rescale health to always display as 10 hearts.");
+                    lore.add("Provides slight damage reduction.");
                 }
 
                 if (item.getType() == Material.NETHER_STAR) {
                     lore.add("Main stat for increasing critical chance and critical damage.");
-                    lore.add("Main stat for decreasing critical chance of players during PVP.");
-                    lore.add("Requires 4,000 to 5,000 points to reach 100% critical chance vs. Mobs.");
+                    lore.add("Main stat for reducing enemy critical chance in PVP.");
+                    lore.add("• Critical Chance: Up to 50% at 50 LUK per bp level");
+                    lore.add("• Critical Damage Bonus: (LUK ÷ bpLvl ÷ 100) × 12 × bpLvl");
+                    lore.add("• Critical Resist: Up to 25% at 50 LUK per level.");
                 }
 
 

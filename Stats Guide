@@ -15,7 +15,7 @@ Stat	Role in Combat
 🏹 DEX	Boosts bow/trident damage and archer crit chance. (÷100 before used)
 🧠 INT	Increases elemental skill damage. (÷100 before used)
 💖 VIT	Increases max health. (÷100 before used)
-🍀 LUK	Increases crit chance and crit multiplier. (✅ Used as-is)
+🍀 LUK	Increases crit chance and crit damage.
 🏃 AGI	Increases melee attack speed, projectile damage, and Evasion Chance. (✅ Used as-is)
 📈 StatDamage%	Final damage multiplier from gear. (✅ Used as-is)
 
@@ -40,46 +40,6 @@ If DEX > INT → Bonus = DEX × 2
 
 ================================================================================================
 
-✅ Critical Hit System
-
-🎯 Crit Chance (based on stats and class)
-Class/Type	Crit Chance Formula
-🗡 Swordsman	+0.03% per LUK
-🏹 Archer	+0.03% per LUK and +0.01% per DEX
-🏹 Archer + Skill 3	Above + flat +25% bonus
-❔ Others	+0.02% per LUK
-
-💥 Crit Damage Multiplier
-
-Starts at 1.5x
-Gains +0.1x every 100 LUK
-If Archer + Skill 3: gains extra +0.05x every 100 DEX
-
-🛡 Crit Resistance (PVP Enemy Defense)
-
-🛡️ Critical Resistance Guide
-
-Crit Resistance Formula
-+0.02% per AGI
-+0.02% per VIT
-+0.02% per LUK
-+0.02% per HP%
-
-📌 Example Calculation
-
-You (Defender):
-200 LUK → 200 × 0.02% = 4%
-100 VIT → 100 × 0.02% = 2%
-50 AGI → 50 × 0.02% = 1%
-Base Crit Resistance = 7%
-
-Player Swordsman (Attacker):
-1000 LUK → 1000 × 0.03% = 30%
-
-Final Crit chance of attacker:
-30 - 7 = 23%
-
-=================================================================
 ⚔️ CLASS SKILL SCALING
 (Again, STR/DEX/INT in formulas below are assumed ÷ 100)
 
@@ -102,8 +62,7 @@ INT × 6
 
 Skill 3 ARCHER:
 DEX × 4
-+25% crit chance
-+DEX × 0.00005 to crit multiplier
++10% crit chance
 Crossbow heals 5% of damage dealt (5% lifesteal effect)
 
 ⚗️ ALCHEMIST
@@ -112,7 +71,6 @@ INT × 4 vs players
 INT × 8 vs mobs
 DEX * 2
 
-Skill 1 ALCHEMIST: +20% damage from INT
 Bonus:
 +20% to all gear stats before division (STR/DEX/INT/VIT/AGI)
 

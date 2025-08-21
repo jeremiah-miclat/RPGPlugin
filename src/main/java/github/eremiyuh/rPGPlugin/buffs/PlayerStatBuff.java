@@ -229,16 +229,17 @@ public class PlayerStatBuff {
             int luk = profile.getTempLuk();
             int vit = profile.getTempVit();
             int agi = profile.getTempAgi();
-            int hp= profile.getHpMultiplier()*10;
-            int dmg = profile.getStatDmgMultiplier()*10;
-            int power = (int) equipStats[8]*20;
-            int sharp = (int) equipStats[9]*20;
-            double totalStats = str+dex+intel+luk+vit+agi+hp+dmg+power+sharp;
+            int hp= profile.getHpMultiplier();
+            int dmg = profile.getStatDmgMultiplier();
+            int power = (int) equipStats[8];
+            int sharp = (int) equipStats[9];
+            double totalStats = str+dex+intel+luk+vit+agi;
+            double bonusLvlFromDmg = calculateBPLevelMBonusFromStatDmg(str,intel,dex,dmg,sharp,power);
+            double bonusLvlFromHp = calculateBPLevelMBonusFromHP(vit,hp, profile.getArLvl());
+            double bonusLvlFromEnchant = calculateBPLevelMBonusFromEnchant(sharp,power);
 
 
-
-// Divide the total by 100
-            double level = totalStats / 100;
+            double level = (totalStats / 100) + bonusLvlFromDmg + bonusLvlFromHp +bonusLvlFromEnchant;
             int tempLvl = (int) Math.ceil(level); // always round UP
             profile.setArLvl(Math.max(1,tempLvl));
             int finalLevel = (int) Math.max(1, (totalStats - 100) / 100 + 1);
@@ -249,9 +250,9 @@ public class PlayerStatBuff {
             profile.setLs(lifeStealPercent(chosenClass,profile.getSelectedSkill(),player,chosenTrait));
             double bonusCrit = 0;
             if (profile.getSelectedElement().equalsIgnoreCase("ice")) bonusCrit+=.1;
-            profile.setCrit(critChance(chosenClass,luk,dex, profile.getSelectedSkill(),chosenTrait,validRangedWeapon)+bonusCrit);
-            profile.setCritResist(calculateCritResist(agi,vit,luk, hp));
-            profile.setCritDmg(getCritMultiplier(chosenClass,luk,dex, profile.getSelectedSkill(),chosenTrait,validRangedWeapon));
+            profile.setCrit(critChance(chosenClass,luk,dex, profile.getSelectedSkill(),chosenTrait,validRangedWeapon,profile.getArLvl())+bonusCrit);
+            profile.setCritResist(calculateCritResist(luk, profile.getArLvl()));
+            profile.setCritDmg(getCritMultiplier(chosenClass,luk,dex, profile.getSelectedSkill(),chosenTrait,validRangedWeapon,profile.getArLvl()));
 
             double meleeDmg = 0;
             double longDmg=0;
@@ -265,8 +266,9 @@ public class PlayerStatBuff {
                 if (selectedSkill.contains("1") && chosenClass.contains("sword")) {
                     meleeDmg+=((double) intel /100)*4;
                 }
+                meleeDmg+=dmgBonusFromEnchant(player);
                 meleeDmg*=dmgMultiplierFromCE(profile);
-                meleeDmg*=dmgMultiplierFromEnchant(player);
+
             }
 
             if (validRangedWeapon) {
@@ -275,16 +277,16 @@ public class PlayerStatBuff {
                     if(selectedSkill.contains("1")) longDmg+=((double) intel /100)*4;
                     else if (selectedSkill.contains("2")) longDmg+=((double) intel /100)*4;
                 }
+                longDmg+=dmgBonusFromEnchant(player);
                 longDmg*=dmgMultiplierFromCE(profile);
-                longDmg*=dmgMultiplierFromEnchant(player);
+
                 longDmg*=dmgMultiplierFromAgi(profile);
             }
 
             if (chosenClass.contains("alche")) {
+                splashDmg+=dmgBonusFromEnchant(player);
                 splashDmg*=dmgMultiplierFromCE(profile);
-                splashDmg*=dmgMultiplierFromEnchant(player);
                 splashDmg*=dmgMultiplierFromAgi(profile);
-                if (selectedSkill.contains("1")) splashDmg*=1.2;
             }
 
             if (profile.getAbyssTrait().equalsIgnoreCase("Fortress")) {
@@ -422,58 +424,59 @@ public class PlayerStatBuff {
         return lifeSteal;
     }
 
-    public double critChance(String chosenClass, int luk, int dex, String chosenSkill, String chosenTrait, boolean validRangedWeapon) {
-        double baseChance;
+    public double critChance(String chosenClass, int luk, int dex,
+                             String chosenSkill, String chosenTrait,
+                             boolean validRangedWeapon, int bpLvl) {
+        if (bpLvl <= 0) return 0;
 
-        switch (chosenClass.toLowerCase()) {
-            case "swordsman":
-                baseChance = luk * 0.0003;
-                break;
+        double lukPerLvl = (double) luk / bpLvl;
 
-            case "archer":
-                if (validRangedWeapon) {
-                    baseChance = (luk * 0.0003) + (dex * 0.0001);
-                    if (chosenSkill.equalsIgnoreCase("skill 3")) {
-                        baseChance += 0.25; // +25% flat
-                    }
-                } else {
-                    baseChance = luk * 0.0002; // maybe fallback for no ranged weapon
-                }
-                break;
+        // Linear scaling: 50 lukPerLvl = 50% chance, capped at 50%
+        double baseChance = lukPerLvl / 100.0;   // scales linearly
+        if (baseChance > 0.5) baseChance = 0.5; // max 50%
 
-            default:
-                baseChance = luk * 0.0002;
-                break;
+        // Archer bonus
+        if (chosenClass.equalsIgnoreCase("Archer") && validRangedWeapon
+                && chosenSkill.contains("3")) {
+            baseChance += 0.1;
         }
 
+        // Trait penalty
         if (chosenTrait.equalsIgnoreCase("Gamble")) {
             baseChance -= 0.25;
         }
+
+        // Clamp between 0% and 100%
+        baseChance = Math.max(0, Math.min(1, baseChance));
 
         return baseChance;
     }
 
 
-    public double getCritMultiplier(String classType, double luk, double dex, String chosenSkill, String chosenTrait, boolean validRangedWeapon) {
-        double multiplier = 1.5 + (luk * 0.001);
+    public double getCritMultiplier(String classType, double luk, double dex, String chosenSkill, String chosenTrait, boolean validRangedWeapon, int bpLvl) {
+        if (bpLvl <= 0) return 0;
 
-        if (classType.equalsIgnoreCase("archer") && chosenSkill.equalsIgnoreCase("skill 3") && validRangedWeapon) {
-            multiplier += dex * 0.00005;
-        }
-        if (chosenTrait.equalsIgnoreCase("Gamble")) multiplier+=0.25;
-        return multiplier;
+        double lukPerLvl = luk / bpLvl;
+
+
+        double bonus = bpLvl * (lukPerLvl / 100.0) * 12.0;
+
+        if (chosenTrait.equalsIgnoreCase("Gamble")) bonus*=1.5;
+
+
+        return bonus;
     }
 
-    public double dmgMultiplierFromEnchant(Player player) {
-        double multiplier = 1;
+    public double dmgBonusFromEnchant(Player player) {
+        double bonus = 0;
 
         ItemStack weapon = player.getEquipment().getItemInMainHand();
 
         int sharplevel = weapon.getEnchantmentLevel(Enchantment.SHARPNESS);
         int powerlevel  = weapon.getEnchantmentLevel(Enchantment.POWER);
-        multiplier += Math.max(sharplevel*.1,powerlevel*.1);
+        bonus += (sharplevel+powerlevel)*4;
 
-        return multiplier;
+        return bonus;
     }
 
     public double dmgMultiplierFromCE(UserProfile profile) {
@@ -539,9 +542,15 @@ public class PlayerStatBuff {
         return reduction;
     }
 
-    public double calculateCritResist(int agi, int vit, int luk, int hp) {
-        int totalStats = agi + vit + luk+hp;
-        return totalStats * 0.0002;
+    public double calculateCritResist(int luk, int bpLvl) {
+        if (bpLvl <= 0) return 0;
+
+        double lukPerLvl = (double) luk / bpLvl;
+
+        // 50 lukPerLvl = 0.25 resist, capped at 0.25
+        double resist = Math.min((lukPerLvl / 50.0) * 0.25, 0.25);
+
+        return resist;
     }
 
     public double calculateCritDmgNegate(int agi,int vit, int luk, int hp) {
@@ -553,5 +562,25 @@ public class PlayerStatBuff {
         else {
             return 0;
         }
+    }
+
+    public double calculateBPLevelMBonusFromStatDmg(int str, int intel, int dex, int statDmg,int sharp,int power) {
+        double totalStats = str + intel + dex;
+        double base = (totalStats / 100.0)+sharp+power;
+        double multiplier = 1.0 + (statDmg / 100.0);
+        if (multiplier>1) return ((base * multiplier)-base)*.8;
+        return 0;
+
+    }
+
+    public double calculateBPLevelMBonusFromHP(int vit, int hp, int bpLvl) {
+        double base = ((double) vit / 100.0) + bpLvl;
+        double multiplier = 1.0 + (hp / 100.0);
+        if (multiplier>1) return ((base * multiplier)-base)*.8;
+        return 0;
+    }
+
+    public double calculateBPLevelMBonusFromEnchant(int sharp, int power) {
+        return  sharp+power;
     }
 }

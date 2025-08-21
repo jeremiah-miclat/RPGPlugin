@@ -25,7 +25,8 @@ public class SelectAbyssTrait implements CommandExecutor, Listener {
     private final PlayerProfileManager profileManager;
     private final NamespacedKey traitKey;
     private final Map<UUID, Long> traitCooldowns = new HashMap<>();
-    private static final long COOLDOWN_MILLIS = 10 * 60 * 1000; // 10 minutes
+//    private static final long COOLDOWN_MILLIS = 10 * 60 * 1000; // 10 minutes
+    private static final long COOLDOWN_MILLIS = 60 * 1000;
 
     public SelectAbyssTrait(PlayerProfileManager profileManager) {
         this.profileManager = profileManager;
@@ -67,7 +68,7 @@ public class SelectAbyssTrait implements CommandExecutor, Listener {
 
         gui.setItem(16, createTraitItem(Material.NETHER_STAR, "§dGamble", Arrays.asList(
                 "§7❌ Crit Rate -25%",
-                "§7💥 Crit Damage +25%",
+                "§7💥 Crit Damage +50%",
                 "§8Strike less often, but harder."
         ), "Gamble"));
 
