@@ -115,6 +115,18 @@ public class ActivitiyShop implements CommandExecutor, Listener {
         activityPointStore.setItem(5, rabbitEgg);
 
 
+        // Create Heart of the Sea item
+        ItemStack heartOfSea = new ItemStack(Material.HEART_OF_THE_SEA);
+        ItemMeta heartMeta = heartOfSea.getItemMeta();
+        if (heartMeta != null) {
+            List<Component> lore = new ArrayList<>();
+            lore.add(Component.text("Cost: 100,000 Active Points").color(TextColor.color(255, 215, 0)));
+            heartMeta.lore(lore);
+            heartOfSea.setItemMeta(heartMeta);
+        }
+        activityPointStore.setItem(6, heartOfSea);
+
+
         // Create the activity point item
         ItemStack activePoints = new ItemStack(Material.WOODEN_PICKAXE);
         ItemMeta activePointsMeta = activePoints.getItemMeta();
@@ -188,6 +200,15 @@ public class ActivitiyShop implements CommandExecutor, Listener {
                 if (userProfile.getActivitypoints() >= 10000) {
                     userProfile.setCurrency("activitypoints", userProfile.getActivitypoints() - 10000);
                     dropOrNotify(player, new ItemStack(Material.RABBIT_SPAWN_EGG), "Successfully purchased.");
+                } else {
+                    player.sendMessage(Component.text("You do not have enough Points!").color(TextColor.color(255, 0, 0)));
+                }
+            }
+
+            else if (event.getSlot() == 6 && event.getCurrentItem() != null && event.getCurrentItem().getType() == Material.HEART_OF_THE_SEA) {
+                if (userProfile.getActivitypoints() >= 100000) {
+                    userProfile.setCurrency("activitypoints", userProfile.getActivitypoints() - 100000);
+                    dropOrNotify(player, new ItemStack(Material.HEART_OF_THE_SEA), "Successfully purchased.");
                 } else {
                     player.sendMessage(Component.text("You do not have enough Points!").color(TextColor.color(255, 0, 0)));
                 }

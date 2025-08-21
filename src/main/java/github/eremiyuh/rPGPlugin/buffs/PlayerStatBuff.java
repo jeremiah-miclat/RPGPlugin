@@ -576,7 +576,7 @@ public class PlayerStatBuff {
     public double calculateBPLevelMBonusFromHP(int vit, int hp, int bpLvl) {
         double base = ((double) vit / 100.0) + bpLvl;
         double multiplier = 1.0 + (hp / 100.0);
-        if (multiplier>1) return ((base * multiplier)-base)*.8;
+        if (multiplier>1) return ((base * multiplier)-base)*.5;
         return 0;
     }
 

@@ -279,7 +279,7 @@ public class CheckClassCommand implements CommandExecutor, Listener {
         lore.add("§7Lifesteal%: " + df.format(profile.getLs() * 100) + "%");
         lore.add("§7AttackSpeed Bonus: " + String.format("%.1f%%", calculateBonusAttackSpeed(profile) * 100));
         lore.add("§7Ranged/Splash bonus from agi: +" + String.format("%.1f%%", (dmgMultiplierFromAgi(profile)-1) * 100));
-        lore.add("§7Evasion%: " + df.format(calculateEvasion(profile.getTempAgi(), profile.getLevel())) + "% for BPLvl " + profile.getArLvl());
+        lore.add("§7Evasion%: " + df.format(calculateEvasion(profile.getTempAgi(), profile.getArLvl())) + "% for BPLvl " + profile.getArLvl());
         lore.add("§7PierceEvasion%: " + df.format(calculatePierce(profile.getTempDex(), profile.getArLvl())) + "% for BPLvl " + profile.getArLvl());
         lore.add("§7CD reduction: -" + (int) profile.getCdr());
         // Add remaining points, total allocated points for chosen class, and overall allocated points
