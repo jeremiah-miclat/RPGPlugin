@@ -10,6 +10,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 
 public class LoginListener implements Listener {
@@ -49,6 +50,13 @@ public class LoginListener implements Listener {
             return;
         }
 
+
+    }
+
+    @EventHandler
+    public  void  onCommandAbyss(PlayerCommandPreprocessEvent event) {
+        Player player = event.getPlayer();
+        String message = event.getMessage().toLowerCase();
         // 2. Block specific words/commands in _rpg worlds
         if (player.getWorld().getName().toLowerCase().contains("_rpg")) {
             String[] blockedWords = {"/sit", "/spin", "/crawl", "/lay", "/gsit", "/bellyflop"};

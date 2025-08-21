@@ -2176,16 +2176,20 @@ public class DamageListener implements Listener {
         if (entity instanceof Pillager pillager)  {
             if (pillager.getCustomName().contains("Dummy")) return;
         }
+        String customName = entity.getCustomName();
+
+        assert customName != null;
+        if (customName.contains("Clone")) return;
 
         double totalHealth = entity.getHealth();
         double totalRemainingHealth = Math.max(0, totalHealth - damage);
 
         String healthIndicator = ChatColor.YELLOW + " [" + (int) totalRemainingHealth + "]"; // Format health
 
-        String customName = entity.getCustomName();
+
 
         // Remove old health indicator if it exists
-        if (customName != null && customName.contains("[")) {
+        if (customName.contains("[")) {
             int healthIndex = customName.indexOf('[');
             customName = customName.substring(0, healthIndex).trim(); // Remove old health indicator
         }

@@ -143,30 +143,30 @@ AGI is not divided
 Alchemist: Gear AGI × 1.2 before applying
 
 Attack Speed Bonus from AGI (melee)
-Formula basis: AGI per level (agi / level) determines bonus attack speed.
+Formula basis: AGI per level (agi / bp level) determines bonus attack speed.
 
 Explanation:
-From 0 → 50 AGI/lvl, bonus scales linearly from 0% to 100%.
-Example: 25 AGI/lvl → 50% bonus
-From 50 → 100 AGI/lvl, bonus scales linearly from 100% → 300%.
-Example: 75 AGI/lvl → 200% bonus
-For 100 AGI/lvl and above, bonus is capped at 300%.
+From 0 → 50 AGI/bp lvl, bonus scales linearly from 0% to 100%.
+Example: 25 AGI/bp lvl → 50% bonus
+From 50 → 100 AGI/bp lvl, bonus scales linearly from 100% → 300%.
+Example: 75 AGI/bp lvl → 200% bonus
+For 100 AGI/bp lvl and above, bonus is capped at 300%.
 
 
 
 Damage Multiplier from AGI (Long Range & Splash)
-Formula basis: AGI per level (agi / level) also determines extra damage.
+Formula basis: AGI per level (agi / bp level) also determines extra damage.
 
 
 
 Explanation:
-From 0 → 50 AGI/lvl, damage multiplier scales linearly from x1 → x2.
-Example: 25 AGI/lvl → x1.5 damage
-From 50 → 100 AGI/lvl, damage multiplier scales linearly from x2 → x4.
-Example: 75 AGI/lvl → x3 damage
-For 100 AGI/lvl and above, multiplier is capped at x4.
+From 0 → 50 AGI/bp lvl, damage multiplier scales linearly from x1 → x2.
+Example: 25 AGI/bp lvl → x1.5 damage
+From 50 → 100 AGI/bp lvl, damage multiplier scales linearly from x2 → x4.
+Example: 75 AGI/bp lvl → x3 damage
+For 100 AGI/bp lvl and above, multiplier is capped at x4.
 
-Summary: Higher AGI per level directly boosts damage, with smooth scaling and a hard cap.
+Summary: Higher AGI per bp level directly boosts damage, with smooth scaling and a hard cap.
 
 
 
@@ -197,10 +197,10 @@ If you're Level 1 with 50 AGI vs a Level 2 monster, your AGI is worth 25 per lev
 
 
 🎯 Guide to Cooldown Reduction from Dexterity
-In this system, your Dexterity (DEX) directly reduces your skill cooldowns. The reduction depends on your DEX compared to your Level, not just raw DEX.
-The formula behind the scenes looks at Dexterity per Level (DEX ÷ Level). This makes sure cooldown reduction stays balanced no matter what level you are.
+In this system, your Dexterity (DEX) directly reduces your skill cooldowns. The reduction depends on your DEX compared to your bp Level, not just raw DEX.
+The formula behind the scenes looks at Dexterity per bp Level (DEX ÷ bp Level). This makes sure cooldown reduction stays balanced no matter what bp level you are.
 
-🔹 Step 1: Calculate Dexterity per Level
+🔹 Step 1: Calculate Dexterity per bp Level
 To determine your cooldown reduction (CDR), first calculate:
 Dexterity per Level = DEX ÷ Level
 Example:

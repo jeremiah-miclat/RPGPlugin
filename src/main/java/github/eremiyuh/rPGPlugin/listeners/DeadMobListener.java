@@ -245,6 +245,10 @@ public class DeadMobListener implements Listener {
                         }
                         UserProfile playerProfile = profileManager.getProfile(player.getName());
                         applyRewards(player, playerProfile, health*3, chance+.2, dropMultiplier,level);
+                        if (isWorldBoss && worldName.contains("_br") && killer.getName().equals(player.getName())) {
+                            player.sendMessage(ChatColor.GOLD + "You received bonus reward for killing the world boss");
+                            applyRewards(player, playerProfile, health*3, chance+.2, dropMultiplier,level);
+                        }
                         distributeDrops(player, event, dropMultiplier,level);
 
                         if (bosslvl > 9 && isWorldBoss) {

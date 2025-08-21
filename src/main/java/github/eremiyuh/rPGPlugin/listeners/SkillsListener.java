@@ -129,7 +129,7 @@ public class SkillsListener implements Listener {
                     double damage = profile.getMeleeDmg();
                     skillStates.put(player.getUniqueId(), true);
                     target.damage(damage*.5, player);
-                    applyElementEffect(target, element);
+//                    applyElementEffect(target, element);
                 }
             }
             setCooldown(player, 30, main.getType(), profile);
@@ -301,7 +301,7 @@ public class SkillsListener implements Listener {
                     double damage = profile.getLongDmg();
                     skillStates.put(player.getUniqueId(), true);
                     target.damage(damage*.5, player);
-                    applyElementEffect(target, element);
+//                    applyElementEffect(target, element);
 
                     // Optional: retarget monsters
                     if (target instanceof Monster monster) {

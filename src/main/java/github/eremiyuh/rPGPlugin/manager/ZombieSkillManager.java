@@ -67,33 +67,18 @@ public class ZombieSkillManager {
     private void spawnClones(LivingEntity original) {
         World world = original.getWorld();
         Location base = original.getLocation();
-        Vector[] offsets = {
-                new Vector(1, 0, 0),
-                new Vector(-1, 0, 0),
-                new Vector(0, 0, 1),
-                new Vector(0, 0, -1)
-        };
+
 
 
 
         List<LivingEntity> clones = new ArrayList<>();
-        for (Vector offset : offsets) {
-            Location spawnLoc = base.clone().add(offset);
-            spawnLoc.setY(world.getHighestBlockYAt(spawnLoc) + 1);
-
+        for (int i = 0; i < 4; i++) { // spawn 4 clones
+            Location spawnLoc = base.clone();
             LivingEntity clone = (LivingEntity) world.spawnEntity(spawnLoc, original.getType());
             clone.setCustomName(original.getCustomName() + " Clone");
             clone.setCustomNameVisible(true);
             clone.setPersistent(false);
             clone.setRemoveWhenFarAway(true);
-
-
-
-
-            // Copy equipment
-//            for (EquipmentSlot slot : EquipmentSlot.values()) {
-//                clone.getEquipment().setItem(slot, original.getEquipment().getItem(slot));
-//            }
 
             clones.add(clone);
         }

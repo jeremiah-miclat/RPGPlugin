@@ -96,7 +96,7 @@ public class BlockRewardManager {
                             player.sendMessage(firstStepMessages.get(blockType));
                             lastBlockType.put(uuid, blockType);
                             timeOnBlock.put(uuid, 0);
-                            plugin.getLogger().info("First-step: " + player.getName() + " on " + blockType + " at " + x + "," + z);
+//                            plugin.getLogger().info("First-step: " + player.getName() + " on " + blockType + " at " + x + "," + z);
                         }
 
                         int secs = timeOnBlock.getOrDefault(uuid, 0) + 1;
@@ -111,7 +111,7 @@ public class BlockRewardManager {
                             if (currencyName != null && profile != null) {
                                 double currentAmount = profile.getCurrency(currencyName);
                                 profile.setCurrency(currencyName, currentAmount + rewardAmount);
-                                plugin.getLogger().info("Rewarded " + player.getName() + " with " + rewardAmount + " " + currencyName);
+//                                plugin.getLogger().info("Rewarded " + player.getName() + " with " + rewardAmount + " " + currencyName);
                             } else {
                                 plugin.getLogger().warning("Missing profile or currency mapping for " + player.getName());
                             }
@@ -122,7 +122,7 @@ public class BlockRewardManager {
                     } else {
                         if (lastBlockType.containsKey(uuid) && !testMode) {
                             player.sendMessage("You left the afk site");
-                            plugin.getLogger().info(player.getName() + " left reward block/region (x=" + x + ", z=" + z + ")");
+//                            plugin.getLogger().info(player.getName() + " left reward block/region (x=" + x + ", z=" + z + ")");
                         }
                         timeOnBlock.remove(uuid);
                         lastBlockType.remove(uuid);

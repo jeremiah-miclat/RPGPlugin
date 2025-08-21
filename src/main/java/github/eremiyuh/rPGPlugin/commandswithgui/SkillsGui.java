@@ -64,14 +64,13 @@ public class SkillsGui implements CommandExecutor, Listener {
                                 "§7Right-click with sword (main hand).",
                                 "§7Damages all living entities in 5 block radius by your §cmelee damage * 1.5§7.",
                                 "§7Multipliers apply, cannot crit.",
-                                "§7Fire: Burn 10s | Water: Weakness IX 10s | Ice: Slowness II 10s.",
+                                "§7Fire: Burn | Water: Weakness  | Ice: Slowness",
                                 "§730s cooldown."
                         ),
                         Arrays.asList(
                                 "§7Right-click with sword in both hands.",
                                 "§73 lines, 20 blocks forward, §cmelee damage x 3§7.",
                                 "§7Multipliers apply, cannot crit.",
-                                "§7Can hit a single target up to 10 times.",
                                 "§730s cooldown"
                         ),
                         Arrays.asList(
@@ -92,7 +91,7 @@ public class SkillsGui implements CommandExecutor, Listener {
                                 "§7Damages mobs in 5 block radius by your §cranged damage * 1.5§7.",
                                 "§7Multipliers apply, cannot crit.",
                                 "§7Targets switch to random mob (Boss priority).",
-                                "§7Fire: Burn 10s | Water: Weakness IX 10s | Ice: Slowness II 10s.",
+                                "§7Fire: Burn | Water: Weakness | Ice: Slowness",
                                 "§730s cooldown. Item on Slot 9 is the cd identifier"
                         ),
                         Arrays.asList(
