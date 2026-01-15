@@ -24,7 +24,14 @@ public class ConvertLevelsCommand implements CommandExecutor {
             return true;
         }
 
+
         Player player = (Player) sender;
+
+        if (sender != null) {
+            sender.sendMessage("No need to convert");
+            return true;
+        }
+
         UserProfile profile = profileManager.getProfile(player.getName());
         double playerClassTotalAttrib = profile.getTotalAllocatedPoints() + profile.getCurrentAttributePoints();
         double abyssPoints = profile.getAbysspoints();

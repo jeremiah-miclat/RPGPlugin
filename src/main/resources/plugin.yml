@@ -3,6 +3,9 @@ version: '1.0-SNAPSHOT'
 main: github.eremiyuh.rPGPlugin.RPGPlugin
 api-version: '1.21'
 commands:
+  updatestats:
+    description: Opens a GUI to prepare for abyss
+    usage: /<command>
   selectclass:
     description: Opens a GUI to select your class
     usage: /<command>
@@ -212,7 +215,6 @@ commands:
   grt:
     description: give reset token to player
     permission: RPGPlugin.changepass
-    permission-default: op
   vault:
     description: Opens a vault for the player.
     usage: /vault <number>
@@ -259,6 +261,10 @@ commands:
   showprofile:
     description: Toggle profile visibility to other players.
     usage: /showprofile
+  setPremiumStatus:
+    description: Toggle profile premium status.
+    usage: /setPremiumStatus playerName
+    permission-default: op
   shareVault:
     description: Toggle vault sharing with team.
     usage: /shareVault

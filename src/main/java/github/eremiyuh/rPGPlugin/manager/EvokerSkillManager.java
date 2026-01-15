@@ -125,8 +125,8 @@ public class EvokerSkillManager {
 
             Vindicator vindicator = (Vindicator) world.spawnEntity(spawnLoc, EntityType.VINDICATOR);
             vindicator.setCustomNameVisible(true);
-            vindicator.setPersistent(true);
-            vindicator.setRemoveWhenFarAway(false);
+            vindicator.setPersistent(false);
+            vindicator.setRemoveWhenFarAway(true);
             vindicator.setCanPickupItems(false);
             vindicators.add(vindicator);
         }

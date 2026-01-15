@@ -14,17 +14,20 @@ import github.eremiyuh.rPGPlugin.methods.EffectsAbilityManager;
 import org.bukkit.*;
 import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.*;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffectType;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.UUID;
 
 public class RPGPlugin extends JavaPlugin {
 
+    private static final double MAX_HEALTH_VAL = 100000000;
     private PlayerProfileManager profileManager;
     private ChunkManager chunkManager;
     private ChunkBorderBlueVisualizer chunkBorderBlueVisualizer;
@@ -47,7 +50,7 @@ public class RPGPlugin extends JavaPlugin {
     private SkillsListener skillsListener;
     @Override
     public void onEnable() {
-
+//        updateSpigotLimits();
 
         loadResources();
         // Add a delay (e.g., 5 seconds) before allowing logins
@@ -70,6 +73,7 @@ public class RPGPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
+//        updateSpigotLimits();
         for (Player player : Bukkit.getOnlinePlayers()) {
             player.setInvulnerable(false);
             player.removePotionEffect(PotionEffectType.SLOWNESS);
@@ -287,6 +291,7 @@ public class RPGPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new PlayerJoinListener(profileManager), this);
         getServer().getPluginManager().registerEvents(new PlayerQuitListener(profileManager,vaultManager), this);
         Objects.requireNonNull(getCommand("selectclass")).setExecutor(new SelectClassCommand(this, profileManager));
+        Objects.requireNonNull(getCommand("updatestats")).setExecutor(new RPGMainGuiCommand(this, profileManager));
         Objects.requireNonNull(getCommand("abyssstore")).setExecutor(new AbyssStoreCommand(this, profileManager));
         Objects.requireNonNull(getCommand("activityshop")).setExecutor(new ActivitiyShop(this, profileManager));
         Objects.requireNonNull(getCommand("cestore")).setExecutor(new CustomEnchant(this, profileManager));
@@ -369,9 +374,9 @@ public class RPGPlugin extends JavaPlugin {
         Objects.requireNonNull(getCommand("craftpotion")).setExecutor(new LapisToPotion(profileManager));
         Objects.requireNonNull(this.getCommand("givesword")).setExecutor(new SwordCommand(this));
         Objects.requireNonNull(this.getCommand("rtp")).setExecutor(new RTPCommand(this));
-        Objects.requireNonNull(this.getCommand("spawn")).setExecutor(new SpawnCommand(profileManager,playerStatBuff));
+        Objects.requireNonNull(this.getCommand("spawn")).setExecutor(new SpawnCommand(profileManager,playerStatBuff,this));
         Objects.requireNonNull(this.getCommand("sethome")).setExecutor(new SetHomeCommand(profileManager));
-        Objects.requireNonNull(this.getCommand("home")).setExecutor(new HomeCommand(profileManager, playerStatBuff));
+        Objects.requireNonNull(this.getCommand("home")).setExecutor(new HomeCommand(profileManager, playerStatBuff,this));
         Objects.requireNonNull(this.getCommand("homedelete")).setExecutor(new DeleteHomeCommand(profileManager));
         Objects.requireNonNull(this.getCommand("addstamina")).setExecutor(new ConvertFoodCommand(profileManager));
         Objects.requireNonNull(this.getCommand("adddurability")).setExecutor(new PayBlackSmithCommand(profileManager));
@@ -409,6 +414,7 @@ public class RPGPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new PlayerMovementListener(this,profileManager), this);
         this.getCommand("discordlink").setExecutor(new DiscordLinkCommand(this));
         Objects.requireNonNull(this.getCommand("showprofile")).setExecutor(new PublicSetCommand(profileManager));
+        Objects.requireNonNull(this.getCommand("setPremiumStatus")).setExecutor(new PremiumSetCommand(profileManager));
         Objects.requireNonNull(this.getCommand("buyhomeslot")).setExecutor(new AddHomesCommand(profileManager));
         Objects.requireNonNull(getCommand("tpallow")).setExecutor(new TpAllowCommand(tpAllowManager));
         TpToggleCommand tpToggleCommand = new TpToggleCommand(tpAllowManager);
@@ -422,16 +428,16 @@ public class RPGPlugin extends JavaPlugin {
 
 
         worldConfig();
-        loadWorld("world_rpg",-91,75,-91, 0,0,-1,-1,-1,18000,GameRule.DO_DAYLIGHT_CYCLE,false, World.Environment.NORMAL, null);
-        for (int i = 10; i <= 300; i += 10) {
-            loadWorld("world_rpg_br_" + i,
-                    -1, -1, -1, -1, -1,
-                    0, 0, 150, 18000,
-                    GameRule.DO_DAYLIGHT_CYCLE,
-                    false,
-                    World.Environment.NORMAL,
-                    null);
-        }
+        loadWorld("world_rpg",-1,75,-91, 0,0,-1,-1,-1,18000,GameRule.DO_DAYLIGHT_CYCLE,false, World.Environment.NORMAL, null);
+//        for (int i = 10; i <= 300; i += 10) {
+//            loadWorld("world_rpg_br_" + i,
+//                    -1, -1, -1, -1, -1,
+//                    0, 0, 150, 18000,
+//                    GameRule.DO_DAYLIGHT_CYCLE,
+//                    false,
+//                    World.Environment.NORMAL,
+//                    null);
+//        }
 //        loadWorld("world_labyrinth2",-19,251,-36,270,0,0,0,100,18000,null,false, World.Environment.NETHER,Biome.NETHER_WASTES);
         getServer().getPluginManager().registerEvents(new TabListCustomizer(this, profileManager,playerStatBuff), this);
 
@@ -445,7 +451,7 @@ public class RPGPlugin extends JavaPlugin {
         Objects.requireNonNull(getCommand("junkshop")).setExecutor(new JunkShopCommand(profileManager));
         getServer().getPluginManager().registerEvents(new JunkShopCommand(profileManager), this);
         new BRBossSpawner(this);
-        new BlockRewardManager(profileManager,this).start();
+//        new BlockRewardManager(profileManager,this).start();
 //        createResourceWorld("resource_normal", World.Environment.NORMAL);
 //        createResourceWorld("resource_nether", World.Environment.NETHER);
 //        createResourceWorld("resource_end", World.Environment.THE_END);
@@ -517,5 +523,40 @@ public class RPGPlugin extends JavaPlugin {
         return block.getType().isSolid() && block.getType() != Material.AIR;
     }
 
+    private void updateSpigotLimits() {
+        // Access spigot.yml in the server root
+        File spigotFile = new File(getDataFolder().getParentFile().getParentFile(), "spigot.yml");
+        if (!spigotFile.exists()) return;
 
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(spigotFile);
+        boolean needsSave = false;
+
+        // 1. Check Max Health Limit
+        double currentHealthLimit = config.getDouble("settings.attribute.maxHealth.max", 2048.0);
+        if (currentHealthLimit < MAX_HEALTH_VAL) {
+            config.set("settings.attribute.maxHealth.max", MAX_HEALTH_VAL);
+            needsSave = true;
+        }
+
+        // 2. Check Attack Damage Limit
+        double currentDamageLimit = config.getDouble("settings.attribute.attackDamage.max", 2048.0);
+        if (currentDamageLimit < MAX_HEALTH_VAL) {
+            config.set("settings.attribute.attackDamage.max", MAX_HEALTH_VAL);
+            needsSave = true;
+        }
+
+        // 3. Save if changes were made
+        if (needsSave) {
+            try {
+                config.save(spigotFile);
+                getLogger().info("--- CONFIG UPDATED ---");
+                getLogger().info("Increased limits for Health and Attack Damage in spigot.yml.");
+                getLogger().info("A RESTART is required to apply these changes.");
+                getLogger().info("----------------------");
+            } catch (IOException e) {
+                getLogger().severe("Could not save spigot.yml!");
+                e.printStackTrace();
+            }
+        }
+    }
 }

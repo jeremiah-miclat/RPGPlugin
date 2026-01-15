@@ -62,23 +62,23 @@ public class AbyssStoreCommand implements CommandExecutor, Listener {
         abyssStore.setItem(1, abyssPotion);
 
         // Create the Abyss Ore item
-        ItemStack abyssOre = getAbyssOre();
-        abyssStore.setItem(2, abyssOre);
+//        ItemStack abyssOre = getAbyssOre();
+//        abyssStore.setItem(2, abyssOre);
 
         // Create the Ender Pearl item
-        ItemStack enderPearl = new ItemStack(Material.ENDER_PEARL);
-        ItemMeta enderPearlMeta = enderPearl.getItemMeta(); // Get the ItemMeta of the Ender Pearl
-
-        if (enderPearlMeta != null) {
-            // Add lore to show the cost
-            List<Component> lore = new ArrayList<>();
-            lore.add(Component.text("Cost: 10,000 Abyss Points").color(TextColor.color(255, 215, 0))); // Gold color for cost
-            enderPearlMeta.lore(lore); // Set the lore to the ItemMeta
-
-            enderPearl.setItemMeta(enderPearlMeta); // Apply the modified ItemMeta to the Ender Pearl
-        }
-
-        abyssStore.setItem(3, enderPearl); // Place the Ender Pearl with the lore at the 7th slot
+//        ItemStack enderPearl = new ItemStack(Material.ENDER_PEARL);
+//        ItemMeta enderPearlMeta = enderPearl.getItemMeta(); // Get the ItemMeta of the Ender Pearl
+//
+//        if (enderPearlMeta != null) {
+//            // Add lore to show the cost
+//            List<Component> lore = new ArrayList<>();
+//            lore.add(Component.text("Cost: 10,000 Abyss Points").color(TextColor.color(255, 215, 0))); // Gold color for cost
+//            enderPearlMeta.lore(lore); // Set the lore to the ItemMeta
+//
+//            enderPearl.setItemMeta(enderPearlMeta); // Apply the modified ItemMeta to the Ender Pearl
+//        }
+//
+//        abyssStore.setItem(3, enderPearl); // Place the Ender Pearl with the lore at the 7th slot
 
 
         // WARDEN SPAWN EGG
@@ -175,42 +175,43 @@ public class AbyssStoreCommand implements CommandExecutor, Listener {
             }
 
             // Handle item purchase logic
-            if (event.getSlot() == 2 && event.getCurrentItem() != null && event.getCurrentItem().isSimilar(getAbyssOre())) {
-                if (userProfile.getAbysspoints() >= 1000) {
-                    userProfile.setAbysspoints(userProfile.getAbysspoints() - 1000); // Deduct Abyss Points
-                    dropOrNotify(player, ItemUtils.getAbyssOre(), "Successfully purchased Abyss Ore!");
-                } else {
-                    player.sendMessage(Component.text("You do not have enough Abyss Points!").color(TextColor.color(255, 0, 0)));
-                }
-            }
+//            if (event.getSlot() == 2 && event.getCurrentItem() != null && event.getCurrentItem().isSimilar(getAbyssOre())) {
+//                if (userProfile.getAbysspoints() >= 1000) {
+//                    userProfile.setAbysspoints(userProfile.getAbysspoints() - 1000); // Deduct Abyss Points
+//                    dropOrNotify(player, ItemUtils.getAbyssOre(), "Successfully purchased Abyss Ore!");
+//                } else {
+//                    player.sendMessage(Component.text("You do not have enough Abyss Points!").color(TextColor.color(255, 0, 0)));
+//                }
+//            }
 
             if (event.getSlot() == 0 && event.getCurrentItem() != null && event.getCurrentItem().isSimilar(getAbyssIngot())) {
                 if (userProfile.getAbysspoints() >= 100000) {
-                    userProfile.setAbysspoints(userProfile.getAbysspoints() - 100000); // Deduct Abyss Points
-                    dropOrNotify(player, ItemUtils.getAbyssIngot(), "Successfully purchased Abyss Mana Stone!");
+                      player.sendMessage("Disabled");
+//                    userProfile.setAbysspoints(userProfile.getAbysspoints() - 100000); // Deduct Abyss Points
+//                    dropOrNotify(player, ItemUtils.getAbyssIngot(), "Successfully purchased Abyss Mana Stone!");
                 } else {
                     player.sendMessage(Component.text("You do not have enough Abyss Points!").color(TextColor.color(255, 0, 0)));
                 }
             }
 
             if (event.getSlot() == 1 && event.getCurrentItem() != null && event.getCurrentItem().isSimilar(getAbyssPotion())) {
-                if (userProfile.getAbysspoints() >= 1000) {
-                    userProfile.setAbysspoints(userProfile.getAbysspoints() - 1000); // Deduct Abyss Points
+                if (userProfile.getEmerald() >= 100) {
+                    userProfile.setAbysspoints(userProfile.getEmerald() - 100); // Deduct Abyss Points
                     dropOrNotify(player, ItemUtils.getAbyssPotion(), "Successfully purchased Abyss Potion!");
                 } else {
-                    player.sendMessage(Component.text("You do not have enough Abyss Points!").color(TextColor.color(255, 0, 0)));
+                    player.sendMessage(Component.text("You do not have enough Emerald!").color(TextColor.color(255, 0, 0)));
                 }
             }
 
             // Ender Pearl (10,000 Abyss Points)
-            if (event.getSlot() == 3 && event.getCurrentItem() != null && event.getCurrentItem().getType() == Material.ENDER_PEARL) {
-                if (userProfile.getAbysspoints() >= 10000) {
-                    userProfile.setAbysspoints(userProfile.getAbysspoints() - 10000); // Deduct Abyss Points
-                    dropOrNotify(player, new ItemStack(Material.ENDER_PEARL), "Successfully purchased Ender Pearl!");
-                } else {
-                    player.sendMessage(Component.text("You do not have enough Abyss Points!").color(TextColor.color(255, 0, 0)));
-                }
-            }
+//            if (event.getSlot() == 3 && event.getCurrentItem() != null && event.getCurrentItem().getType() == Material.ENDER_PEARL) {
+//                if (userProfile.getAbysspoints() >= 10000) {
+//                    userProfile.setAbysspoints(userProfile.getAbysspoints() - 10000); // Deduct Abyss Points
+//                    dropOrNotify(player, new ItemStack(Material.ENDER_PEARL), "Successfully purchased Ender Pearl!");
+//                } else {
+//                    player.sendMessage(Component.text("You do not have enough Abyss Points!").color(TextColor.color(255, 0, 0)));
+//                }
+//            }
 
 
             //WARDEN

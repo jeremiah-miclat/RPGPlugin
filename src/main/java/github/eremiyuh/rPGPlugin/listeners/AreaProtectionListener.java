@@ -77,8 +77,9 @@ public class AreaProtectionListener implements Listener {
 
     // Check if the coordinates are within the protected area
     private boolean isInProtectedArea(int x, int z) {
-        return x >= Math.min(xx1, xx2) && x <= Math.max(xx1, xx2) &&
-                z >= Math.min(zz1, zz2) && z <= Math.max(zz1, zz2);
+//        return x >= Math.min(xx1, xx2) && x <= Math.max(xx1, xx2) &&
+//                z >= Math.min(zz1, zz2) && z <= Math.max(zz1, zz2);
+        return false;
     }
 
     private boolean isInNoSpawnArea(int x, int z) {
@@ -87,8 +88,9 @@ public class AreaProtectionListener implements Listener {
     }
 
     private boolean isInNoSpawnArea2(int x, int z) {
-        return x >= Math.min(xxx1, xxx2) && x <= Math.max(xxx1, xxx2) &&
-                z >= Math.min(zzz1, zzz2) && z <= Math.max(zzz1, zzz2);
+//        return x >= Math.min(xxx1, xxx2) && x <= Math.max(xxx1, xxx2) &&
+//                z >= Math.min(zzz1, zzz2) && z <= Math.max(zzz1, zzz2);
+        return false;
     }
 
     @EventHandler

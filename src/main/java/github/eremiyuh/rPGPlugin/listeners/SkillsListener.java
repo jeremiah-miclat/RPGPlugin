@@ -76,6 +76,20 @@ public class SkillsListener implements Listener {
                 profile.getSelectedSkill().contains("3")) {
             finalSeconds = Math.max(20, finalSeconds+20);
         }
+        if (
+                profile.getSelectedSkill().contains("1")) {
+            finalSeconds = Math.max(5, finalSeconds+4);
+        }
+
+        if (profile.getChosenClass().equalsIgnoreCase("archer") &&
+                profile.getSelectedSkill().contains("2")) {
+            finalSeconds = Math.max(10, finalSeconds+9);
+        }
+
+        if (profile.getChosenClass().equalsIgnoreCase("archer") &&
+                profile.getSelectedSkill().contains("3")) {
+            finalSeconds = Math.max(10, finalSeconds+9);
+        }
 
         if (profile.getChosenClass().equalsIgnoreCase("alchemist")) {
             finalSeconds = Math.max(10, finalSeconds+10);

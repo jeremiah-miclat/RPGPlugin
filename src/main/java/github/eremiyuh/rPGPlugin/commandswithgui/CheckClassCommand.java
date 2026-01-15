@@ -278,9 +278,9 @@ public class CheckClassCommand implements CommandExecutor, Listener {
 //        lore.add("§7CritDmg Res%: " + df.format(profile.getCritResist2() * 100) + "%");
         lore.add("§7Lifesteal%: " + df.format(profile.getLs() * 100) + "%");
         lore.add("§7AttackSpeed Bonus: " + String.format("%.1f%%", calculateBonusAttackSpeed(profile) * 100));
-        lore.add("§7Ranged/Splash bonus from agi: +" + String.format("%.1f%%", (dmgMultiplierFromAgi(profile)-1) * 100));
-        lore.add("§7Evasion%: " + df.format(calculateEvasion(profile.getTempAgi(), profile.getArLvl())) + "% for BPLvl " + profile.getArLvl());
-        lore.add("§7PierceEvasion%: " + df.format(calculatePierce(profile.getTempDex(), profile.getArLvl())) + "% for BPLvl " + profile.getArLvl());
+        lore.add("§7Ranged/Splash bonus from agi: +" + ((double) profile.getTempAgi() /100)*2);
+        lore.add("§7Flee: " + profile.getFlee());
+        lore.add("§7Hit: " + profile.getHit());
         lore.add("§7CD reduction: -" + (int) profile.getCdr());
         // Add remaining points, total allocated points for chosen class, and overall allocated points
         lore.add("§eRemaining Points: " + profile.getCurrentAttributePoints());
@@ -376,15 +376,16 @@ public class CheckClassCommand implements CommandExecutor, Listener {
 
                 if (item.getType() == Material.FEATHER) {
                     lore.add("Increases attack speed or projectiles damage.");
-                    lore.add("Increases normal attack evasion.");
-                    lore.add("25/bp lvl = 80% evasion against same level mob");
-                    lore.add("50/bp lvl = 100% evasion against same level mob");
+                    lore.add("Increases flee rate.");
+                    lore.add("• Critical Resist: Up to 25% at 50 AGI per level.");
                 }
 
                 if (item.getType() == Material.BOW) {
                     lore.add("Increases arrow damage by .04.");
                     lore.add("Increases melee and splash damage slightly.");
-                    lore.add("Provides cooldown reduction");
+                    lore.add("Increases hit rate.");
+                    lore.add("dexPerLevel = DEX/BPLevel; scales from (dexPerBPLevel ÷ 20) × 15");
+                    lore.add("up to 29s cap at dexPerBPLevel ≥ 40");
                 }
 
                 if (item.getType() == Material.BOOK) {
@@ -398,13 +399,14 @@ public class CheckClassCommand implements CommandExecutor, Listener {
                     lore.add("Increases HP by .1.");
                     lore.add("Use /healthscale to rescale health to always display as 10 hearts.");
                     lore.add("Provides slight damage reduction.");
+                    lore.add("• Critical Resist: Up to 25% at 50 VIT per level.");
                 }
 
                 if (item.getType() == Material.NETHER_STAR) {
                     lore.add("Main stat for increasing critical chance and critical damage.");
                     lore.add("Main stat for reducing enemy critical chance in PVP.");
                     lore.add("• Critical Chance: Up to 50% at 50 LUK per bp level");
-                    lore.add("• Critical Damage Bonus: (LUK ÷ bpLvl ÷ 100) × 12 × bpLvl");
+                    lore.add("• Critical Damage Bonus: 24 + (luk / 75) * 12");
                     lore.add("• Critical Resist: Up to 25% at 50 LUK per level.");
                 }
 
@@ -503,7 +505,7 @@ public class CheckClassCommand implements CommandExecutor, Listener {
                     }
 
                     playerStatBuff.onClassSwitchOrAttributeChange(player);
-                    player.sendMessage(ChatColor.BLUE + "Your BP Level is: " + profile.getArLvl());
+//                    player.sendMessage(ChatColor.BLUE + "Your BP Level is: " + profile.getArLvl());
                     openClassInfoGUI(player, profile);  // Refresh the GUI
                 } else {
                     player.sendMessage("You have no remaining points to allocate.");

@@ -100,12 +100,18 @@ public class PlayerStatBuff {
         double healthPerVitality = 10.0;
         double healthPerStrength = 5.0; // +5 HP per 100 strength
 
+        double bonusHPFromS3 = 0;
+
+        if (profile.getChosenClass().contains("Sword") && profile.getSelectedSkill().contains("3")) {
+            bonusHPFromS3 = 2 * profile.getArLvl();
+        }
+
         double vitality = profile.getTempVit() / 100.0;
         double strength = profile.getTempStr() / 100.0;
         double healthPerLevel = (Math.max(0,profile.getArLvl()-1))*8;
         double hpMultiplier = 1.0 + (profile.getHpMultiplier() * 0.01);
 
-        return (baseHealth + healthPerLevel
+        return (bonusHPFromS3 + baseHealth + healthPerLevel
                 + (healthPerVitality * vitality)
                 + (healthPerStrength * strength)) * hpMultiplier;
     }
@@ -234,30 +240,33 @@ public class PlayerStatBuff {
             int power = (int) equipStats[8];
             int sharp = (int) equipStats[9];
             double totalStats = str+dex+intel+luk+vit+agi;
-            double bonusLvlFromDmg = calculateBPLevelMBonusFromStatDmg(str,intel,dex,dmg,sharp,power);
-            double bonusLvlFromHp = calculateBPLevelMBonusFromHP(vit,hp, profile.getArLvl());
-            double bonusLvlFromEnchant = calculateBPLevelMBonusFromEnchant(sharp,power);
+//            double bonusLvlFromDmg = calculateBPLevelMBonusFromStatDmg(str,intel,dex,dmg,sharp,power);
+//            double bonusLvlFromHp = calculateBPLevelMBonusFromHP(vit,hp, profile.getArLvl());
+//            double bonusLvlFromEnchant = calculateBPLevelMBonusFromEnchant(sharp,power);
 
 
-            double level = (totalStats / 100) + bonusLvlFromDmg + bonusLvlFromHp +bonusLvlFromEnchant;
+            double level = (totalStats / 100);
             int tempLvl = (int) Math.ceil(level); // always round UP
-            profile.setArLvl(Math.max(1,tempLvl));
-            int finalLevel = (int) Math.max(1, (totalStats - 100) / 100 + 1);
+
+            int finalLevel = (int) Math.max(1, ((profile.getTotalAllocatedPoints()+profile.getCurrentAttributePoints()) - 100) / 100 + 1);
+            profile.setArLvl(Math.max(1,profile.getTotalAllocatedPoints()/100));
             if (finalLevel>profile.getLevel()) {
                 profile.setLevel(finalLevel);
+                player.sendMessage(ChatColor.GOLD + "You are now level "+ finalLevel);
             }
             boolean validRangedWeapon = isHoldingValidRangedWeapon(player);
             profile.setLs(lifeStealPercent(chosenClass,profile.getSelectedSkill(),player,chosenTrait));
             double bonusCrit = 0;
             if (profile.getSelectedElement().equalsIgnoreCase("ice")) bonusCrit+=.1;
             profile.setCrit(critChance(chosenClass,luk,dex, profile.getSelectedSkill(),chosenTrait,validRangedWeapon,profile.getArLvl())+bonusCrit);
-            profile.setCritResist(calculateCritResist(luk, profile.getArLvl()));
+            profile.setCritResist(calculateCritResist(luk,agi,vit, profile.getArLvl()));
             profile.setCritDmg(getCritMultiplier(chosenClass,luk,dex, profile.getSelectedSkill(),chosenTrait,validRangedWeapon,profile.getArLvl()));
 
             double meleeDmg = 0;
             double longDmg=0;
             double splashDmg= (double) intel /100*8;
             splashDmg+=((double) dex /100)*2;
+            splashDmg+=((double) agi /100)*2;
 
             if (isHoldingValidMeleeWeapon(player)) {
                 meleeDmg+=((double) str /100)*4;
@@ -273,6 +282,7 @@ public class PlayerStatBuff {
 
             if (validRangedWeapon) {
                 longDmg+=((double) dex /100)*4;
+                longDmg+=((double) agi /100)*2;
                 if (chosenClass.contains("archer")) {
                     if(selectedSkill.contains("1")) longDmg+=((double) intel /100)*4;
                     else if (selectedSkill.contains("2")) longDmg+=((double) intel /100)*4;
@@ -280,13 +290,13 @@ public class PlayerStatBuff {
                 longDmg+=dmgBonusFromEnchant(player);
                 longDmg*=dmgMultiplierFromCE(profile);
 
-                longDmg*=dmgMultiplierFromAgi(profile);
+//                longDmg*=dmgMultiplierFromAgi(profile);
             }
 
             if (chosenClass.contains("alche")) {
                 splashDmg+=dmgBonusFromEnchant(player);
                 splashDmg*=dmgMultiplierFromCE(profile);
-                splashDmg*=dmgMultiplierFromAgi(profile);
+//                splashDmg*=dmgMultiplierFromAgi(profile);
             }
 
             if (profile.getAbyssTrait().equalsIgnoreCase("Fortress")) {
@@ -295,8 +305,11 @@ public class PlayerStatBuff {
                 splashDmg*=.8;
             } else if (profile.getAbyssTrait().equalsIgnoreCase("Frenzy")) {
                 meleeDmg *=2;
+                meleeDmg +=8;
                 longDmg*=2;
+                longDmg+=8;
                 splashDmg*=2;
+                splashDmg+=8;
             }
 
             if (profile.getSelectedElement().contains("fire")) {
@@ -310,6 +323,8 @@ public class PlayerStatBuff {
             profile.setSplashDmg(splashDmg);
             profile.setCdr(getCooldownReduction(dex, profile.getArLvl()));
             profile.setCritResist2(calculateCritDmgNegate(agi,vit,luk,hp));
+            profile.setFlee(calculateFlee(agi));
+            profile.setHit(calculateHitRate(dex));
 
             if (player.getWorld().getName().contains("_rpg")) {
                 // Update player health
@@ -456,13 +471,12 @@ public class PlayerStatBuff {
     public double getCritMultiplier(String classType, double luk, double dex, String chosenSkill, String chosenTrait, boolean validRangedWeapon, int bpLvl) {
         if (bpLvl <= 0) return 0;
 
-        double lukPerLvl = luk / bpLvl;
 
 
-        double bonus = bpLvl * (lukPerLvl / 100.0) * 12.0;
+        double bonus = 24 + (luk / 75) * 12.0;
 
         if (chosenTrait.equalsIgnoreCase("Gamble")) bonus*=1.5;
-
+        if (chosenTrait.equalsIgnoreCase("Frenzy")) bonus*=2;
 
         return bonus;
     }
@@ -542,10 +556,10 @@ public class PlayerStatBuff {
         return reduction;
     }
 
-    public double calculateCritResist(int luk, int bpLvl) {
+    public double calculateCritResist(int luk,int agi,int vit, int bpLvl) {
         if (bpLvl <= 0) return 0;
 
-        double lukPerLvl = (double) luk / bpLvl;
+        double lukPerLvl = (double) (luk+agi+vit) / bpLvl;
 
         // 50 lukPerLvl = 0.25 resist, capped at 0.25
         double resist = Math.min((lukPerLvl / 50.0) * 0.25, 0.25);
@@ -564,23 +578,31 @@ public class PlayerStatBuff {
         }
     }
 
-    public double calculateBPLevelMBonusFromStatDmg(int str, int intel, int dex, int statDmg,int sharp,int power) {
-        double totalStats = str + intel + dex;
-        double base = (totalStats / 100.0)+sharp+power;
-        double multiplier = 1.0 + (statDmg / 100.0);
-        if (multiplier>1) return ((base * multiplier)-base)*.8;
-        return 0;
-
+    public double calculateHitRate(int dex) {
+        return  (double) dex /50;
     }
 
-    public double calculateBPLevelMBonusFromHP(int vit, int hp, int bpLvl) {
-        double base = ((double) vit / 100.0) + bpLvl;
-        double multiplier = 1.0 + (hp / 100.0);
-        if (multiplier>1) return ((base * multiplier)-base)*.5;
-        return 0;
+    public  double calculateFlee(int agi) {
+        return  (double) agi /100;
     }
 
-    public double calculateBPLevelMBonusFromEnchant(int sharp, int power) {
-        return  sharp+power;
-    }
+//    public double calculateBPLevelMBonusFromStatDmg(int str, int intel, int dex, int statDmg,int sharp,int power) {
+//        double totalStats = str + intel + dex;
+//        double base = (totalStats / 100.0)+sharp+power;
+//        double multiplier = 1.0 + (statDmg / 100.0);
+//        if (multiplier>1) return ((base * multiplier)-base)*.4;
+//        return 0;
+//
+//    }
+//
+//    public double calculateBPLevelMBonusFromHP(int vit, int hp, int bpLvl) {
+//        double base = ((double) vit / 100.0) + bpLvl;
+//        double multiplier = 1.0 + (hp / 100.0);
+//        if (multiplier>1) return ((base * multiplier)-base)*.1;
+//        return 0;
+//    }
+//
+//    public double calculateBPLevelMBonusFromEnchant(int sharp, int power) {
+//        return  sharp+power;
+//    }
 }

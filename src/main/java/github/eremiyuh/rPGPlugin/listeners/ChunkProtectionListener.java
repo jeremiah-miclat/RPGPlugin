@@ -9,14 +9,12 @@ import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.Material;
 import org.bukkit.block.*;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
-import org.bukkit.entity.Villager;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -28,6 +26,7 @@ public class ChunkProtectionListener implements Listener {
     private final ChunkBorderBlueVisualizer chunkBorderBlueVisualizer;
     private final ChunkBorderRedVisualizer chunkBorderRedVisualizer;
     private final ShopsManager shopsManager;
+    private static final int PROTECTED_LEVEL = -264;
 
     public ChunkProtectionListener(ChunkManager chunkManager, ChunkBorderBlueVisualizer chunkBorderBlueVisualizer, ChunkBorderRedVisualizer chunkBorderRedVisualizer, ShopsManager shopsManager) {
         this.chunkManager = chunkManager;
@@ -35,6 +34,23 @@ public class ChunkProtectionListener implements Listener {
         this.chunkBorderRedVisualizer = chunkBorderRedVisualizer;
         this.shopsManager = shopsManager;
     }
+
+
+    @EventHandler
+    public void onEntityExplode(EntityExplodeEvent event) {
+        if (event.getEntity() instanceof Creeper creeper) {
+            Chunk chunk = creeper.getChunk();
+            if (isInProtectedChunkFromCreeper(chunk)) {
+                event.blockList().removeIf(block -> block.getY() > PROTECTED_LEVEL);
+            }
+        }
+
+
+//        if (Objects.requireNonNull(event.getLocation().getWorld()).getEnvironment() == World.Environment.NORMAL && !event.getLocation().getWorld().getName().contains("resource")) {
+//            event.blockList().removeIf(block -> block.getY() > SEA_LEVEL);
+//        }
+    }
+
 
     // Handle entity damage events (player vs entity or player vs projectile)
     @EventHandler
@@ -191,6 +207,11 @@ public class ChunkProtectionListener implements Listener {
     private boolean isInProtectedChunk(Chunk chunk, Player player) {
         OwnedChunk ownedChunk = chunkManager.getOwnedChunk(chunk);
         return ownedChunk != null && !chunkManager.isOwner(player.getName(), chunk) && !chunkManager.isTrusted(player.getName(), chunk);
+    }
+
+    private boolean isInProtectedChunkFromCreeper(Chunk chunk) {
+        OwnedChunk ownedChunk = chunkManager.getOwnedChunk(chunk);
+        return ownedChunk != null;
     }
 
     public void chunkHasOwnedChunkNearbyVisualizer(Chunk chunk, Player player) {

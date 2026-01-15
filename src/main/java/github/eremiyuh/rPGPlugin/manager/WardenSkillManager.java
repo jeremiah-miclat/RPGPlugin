@@ -68,9 +68,13 @@ public class WardenSkillManager {
         double radius = 10;
 
         // Visual/audio effects
-        center.getWorld().playSound(center, Sound.ENTITY_WARDEN_ROAR, 2f, 1f);
-        center.getWorld().spawnParticle(Particle.SONIC_BOOM, center, 1);
-        center.getWorld().spawnParticle(Particle.DRAGON_BREATH, center, 100, 3, 1, 3, 0.1);
+        try {
+            center.getWorld().playSound(center, Sound.ENTITY_WARDEN_ROAR, 2f, 1f);
+            center.getWorld().spawnParticle(Particle.SONIC_BOOM, center, 1,0.0f);
+            center.getWorld().spawnParticle(Particle.DRAGON_BREATH, center, 100, 3, 1, 3, 0.1);
+        } catch (Exception e) {
+//            throw new RuntimeException(e);
+        }
 
         Vector direction = center.getDirection().normalize();
         List<Player> affectedPlayers = new ArrayList<>();
@@ -97,7 +101,11 @@ public class WardenSkillManager {
         if (!affectedPlayers.isEmpty()) {
             Player chosen = affectedPlayers.get(new Random().nextInt(affectedPlayers.size()));
             chosen.sendMessage("§4" + warden.getName() + " glares at you...");
-            chosen.getWorld().spawnParticle(Particle.LARGE_SMOKE, chosen.getLocation().add(0, 1, 0), 20, 0.5, 0.5, 0.5, 0);
+            try {
+                chosen.getWorld().spawnParticle(Particle.LARGE_SMOKE, chosen.getLocation().add(0, 1, 0), 20, 0.5, 0.5, 0.5, 0);
+            } catch (Exception e) {
+//                throw new RuntimeException(e);
+            }
             // Optional: apply debuff or special status effect
         }
     }

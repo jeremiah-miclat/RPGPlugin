@@ -15,7 +15,9 @@ public class PayCommand implements CommandExecutor {
 
     private final PlayerProfileManager profileManager;
     private static final List<String> validCurrencies = List.of("gold", "emerald", "diamond","iron", "lapis", "enderpearl","netherite"
-    , "copper", "abysspoints", "activitypoints"
+    , "copper"
+//            , "abysspoints"
+            , "activitypoints"
     );
 
 
@@ -72,7 +74,7 @@ public class PayCommand implements CommandExecutor {
 
 
         if (!isCurrencyValid(currencyName)) {
-            senderPlayer.sendMessage(ChatColor.RED + "Valid currencies: diamond, emerald, iron, lapis, gold, enderpearl, netherite, copper, abysspoints");
+            senderPlayer.sendMessage(ChatColor.RED + "Valid currencies: diamond, emerald, iron, lapis, gold, enderpearl, netherite, copper");
             return true;
         }
 

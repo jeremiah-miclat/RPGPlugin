@@ -81,6 +81,7 @@ public class UserProfile {
     private int junkPoints;
 
     private boolean isPublic;
+    private boolean isPremium;
 
     private double activitypoints;
 
@@ -108,6 +109,8 @@ public class UserProfile {
     private double crit;
     private double critDmg;
     private double ls;
+    private double flee;
+    private double hit;
 
     //team vault
     private boolean shareVault;
@@ -130,6 +133,8 @@ public class UserProfile {
         this.crit = 0;
         this.critDmg = 1.5;
         this.ls = 0;
+        this.flee = 0;
+        this.hit =0;
         this.playerID = UUID.randomUUID(); // Generate a unique ID for the player
         this.playerName = playerName;
         this.chosenClass = "default"; // Default class upon joining
@@ -183,6 +188,7 @@ public class UserProfile {
         this.junkPoints = 0;
 
         this.isPublic = true;
+        this.isPremium = false;
         this.activitypoints=0;
         this.builder = 0;
         this.destroyer = 0;
@@ -782,6 +788,23 @@ public class UserProfile {
         this.critResist2 = critResist2;
     }
 
+    public double getFlee() {
+        return flee;
+    }
+
+    public void setFlee(double flee) {
+        this.flee = flee;
+    }
+
+    public double getHit() {
+        return hit;
+    }
+
+    public void setHit(double hit) {
+        this.hit = hit;
+    }
+
+
     // Inner class to hold class-specific attributes
     public static class ClassAttributes {
         private int str;
@@ -1029,6 +1052,14 @@ public class UserProfile {
 
     public void setIsPublic(boolean isPublic) {
         this.isPublic = isPublic;
+    }
+
+    public boolean getIsPremium() {
+        return this.isPremium;
+    }
+
+    public void setIsPremium(boolean isPremium) {
+        this.isPremium = isPremium;
     }
 
     // Getter and Setter for builder

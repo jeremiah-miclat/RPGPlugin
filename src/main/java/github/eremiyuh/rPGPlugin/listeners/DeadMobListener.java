@@ -3,10 +3,11 @@ package github.eremiyuh.rPGPlugin.listeners;
 import github.eremiyuh.rPGPlugin.RPGPlugin;
 import github.eremiyuh.rPGPlugin.manager.BossDropItem;
 import github.eremiyuh.rPGPlugin.manager.PlayerProfileManager;
-import github.eremiyuh.rPGPlugin.methods.BossKillMessages;
+//import github.eremiyuh.rPGPlugin.methods.BossKillMessages;
+import github.eremiyuh.rPGPlugin.methods.AbyssAutoConverter;
 import github.eremiyuh.rPGPlugin.profile.UserProfile;
-import github.scarsz.discordsrv.DiscordSRV;
-import net.dv8tion.jda.api.entities.TextChannel;
+//import github.scarsz.discordsrv.DiscordSRV;
+//import net.dv8tion.jda.api.entities.TextChannel;
 import org.bukkit.*;
 import org.bukkit.damage.DamageSource;
 import org.bukkit.entity.*;
@@ -26,6 +27,7 @@ public class DeadMobListener implements Listener {
     private final Random random = new Random();
     private final Map<UUID, Long> lastBrBossRewardTime = new HashMap<>();
     private static final long REWARD_COOLDOWN = 15 * 60 * 1000;
+    double NETHERITE_CHANCE = 0.01;
 
     private final List<BossDropItem> regularBossDrops = Arrays.asList(
             new BossDropItem(new ItemStack(Material.IRON_HELMET), random.nextInt(1, 2), 0.7),
@@ -57,6 +59,26 @@ public class DeadMobListener implements Listener {
             new BossDropItem(new ItemStack(Material.NETHERITE_BOOTS), random.nextInt(1, 2), 0.01),
             new BossDropItem(new ItemStack(Material.NETHERITE_SWORD), random.nextInt(1, 2), 0.01)
     );
+
+    private final List<BossDropItem> normalWorldBossDrops = Arrays.asList(
+            new BossDropItem(new ItemStack(Material.DIAMOND_HELMET), random.nextInt(1, 3), 1.0),
+            new BossDropItem(new ItemStack(Material.DIAMOND_CHESTPLATE), random.nextInt(1, 3), 1.0),
+            new BossDropItem(new ItemStack(Material.DIAMOND_LEGGINGS), random.nextInt(1, 3), 1.0),
+            new BossDropItem(new ItemStack(Material.DIAMOND_BOOTS), random.nextInt(1, 3), 1.0),
+            new BossDropItem(new ItemStack(Material.DIAMOND_SWORD), random.nextInt(1, 3), 1.0),
+            new BossDropItem(new ItemStack(Material.BOW), random.nextInt(1, 3), 1.0),
+            new BossDropItem(new ItemStack(Material.BOOK), random.nextInt(1, 3), 1.0),
+            new BossDropItem(new ItemStack(Material.CROSSBOW), random.nextInt(1, 3), 1.0)
+    );
+
+    private final List<BossDropItem> netheriteWorldBossDrops = Arrays.asList(
+            new BossDropItem(new ItemStack(Material.NETHERITE_HELMET), random.nextInt(1, 3), 1.0),
+            new BossDropItem(new ItemStack(Material.NETHERITE_CHESTPLATE), random.nextInt(1, 3), 1.0),
+            new BossDropItem(new ItemStack(Material.NETHERITE_LEGGINGS), random.nextInt(1, 3), 1.0),
+            new BossDropItem(new ItemStack(Material.NETHERITE_BOOTS), random.nextInt(1, 3), 1.0),
+            new BossDropItem(new ItemStack(Material.NETHERITE_SWORD), random.nextInt(1, 3), 1.0)
+    );
+
 
 
 
@@ -256,8 +278,15 @@ public class DeadMobListener implements Listener {
                             int dropCount = 2 + ((bosslvl - 1) / 50);
 
                             for (int i = 0; i < dropCount; i++) {
-                                BossDropItem dropItem = isBoss ? BossDropItem.getRandomBossDropItem(regularBossDrops)
-                                        : BossDropItem.getRandomBossDropItem(worldBossDrops);
+                                BossDropItem dropItem;
+
+                                if (Math.random() < NETHERITE_CHANCE) {
+                                    // 1% success → roll Netherite table
+                                    dropItem = BossDropItem.getRandomBossDropItem(netheriteWorldBossDrops);
+                                } else {
+                                    // 98% → roll normal table
+                                    dropItem = BossDropItem.getRandomBossDropItem(normalWorldBossDrops);
+                                }
 
                                 if (dropItem != null) {
                                     int playerLevel = playerProfile.getLevel();
@@ -283,14 +312,14 @@ public class DeadMobListener implements Listener {
                 }
                     event.getDrops().clear();
                     event.setDroppedExp(0);
-                                        if (isWorldBoss) {
-                        try {
-                            BossKillMessages.broadcastBossKill(killer.getName(), customName);
-                        } catch (Exception e) {
-                            Bukkit.getLogger().warning("[BossKill] Failed to broadcast kill: " + e.getMessage());
-                            // Continue execution silently
-                        }
-                    }
+//                                        if (isWorldBoss) {
+//                        try {
+//                            BossKillMessages.broadcastBossKill(killer.getName(), customName);
+//                        } catch (Exception e) {
+//                            Bukkit.getLogger().warning("[BossKill] Failed to broadcast kill: " + e.getMessage());
+//                            // Continue execution silently
+//                        }
+//                    }
                     return;
                 }
 
@@ -390,9 +419,17 @@ public class DeadMobListener implements Listener {
         int rawAbyss = baseMin + (int) (Math.random() * (baseMax - baseMin));
         int finalAbyss = (int) (rawAbyss * rewardMultiplier);
 
+//        if (finalAbyss >= 1) {
+//            profile.setAbysspoints(profile.getAbysspoints() + finalAbyss);
+//            player.sendMessage(ChatColor.AQUA + "You gained " + finalAbyss + " Abyss Points!");
+//        }
+
         if (finalAbyss >= 1) {
-            profile.setAbysspoints(profile.getAbysspoints() + finalAbyss);
-            player.sendMessage(ChatColor.AQUA + "You gained " + finalAbyss + " Abyss Points!");
+            boolean changed = AbyssAutoConverter.rewardAndConvert(player, profile, finalAbyss);
+
+            if (changed) {
+                profileManager.saveProfile(player.getName());
+            }
         }
 
         // --- Lore Reward ---

@@ -1012,6 +1012,7 @@ public class DamageListener implements Listener {
 
         if ((currentHealth - finalDamage) <= 0) {
             if (hasTotem(player)) return;
+            if (player.getWorld().getName().contains("_br_")) return;
             // ✅ If player is already downed, prevent repeated triggering
             if (downedPlayers.containsKey(player.getUniqueId())) {
                 event.setCancelled(true);
@@ -1172,6 +1173,8 @@ public class DamageListener implements Listener {
                 lvl = 1; // fallback if no level is found in name
             }
 
+            double monsterHit = lvl * 0.5; // required flee for max evade
+
 
 
 
@@ -1285,18 +1288,16 @@ public class DamageListener implements Listener {
                     player.sendMessage(ChatColor.RED + "Brute reduced your durability by 100");
                 }
             }
+            // calculation if monster will hit
+            // evadeChance(%) = 100 - (MonsterHit - PlayerFlee)
+            // lvl = monster's level
 
-            double evadeChance;
-            double agiPerLevel = agility / lvl;
+            double playerFlee = playerProfile.getFlee();
+            double evadeChance = 95 - ((monsterHit - playerFlee) / monsterHit) * 95;
 
-            if (agiPerLevel < 25.0) {
-                evadeChance = (agiPerLevel / 25.0) * 80.0;
-            } else if (agiPerLevel < 50.0) {
-                double bonus = ((agiPerLevel - 25.0) / 25.0) * 20.0; // 20% from 25 to 50
-                evadeChance = 80.0 + bonus;
-            } else {
-                evadeChance = 100.0;
-            }
+            // clamp
+            evadeChance = Math.max(0, Math.min(95, evadeChance));
+
 
             if (Math.random() * 100 < evadeChance  && !isUnavoidableDamage(event.getCause()) && !event.isCancelled()) {
                 // Evade successful
@@ -1347,11 +1348,12 @@ public class DamageListener implements Listener {
         }
 
         if (event.getCause() == EntityDamageEvent.DamageCause.THORNS) {
-            if (!damagerProfile.getChosenClass().equalsIgnoreCase("swordsman") ||
-                    !damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
-                event.setCancelled(true);
-                return;
-            }
+            event.setCancelled(true);
+//            if (!damagerProfile.getChosenClass().equalsIgnoreCase("swordsman") ||
+//                    !damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
+//                event.setCancelled(true);
+//                return;
+//            }
         }
 
 
@@ -1423,10 +1425,10 @@ public class DamageListener implements Listener {
             }
         }
 
-        if (event.getCause() == EntityDamageEvent.DamageCause.THORNS && damagerProfile.getChosenClass().equalsIgnoreCase("swordsman") && damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
-            event.setDamage(finalDamage*.1);
-            return;
-        }
+//        if (event.getCause() == EntityDamageEvent.DamageCause.THORNS && damagerProfile.getChosenClass().equalsIgnoreCase("swordsman") && damagerProfile.getSelectedSkill().equalsIgnoreCase("skill 3")) {
+//            event.setDamage(finalDamage*.1);
+//            return;
+//        }
 
 
         float attackCooldown = attacker.getAttackCooldown();
@@ -1670,9 +1672,9 @@ public class DamageListener implements Listener {
                     if (other.equals(downedPlayer)) continue;
                     if (downedPlayers.containsKey(other.getUniqueId())) continue;
 
-                    UserProfile otherProfile = profileManager.getProfile(other.getName());
-                    if (!downedProfile.getTeam().equalsIgnoreCase(otherProfile.getTeam()) ||
-                            downedProfile.getTeam().equalsIgnoreCase("none")) continue;
+//                    UserProfile otherProfile = profileManager.getProfile(other.getName());
+//                    if (!downedProfile.getTeam().equalsIgnoreCase(otherProfile.getTeam()) ||
+//                            downedProfile.getTeam().equalsIgnoreCase("none")) continue;
 
                     if (other.getLocation().distance(downedPlayer.getLocation()) <= radius) {
                         revivingPlayer = other;
@@ -1708,7 +1710,7 @@ public class DamageListener implements Listener {
                     ticksNear = 0;
 
                     // 👀 Downed player sees waiting message
-                    downedPlayer.sendActionBar(Component.text("§7Waiting for teammate..."));
+                    downedPlayer.sendActionBar(Component.text("§7Waiting for someone nearby..."));
                 }
             }
         }, 0L, 20L); // Run every second
@@ -1961,59 +1963,26 @@ public class DamageListener implements Listener {
 
 
             // === Evade calculation (AGI-based) ===
-            double evadeChance;
-            double agiPerLevel = defenderAgi / attackerLvl;
 
-            if (agiPerLevel < 25.0) {
-                evadeChance = (agiPerLevel / 25.0) * 80.0;
-            } else if (agiPerLevel < 50.0) {
-                double bonus = ((agiPerLevel - 25.0) / 25.0) * 20.0; // +20% from 25 to 50
-                evadeChance = 80.0 + bonus;
+
+
+            double flee = defenderProfile.getFlee();
+            double hit = damagerProfile.getHit();
+
+
+            double evadeChance = 95 - ((hit - flee) / hit) * 95;
+
+            // clamp
+            evadeChance = Math.max(0, Math.min(95, evadeChance));
+
+            if (Math.random() * 100 < evadeChance  && !event.isCancelled()) {
+                event.setCancelled(true);
+                spawnFloatingHologram(defender.getLocation(), "Evade", defender.getWorld(), "#ff0004");
+                defender.getWorld().spawnParticle(Particle.SWEEP_ATTACK, defender.getLocation().add(0, 1, 0), 3);
+                defender.getWorld().playSound(defender.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 0.6f, 1.2f);
+                return 0;
             } else {
-                evadeChance = 100.0;
-            }
-
-// Cap evade to 70% unless stat gap >= 1000
-            double statDiffEvade = defenderAgi - attackerDex;
-            if (Math.abs(statDiffEvade) < 300) {
-                evadeChance = Math.min(evadeChance, 70.0);
-            }
-
-// === Pierce calculation (DEX-based) ===
-            double pierceChance;
-            double dexPerLevel = attackerDex / defenderLvl;
-
-            if (dexPerLevel < 25.0) {
-                pierceChance = (dexPerLevel / 25.0) * 80.0;
-            } else if (dexPerLevel < 50.0) {
-                double bonus = ((dexPerLevel - 25.0) / 25.0) * 20.0;
-                pierceChance = 80.0 + bonus;
-            } else {
-                pierceChance = 100.0;
-            }
-
-// Cap pierce to 70% unless stat gap >= 1000
-            double statDiffPierce = attackerDex - defenderAgi;
-            if (Math.abs(statDiffPierce) < 300) {
-                pierceChance = Math.min(pierceChance, 70.0);
-            }
-
-
-            if (Math.random() * 100 < evadeChance) {
-                // Evade triggered — now check pierce
-                if (Math.random() * 100 < pierceChance) {
-                    // Pierce succeeds → evade ignored
-                    calculatedDamage -= ((double) defenderProfile.getTempVit()/100);
-                    spawnFloatingHologram(defender.getLocation(), "Pierce!", defender.getWorld(), "#ffcc00");
-                    defender.getWorld().playSound(defender.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 0.8f, 1.0f);
-                } else {
-                    // Pierce fails → evade successful
-                    event.setCancelled(true);
-                    spawnFloatingHologram(defender.getLocation(), "Evade", defender.getWorld(), "#ff0004");
-                    defender.getWorld().spawnParticle(Particle.SWEEP_ATTACK, defender.getLocation().add(0, 1, 0), 3);
-                    defender.getWorld().playSound(defender.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 0.6f, 1.2f);
-                    return 0;
-                }
+                calculatedDamage -= ((double) defenderProfile.getTempVit()/100);
             }
         }
 

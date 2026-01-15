@@ -280,7 +280,7 @@ public class AlchemistThrowPotion implements Listener {
                             if (applyEffect) {
                                 if (target.getHealth()>0) {
                                     int baseHealing = 10; // Base healing per amplifier level
-                                    double healAmount = baseHealing * (intensity+1); // Add 1 because intensity starts at 0
+                                    double healAmount = baseHealing + ((throwerProfile.getSplashDmg())/4);
 
                                     double newHealth = Math.min(target.getHealth() + healAmount, Objects.requireNonNull(target.getAttribute(Attribute.MAX_HEALTH)).getValue());
                                     target.setHealth(newHealth);

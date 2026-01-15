@@ -20,10 +20,10 @@ public class GiveResetTokenCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (sender instanceof Player player) {
 
-            if (!allowedPlayers.contains(player.getName())) {
-                player.sendMessage("§cYou do not have permission to use this command.");
-                return true;
-            }
+//            if (!allowedPlayers.contains(player.getName())) {
+//                player.sendMessage("§cYou do not have permission to use this command.");
+//                return true;
+//            }
 
             // Get the custom item from ItemUtils
             ItemStack resetToken = ItemUtils.getResetItem();

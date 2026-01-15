@@ -178,7 +178,7 @@ public class TabListCustomizer implements Listener {
                 .build();
     }
     private boolean isHiddenPlayer(String name) {
-        return name.equalsIgnoreCase("Cseph");
+        return name.equalsIgnoreCase("asdfasfdsadfsadasdasdadadadadadsa");
     }
 
     @EventHandler

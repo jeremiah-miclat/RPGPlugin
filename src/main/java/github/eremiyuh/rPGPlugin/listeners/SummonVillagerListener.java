@@ -368,6 +368,7 @@ public class SummonVillagerListener implements Listener {
         trades.add(createEnchantedTradeWithBook(Material.EMERALD, 15, Material.ENCHANTED_BOOK, 1, Enchantment.THORNS, 3));
         trades.add(createEnchantedTradeWithBook(Material.EMERALD, 25, Material.ENCHANTED_BOOK, 1, Enchantment.FEATHER_FALLING, 4));
         trades.add(createEnchantedTradeWithBook(Material.EMERALD, 20, Material.ENCHANTED_BOOK, 1, Enchantment.DEPTH_STRIDER, 3));
+        trades.add(createEnchantedTradeWithBook(Material.EMERALD, 20, Material.ENCHANTED_BOOK, 1, Enchantment.FROST_WALKER, 2));
         trades.add(createEnchantedTradeWithBook(Material.EMERALD, 15, Material.ENCHANTED_BOOK, 1, Enchantment.RESPIRATION, 3));
         trades.add(createEnchantedTradeWithBook(Material.EMERALD, 15, Material.ENCHANTED_BOOK, 1, Enchantment.AQUA_AFFINITY, 1));
         trades.add(createEnchantedTradeWithBook(Material.EMERALD, 15, Material.ENCHANTED_BOOK, 1, Enchantment.UNBREAKING, 3));

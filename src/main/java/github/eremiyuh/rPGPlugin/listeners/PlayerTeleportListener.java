@@ -7,6 +7,8 @@ import io.papermc.paper.event.entity.EntityPortalReadyEvent;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPortalEvent;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.entity.Player;
 
@@ -29,7 +31,7 @@ public class PlayerTeleportListener implements Listener {
         Player player = event.getPlayer();
 
         // Handle flying status when changing worlds
-        flyCommand.onPlayerWorldChange(player); // Call the method to handle fly status
+        flyCommand.onPlayerWorldChange(event.getPlayer());
         playerStatBuff.updatePlayerStatsToNormal(player);
         if (player.getWorld().getName().contains("rpg") || player.getWorld().getName().contains("labyrinth")) {
             playerStatBuff.updatePlayerStatsToRPG(player);
@@ -41,6 +43,7 @@ public class PlayerTeleportListener implements Listener {
 
     @EventHandler
     public void onPortalEvent(EntityPortalEvent event) {
+
         if (!isRestrictedWorld(event.getEntity().getWorld().getName())) return;
         event.setCancelled(true);
     }
@@ -60,5 +63,15 @@ public class PlayerTeleportListener implements Listener {
     // Utility method to check if the world name is restricted
     private boolean isRestrictedWorld(String worldName) {
         return worldName.contains("resource") || worldName.contains("labyrinth") || worldName.contains("rpg");
+    }
+
+    @EventHandler
+    public void onWorldChange(PlayerChangedWorldEvent event) {
+        flyCommand.onPlayerWorldChange(event.getPlayer());
+    }
+
+    @EventHandler
+    public void onQuit(PlayerQuitEvent event) {
+        flyCommand.onPlayerWorldChange(event.getPlayer());
     }
 }

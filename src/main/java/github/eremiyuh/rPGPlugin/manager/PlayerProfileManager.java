@@ -151,6 +151,7 @@ public class PlayerProfileManager {
         config.set("homes", null);
 
         config.set("isPublic",profile.getIsPublic());
+        config.set("isPremium",profile.getIsPremium());
 
         // team vault
         config.set("shareVault",profile.isShareVault());
@@ -286,7 +287,7 @@ public class PlayerProfileManager {
         profile.setLoggedIn(config.getBoolean("loggedin",false));
 
         profile.setIsPublic(config.getBoolean("isPublic",false));
-
+        profile.setIsPremium(config.getBoolean("isPremium",false));
         //passives
         profile.setDestroyer(config.getInt("destroyer",0));
         profile.setBuilder(config.getInt("builder",0));

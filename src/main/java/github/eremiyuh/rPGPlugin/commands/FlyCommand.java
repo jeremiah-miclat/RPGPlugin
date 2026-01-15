@@ -13,13 +13,15 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import github.eremiyuh.rPGPlugin.RPGPlugin;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 
 public class FlyCommand implements CommandExecutor {
 
     private final PlayerProfileManager profileManager;
     private final RPGPlugin plugin;
-    private BukkitTask flyTask; // Store the running task
     private final String protectedWorldName = "world_rpg"; // Protected world name
 
     public FlyCommand(PlayerProfileManager profileManager, RPGPlugin plugin) {
@@ -27,14 +29,15 @@ public class FlyCommand implements CommandExecutor {
         this.plugin = plugin;
     }
 
+    private final Map<UUID, BukkitTask> flyTasks = new HashMap<>();
+
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!(sender instanceof Player)) {
+
+        if (!(sender instanceof Player player)) {
             sender.sendMessage("Only players can use this command.");
             return true;
         }
-
-        Player player = (Player) sender;
 
         if (player.getWorld().getName().contains("labyrinth")) {
             player.sendMessage("Not allowed here");
@@ -42,76 +45,89 @@ public class FlyCommand implements CommandExecutor {
         }
 
         UserProfile profile = profileManager.getProfile(player.getName());
-        String world = Objects.requireNonNull(player.getLocation().getWorld()).getName();
-        // Check if player is allowed to fly
-        if (player.getAllowFlight()) {
-            // Disable flight
-            player.setAllowFlight(false);
-            player.setFlying(false);
-            player.sendMessage("Fly mode disabled.");
-            cancelFlyTask(); // Cancel the task if flying is turned off
-        } else {
-            // Check if player has diamonds
-            if (profile.getDiamond() > 9) {
-                profile.setDiamond(profile.getDiamond() - 10); // Deduct 1 diamond for enabling fly mode
-                player.setAllowFlight(true);
-                player.sendMessage("Fly mode enabled. You have " + profile.getDiamond() + " diamonds remaining.");
-
-                // Start a repeating task to deduct diamonds every minute
-                flyTask = new BukkitRunnable() {
-                    @Override
-                    public void run() {
-                        if (profile.getDiamond() > 10 && player.getAllowFlight()) {
-                            profile.setDiamond(profile.getDiamond() - 10);
-                            player.sendMessage("You have been charged 10 diamonds for flying. Diamonds remaining: " + profile.getDiamond());
-                        } else {
-                            if (!player.getAllowFlight()) {
-                                cancel();
-                                return;
-                            }
-                            player.setAllowFlight(false); // Disable flight
-                            player.setFlying(false);
-
-
-                            player.sendMessage("You have run out of diamonds for flying.");
-
-                            cancel(); // Stop the task
-                        }
-                    }
-                }.runTaskTimer(plugin, 1200L, 1200L); // 1200 ticks = 60 seconds
-            } else {
-                player.sendMessage("You do not have enough diamonds to enable fly mode.");
-                player.sendMessage("Convert diamonds in your inventory to currency.");
-                player.sendMessage("Enter /convertmaterial diamond");
-            }
+        if (profile == null) {
+            player.sendMessage("Profile not found.");
+            return true;
         }
+
+        UUID uuid = player.getUniqueId();
+
+        // ======================
+        // TURN OFF FLY
+        // ======================
+        if (player.getAllowFlight()) {
+            disableFly(player);
+            player.sendMessage("Fly mode disabled.");
+            return true;
+        }
+
+        // ======================
+        // PREMIUM = FREE FLY
+        // ======================
+        if (profile.getIsPremium()) {
+            player.setAllowFlight(true);
+            player.sendMessage("Fly mode enabled (Premium).");
+            return true;
+        }
+
+        // ======================
+        // NON-PREMIUM CHECK
+        // ======================
+        if (profile.getDiamond() < 10) {
+            player.sendMessage("You do not have enough diamonds to enable fly mode.");
+            player.sendMessage("Convert diamonds in your inventory to currency.");
+            player.sendMessage("Enter /convertmaterial diamond");
+            return true;
+        }
+
+        // Initial cost
+        profile.setDiamond(profile.getDiamond() - 10);
+        player.setAllowFlight(true);
+        player.sendMessage("Fly mode enabled. Diamonds remaining: " + profile.getDiamond());
+
+        // ======================
+        // DRAIN TASK
+        // ======================
+        BukkitTask task = new BukkitRunnable() {
+            @Override
+            public void run() {
+
+                if (!player.isOnline() || !player.getAllowFlight()) {
+                    cancel();
+                    flyTasks.remove(uuid);
+                    return;
+                }
+
+                if (profile.getDiamond() >= 10) {
+                    profile.setDiamond(profile.getDiamond() - 10);
+                    player.sendMessage("Charged 10 diamonds. Remaining: " + profile.getDiamond());
+                } else {
+                    disableFly(player);
+                    player.sendMessage("You have run out of diamonds for flying.");
+                    cancel();
+                    flyTasks.remove(uuid);
+                }
+            }
+        }.runTaskTimer(plugin, 1200L, 1200L);
+
+        flyTasks.put(uuid, task);
         return true;
     }
 
-    // Method to cancel the flying task
-    private void cancelFlyTask() {
-        if (flyTask != null) {
-            flyTask.cancel();
-            flyTask = null; // Clear the reference to the canceled task
+    private void disableFly(Player player) {
+        player.setAllowFlight(false);
+        player.setFlying(false);
+
+        BukkitTask task = flyTasks.remove(player.getUniqueId());
+        if (task != null) {
+            task.cancel();
         }
     }
 
-    // Method to handle flight status when the player changes worlds
+    // Called from PlayerChangedWorldEvent
     public void onPlayerWorldChange(Player player) {
-        if (!player.getAllowFlight() && flyTask != null) {
-            cancelFlyTask();
-            player.setAllowFlight(false);
-        }
+        disableFly(player);
     }
 
-    private Location getGroundLocation(Location location, Player player) {
-
-        if (player.getLocation().getBlockY() < player.getWorld().getHighestBlockAt(player.getLocation()).getLocation().getBlockY()) {
-            return player.getLocation();
-        } else {
-            return player.getWorld().getHighestBlockAt(player.getLocation()).getLocation();
-        }
-
-    }
 
 }

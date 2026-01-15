@@ -59,13 +59,13 @@ public class SkillsGui implements CommandExecutor, Listener {
                 addSkillsToGui(gui, "Swordsman",
                         "Int-based damage, normal attack applies element effect",
                         "10% Lifesteal",
-                        "Counter Helix: Return Damage of 10% of your damage from strength when using thorns",
+                        "+2HP per BP Level",
                         Arrays.asList(
                                 "§7Right-click with sword (main hand).",
                                 "§7Damages all living entities in 5 block radius by your §cmelee damage * 1.5§7.",
                                 "§7Multipliers apply, cannot crit.",
                                 "§7Fire: Burn | Water: Weakness  | Ice: Slowness",
-                                "§730s cooldown."
+                                "§730s cooldown, 5s fixed cooldown."
                         ),
                         Arrays.asList(
                                 "§7Right-click with sword in both hands.",
@@ -92,12 +92,12 @@ public class SkillsGui implements CommandExecutor, Listener {
                                 "§7Multipliers apply, cannot crit.",
                                 "§7Targets switch to random mob (Boss priority).",
                                 "§7Fire: Burn | Water: Weakness | Ice: Slowness",
-                                "§730s cooldown. Item on Slot 9 is the cd identifier"
+                                "§730s cooldown, 5s fixed cooldown. Item on Slot 9 is the cd identifier"
                         ),
                         Arrays.asList(
                                 "§7Right-click with bow/crossbow.",
                                 "§730x30 square centered on player – arrow rain from y+50.",
-                                "§730s cooldown. Item on Slot 9 is the cd identifier"
+                                "§730s cooldown, 10s fixed cooldown. Item on Slot 9 is the cd identifier"
                         ),
                         Arrays.asList(
                                 "§7Right-click with bow/crossbow.",
@@ -105,7 +105,7 @@ public class SkillsGui implements CommandExecutor, Listener {
                                 "§7Automatically fires arrow every 0.5s in the",
                                 "§7direction you're facing (10 arrows total).",
                                 "§7No damage dealt by the skill itself.",
-                                "§730s cooldown. Item in Slot 9 indicates cooldown."
+                                "§730s cooldown, 10s fixed cooldown. Item in Slot 9 indicates cooldown."
                         )
                 );
                 break;

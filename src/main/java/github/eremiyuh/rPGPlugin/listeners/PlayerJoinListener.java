@@ -66,16 +66,23 @@ public class PlayerJoinListener implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
+
         if (player.isInvulnerable()) {
             player.setInvulnerable(false);
         }
 
         String playerName = player.getName();
-        if (playerName.equalsIgnoreCase("Cseph")) {
-            event.joinMessage(null); return;}
 
         UserProfile profile = profileManager.getProfile(playerName);
+        if (player.getGameMode() != GameMode.CREATIVE) {
 
+            // If NOT premium, disable flight
+            if (!profile.getIsPremium()) {
+                player.setAllowFlight(false);
+                player.setFlying(false); // force drop if currently flying
+            }
+
+        }
         World world = Bukkit.getWorld("world");
         assert world != null;
 
@@ -94,7 +101,7 @@ public class PlayerJoinListener implements Listener {
 
             player.sendMessage("§6[§Server§6] §7Enter the command §e/register <password> <password>§7 to inscribe your credentials.");
             player.sendMessage("§6[§Server§6] §7Then enter the realm by using §e/login <password>§7.");
-            givekit(playerName);
+//            givekit(playerName);
 //            World customWorld = Bukkit.getWorld("world_rpg");
 //
 //            if (customWorld != null) {
@@ -145,7 +152,7 @@ public class PlayerJoinListener implements Listener {
         // Apply appropriate buffs
         playerStatBuff.updatePlayerStatsToNormal(player);
         String worldName = Objects.requireNonNull(player.getLocation().getWorld()).getName();
-        if (worldName.equals("world_rpg") || worldName.contains("labyrinth")) {
+        if (worldName.equals("world_rpg") || worldName.contains("_br_")) {
             playerStatBuff.updatePlayerStatsToRPG(player);
         }
     }
@@ -163,7 +170,7 @@ public class PlayerJoinListener implements Listener {
         // Check which world the player is respawning in
         assert world != null;
         String worldName = world.getName();
-        if (worldName.equals("world_rpg") || worldName.equals("world_labyrinth")) {
+        if (worldName.equals("world_rpg") || worldName.equals("_br_")) {
             playerStatBuff.updatePlayerStatsToRPG(player);
         }
     }

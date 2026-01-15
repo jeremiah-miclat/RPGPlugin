@@ -5,6 +5,7 @@ import github.eremiyuh.rPGPlugin.profile.UserProfile;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.event.EventHandler;
@@ -26,6 +27,7 @@ public class PlayerDeathListener implements Listener {
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
         Player player = event.getEntity();
+        UserProfile profile = profileManager.getProfile(player.getName());
 //        event.getDrops().clear();
         // Check if the player is in a world other than "world_resource"
         if (Objects.requireNonNull(player.getLocation().getWorld()).getName().contains(keepInventoryWorld)) {
@@ -34,8 +36,14 @@ public class PlayerDeathListener implements Listener {
 
 //            player.sendMessage("You will not lose your items in this world.");
         }
-        if (player.getAllowFlight()) {
-            player.setAllowFlight(false);
+        if (player.getGameMode() != GameMode.CREATIVE) {
+
+            // If NOT premium, disable flight
+            if (!profile.getIsPremium()) {
+                player.setAllowFlight(false);
+                player.setFlying(false); // force drop if currently flying
+            }
+
         }
 
         if (player.getWorld().getName().contains("resource")) {
@@ -46,7 +54,7 @@ public class PlayerDeathListener implements Listener {
         }
 
 
-        UserProfile profile = profileManager.getProfile(player.getName());
+
         if (player.getLocation().getWorld().getName().contains("world_rpg")
         ) {
             int durability = profile.getDurability();

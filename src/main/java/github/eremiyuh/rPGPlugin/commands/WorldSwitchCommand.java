@@ -44,6 +44,7 @@ public class WorldSwitchCommand implements CommandExecutor, Listener {
         }
 
         Player player = (Player) sender;
+        UserProfile profile = profileManager.getProfile(player.getName());
 
         // No args: open GUI
         if (args.length == 0) {
@@ -61,13 +62,17 @@ public class WorldSwitchCommand implements CommandExecutor, Listener {
 
 // ==== /warp o ====
         if (input.equals("o")) {
-            teleportPlayerToWorld(player, "world", "Overworld");
+//            teleportPlayerToWorld(player, "world", "Overworld");
             return true;
         }
 
         // ==== /warp a<number> ====
         if (input.matches("a\\d+")) {
             int num = Integer.parseInt(input.substring(1));
+            if (profile.getArLvl() > num) {
+                player.sendMessage("Not allowed for your level");
+                return true;
+            }
             if (num % 10 == 0 && num >= 10 && num <= 300) {
                 String folderWorldName = "world_rpg_br_" + num;
                 String displayName = "Abyss Warzone " + num;
@@ -157,7 +162,7 @@ public class WorldSwitchCommand implements CommandExecutor, Listener {
         // Handle teleportation based on the clicked slot
         switch (slot) {
             case 0:
-                teleportPlayerToWorld(player, "world", "Overworld"); // Overworld
+//                teleportPlayerToWorld(player, "world", "Overworld"); // Overworld
                 break;
 //            case 1:
 //                teleportPlayerToWorld(player, "resource_normal", "Resource Overworld"); // Resource Overworld
@@ -184,10 +189,10 @@ public class WorldSwitchCommand implements CommandExecutor, Listener {
     private void teleportPlayerToWorld(Player player, String worldName, String displayName) {
         UserProfile profile = profileManager.getProfile(player.getName());
 
-        if (profile.getEnderPearl() < 1) {
-            player.sendMessage(ChatColor.RED + "Failed to teleport. Tip: /convertmaterial enderpearl or /status");
-            return;
-        }
+//        if (profile.getEnderPearl() < 1) {
+//            player.sendMessage(ChatColor.RED + "Failed to teleport. Tip: /convertmaterial enderpearl or /status");
+//            return;
+//        }
 
         World world = plugin.getServer().getWorld(worldName);
 
@@ -239,7 +244,7 @@ public class WorldSwitchCommand implements CommandExecutor, Listener {
                 if (worldName.contains("rpg") || worldName.contains("labyrinth")) {
                     playerStatBuff.updatePlayerStatsToRPG(player);
                 }
-                profile.setEnderPearl(profile.getEnderPearl()-1);
+//                profile.setEnderPearl(profile.getEnderPearl()-1);
                 player.sendMessage(ChatColor.GREEN + "Teleported to " + displayName);
             } else {
                 player.sendMessage(ChatColor.RED + "Failed to teleport.");

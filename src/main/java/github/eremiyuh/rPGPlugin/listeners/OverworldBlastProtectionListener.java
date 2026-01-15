@@ -26,9 +26,9 @@ public class OverworldBlastProtectionListener implements Listener {
         }
 
 
-        if (Objects.requireNonNull(event.getLocation().getWorld()).getEnvironment() == World.Environment.NORMAL && !event.getLocation().getWorld().getName().contains("resource")) {
-            event.blockList().removeIf(block -> block.getY() > SEA_LEVEL);
-        }
+//        if (Objects.requireNonNull(event.getLocation().getWorld()).getEnvironment() == World.Environment.NORMAL && !event.getLocation().getWorld().getName().contains("resource")) {
+//            event.blockList().removeIf(block -> block.getY() > SEA_LEVEL);
+//        }
     }
 
     // Handle block-based explosions (e.g., beds, respawn anchors)
@@ -38,8 +38,8 @@ public class OverworldBlastProtectionListener implements Listener {
             event.blockList().removeIf(block -> block.getY() > -65);
         }
 
-        if (event.getBlock().getWorld().getEnvironment() == World.Environment.NORMAL && !event.getBlock().getWorld().getName().contains("resource"))  {
-            event.blockList().removeIf(block -> block.getY() > SEA_LEVEL);
-        }
+//        if (event.getBlock().getWorld().getEnvironment() == World.Environment.NORMAL && !event.getBlock().getWorld().getName().contains("resource"))  {
+//            event.blockList().removeIf(block -> block.getY() > SEA_LEVEL);
+//        }
     }
 }

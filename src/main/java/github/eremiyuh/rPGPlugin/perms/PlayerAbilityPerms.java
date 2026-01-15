@@ -13,13 +13,11 @@ public class PlayerAbilityPerms {
             return false;
         }
 
-        if (chosenClass.equalsIgnoreCase("Swordsman")) {
-            return true; // Swordsman always qualifies if element matches
-        }
+
 
         return (chosenClass.equalsIgnoreCase("Alchemist") ||
                 chosenClass.equalsIgnoreCase("Archer") ||
-                chosenClass.equalsIgnoreCase("Rocket"))
+                chosenClass.equalsIgnoreCase("Swordsman"))
                 && skill.equalsIgnoreCase("Skill 1");
     }
 

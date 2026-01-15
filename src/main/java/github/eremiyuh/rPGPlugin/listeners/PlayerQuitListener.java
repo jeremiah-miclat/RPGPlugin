@@ -29,8 +29,8 @@ public class PlayerQuitListener implements Listener {
         player.closeInventory();
         String playerName = event.getPlayer().getName();
         UserProfile playerProfile = profileManager.getProfile(playerName);
-        if (playerName.equalsIgnoreCase("Cseph")) {
-            event.quitMessage(null); playerProfile.setLoggedIn(false); return;}
+//        if (playerName.equalsIgnoreCase("Cseph")) {
+//            event.quitMessage(null); playerProfile.setLoggedIn(false); return;}
 
         playerProfile.setLoggedIn(false);
         profileManager.removeProfileOnLogout(playerName);
