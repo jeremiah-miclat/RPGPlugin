@@ -110,7 +110,7 @@ public class RPGMainGuiCommand implements CommandExecutor, Listener {
                     )));
 
             gui.setItem(5, skillItem("Skill 3",
-                    "Counter Helix",
+                    "+2HP per BP Level",
                     Arrays.asList(
                             "§7Right-click with sword (main hand).",
                             "§710 block radius taunt.",

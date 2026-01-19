@@ -91,39 +91,39 @@ public class ArmorChangePlugin  implements Listener {
                         UserProfile profile = profileManager.getProfile(player.getName());
                         ItemStack item = player.getInventory().getItemInMainHand();
 
-                        if (item.getType() != Material.AIR && item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
-                            String displayName = item.getItemMeta().getDisplayName();
-
-                            if (displayName.contains("S1") || displayName.toLowerCase().contains("skill 1")) {
-                                profile.setSelectedSkill("Skill 1");
-                                player.sendMessage("Switched to Skill 1");
-                            }
-
-                            if (displayName.contains("S2") || displayName.toLowerCase().contains("skill 2")) {
-                                profile.setSelectedSkill("Skill 2");
-                                player.sendMessage("Switched to Skill 2");
-                            }
-
-                            if (displayName.contains("S3") || displayName.toLowerCase().contains("skill 3")) {
-                                profile.setSelectedSkill("Skill 3");
-                                player.sendMessage("Switched to Skill 3");
-                            }
-
-                            if (displayName.toLowerCase().contains("fire")) {
-                                profile.setSelectedElement("fire");
-                                player.sendMessage("Switched to fire element");
-                            }
-
-                            if (displayName.toLowerCase().contains("ice")) {
-                                profile.setSelectedElement("ice");
-                                player.sendMessage("Switched to ice element");
-                            }
-
-                            if (displayName.toLowerCase().contains("water")) {
-                                profile.setSelectedElement("water");
-                                player.sendMessage("Switched to water element");
-                            }
-                        }
+//                        if (item.getType() != Material.AIR && item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
+//                            String displayName = item.getItemMeta().getDisplayName();
+//
+//                            if (displayName.contains("S1") || displayName.toLowerCase().contains("skill 1")) {
+//                                profile.setSelectedSkill("Skill 1");
+//                                player.sendMessage("Switched to Skill 1");
+//                            }
+//
+//                            if (displayName.contains("S2") || displayName.toLowerCase().contains("skill 2")) {
+//                                profile.setSelectedSkill("Skill 2");
+//                                player.sendMessage("Switched to Skill 2");
+//                            }
+//
+//                            if (displayName.contains("S3") || displayName.toLowerCase().contains("skill 3")) {
+//                                profile.setSelectedSkill("Skill 3");
+//                                player.sendMessage("Switched to Skill 3");
+//                            }
+//
+//                            if (displayName.toLowerCase().contains("fire")) {
+//                                profile.setSelectedElement("fire");
+//                                player.sendMessage("Switched to fire element");
+//                            }
+//
+//                            if (displayName.toLowerCase().contains("ice")) {
+//                                profile.setSelectedElement("ice");
+//                                player.sendMessage("Switched to ice element");
+//                            }
+//
+//                            if (displayName.toLowerCase().contains("water")) {
+//                                profile.setSelectedElement("water");
+//                                player.sendMessage("Switched to water element");
+//                            }
+//                        }
 
                         // ✅ Always update RPG stats, even if no skill/element is changed
                         playerStatBuff.updatePlayerStatsToRPG(player);

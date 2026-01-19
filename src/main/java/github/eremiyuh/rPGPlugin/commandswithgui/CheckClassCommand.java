@@ -314,14 +314,33 @@ public class CheckClassCommand implements CommandExecutor, Listener {
         double healthPerVitality = 10.0;
         double healthPerStrength = 5.0; // +5 HP per 100 strength
 
+        double bonusHPFromS3 = 0;
+
+        double newhealth = 0;
+
+        if (profile.getChosenClass().contains("sword") && profile.getSelectedSkill().contains("3")) {
+            bonusHPFromS3 += 2 * profile.getArLvl();
+        }
+
         double vitality = profile.getTempVit() / 100.0;
         double strength = profile.getTempStr() / 100.0;
         double healthPerLevel = (Math.max(0,profile.getArLvl()-1))*8;
         double hpMultiplier = 1.0 + (profile.getHpMultiplier() * 0.01);
 
-        return (baseHealth + healthPerLevel
+
+
+        newhealth = (bonusHPFromS3 + baseHealth + healthPerLevel
                 + (healthPerVitality * vitality)
                 + (healthPerStrength * strength)) * hpMultiplier;
+
+        if (profile.getAbyssTrait().equalsIgnoreCase("Bloodlust")) newhealth*=.9;
+        else if (profile.getAbyssTrait().equalsIgnoreCase("Fortress")) {
+            newhealth*=2;
+        }
+        if (profile.getSelectedElement().contains("water")) newhealth*=1.1;
+
+        return newhealth;
+
     }
 
     private double calculateEvasion(double agility, int level) {

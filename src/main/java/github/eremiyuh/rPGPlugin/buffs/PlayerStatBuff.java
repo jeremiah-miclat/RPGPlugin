@@ -102,8 +102,10 @@ public class PlayerStatBuff {
 
         double bonusHPFromS3 = 0;
 
-        if (profile.getChosenClass().contains("Sword") && profile.getSelectedSkill().contains("3")) {
-            bonusHPFromS3 = 2 * profile.getArLvl();
+        double newhealth = 0;
+
+        if (profile.getChosenClass().contains("sword") && profile.getSelectedSkill().contains("3")) {
+            bonusHPFromS3 += 2 * profile.getArLvl();
         }
 
         double vitality = profile.getTempVit() / 100.0;
@@ -111,9 +113,20 @@ public class PlayerStatBuff {
         double healthPerLevel = (Math.max(0,profile.getArLvl()-1))*8;
         double hpMultiplier = 1.0 + (profile.getHpMultiplier() * 0.01);
 
-        return (bonusHPFromS3 + baseHealth + healthPerLevel
+
+
+        newhealth = (bonusHPFromS3 + baseHealth + healthPerLevel
                 + (healthPerVitality * vitality)
                 + (healthPerStrength * strength)) * hpMultiplier;
+
+        if (profile.getAbyssTrait().equalsIgnoreCase("Bloodlust")) newhealth*=.9;
+        else if (profile.getAbyssTrait().equalsIgnoreCase("Fortress")) {
+            newhealth*=2;
+        }
+        if (profile.getSelectedElement().contains("water")) newhealth*=1.1;
+
+        return newhealth;
+
     }
 
 
@@ -331,11 +344,6 @@ public class PlayerStatBuff {
                 AttributeInstance maxHealthAttr = player.getAttribute(Attribute.MAX_HEALTH);
                 if (maxHealthAttr != null) {
                     double newMaxHealth = calculateMaxHealth(profile);
-                    if (chosenTrait.equalsIgnoreCase("Bloodlust")) newMaxHealth*=.9;
-                    else if (chosenTrait.equalsIgnoreCase("Fortress")) {
-                        newMaxHealth*=2;
-                    }
-                    if (profile.getSelectedElement().contains("water")) newMaxHealth*=1.1;
                     maxHealthAttr.setBaseValue(newMaxHealth);
                     player.setHealth(Math.min(player.getHealth(), newMaxHealth));
                 }
