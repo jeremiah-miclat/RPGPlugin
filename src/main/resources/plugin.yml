@@ -313,6 +313,8 @@ commands:
     usage: /viewitem <playerName>
     permission: RPGPlugin.viewitem
     permission-default: op
-
+  waypoint:
+    description: Waypoint system
+    usage: /waypoint add/delete <name>
 softdepend:
   - DiscordSRV

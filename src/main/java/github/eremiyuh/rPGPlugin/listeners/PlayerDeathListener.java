@@ -30,12 +30,12 @@ public class PlayerDeathListener implements Listener {
         UserProfile profile = profileManager.getProfile(player.getName());
 //        event.getDrops().clear();
         // Check if the player is in a world other than "world_resource"
-        if (Objects.requireNonNull(player.getLocation().getWorld()).getName().contains(keepInventoryWorld)) {
-            event.setKeepInventory(true);
-            event.getDrops().clear();
-
-//            player.sendMessage("You will not lose your items in this world.");
-        }
+//        if (Objects.requireNonNull(player.getLocation().getWorld()).getName().contains(keepInventoryWorld)) {
+//            event.setKeepInventory(true);
+//            event.getDrops().clear();
+//
+////            player.sendMessage("You will not lose your items in this world.");
+//        }
         if (player.getGameMode() != GameMode.CREATIVE) {
 
             // If NOT premium, disable flight

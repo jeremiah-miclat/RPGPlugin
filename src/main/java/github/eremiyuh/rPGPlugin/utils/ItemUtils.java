@@ -87,6 +87,27 @@ public class ItemUtils {
         return abyssIngot;
     }
 
+    public static ItemStack getEnchantedObsidian() {
+        ItemStack obsidianItem = new ItemStack(Material.OBSIDIAN);
+        ItemMeta meta = obsidianItem.getItemMeta();
+
+        if (meta != null) {
+            meta.displayName(Component.text("§bEnchanted Obsidian")); // blue name
+            meta.lore(Arrays.asList(
+                    Component.text("§7Used to mark waypoints"),
+                    Component.text("§7Glows magically to guide players")
+            ));
+            meta.addItemFlags(ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_ATTRIBUTES);
+
+            // Make the glow effect without real enchant
+            meta.setEnchantmentGlintOverride(true);
+
+            obsidianItem.setItemMeta(meta);
+        }
+
+        return obsidianItem;
+    }
+
     public static ItemStack getAbyssPotion() {
         ItemStack resetItem = new ItemStack(Material.POTION); // Choose any material you prefer
         ItemMeta meta = resetItem.getItemMeta();

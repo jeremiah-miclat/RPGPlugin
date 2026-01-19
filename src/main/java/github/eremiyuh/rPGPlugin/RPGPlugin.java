@@ -3,7 +3,6 @@ package github.eremiyuh.rPGPlugin;
 import github.eremiyuh.rPGPlugin.buffs.PlayerStatBuff;
 import github.eremiyuh.rPGPlugin.commandswithgui.*;
 import github.eremiyuh.rPGPlugin.manager.*;
-import github.eremiyuh.rPGPlugin.utils.HologramUtil;
 import github.eremiyuh.rPGPlugin.utils.TradeOffer;
 import github.eremiyuh.rPGPlugin.commands.*;
 import github.eremiyuh.rPGPlugin.listeners.*;
@@ -48,6 +47,9 @@ public class RPGPlugin extends JavaPlugin {
     private final String DATA_PACK_FOLDER = "datapacks";
     private DamageListener damageListener;
     private SkillsListener skillsListener;
+
+    private WaypointManager waypointManager;
+
     @Override
     public void onEnable() {
 //        updateSpigotLimits();
@@ -175,6 +177,16 @@ public class RPGPlugin extends JavaPlugin {
             getLogger().info("All vault data has been saved.");
         } catch (Exception e) {
             getLogger().severe("Error saving vault data: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        try {
+            if (waypointManager != null) {
+                waypointManager.saveAll();
+            }
+            getLogger().info("Waypoint system disabled.");
+        } catch (Exception e) {
+            getLogger().severe("Error saving waypoints data: " + e.getMessage());
             e.printStackTrace();
         }
 
@@ -456,6 +468,21 @@ public class RPGPlugin extends JavaPlugin {
 //        createResourceWorld("resource_nether", World.Environment.NETHER);
 //        createResourceWorld("resource_end", World.Environment.THE_END);
 
+        waypointManager = new WaypointManager(this);
+
+        WaypointCommand command = new WaypointCommand(this, waypointManager, profileManager);
+        Objects.requireNonNull(getCommand("waypoint")).setExecutor(command);
+
+        getServer().getPluginManager().registerEvents(
+                new WaypointListener(this, waypointManager), this
+        );
+
+        getServer().getPluginManager().registerEvents(
+                new WaypointClickListener(waypointManager), this
+        );
+
+
+        getLogger().info("Waypoint system enabled.");
     }
 
     private void createResourceWorld(String name, World.Environment environment) {
