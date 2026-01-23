@@ -111,7 +111,7 @@ public class WaypointCommand implements CommandExecutor {
         // Get player location
         Location loc = player.getLocation();
 
-        Waypoint nearby = getNearestWaypoint(loc, 500);
+        Waypoint nearby = getNearestWaypoint(loc, 5);
         if (nearby != null) {
             double distance = nearby.toLocation().distance(loc);
             player.sendMessage("§cYou cannot create a waypoint here.");

@@ -1,5 +1,6 @@
 package github.eremiyuh.rPGPlugin.listeners;
 
+import com.destroystokyo.paper.profile.PlayerProfile;
 import github.eremiyuh.rPGPlugin.RPGPlugin;
 import github.eremiyuh.rPGPlugin.buffs.PlayerStatBuff;
 import github.eremiyuh.rPGPlugin.buffs.VampireBuffs;
@@ -26,6 +27,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
+
+import org.geysermc.floodgate.api.FloodgateApi;
 
 public class PlayerJoinListener implements Listener {
 
@@ -93,14 +96,32 @@ public class PlayerJoinListener implements Listener {
             player.sendMessage("§6[§Server§6] §7Welcome, adventurer! Your profile hath been forged.");
             profileManager.createProfile(playerName); // Create a new profile
 
-            player.sendTitle("§0§l§k⚜§r§6§lWelcome Adventurer!",
-                    "§7Use /register <password> <password> to start your adventure",
-                    10, 200, 20);
-            player.spigot().sendMessage(ChatMessageType.ACTION_BAR,
-                    new TextComponent("§c§lHeed the Call: Register to Enter!"));
 
-            player.sendMessage("§6[§Server§6] §7Enter the command §e/register <password> <password>§7 to inscribe your credentials.");
-            player.sendMessage("§6[§Server§6] §7Then enter the realm by using §e/login <password>§7.");
+
+            FloodgateApi api = FloodgateApi.getInstance();
+            if (api.isFloodgatePlayer(player.getUniqueId())) {
+                Bukkit.getLogger().info(player.getName() + " IS BEDROCK");
+            } else {
+                Bukkit.getLogger().info(player.getName() + " IS JAVA");
+            }
+            UserProfile newProf = profileManager.getProfile(playerName);
+            if (FloodgateApi.getInstance().isFloodgatePlayer(player.getUniqueId())) {
+                // Bedrock player
+                newProf.setLoggedIn(true);
+                newProf.setPassword("bedrock");
+                profileManager.saveProfile(playerName);
+            } else {
+                player.sendTitle("§0§l§k⚜§r§6§lWelcome Adventurer!",
+                        "§7Use /register <password> <password> to start your adventure",
+                        10, 200, 20);
+                player.spigot().sendMessage(ChatMessageType.ACTION_BAR,
+                        new TextComponent("§c§lHeed the Call: Register to Enter!"));
+
+                player.sendMessage("§6[§Server§6] §7Enter the command §e/register <password> <password>§7 to inscribe your credentials.");
+                player.sendMessage("§6[§Server§6] §7Then enter the realm by using §e/login <password>§7.");
+            }
+
+
 //            givekit(playerName);
 //            World customWorld = Bukkit.getWorld("world_rpg");
 //
@@ -115,16 +136,27 @@ public class PlayerJoinListener implements Listener {
             // Handle returning players
             String suggestion = suggestRandomThing();
             player.sendMessage("§6[§eServer§6] §7Welcome back adventurer! Your profile has been loaded.");
-            profile.setLoggedIn(false);
-            player.sendMessage("§6[§SServer§6] §cLog in to continue your quest.");
-            player.sendMessage("§6[§SServer§6] §cEnter /login <your password>");
-            player.sendTitle("§0§l§k⚜§r§6§lWelcome Back!",
-                    "§7Use /login <password> to continue your journey.",
-                    10, 100, 20);
-            player.spigot().sendMessage(ChatMessageType.ACTION_BAR,
-                    new TextComponent("§7Use /login <password> to proceed."));
-            event.setJoinMessage(ChatColor.DARK_GREEN + "⚔ Welcome back, " + ChatColor.AQUA + playerName +". " +
-                    ChatColor.DARK_GREEN + suggestion);
+
+            if (FloodgateApi.getInstance().isFloodgatePlayer(player.getUniqueId())) {
+                // Bedrock player
+                profile.setLoggedIn(true);
+            } else {
+                // Java player
+                profile.setLoggedIn(false);
+
+                player.sendMessage("§6[§SServer§6] §cLog in to continue your quest.");
+                player.sendMessage("§6[§SServer§6] §cEnter /login <your password>");
+                player.sendTitle("§0§l§k⚜§r§6§lWelcome Back!",
+                        "§7Use /login <password> to continue your journey.",
+                        10, 100, 20);
+                player.spigot().sendMessage(ChatMessageType.ACTION_BAR,
+                        new TextComponent("§7Use /login <password> to proceed."));
+                event.setJoinMessage(ChatColor.DARK_GREEN + "⚔ Welcome back, " + ChatColor.AQUA + playerName +". " +
+                        ChatColor.DARK_GREEN + suggestion);
+            }
+
+
+
         }
 
 //        if (profile.getPassword() == null || Objects.equals(profile.getPassword(), "")) {

@@ -318,3 +318,5 @@ commands:
     usage: /waypoint add/delete <name>
 softdepend:
   - DiscordSRV
+depend:
+  - floodgate
