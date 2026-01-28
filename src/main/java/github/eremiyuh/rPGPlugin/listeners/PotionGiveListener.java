@@ -60,7 +60,7 @@ public class PotionGiveListener implements Listener {
 
         if (mainHandItem.getType() != Material.AIR && offHandItem.getType() == Material.AIR) {
             if (playerProfile.getPotion() < 1) {
-                player.sendMessage("No potions");
+                player.sendActionBar("No potions");
                 return;
             }
 
@@ -90,7 +90,7 @@ public class PotionGiveListener implements Listener {
                     Random random = new Random();
                     PotionEffectType selectedEffect = possibleEffects.get(random.nextInt(possibleEffects.size()));
                     potionEffect = new PotionEffect(selectedEffect, 0, 0); // ⛔ untouched duration
-                    player.sendMessage(ChatColor.BLUE + "Crafted Potion: " + formatPotionEffectName(selectedEffect));
+                    player.sendActionBar(ChatColor.BLUE + "Crafted Potion: " + formatPotionEffectName(selectedEffect));
                 } else if (skill.equals("skill 3")) {
                     potionEffect = new PotionEffect(PotionEffectType.INSTANT_HEALTH, 1, 0);
                 }

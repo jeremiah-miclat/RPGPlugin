@@ -1,6 +1,7 @@
 package github.eremiyuh.rPGPlugin.listeners;
 
 import github.eremiyuh.rPGPlugin.RPGPlugin;
+import github.eremiyuh.rPGPlugin.buffs.PlayerStatBuff;
 import github.eremiyuh.rPGPlugin.manager.BossDropItem;
 import github.eremiyuh.rPGPlugin.manager.PlayerProfileManager;
 //import github.eremiyuh.rPGPlugin.methods.BossKillMessages;
@@ -8,6 +9,8 @@ import github.eremiyuh.rPGPlugin.methods.AbyssAutoConverter;
 import github.eremiyuh.rPGPlugin.profile.UserProfile;
 //import github.scarsz.discordsrv.DiscordSRV;
 //import net.dv8tion.jda.api.entities.TextChannel;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.*;
 import org.bukkit.damage.DamageSource;
 import org.bukkit.entity.*;
@@ -28,6 +31,7 @@ public class DeadMobListener implements Listener {
     private final Map<UUID, Long> lastBrBossRewardTime = new HashMap<>();
     private static final long REWARD_COOLDOWN = 15 * 60 * 1000;
     double NETHERITE_CHANCE = 0.01;
+    private final PlayerStatBuff playerStatBuff;
 
     private final List<BossDropItem> regularBossDrops = Arrays.asList(
             new BossDropItem(new ItemStack(Material.IRON_HELMET), random.nextInt(1, 2), 0.7),
@@ -85,6 +89,7 @@ public class DeadMobListener implements Listener {
     public DeadMobListener(RPGPlugin plugin, PlayerProfileManager profileManager) {
         this.plugin = plugin;
         this.profileManager = profileManager;
+        this.playerStatBuff = new PlayerStatBuff(profileManager);
     }
 
 
@@ -389,7 +394,11 @@ public class DeadMobListener implements Listener {
 
         if (Math.abs(levelDiff) > 60) {
             if (profile.isBossIndicator()) {
-                player.sendMessage("⚠ No rewards due 60 level difference. /sdw to turn off this warning");
+
+                player.sendActionBar(
+                        Component.text("⚠ No rewards due 60 level difference.")
+                                .color(NamedTextColor.RED)
+                );
             }
             return;
         }
@@ -408,13 +417,17 @@ public class DeadMobListener implements Listener {
 
         // Notify player if rewards are reduced
         if (rewardMultiplier < 1.0 && profile.isBossIndicator()) {
-            player.sendMessage(ChatColor.RED + "⚠ Rewards reduced due to level gap. /sdw to turn off this warning");
+            player.sendActionBar(
+                    Component.text("⚠ Rewards reduced due to level gap. /sdw to turn off this warning")
+                            .color(NamedTextColor.RED)
+
+            );
         }
 
         // --- EXP Reward ---
         int expGained = (int) (healthForExp * 0.2 * rewardMultiplier);
         if (expGained > 0) {
-            player.giveExp(expGained);
+            player.giveExp(expGained/5);
         }
 
         // --- Abyss Points Reward ---
@@ -432,6 +445,7 @@ public class DeadMobListener implements Listener {
             boolean changed = AbyssAutoConverter.rewardAndConvert(player, profile, finalAbyss);
 
             if (changed) {
+                playerStatBuff.updatePlayerStatsToRPG(player);
                 profileManager.saveProfile(player.getName());
             }
         }
@@ -452,27 +466,27 @@ public class DeadMobListener implements Listener {
                 switch (randomOre) {
                     case DIAMOND -> {
                         profile.setDiamond(profile.getDiamond() + finalAmount);
-                        player.sendMessage(ChatColor.GREEN + "You received " + finalAmount + " Diamond(s)!");
+                        player.sendActionBar(ChatColor.GREEN + "You received " + finalAmount + " Diamond(s)!");
                     }
                     case EMERALD -> {
                         profile.setEmerald(profile.getEmerald() + finalAmount);
-                        player.sendMessage(ChatColor.GREEN + "You received " + finalAmount + " Emerald(s)!");
+                        player.sendActionBar(ChatColor.GREEN + "You received " + finalAmount + " Emerald(s)!");
                     }
                     case GOLD -> {
                         profile.setGold(profile.getGold() + finalAmount);
-                        player.sendMessage(ChatColor.GREEN + "You received " + finalAmount + " Gold Ingot(s)!");
+                        player.sendActionBar(ChatColor.GREEN + "You received " + finalAmount + " Gold Ingot(s)!");
                     }
                     case IRON -> {
                         profile.setIron(profile.getIron() + finalAmount);
-                        player.sendMessage(ChatColor.GREEN + "You received " + finalAmount + " Iron Ingot(s)!");
+                        player.sendActionBar(ChatColor.GREEN + "You received " + finalAmount + " Iron Ingot(s)!");
                     }
                     case LAPIS -> {
                         profile.setLapiz(profile.getLapiz() + finalAmount);
-                        player.sendMessage(ChatColor.GREEN + "You received " + finalAmount + " Lapis Lazuli(s)!");
+                        player.sendActionBar(ChatColor.GREEN + "You received " + finalAmount + " Lapis Lazuli(s)!");
                     }
                     case COPPER -> {
                         profile.setCopper(profile.getCopper() + finalAmount);
-                        player.sendMessage(ChatColor.GREEN + "You received " + finalAmount + " Copper Ingot(s)!");
+                        player.sendActionBar(ChatColor.GREEN + "You received " + finalAmount + " Copper Ingot(s)!");
                     }
                 }
             }

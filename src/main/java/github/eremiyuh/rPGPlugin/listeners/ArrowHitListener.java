@@ -32,7 +32,7 @@ public class ArrowHitListener implements Listener {
     @EventHandler
     public void onArrowHit(ProjectileHitEvent event) {
         if (event.getEntity().getShooter() instanceof Player player && player.getAllowFlight()) {
-            player.sendMessage("you can't attack while flying");
+            player.sendActionBar("you can't attack while flying");
             event.setCancelled(true);
 
             if ( event.getEntity() instanceof  Arrow arrow) {

@@ -59,7 +59,7 @@ public class AlchemistThrowPotion implements Listener {
     @EventHandler
     public void onDoctorThrewPotion(PotionSplashEvent event) {
         if (event.getEntity().getShooter() instanceof Player thrower  && thrower.getAllowFlight()) {
-            thrower.sendMessage("Disable fly");
+            thrower.sendActionBar("Disable fly");
             event.setCancelled(true);
             return;
         }

@@ -2,14 +2,18 @@ package github.eremiyuh.rPGPlugin.listeners;
 
 import github.eremiyuh.rPGPlugin.manager.PlayerProfileManager;
 import github.eremiyuh.rPGPlugin.profile.UserProfile;
+import net.md_5.bungee.api.ChatMessageType;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 
+
 import java.util.HashMap;
 import java.util.UUID;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
 
 public class MonsterZoneWarningListener implements Listener {
 
@@ -69,18 +73,27 @@ public class MonsterZoneWarningListener implements Listener {
         int levelDiff = monsterLevel - playerLevel;
 
         // Warnings based purely on level difference
+        String msg = null;
+
         if (levelDiff > 30) {
-            player.sendMessage(ChatColor.RED + "These monsters (level " + monsterLevel + ") are too powerful. You will not receive any drops while you're only level " + playerLevel + ".");
+            msg = "§c⚠ Too strong! No drops (Mob Lv " + monsterLevel + " | You Lv " + playerLevel + ")";
         } else if (levelDiff > 12) {
-            player.sendMessage(ChatColor.RED + "Warning: These monsters are much stronger than you. Drop rewards will be heavily reduced.");
+            msg = "§c⚠ Much stronger! Drops heavily reduced";
         } else if (levelDiff > 10) {
-            player.sendMessage(ChatColor.YELLOW + "Caution: These monsters are slightly stronger. Drop rewards will be slightly reduced.");
+            msg = "§e⚠ Slightly stronger. Drops reduced";
         } else if (playerLevel - monsterLevel > 30) {
-            player.sendMessage(ChatColor.RED + "These monsters are far too weak. Drop rewards will be greatly reduced.");
+            msg = "§c⚠ Too weak! Drops greatly reduced";
         } else if (playerLevel - monsterLevel > 12) {
-            player.sendMessage(ChatColor.RED + "Warning: These monsters are significantly below your level. Drop rewards will be heavily reduced.");
+            msg = "§c⚠ Far below your level. Drops heavily reduced";
         } else if (playerLevel - monsterLevel > 10) {
-            player.sendMessage(ChatColor.YELLOW + "Caution: These monsters are slightly below your level. Drop rewards will be slightly reduced.");
+            msg = "§e⚠ Slightly below your level. Drops reduced";
+        }
+
+        if (msg != null) {
+            player.spigot().sendMessage(
+                    ChatMessageType.ACTION_BAR,
+                    new TextComponent(msg)
+            );
         }
     }
 }

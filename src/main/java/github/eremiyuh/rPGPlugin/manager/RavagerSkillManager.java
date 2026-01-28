@@ -148,7 +148,7 @@ public class RavagerSkillManager {
         Location origin = entity.getLocation();
         for (Player player : entity.getWorld().getPlayers()) {
             if (player.getLocation().distanceSquared(origin) <= radius * radius) {
-                player.sendMessage(message);
+                player.sendActionBar(message);
             }
         }
     }

@@ -92,7 +92,7 @@ public class WardenSkillManager {
                 Location target = center.clone().add(direction).add(0, 1, 0);
                 player.teleport(target);
                 player.playSound(target, Sound.ENTITY_ENDERMAN_TELEPORT, 1.5f, 1.0f);
-                player.sendMessage("§c" + warden.getName() + ": \"COME TO ME!\"");
+                player.sendActionBar("§c" + warden.getName() + ": \"COME TO ME!\"");
                 affectedPlayers.add(player);
             }
         }
@@ -100,7 +100,7 @@ public class WardenSkillManager {
         // Choose random teleported player for extra effect
         if (!affectedPlayers.isEmpty()) {
             Player chosen = affectedPlayers.get(new Random().nextInt(affectedPlayers.size()));
-            chosen.sendMessage("§4" + warden.getName() + " glares at you...");
+            chosen.sendActionBar("§4" + warden.getName() + " glares at you...");
             try {
                 chosen.getWorld().spawnParticle(Particle.LARGE_SMOKE, chosen.getLocation().add(0, 1, 0), 20, 0.5, 0.5, 0.5, 0);
             } catch (Exception e) {
@@ -116,7 +116,7 @@ public class WardenSkillManager {
 
         for (Player player : warden.getWorld().getPlayers()) {
             if (player.getLocation().distanceSquared(center) <= 900) { // within 30 blocks
-                player.sendMessage("§5" + warden.getName() + ": \"Yes Hi Hello... Goodmorning... mmmm...\"");
+                player.sendActionBar("§5" + warden.getName() + ": \"Yes Hi Hello... Goodmorning... mmmm...\"");
             }
         }
     }

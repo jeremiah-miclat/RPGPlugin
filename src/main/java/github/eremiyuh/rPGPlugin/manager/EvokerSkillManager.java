@@ -104,7 +104,7 @@ public class EvokerSkillManager {
 
 
                 player.damage(damage);
-                player.sendMessage("§a" + evoker.getName() + ": \"Shinra Tensei!\"");
+                player.sendActionBar("§a" + evoker.getName() + ": \"Shinra Tensei!\"");
             }
         }
 
@@ -151,7 +151,7 @@ public class EvokerSkillManager {
 
         for (Player player : evoker.getWorld().getPlayers()) {
             if (player.getLocation().distanceSquared(evoker.getLocation()) <= 60 * 60) {
-                player.sendMessage("§e" + evoker.getName() + ": \"This world shall know pain...\"");
+                player.sendActionBar("§e" + evoker.getName() + ": \"This world shall know pain...\"");
             }
         }
     }
@@ -169,7 +169,7 @@ public class EvokerSkillManager {
 
             for (Player player : evoker.getWorld().getPlayers()) {
                 if (player.getLocation().distanceSquared(evoker.getLocation()) <= 60 * 60) {
-                    player.sendMessage("§a" + evoker.getName() + " chants: \"Life... returns to me.\"");
+                    player.sendActionBar("§a" + evoker.getName() + " chants: \"Life... returns to me.\"");
                 }
             }
         }

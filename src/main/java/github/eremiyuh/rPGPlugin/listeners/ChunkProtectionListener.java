@@ -155,7 +155,7 @@ public class ChunkProtectionListener implements Listener {
                         if (!chunkManager.isTrusted(player.getName(), nearbyChunk)) {
                             event.setCancelled(true);
                             chunkHasOwnedChunkNearbyVisualizer(chunk, player);
-                            player.sendMessage("You cannot place this near protected chunks owned by others.");
+                            player.sendActionBar("You cannot place this near protected chunks owned by others.");
                             return; // Exit the method once the event is canceled
                         }
                     }
@@ -185,7 +185,7 @@ public class ChunkProtectionListener implements Listener {
                 // If the surrounding chunk is protected and the player is not allowed to interact, cancel the event
                 if (isInProtectedChunk(surroundingChunk, player)) {
                     event.setCancelled(true); // Cancel the event
-                    player.sendMessage("You cannot empty the bucket near a protected area.");
+                    player.sendActionBar("You cannot empty the bucket near a protected area.");
                     return; // Exit once the event is cancelled
                 }
             }

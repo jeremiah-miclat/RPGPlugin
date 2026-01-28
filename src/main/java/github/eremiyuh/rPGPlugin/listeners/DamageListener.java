@@ -9,6 +9,7 @@ import github.eremiyuh.rPGPlugin.perms.PlayerBuffPerms;
 import github.eremiyuh.rPGPlugin.profile.UserProfile;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.*;
@@ -148,14 +149,14 @@ public class DamageListener implements Listener {
             // Get the damager (the entity dealing the damage)
             Entity damager = event.getDamager();
             if (event.getDamager() instanceof Player player && (player.getAllowFlight() && player.isFlying())) {
-                player.sendMessage("damaged cancelled. Disable fly mode");
+                player.sendActionBar("damaged cancelled. Disable fly mode");
                 event.setCancelled(true);
                 return;
             }
 
 
             if (damaged instanceof Tameable tameable) {
-                if (damager instanceof Player) {
+                if (damager instanceof Player damagerPlayer) {
                     AnimalTamer owner = tameable.getOwner();
 
                     // Check if the tameable has an owner
@@ -167,7 +168,7 @@ public class DamageListener implements Listener {
                         UserProfile profile = profileManager.getProfile(damager.getName());
                         if (!(profile.getTeam().equalsIgnoreCase(ownerProfile.getTeam())) && !profile.getTeam().equalsIgnoreCase("none")) return;
                         if ((profile.isPvpEnabled() && ownerProfile.isPvpEnabled())) return;
-                        damager.sendMessage("Can't Damage");
+                        damagerPlayer.sendActionBar("Can't Damage");
                         event.setCancelled(true);
 
                     }
@@ -184,7 +185,7 @@ public class DamageListener implements Listener {
                         UserProfile profile = profileManager.getProfile(shooter.getName());
                         if (!(profile.getTeam().equalsIgnoreCase(ownerProfile.getTeam())) && !profile.getTeam().equalsIgnoreCase("none")) return;
                         if ((profile.isPvpEnabled() && ownerProfile.isPvpEnabled())) return;
-                        damager.sendMessage("Can't Damage");
+                        shooter.sendActionBar("Can't Damage");
                         event.setCancelled(true);
                     }
                 }
@@ -200,8 +201,8 @@ public class DamageListener implements Listener {
                 UserProfile damagedProfile = profileManager.getProfile(damaged.getName());
 
                 if (attackerProfile == null || damagedProfile == null) {
-                    attacker.sendMessage("Your profile or target's profile can not be found. contact developer to fix files");
-                    damaged.sendMessage("Your profile or dude's profile can not be found. contact developer to fix files");
+                    attacker.sendActionBar("Your profile or target's profile can not be found. contact developer to fix files");
+                    damagedPlayer.sendActionBar("Your profile or dude's profile can not be found. contact developer to fix files");
                     event.setCancelled(true);
                     return;
                 }
@@ -231,8 +232,8 @@ public class DamageListener implements Listener {
                 UserProfile damagedProfile = profileManager.getProfile(damaged.getName());
 
                 if (shooterProfile == null || damagedProfile == null) {
-                    shooter.sendMessage("Your profile or target's profile can not be found. contact developer to fix files");
-                    damaged.sendMessage("Your profile or dude's profile can not be found. contact developer to fix files");
+                    shooter.sendActionBar("Your profile or target's profile can not be found. contact developer to fix files");
+                    damagedPlayer.sendActionBar("Your profile or dude's profile can not be found. contact developer to fix files");
                     event.setCancelled(true);
                     return;
                 }
@@ -262,8 +263,8 @@ public class DamageListener implements Listener {
                 UserProfile damagedProfile = profileManager.getProfile(damaged.getName());
 
                 if (throwerProfile == null || damagedProfile == null) {
-                    thrower.sendMessage("Your profile or target's profile can not be found. contact developer to fix files");
-                    damaged.sendMessage("Your profile or dude's profile can not be found. contact developer to fix files");
+                    thrower.sendActionBar("Your profile or target's profile can not be found. contact developer to fix files");
+                    damagedPlayer.sendActionBar("Your profile or dude's profile can not be found. contact developer to fix files");
                     event.setCancelled(true);
                     return;
                 }
@@ -410,7 +411,7 @@ public class DamageListener implements Listener {
                                 knockbackDirection.setY(0.5);
                                 attacker.setVelocity(knockbackDirection);
                                 attacker.damage(event.getDamage());
-                                attacker.sendMessage("§cYou were struck by " + ravager.getName() + "'s retaliation!");
+                                attacker.sendActionBar("§cYou were struck by " + ravager.getName() + "'s retaliation!");
                                 event.setDamage(0);
                             }
 
@@ -532,7 +533,7 @@ public class DamageListener implements Listener {
                                   knockbackDirection.setY(0.5);
                                   attacker.setVelocity(knockbackDirection);
                                   attacker.damage(event.getDamage());
-                                  attacker.sendMessage("§cYou were struck by " + ravager.getName() + "'s retaliation!");
+                                  attacker.sendActionBar("§cYou were struck by " + ravager.getName() + "'s retaliation!");
                                   event.setDamage(0);
                               }
 
@@ -636,7 +637,7 @@ public class DamageListener implements Listener {
                                 knockbackDirection.setY(0.5);
                                 attacker.setVelocity(knockbackDirection);
                                 attacker.damage(event.getDamage());
-                                attacker.sendMessage("§cYou were struck by " + ravager.getName() + "'s retaliation!");
+                                attacker.sendActionBar("§cYou were struck by " + ravager.getName() + "'s retaliation!");
                                 event.setDamage(0);
                             }
 
@@ -1090,7 +1091,7 @@ public class DamageListener implements Listener {
         }
 
         if (event.getDamageSource().getCausingEntity() instanceof Player player1 && (player1.getAllowFlight() && player1.isFlying())) {
-            player1.sendMessage("damaged cancelled. Disable fly mode");
+            player1.sendActionBar("damaged cancelled. Disable fly mode");
             event.setCancelled(true);
             return;
         }
@@ -1160,7 +1161,11 @@ public class DamageListener implements Listener {
             UserProfile playerProfile = profileManager.getProfile(player.getName());
             playerProfile.setDurability(Math.max(0,playerProfile.getDurability()-1));
             if (playerProfile.isBossIndicator() && playerProfile.getDurability() <= 0) {
-                player.sendMessage("Durability depleted. You will receive more damage. /sdw to turn off this warning");
+                player.sendActionBar(
+                        Component.text("⚠ Durability depleted! You will receive more damage. ")
+                                .color(NamedTextColor.RED)
+                                .append(Component.text("throw ores or equips on /adddurability").color(NamedTextColor.GRAY))
+                );
             }
             double agility = playerProfile.getTempAgi();
             int lvl = 1; // Default to level 1
@@ -1183,7 +1188,7 @@ public class DamageListener implements Listener {
                 if (player.hasPotionEffect(PotionEffectType.FIRE_RESISTANCE)) {
 
                     player.removePotionEffect(PotionEffectType.FIRE_RESISTANCE);
-                    player.sendMessage("Your fire resistance effect has been removed by Blaze.");
+                    player.sendActionBar("Your fire resistance effect has been removed by Blaze.");
                 }
             }
 
@@ -1193,7 +1198,7 @@ public class DamageListener implements Listener {
                     player.damage(sdmg);
                     event.setCancelled(true);
                     String displayName = s.getCustomName() != null ? s.getCustomName() : ChatColor.GRAY + "Spider";
-                    player.sendMessage(displayName + ChatColor.RED + ": " + getSpiderRandomInsult());
+                    player.sendActionBar(displayName + ChatColor.RED + ": " + getSpiderRandomInsult());
                     player.addPotionEffect(new PotionEffect(PotionEffectType.NAUSEA, 200, 2));
                 });
             }
@@ -1204,7 +1209,7 @@ public class DamageListener implements Listener {
                     player.damage(sdmg);
                     event.setCancelled(true);
                     String displayName = s.getCustomName() != null ? s.getCustomName() : ChatColor.GRAY + "Spider";
-                    player.sendMessage(displayName + ChatColor.RED + ": " + getSpiderRandomInsult());
+                    player.sendActionBar(displayName + ChatColor.RED + ": " + getSpiderRandomInsult());
                     player.addPotionEffect(new PotionEffect(PotionEffectType.NAUSEA, 200, 2));
                 });
             }
@@ -1215,7 +1220,7 @@ public class DamageListener implements Listener {
                     player.damage(zdmg);
                     event.setCancelled(true);
                     String displayName = z.getCustomName() != null ? z.getCustomName() : ChatColor.GRAY + "Zombie";
-                    player.sendMessage(displayName + ChatColor.RED + ": " + getZRandomInsult());
+                    player.sendActionBar(displayName + ChatColor.RED + ": " + getZRandomInsult());
                     player.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 200, 2));
                 });
             }
@@ -1226,7 +1231,7 @@ public class DamageListener implements Listener {
                     player.damage(zdmg);
                     event.setCancelled(true);
                     String displayName = zv.getCustomName() != null ? zv.getCustomName() : ChatColor.GRAY + "Zombie";
-                    player.sendMessage(displayName + ChatColor.RED + ": " + getZRandomInsult());
+                    player.sendActionBar(displayName + ChatColor.RED + ": " + getZRandomInsult());
                     player.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 200, 2));
                 });
             }
@@ -1244,7 +1249,7 @@ public class DamageListener implements Listener {
 
                     // Message
                     String displayName = w.getCustomName() != null ? w.getCustomName() : ChatColor.GRAY + "Warden";
-                    player.sendMessage(displayName + ChatColor.RED + ": " + getWRandomInsult());
+                    player.sendActionBar(displayName + ChatColor.RED + ": " + getWRandomInsult());
                 });
             }
 
@@ -1266,7 +1271,7 @@ public class DamageListener implements Listener {
                                             skeleton instanceof WitherSkeleton ? "Wither Skeleton" : "Skeleton"
                             );
 
-                    player.sendMessage(displayName + ChatColor.RED + ": " + getSkeletonRandomInsult());
+                    player.sendActionBar(displayName + ChatColor.RED + ": " + getSkeletonRandomInsult());
                 });
             }
 
@@ -1275,8 +1280,8 @@ public class DamageListener implements Listener {
                 if (new Random().nextInt(100) < 5){
                     playerProfile.setDurability(Math.max(0,playerProfile.getDurability()-1000));
                     String displayName = monster.getCustomName() != null ? monster.getCustomName() : ChatColor.GRAY + "Vindicator";
-                    player.sendMessage(displayName + ChatColor.RED + ": " + getVindicatorRandomInsult());
-                    player.sendMessage(ChatColor.RED + "Vindicator reduced your durability by 1000");
+                    player.sendActionBar(displayName + ChatColor.RED + ": " + getVindicatorRandomInsult());
+                    player.sendActionBar(ChatColor.RED + "Vindicator reduced your durability by 1000");
                 }
                 event.setDamage(1);
             }
@@ -1285,7 +1290,7 @@ public class DamageListener implements Listener {
                 if (new Random().nextInt(100) < 30){
                     playerProfile.setDurability(Math.max(0,playerProfile.getDurability()-100));
                     String displayName = monster.getCustomName() != null ? monster.getCustomName() : ChatColor.GRAY + "Brute";
-                    player.sendMessage(ChatColor.RED + "Brute reduced your durability by 100");
+                    player.sendActionBar(ChatColor.RED + "Brute reduced your durability by 100");
                 }
             }
             // calculation if monster will hit
@@ -1343,7 +1348,7 @@ public class DamageListener implements Listener {
 
         if (downedPlayers.containsKey(attacker.getUniqueId())) {
             event.setCancelled(true);
-            attacker.sendMessage(org.bukkit.ChatColor.RED + "Can't attack");
+            attacker.sendActionBar(org.bukkit.ChatColor.RED + "Can't attack");
             return;
         }
 
@@ -1441,7 +1446,7 @@ public class DamageListener implements Listener {
         }
 
         if (hasBeenAirborneTooLong(attacker, 10000) && !isStandingOnSolidBlock(attacker)) {
-            attacker.sendMessage("§e⚠ Damage is reduced because you have been in the air, on water, or on lava for too long.");
+            attacker.sendActionBar("§e⚠ Damage is reduced because you have been in the air, on water, or on lava for too long.");
             finalDamage *= 0.1; // reduce to 10%
         }
 
@@ -1524,7 +1529,7 @@ public class DamageListener implements Listener {
 //
 //        forceDeath.add(player.getUniqueId()); // ✅ tell the damage event to skip downing
 
-        player.sendMessage("§cYou gave up while downed.");
+        player.sendActionBar("§cYou gave up while downed.");
         player.setHealth(0); // Triggers EntityDamageEvent again
     }
 
@@ -1727,7 +1732,7 @@ public class DamageListener implements Listener {
         removeDownedState(player);
         Bukkit.broadcastMessage(ChatColor.GREEN + player.getName() + " was revived");
  // 3 hearts
-        player.sendMessage("§aYou were revived!");
+        player.sendActionBar("§aYou were revived!");
     }
 
 
@@ -1894,7 +1899,7 @@ public class DamageListener implements Listener {
 
 
         if (hasBeenAirborneTooLong(attacker, 5000) && !isStandingOnSolidBlock(attacker)) {
-            attacker.sendMessage("§e⚠ Damage is reduced because you have been in the air, on water, or on lava for too long.");
+            attacker.sendActionBar("§e⚠ Damage is reduced because you have been in the air, on water, or on lava for too long.");
             finalDamage *= 0.1; // reduce to 10%
         }
 
@@ -2014,7 +2019,11 @@ public class DamageListener implements Listener {
         if (damagerProfile.getStamina() <= 0) {
             damagerProfile.setStamina(0);
             if (damagerProfile.isBossIndicator()) {
-                player.sendMessage("Stamina depleted. You will deal less damage. /sdw to turn off this warning");
+                player.sendActionBar(
+                        Component.text("⚠ Stamina depleted! You will deal less damage. ")
+                                .color(NamedTextColor.RED)
+                                .append(Component.text("throw food on /addstamina").color(NamedTextColor.GRAY))
+                );
             }
             calculatedDamage /= 2;
         } else {
