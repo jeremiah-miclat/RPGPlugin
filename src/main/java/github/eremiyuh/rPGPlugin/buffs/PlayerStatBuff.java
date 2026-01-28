@@ -149,33 +149,35 @@ public class PlayerStatBuff {
         double agility = profile.getTempAgi();
         double lvl = profile.getArLvl();
 
-        if (lvl <= 0) return 0;
-        if (agility <= 0) return 0;
+        if (lvl <= 0 || agility <= 0) return 0;
+
         double agiPerLvl = agility / lvl;
-        double bonus;
 
-        if (agiPerLvl <= 50) {
-            // Linear from 0 → 50 AGI/lvl maps to 0 → 1 bonus
-            bonus = agiPerLvl / 50.0;
-        } else if (agiPerLvl <= 100) {
-            // Linear from 50 → 100 AGI/lvl maps to 1 → 3 bonus
-            bonus = 1.0 + ((agiPerLvl - 50) / 50.0) * 2.0;
+        if (agiPerLvl <= 25) {
+            // 0 → 25 AGI/lvl => 0.0 → 0.25
+            return (agiPerLvl / 25.0) * 0.25;
+
+        } else if (agiPerLvl <= 50) {
+            // 25 → 50 AGI/lvl => 0.25 → 0.5
+            return 0.25 + ((agiPerLvl - 25) / 25.0) * 0.25;
+
         } else {
-            // Cap at 3
-            bonus = 3.0;
+            // Cap bonus at 1.0 (max 2× speed)
+            return 1.0;
         }
-
-        return bonus;
     }
+
 
     public void applyAttackSpeedBonus(Player player, UserProfile profile) {
         AttributeInstance attr = player.getAttribute(Attribute.ATTACK_SPEED);
         if (attr == null) return;
 
-        double currentSpeed = attr.getDefaultValue(); // Includes base + modifiers
+        double baseSpeed = 4.0; // vanilla base attack speed
         double bonusMultiplier = 1.0 + calculateBonusAttackSpeed(profile);
 
-        attr.setBaseValue(currentSpeed * bonusMultiplier);
+        attr.setBaseValue(baseSpeed * bonusMultiplier);
+
+        player.sendMessage("Attack Speed: " + attr.getValue());
     }
 
 
