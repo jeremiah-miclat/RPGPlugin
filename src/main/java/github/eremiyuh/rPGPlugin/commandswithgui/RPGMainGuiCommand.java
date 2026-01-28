@@ -406,7 +406,7 @@ public class RPGMainGuiCommand implements CommandExecutor, Listener {
         // Back button (ONLY way to go back)
         gui.setItem(45, attrBackButton());
 
-        // Reset button (same logic as ResetItemListener)
+        // Reset button
         gui.setItem(49, attrResetButton());
 
         // ---------- PURE STAT BUILDS (show to all classes) ----------
@@ -446,8 +446,7 @@ public class RPGMainGuiCommand implements CommandExecutor, Listener {
                 "LUK",
                 "BUILD|pure_luk|luk:100"));
 
-
-        // ---------- CLASS BUILDS ----------
+        // ---------- CLASS BUILDS (ONLY show builds for the chosen class) ----------
         String clazz = (profile.getChosenClass() == null) ? "default" : profile.getChosenClass().toLowerCase();
 
         int[] slots = {
@@ -456,172 +455,179 @@ public class RPGMainGuiCommand implements CommandExecutor, Listener {
         };
         int idx = 0;
 
-        idx = addBuild(gui, slots, idx,
-                "STR/DEX",
-                "recommended if you want to spam skills",
-                "60 / 40",
-                "STR + DEX",
-                "BUILD|sw_str_dex_60_40|str:60,dex:40");
+        switch (clazz) {
 
-        idx = addBuild(gui, slots, idx,
-                "STR/AGI",
-                "increase hp and damage, will get max atkspd and evasion",
-                "50 / 50",
-                "STR + AGI",
-                "BUILD|sw_str_agi_50_50|str:50,agi:50");
+            case "swordsman" -> {
+                idx = addBuild(gui, slots, idx,
+                        "STR/DEX",
+                        "recommended if you want to spam skills",
+                        "60 / 40",
+                        "STR + DEX",
+                        "BUILD|sw_str_dex_60_40|str:60,dex:40");
 
-        idx = addBuild(gui, slots, idx,
-                "STR/AGI/DEX",
-                "increase hp and damage, slight atkspd, slight evasion and max cooldown",
-                "35 / 25 / 40",
-                "STR + AGI + DEX",
-                "BUILD|sw_str_agi_dex_35_25_40|str:35,agi:25,dex:40");
+                idx = addBuild(gui, slots, idx,
+                        "STR/AGI",
+                        "increase hp and damage, will get +50% atkspd and evasion",
+                        "50 / 50",
+                        "STR + AGI",
+                        "BUILD|sw_str_agi_50_50|str:50,agi:50");
 
-        idx = addBuild(gui, slots, idx,
-                "STR/AGI/LUK",
-                "increase hp and damage, slight atkspd and evasion, max crit",
-                "25 / 25 / 50",
-                "STR + AGI + LUK",
-                "BUILD|sw_str_agi_luk_25_25_50|str:25,agi:25,luk:50");
+                idx = addBuild(gui, slots, idx,
+                        "STR/AGI/DEX",
+                        "increase hp and damage, +25% atkspd, slight evasion and max cooldown reduction",
+                        "35 / 25 / 40",
+                        "STR + AGI + DEX",
+                        "BUILD|sw_str_agi_dex_35_25_40|str:35,agi:25,dex:40");
 
-        idx = addBuild(gui, slots, idx,
-                "STR/AGI/LUK",
-                "increase hp and damage, max atkspd and evasion, slight crit",
-                "25 / 50 / 25",
-                "STR + AGI + LUK",
-                "BUILD|sw_str_agi_luk_25_50_25|str:25,agi:50,luk:25");
+                idx = addBuild(gui, slots, idx,
+                        "STR/AGI/LUK",
+                        "increase hp and damage, +25% atkspd and evasion, max crit",
+                        "25 / 25 / 50",
+                        "STR + AGI + LUK",
+                        "BUILD|sw_str_agi_luk_25_25_50|str:25,agi:25,luk:50");
 
-        idx = addBuild(gui, slots, idx,
-                "AGI/LUK",
-                "crit build with max atksp and evasion",
-                "50 / 50",
-                "AGI + LUK",
-                "BUILD|sw_agi_luk_50_50|agi:50,luk:50");
+                idx = addBuild(gui, slots, idx,
+                        "STR/AGI/LUK",
+                        "increase hp and damage, +50% atkspd and evasion, slight crit",
+                        "25 / 50 / 25",
+                        "STR + AGI + LUK",
+                        "BUILD|sw_str_agi_luk_25_50_25|str:25,agi:50,luk:25");
 
-        idx = addBuild(gui, slots, idx,
-                "STR/LUK",
-                "crit build with max atk dmg + hp",
-                "50 / 50",
-                "STR + LUK",
-                "BUILD|sw_str_luk_50_50|str:50,luk:50");
+                idx = addBuild(gui, slots, idx,
+                        "AGI/LUK",
+                        "crit build with +50% atkspd and evasion",
+                        "50 / 50",
+                        "AGI + LUK",
+                        "BUILD|sw_agi_luk_50_50|agi:50,luk:50");
 
-        idx = addBuild(gui, slots, idx,
-                "STR/VIT",
-                "tank with damage",
-                "50 / 50",
-                "STR + VIT",
-                "BUILD|sw_str_vit_50_50|str:50,vit:50");
+                idx = addBuild(gui, slots, idx,
+                        "STR/LUK",
+                        "crit build with atk dmg + hp",
+                        "50 / 50",
+                        "STR + LUK",
+                        "BUILD|sw_str_luk_50_50|str:50,luk:50");
 
-        idx = addBuild(gui, slots, idx,
-                "STR/VIT/DEX",
-                "semi tank with max cooldown",
-                "30 / 30 / 40",
-                "STR + VIT + DEX",
-                "BUILD|sw_str_vit_dex_30_30_40|str:30,vit:30,dex:40");
+                idx = addBuild(gui, slots, idx,
+                        "STR/VIT",
+                        "tank with damage",
+                        "50 / 50",
+                        "STR + VIT",
+                        "BUILD|sw_str_vit_50_50|str:50,vit:50");
 
+                idx = addBuild(gui, slots, idx,
+                        "STR/VIT/DEX",
+                        "semi tank with max cooldown reduction",
+                        "30 / 30 / 40",
+                        "STR + VIT + DEX",
+                        "BUILD|sw_str_vit_dex_30_30_40|str:30,vit:30,dex:40");
+            }
 
-        idx = addBuild(gui, slots, idx,
-                "VIT/DEX",
-                "you can spam skills while being tanky",
-                "60 / 40",
-                "VIT + DEX",
-                "BUILD|ar_vit_dex_60_40|vit:60,dex:40");
+            case "archer" -> {
+                idx = addBuild(gui, slots, idx,
+                        "VIT/DEX",
+                        "you can spam skills while being tanky",
+                        "60 / 40",
+                        "VIT + DEX",
+                        "BUILD|ar_vit_dex_60_40|vit:60,dex:40");
 
-        idx = addBuild(gui, slots, idx,
-                "AGI/DEX",
-                "you spam skills while being evasive + damage",
-                "50 / 50",
-                "AGI + DEX",
-                "BUILD|ar_agi_dex_50_50|agi:50,dex:50");
+                idx = addBuild(gui, slots, idx,
+                        "AGI/DEX",
+                        "you spam skills while being evasive + damage",
+                        "50 / 50",
+                        "AGI + DEX",
+                        "BUILD|ar_agi_dex_50_50|agi:50,dex:50");
 
-        idx = addBuild(gui, slots, idx,
-                "LUK/DEX",
-                "crit build, max cooldown",
-                "50 / 50",
-                "LUK + DEX",
-                "BUILD|ar_luk_dex_50_50|luk:50,dex:50");
+                idx = addBuild(gui, slots, idx,
+                        "LUK/DEX",
+                        "crit build, max cooldown reduction",
+                        "50 / 50",
+                        "LUK + DEX",
+                        "BUILD|ar_luk_dex_50_50|luk:50,dex:50");
 
-        idx = addBuild(gui, slots, idx,
-                "DEX/AGI/LUK",
-                "slight dmg and cooldown, slight bonus dmg and evasion, max crit",
-                "25 / 25 / 50",
-                "DEX + AGI + LUK",
-                "BUILD|ar_dex_agi_luk_25_25_50|dex:25,agi:25,luk:50");
+                idx = addBuild(gui, slots, idx,
+                        "DEX/AGI/LUK",
+                        "slight dmg and cooldown, bonus dmg and evasion, max crit",
+                        "25 / 25 / 50",
+                        "DEX + AGI + LUK",
+                        "BUILD|ar_dex_agi_luk_25_25_50|dex:25,agi:25,luk:50");
 
-        idx = addBuild(gui, slots, idx,
-                "DEX/AGI/LUK",
-                "slight dmg and cooldown, max bonus dmg and evasion, slight crit",
-                "25 / 50 / 25",
-                "DEX + AGI + LUK",
-                "BUILD|ar_dex_agi_luk_25_50_25|dex:25,agi:50,luk:25");
+                idx = addBuild(gui, slots, idx,
+                        "DEX/AGI/LUK",
+                        "slight dmg and cooldown, agi bonus dmg and evasion, slight crit",
+                        "25 / 50 / 25",
+                        "DEX + AGI + LUK",
+                        "BUILD|ar_dex_agi_luk_25_50_25|dex:25,agi:50,luk:25");
+            }
 
+            case "alchemist" -> {
+                idx = addBuild(gui, slots, idx,
+                        "INT/DEX",
+                        "recommended if you want to spam skills, good for supporting/healing",
+                        "60 / 40",
+                        "INT + DEX",
+                        "BUILD|al_int_dex_60_40|intel:60,dex:40");
 
-        idx = addBuild(gui, slots, idx,
-                "INT/DEX",
-                "recommended if you want to spam skills, good for supporting/healing",
-                "60 / 40",
-                "INT + DEX",
-                "BUILD|al_int_dex_60_40|intel:60,dex:40");
+                idx = addBuild(gui, slots, idx,
+                        "INT/AGI",
+                        "increase potion damage, agi bonus potion dmg, melee atkspd and evasion",
+                        "50 / 50",
+                        "INT + AGI",
+                        "BUILD|al_int_agi_50_50|intel:50,agi:50");
 
-        idx = addBuild(gui, slots, idx,
-                "INT/AGI",
-                "increase potion damage, max bonus potion dmg, melee atkspd and evasion",
-                "50 / 50",
-                "INT + AGI",
-                "BUILD|al_int_agi_50_50|intel:50,agi:50");
+                idx = addBuild(gui, slots, idx,
+                        "INT/AGI/DEX",
+                        "increase potion damage, slight melee atkspd, slight evasion and max cooldown reduction",
+                        "35 / 25 / 40",
+                        "INT + AGI + DEX",
+                        "BUILD|al_int_agi_dex_35_25_40|intel:35,agi:25,dex:40");
 
-        idx = addBuild(gui, slots, idx,
-                "INT/AGI/DEX",
-                "increase potion damage, slight melee atkspd, slight evasion and max cooldown",
-                "35 / 25 / 40",
-                "INT + AGI + DEX",
-                "BUILD|al_int_agi_dex_35_25_40|intel:35,agi:25,dex:40");
+                idx = addBuild(gui, slots, idx,
+                        "INT/AGI/LUK",
+                        "increase potion damage, bonus potion dmg and evasion, max crit",
+                        "25 / 25 / 50",
+                        "INT + AGI + LUK",
+                        "BUILD|al_int_agi_luk_25_25_50|intel:25,agi:25,luk:50");
 
-        idx = addBuild(gui, slots, idx,
-                "INT/AGI/LUK",
-                "increase potion damage, slight bonus potion dmg and evasion, max crit",
-                "25 / 25 / 50",
-                "INT + AGI + LUK",
-                "BUILD|al_int_agi_luk_25_25_50|intel:25,agi:25,luk:50");
+                idx = addBuild(gui, slots, idx,
+                        "INT/AGI/LUK",
+                        "increase potion damage, agi bonus potion dmg and evasion, slight crit",
+                        "25 / 50 / 25",
+                        "INT + AGI + LUK",
+                        "BUILD|al_int_agi_luk_25_50_25|intel:25,agi:50,luk:25");
 
-        idx = addBuild(gui, slots, idx,
-                "INT/AGI/LUK",
-                "increase potion damage, max bonus potion dmg and evasion, slight crit",
-                "25 / 50 / 25",
-                "INT + AGI + LUK",
-                "BUILD|al_int_agi_luk_25_50_25|intel:25,agi:50,luk:25");
+                idx = addBuild(gui, slots, idx,
+                        "INT/LUK",
+                        "crit build with potion damage",
+                        "50 / 50",
+                        "INT + LUK",
+                        "BUILD|al_int_luk_50_50|intel:50,luk:50");
 
-        idx = addBuild(gui, slots, idx,
-                "INT/LUK",
-                "crit build with potion damage",
-                "50 / 50",
-                "INT + LUK",
-                "BUILD|al_int_luk_50_50|intel:50,luk:50");
+                idx = addBuild(gui, slots, idx,
+                        "INT/LUK/DEX",
+                        "potion damage with max cooldown reduction + slight crit chance and damage",
+                        "35 / 25 / 40",
+                        "INT + LUK + DEX",
+                        "BUILD|al_int_luk_dex_35_25_40|intel:35,luk:25,dex:40");
 
-        idx = addBuild(gui, slots, idx,
-                "INT/LUK/DEX",
-                "potion damage with max cooldown + slight crit chance and damage",
-                "35 / 25 / 40",
-                "INT + LUK + DEX",
-                "BUILD|al_int_luk_dex_35_25_40|intel:35,luk:25,dex:40");
+                idx = addBuild(gui, slots, idx,
+                        "VIT/DEX/INT",
+                        "tanky support, best support build",
+                        "30 / 40 / 30",
+                        "VIT + DEX + INT",
+                        "BUILD|al_vit_dex_int_30_40_30|vit:30,dex:40,intel:30");
+            }
 
-        idx = addBuild(gui, slots, idx,
-                "VIT/DEX/INT",
-                "tanky support, best support build",
-                "30 / 40 / 30",
-                "VIT + DEX + INT",
-                "BUILD|al_vit_dex_int_30_40_30|vit:30,dex:40,intel:30");
-
-
-        if (clazz.equals("default")) {
-            gui.setItem(31, selectableItem(Material.BARRIER,
-                    "§cChoose a class first",
-                    List.of("§7You cannot apply builds while in default class."),
-                    "NOOP"));
+            default -> {
+                gui.setItem(31, selectableItem(Material.BARRIER,
+                        "§cChoose a class first",
+                        List.of("§7You cannot apply builds while in default class."),
+                        "NOOP"));
+            }
         }
 
         player.openInventory(gui);
     }
+
 
     private int addBuild(Inventory gui, int[] slots, int idx,
                          String title, String descTop, String ratioText, String buildText, String action) {
