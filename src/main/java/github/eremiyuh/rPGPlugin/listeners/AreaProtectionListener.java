@@ -559,16 +559,20 @@ public class AreaProtectionListener implements Listener {
 
     @EventHandler
     public void onBlockChange(EntityChangeBlockEvent event) {
-        if (!event.getEntity().getWorld().getName().equals(world.getName())) {
-            return;
-        }
+//        if (!event.getEntity().getWorld().getName().equals(world.getName())) {
+//            return;
+//        }
 
-        if (event.getBlock().getType() == Material.FARMLAND && isInProtectedArea(event.getEntity().getLocation().getBlockX(), event.getEntity().getLocation().getBlockZ())) {
+        if (event.getBlock().getType() == Material.FARMLAND
+//                && isInProtectedArea(event.getEntity().getLocation().getBlockX(), event.getEntity().getLocation().getBlockZ())
+        ) {
             event.setCancelled(true);
         }
 
-        if (isInProtectedArea(event.getEntity().getLocation().getBlockX(), event.getEntity().getLocation().getBlockZ())
-                && event.getEntity() instanceof Enderman)
+        if (
+//                isInProtectedArea(event.getEntity().getLocation().getBlockX(), event.getEntity().getLocation().getBlockZ())
+//                &&
+                event.getEntity() instanceof Enderman)
         {
             event.setCancelled(true);
         }

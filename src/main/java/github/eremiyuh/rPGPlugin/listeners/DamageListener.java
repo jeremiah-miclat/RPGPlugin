@@ -1440,7 +1440,7 @@ public class DamageListener implements Listener {
             }
         }
 
-        if (hasBeenAirborneTooLong(attacker, 5000) && !isStandingOnSolidBlock(attacker)) {
+        if (hasBeenAirborneTooLong(attacker, 10000) && !isStandingOnSolidBlock(attacker)) {
             attacker.sendMessage("§e⚠ Damage is reduced because you have been in the air, on water, or on lava for too long.");
             finalDamage *= 0.1; // reduce to 10%
         }

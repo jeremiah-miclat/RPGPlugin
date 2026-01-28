@@ -556,31 +556,64 @@ public class SummonVillagerListener implements Listener {
         return recipe;
     }
 
-    private MerchantRecipe createEnchantedTradeWithBook(Material ingredient, int ingredientCount, Material result, int resultCount, Enchantment enchantment, int enchantmentLevel) {
-        // Create the enchanted book item stack
-        ItemStack enchantedBook = new ItemStack(Material.ENCHANTED_BOOK);
+    private MerchantRecipe createEnchantedTradeWithBook(
+            Material ingredient, int ingredientCount,
+            Material result, int resultCount, // (kept for your signature; result is ignored)
+            Enchantment enchantment, int enchantmentLevel
+    ) {
+        ItemStack enchantedBook = new ItemStack(Material.ENCHANTED_BOOK, Math.max(1, resultCount));
 
-        // Get the item meta of the enchanted book to modify it
-        EnchantmentStorageMeta meta = (EnchantmentStorageMeta) enchantedBook.getItemMeta();
-        if (meta != null) {
-            // Add the enchantment to the item meta
+        ItemMeta rawMeta = enchantedBook.getItemMeta();
+        if (rawMeta instanceof EnchantmentStorageMeta meta) {
             meta.addStoredEnchant(enchantment, enchantmentLevel, true);
-            enchantedBook.setItemMeta(meta); // Apply the changes to the book
+
+            // ✅ Make Bedrock players see the enchant in the trade list
+            String niceName = prettifyEnchantmentName(enchantment) + " " + toRoman(enchantmentLevel);
+
+            meta.displayName(net.kyori.adventure.text.Component.text(niceName));
+
+            meta.lore(java.util.List.of(
+                    net.kyori.adventure.text.Component.text("Enchant: " + niceName),
+                    net.kyori.adventure.text.Component.text("Use on an anvil")
+            ));
+
+            enchantedBook.setItemMeta(meta);
         }
-
-
 
         ItemStack ingredientItem = new ItemStack(ingredient, ingredientCount);
         ItemStack bookItem = new ItemStack(Material.BOOK, 1);
-//        ItemStack resultItem = new ItemStack(enchantedBook.getType(), resultCount);
 
-        // Apply the specified enchantment to the result item
-//        resultItem.addUnsafeEnchantment(enchantment, enchantmentLevel);
-
-        // Create the trade with two ingredients (main ingredient and a book)
         MerchantRecipe recipe = new MerchantRecipe(enchantedBook, Integer.MAX_VALUE);
-        recipe.setIngredients(Arrays.asList(ingredientItem, bookItem));
+        recipe.setIngredients(java.util.Arrays.asList(ingredientItem, bookItem));
         return recipe;
+    }
+
+    private String prettifyEnchantmentName(Enchantment ench) {
+        // e.g. minecraft:fire_aspect -> Fire Aspect
+        String key = ench.getKey().getKey().replace('_', ' ');
+        String[] parts = key.split(" ");
+        StringBuilder sb = new StringBuilder();
+        for (String p : parts) {
+            if (p.isEmpty()) continue;
+            sb.append(Character.toUpperCase(p.charAt(0))).append(p.substring(1)).append(" ");
+        }
+        return sb.toString().trim();
+    }
+
+    private String toRoman(int num) {
+        return switch (num) {
+            case 1 -> "I";
+            case 2 -> "II";
+            case 3 -> "III";
+            case 4 -> "IV";
+            case 5 -> "V";
+            case 6 -> "VI";
+            case 7 -> "VII";
+            case 8 -> "VIII";
+            case 9 -> "IX";
+            case 10 -> "X";
+            default -> String.valueOf(num);
+        };
     }
 
     private MerchantRecipe createTippedArrowTrade(Material ingredient, int ingredientCount, PotionEffectType effectType, int durationTicks, int amplifier, int resultCount) {

@@ -312,6 +312,10 @@ public class DeadMobListener implements Listener {
                 }
                     event.getDrops().clear();
                     event.setDroppedExp(0);
+
+                    if (isWorldBoss) {
+                        Bukkit.broadcastMessage(killer.getName() + " has slain a " + mob.getName());
+                    }
 //                                        if (isWorldBoss) {
 //                        try {
 //                            BossKillMessages.broadcastBossKill(killer.getName(), customName);

@@ -133,6 +133,7 @@ public class PayBlackSmithCommand implements CommandExecutor, Listener {
         durabilityMap.put(Material.WITHER_SKELETON_SKULL, 10000);
         durabilityMap.put(Material.NETHER_STAR, 100000);
         durabilityMap.put(Material.BUCKET, 200);
+        durabilityMap.put(Material.ENDER_PEARL, 100);
 
     }
 
