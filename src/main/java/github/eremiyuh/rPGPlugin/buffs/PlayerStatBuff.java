@@ -176,8 +176,6 @@ public class PlayerStatBuff {
         double bonusMultiplier = 1.0 + calculateBonusAttackSpeed(profile);
 
         attr.setBaseValue(baseSpeed * bonusMultiplier);
-
-        player.sendMessage("Attack Speed: " + attr.getValue());
     }
 
 

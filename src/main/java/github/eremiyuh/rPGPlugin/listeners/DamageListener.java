@@ -1072,14 +1072,14 @@ public class DamageListener implements Listener {
 
         if (event.getCause() == EntityDamageEvent.DamageCause.SONIC_BOOM
                 && event.getEntity() instanceof LivingEntity
-                && event.getDamageSource() instanceof Warden warden) {
-
-            // Reuse the modified attack damage from the initialized Warden
-            double modifiedDamage = Objects.requireNonNull(
-                    warden.getAttribute(Attribute.ATTACK_DAMAGE)
-            ).getValue();
-
-            event.setDamage(modifiedDamage);
+        ) {
+            Entity causer = event.getDamageSource().getCausingEntity();
+            if (causer instanceof Warden warden) {
+                double modifiedDamage = Objects.requireNonNull(
+                        warden.getAttribute(Attribute.ATTACK_DAMAGE)
+                ).getValue();
+                event.setDamage(modifiedDamage);
+            }
         }
 
 
