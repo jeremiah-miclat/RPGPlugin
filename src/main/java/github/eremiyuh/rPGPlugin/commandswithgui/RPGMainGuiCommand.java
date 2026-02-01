@@ -699,6 +699,90 @@ public class RPGMainGuiCommand implements CommandExecutor, Listener {
     }
 
 
+//    private void applyBuild(Player player, UserProfile profile, String action) {
+//        String clazz = (profile.getChosenClass() == null) ? "default" : profile.getChosenClass().toLowerCase();
+//        if (clazz.equals("default")) {
+//            player.sendMessage("§cYou must choose a class first.");
+//            return;
+//        }
+//
+//        String[] parts = action.split("\\|");
+//        if (parts.length < 3) return;
+//
+//        String ratioPart = parts[2].trim();
+//        Map<String, Integer> ratios = new LinkedHashMap<>();
+//
+//        for (String kv : ratioPart.split(",")) {
+//            String[] kvp = kv.split(":");
+//            if (kvp.length != 2) continue;
+//            String stat = kvp[0].trim().toLowerCase();
+//            int r;
+//            try { r = Integer.parseInt(kvp[1].trim()); }
+//            catch (NumberFormatException ex) { continue; }
+//            ratios.put(stat, r);
+//        }
+//
+//        if (ratios.isEmpty()) return;
+//        int sum = ratios.values().stream().mapToInt(Integer::intValue).sum();
+//        if (sum != 100) {
+//            player.sendMessage("§cInvalid build setup: ratios must total 100 (got " + sum + ").");
+//            player.sendMessage("This is a bug. Contact Dev");
+//            return;
+//        }
+//
+//        int allocatedForClass = switch (clazz) {
+//            case "archer" -> profile.getTotalArcherAllocatedPoints();
+//            case "swordsman" -> profile.getTotalSwordsmanAllocatedPoints();
+//            case "alchemist" -> profile.getTotalAlchemistAllocatedPoints();
+//            default -> 0;
+//        };
+//
+//        int totalForClass = profile.getCurrentAttributePoints() + allocatedForClass;
+//
+//        int allocatable = Math.min(totalForClass, 20000);
+//        int overflow = Math.max(0, totalForClass - allocatable);
+//
+//        int chunks = allocatable / 100;
+//        int remainder = (allocatable % 100) + overflow;
+//
+//        UserProfile.ClassAttributes attrs = switch (clazz) {
+//            case "archer" -> profile.getArcherClassInfo();
+//            case "swordsman" -> profile.getSwordsmanClassInfo();
+//            case "alchemist" -> profile.getAlchemistClassInfo();
+//            default -> null;
+//        };
+//        if (attrs == null) return;
+//
+//        attrs.resetAttributes();
+//
+//        // Track how much each stat received (so we can message it)
+//        Map<String, Integer> allocatedStats = new LinkedHashMap<>();
+//
+//        for (Map.Entry<String, Integer> e : ratios.entrySet()) {
+//            String stat = e.getKey();
+//            int ratio = e.getValue();     // e.g. 50
+//            int add = chunks * ratio;     // e.g. chunks=2 => 100
+//
+//            if (add <= 0) continue;
+//
+//            profile.addPointsToClass(attrs, stat, add);
+//            allocatedStats.put(stat, add);
+//        }
+//
+//        profile.setCurrentAttributePoints(remainder);
+//
+//        int allocatedNow = chunks * 100;
+//
+//        // Build readable message: "AGI: 100  LUK: 100"
+//        String statBreakdown = allocatedStats.entrySet().stream()
+//                .map(en -> en.getKey().toUpperCase() + ": " + en.getValue())
+//                .reduce((a, b) -> a + "  §7| §f" + b)
+//                .orElse("None");
+//
+//        player.sendMessage("§aBuild applied! §7Allocated §f" + allocatedNow + "§7. Remainder: §f" + remainder);
+//        player.sendMessage("§eStats: §f" + statBreakdown);
+//    }
+
     private void applyBuild(Player player, UserProfile profile, String action) {
         String clazz = (profile.getChosenClass() == null) ? "default" : profile.getChosenClass().toLowerCase();
         if (clazz.equals("default")) {
@@ -715,36 +799,44 @@ public class RPGMainGuiCommand implements CommandExecutor, Listener {
         for (String kv : ratioPart.split(",")) {
             String[] kvp = kv.split(":");
             if (kvp.length != 2) continue;
+
             String stat = kvp[0].trim().toLowerCase();
             int r;
             try { r = Integer.parseInt(kvp[1].trim()); }
             catch (NumberFormatException ex) { continue; }
+
             ratios.put(stat, r);
         }
 
         if (ratios.isEmpty()) return;
+
         int sum = ratios.values().stream().mapToInt(Integer::intValue).sum();
         if (sum != 100) {
             player.sendMessage("§cInvalid build setup: ratios must total 100 (got " + sum + ").");
-            player.sendMessage("This is a bug. Contact Dev");
+            player.sendMessage("§7This is a bug. Contact Dev");
             return;
         }
 
-        int allocatedForClass = switch (clazz) {
-            case "archer" -> profile.getTotalArcherAllocatedPoints();
-            case "swordsman" -> profile.getTotalSwordsmanAllocatedPoints();
-            case "alchemist" -> profile.getTotalAlchemistAllocatedPoints();
-            default -> 0;
-        };
+        // ===== NEW: pool ALL points across ALL classes =====
+        int pooledPoints =
+                profile.getCurrentAttributePoints()
+                        + profile.getTotalArcherAllocatedPoints()
+                        + profile.getTotalSwordsmanAllocatedPoints()
+                        + profile.getTotalAlchemistAllocatedPoints();
 
-        int totalForClass = profile.getCurrentAttributePoints() + allocatedForClass;
+        // cap only what can be allocated via build
+        int allocatable = Math.min(pooledPoints, 20000);
+        int overflow = Math.max(0, pooledPoints - allocatable);
 
-        int allocatable = Math.min(totalForClass, 20000);
-        int overflow = Math.max(0, totalForClass - allocatable);
+        int chunks = allocatable / 100;                // how many 100-point chunks we can allocate
+        int remainder = (allocatable % 100) + overflow; // leftover that stays as points
 
-        int chunks = allocatable / 100;
-        int remainder = (allocatable % 100) + overflow;
+        // ===== NEW: wipe ALL class stats so only one class has stats after build =====
+        profile.getArcherClassInfo().resetAttributes();
+        profile.getSwordsmanClassInfo().resetAttributes();
+        profile.getAlchemistClassInfo().resetAttributes();
 
+        // apply to CURRENT class only
         UserProfile.ClassAttributes attrs = switch (clazz) {
             case "archer" -> profile.getArcherClassInfo();
             case "swordsman" -> profile.getSwordsmanClassInfo();
@@ -753,15 +845,12 @@ public class RPGMainGuiCommand implements CommandExecutor, Listener {
         };
         if (attrs == null) return;
 
-        attrs.resetAttributes();
-
-        // Track how much each stat received (so we can message it)
         Map<String, Integer> allocatedStats = new LinkedHashMap<>();
 
         for (Map.Entry<String, Integer> e : ratios.entrySet()) {
             String stat = e.getKey();
-            int ratio = e.getValue();     // e.g. 50
-            int add = chunks * ratio;     // e.g. chunks=2 => 100
+            int ratio = e.getValue();           // ex 50
+            int add = chunks * ratio;           // each chunk is 100 total points, ratio splits it
 
             if (add <= 0) continue;
 
@@ -769,19 +858,21 @@ public class RPGMainGuiCommand implements CommandExecutor, Listener {
             allocatedStats.put(stat, add);
         }
 
+        // remaining points go back to "unspent"
         profile.setCurrentAttributePoints(remainder);
 
         int allocatedNow = chunks * 100;
 
-        // Build readable message: "AGI: 100  LUK: 100"
         String statBreakdown = allocatedStats.entrySet().stream()
                 .map(en -> en.getKey().toUpperCase() + ": " + en.getValue())
                 .reduce((a, b) -> a + "  §7| §f" + b)
                 .orElse("None");
 
-        player.sendMessage("§aBuild applied! §7Allocated §f" + allocatedNow + "§7. Remainder: §f" + remainder);
-        player.sendMessage("§eStats: §f" + statBreakdown);
+        player.sendMessage("§aBuild applied! §7Allocated §f" + allocatedNow + "§7 total points.");
+        player.sendMessage("§eClass: §f" + clazz.toUpperCase() + " §7| §eStats: §f" + statBreakdown);
+        player.sendMessage("§7Remainder (unspent): §f" + remainder);
     }
+
 
 
 

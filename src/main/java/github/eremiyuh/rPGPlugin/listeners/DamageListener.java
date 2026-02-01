@@ -1,5 +1,6 @@
 package github.eremiyuh.rPGPlugin.listeners;
 
+import com.destroystokyo.paper.profile.PlayerProfile;
 import github.eremiyuh.rPGPlugin.RPGPlugin;
 import github.eremiyuh.rPGPlugin.manager.PlayerProfileManager;
 import github.eremiyuh.rPGPlugin.manager.RavagerSkillManager;
@@ -1495,10 +1496,14 @@ public class DamageListener implements Listener {
     @EventHandler
     public void onTargetDownPlayer(EntityTargetEvent event) {
         if (!(event.getEntity() instanceof Monster && event.getTarget() instanceof Player player)) return;
-
+        UserProfile profile = profileManager.getProfile(player.getName());
         if (downedPlayers.containsKey(player.getUniqueId())) {
                 event.setCancelled(true);
             }
+
+
+
+        if (!profile.isLoggedIn()) event.setCancelled(true);
 
     }
 

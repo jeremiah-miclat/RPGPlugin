@@ -4,8 +4,10 @@ import github.eremiyuh.rPGPlugin.utils.ItemUtils;
 import io.papermc.paper.event.player.PlayerTradeEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.AbstractVillager;
@@ -16,9 +18,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityTransformEvent;
-import org.bukkit.inventory.ItemFlag;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.MerchantRecipe;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.TradeSelectEvent;
+import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
@@ -884,5 +886,40 @@ public class SummonVillagerListener implements Listener {
 
 
 
+    @EventHandler
+    public void onTradeSelect(TradeSelectEvent event) {
+        if (!(event.getWhoClicked() instanceof Player player)) return;
+
+        Merchant merchant = event.getMerchant();
+        int index = event.getIndex();
+
+        MerchantRecipe recipe;
+        try {
+            recipe = merchant.getRecipe(index);
+        } catch (IndexOutOfBoundsException ignored) {
+            return;
+        }
+
+        ItemStack result = recipe.getResult();
+
+        if (result.getType() != Material.ENCHANTED_BOOK) return;
+
+        ItemMeta meta = result.getItemMeta();
+        if (meta == null || !meta.hasLore()) return;
+
+        List<Component> lore = meta.lore();
+        if (lore == null || lore.isEmpty()) return;
+
+        // Join lore lines into one ActionBar message
+        Component bar = Component.empty();
+        for (int i = 0; i < lore.size(); i++) {
+            bar = bar.append(lore.get(i));
+            if (i < lore.size() - 1) {
+                bar = bar.append(Component.text(" • ", NamedTextColor.GREEN));
+            }
+        }
+
+        player.sendActionBar(bar);
+    }
 }
 
