@@ -272,7 +272,7 @@ public class PlayerStatBuff {
             if (profile.getSelectedElement().equalsIgnoreCase("ice")) bonusCrit+=.1;
             profile.setCrit(critChance(chosenClass,luk,dex, profile.getSelectedSkill(),chosenTrait,validRangedWeapon,profile.getArLvl())+bonusCrit);
             profile.setCritResist(calculateCritResist(luk,agi,vit, profile.getArLvl()));
-            profile.setCritDmg(getCritMultiplier(chosenClass,luk,dex, profile.getSelectedSkill(),chosenTrait,validRangedWeapon,profile.getArLvl()));
+
 
             double meleeDmg = 0;
             double longDmg=0;
@@ -337,7 +337,8 @@ public class PlayerStatBuff {
             profile.setCritResist2(calculateCritDmgNegate(agi,vit,luk,hp));
             profile.setFlee(calculateFlee(agi));
             profile.setHit(calculateHitRate(dex));
-
+            profile.setCritDmg(getCritBonus(chosenClass,luk,dex, profile.getSelectedSkill(),chosenTrait,validRangedWeapon,profile.getArLvl(),profile)
+            );
             if (player.getWorld().getName().contains("_rpg")) {
                 // Update player health
                 AttributeInstance maxHealthAttr = player.getAttribute(Attribute.MAX_HEALTH);
@@ -475,13 +476,15 @@ public class PlayerStatBuff {
     }
 
 
-    public double getCritMultiplier(String classType, double luk, double dex, String chosenSkill, String chosenTrait, boolean validRangedWeapon, int bpLvl) {
+    public double getCritBonus(String classType, double luk, double dex, String chosenSkill, String chosenTrait, boolean validRangedWeapon, int bpLvl, UserProfile profile) {
         if (bpLvl <= 0) return 0;
 
 
 
-        double bonus = 24 + (luk / 75) * 12.0;
 
+
+        double bonus = .5*(profile.getLongDmg()+profile.getMeleeDmg()+profile.getSplashDmg());
+        bonus += (luk / 100) * 10.0;
         if (chosenTrait.equalsIgnoreCase("Gamble")) bonus*=1.5;
         if (chosenTrait.equalsIgnoreCase("Frenzy")) bonus*=2;
 
