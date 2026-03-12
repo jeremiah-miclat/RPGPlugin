@@ -115,7 +115,7 @@ public class ItemUtils {
         if (meta != null) {
             meta.displayName(Component.text("Abyss Heal Potion").color(TextColor.color(255,0,0)));
             meta.lore(Arrays.asList(
-                    Component.text("Cost: 1,000 abyss points."),
+                    Component.text("Cost: 1 diamond currency."),
                     Component.text("Right-click to use"),
                     Component.text("Health will be restored.")
             ));

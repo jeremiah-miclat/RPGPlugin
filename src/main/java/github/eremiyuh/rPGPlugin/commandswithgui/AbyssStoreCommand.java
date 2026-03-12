@@ -6,8 +6,10 @@ import github.eremiyuh.rPGPlugin.profile.UserProfile;
 import github.eremiyuh.rPGPlugin.utils.ItemUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -20,6 +22,9 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.PotionMeta;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,13 +54,41 @@ public class AbyssStoreCommand implements CommandExecutor, Listener {
         return false;
     }
 
+    private ItemStack getJumpBoostPotion() {
+        ItemStack potion = new ItemStack(Material.POTION);
+        PotionMeta meta = (PotionMeta) potion.getItemMeta();
+
+        if (meta != null) {
+            meta.setDisplayName(ChatColor.GREEN + "Jump Boost II Potion");
+
+            List<Component> lore = new ArrayList<>();
+            lore.add(Component.text("Grants Jump Boost II for 3 minutes")
+                    .color(TextColor.color(0, 255, 0)));
+            lore.add(Component.text("Cost: 5 Netherite Currency")
+                    .color(TextColor.color(255, 215, 0)));
+            meta.lore(lore);
+
+            meta.addCustomEffect(
+                    new PotionEffect(PotionEffectType.JUMP_BOOST, 20 * 60 * 3, 1), // 3 min, level 2 (amplifier 1)
+                    true
+            );
+
+            potion.setItemMeta(meta);
+        }
+
+        return potion;
+    }
+
     public void openAbyssStore(Player player) {
         // Create the Abyss Store inventory with 9 slots
         Inventory abyssStore = Bukkit.createInventory(null, 9, Component.text("Abyss Store").color(TextColor.color(255, 0, 0)));
 
         // Create the Abyss Mana Stone item
-        ItemStack abyssIngot = getAbyssIngot();
-        abyssStore.setItem(0, abyssIngot); // Place the Abyss Mana Stone in the center of the inventory
+//        ItemStack abyssIngot = getAbyssIngot();
+//        abyssStore.setItem(0, abyssIngot); // Place the Abyss Mana Stone in the center of the inventory
+
+        ItemStack jumpPotion = getJumpBoostPotion();
+        abyssStore.setItem(0, jumpPotion);
 
         // Create the Abyss Potion item
         ItemStack abyssPotion = getAbyssPotion();
@@ -184,22 +217,45 @@ public class AbyssStoreCommand implements CommandExecutor, Listener {
 //                }
 //            }
 
-            if (event.getSlot() == 0 && event.getCurrentItem() != null && event.getCurrentItem().isSimilar(getAbyssIngot())) {
-                if (userProfile.getAbysspoints() >= 100000) {
-                      player.sendMessage("Disabled");
-//                    userProfile.setAbysspoints(userProfile.getAbysspoints() - 100000); // Deduct Abyss Points
-//                    dropOrNotify(player, ItemUtils.getAbyssIngot(), "Successfully purchased Abyss Mana Stone!");
+//            if (event.getSlot() == 0 && event.getCurrentItem() != null && event.getCurrentItem().isSimilar(getAbyssIngot())) {
+//                if (userProfile.getAbysspoints() >= 100000) {
+//                      player.sendMessage("Disabled");
+////                    userProfile.setAbysspoints(userProfile.getAbysspoints() - 100000); // Deduct Abyss Points
+////                    dropOrNotify(player, ItemUtils.getAbyssIngot(), "Successfully purchased Abyss Mana Stone!");
+//                } else {
+//                    player.sendMessage(Component.text("You do not have enough Abyss Points!").color(TextColor.color(255, 0, 0)));
+//                }
+//            }
+
+            if (event.getSlot() == 0 &&
+                    event.getCurrentItem() != null &&
+                    event.getCurrentItem().isSimilar(getJumpBoostPotion())) {
+
+                if (userProfile.getDiamond() >= 1) {
+
+                    userProfile.setDiamond(userProfile.getDiamond() - 1);
+
+                    player.addPotionEffect(
+                            new PotionEffect(PotionEffectType.JUMP_BOOST, 20 * 60 * 3, 1)
+                    );
+
+                    player.sendActionBar(Component.text("Jump Boost II activated!")
+                            .color(TextColor.color(0, 255, 0)));
+                    player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f);
+                    player.closeInventory();
+
                 } else {
-                    player.sendMessage(Component.text("You do not have enough Abyss Points!").color(TextColor.color(255, 0, 0)));
+                    player.sendMessage(Component.text("You do not have enough diamond currency!")
+                            .color(TextColor.color(255, 0, 0)));
                 }
             }
 
             if (event.getSlot() == 1 && event.getCurrentItem() != null && event.getCurrentItem().isSimilar(getAbyssPotion())) {
-                if (userProfile.getEmerald() >= 100) {
-                    userProfile.setAbysspoints(userProfile.getEmerald() - 100); // Deduct Abyss Points
+                if (userProfile.getDiamond() >= 1) {
+                    userProfile.setDiamond(userProfile.getDiamond() - 1); // Deduct diamond Points
                     dropOrNotify(player, ItemUtils.getAbyssPotion(), "Successfully purchased Abyss Potion!");
                 } else {
-                    player.sendMessage(Component.text("You do not have enough Emerald!").color(TextColor.color(255, 0, 0)));
+                    player.sendMessage(Component.text("You do not have enough diamond!").color(TextColor.color(255, 0, 0)));
                 }
             }
 

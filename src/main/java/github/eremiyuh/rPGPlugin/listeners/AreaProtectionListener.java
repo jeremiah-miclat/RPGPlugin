@@ -67,7 +67,7 @@ public class AreaProtectionListener implements Listener {
             EntityType.SNIFFER
     );
 
-    private static final int MAX_PER_TYPE_PER_3x3_CHUNKS = 25;
+    private static final int MAX_PER_TYPE_PER_3x3_CHUNKS = 50;
 
     public AreaProtectionListener(RPGPlugin plugin) {
         this.world = Bukkit.getWorld("world"); // Ensure this is the correct world name
